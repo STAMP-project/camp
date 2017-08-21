@@ -28,7 +28,7 @@ RUN mkdir workingdir \
 	gcc \
 	make
 
-RUN curl -sL https://deb.nodesource.com/setup_7.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_4.x | bash - \
 	&& apt-get install --no-install-recommends -qqy nodejs \
 	build-essential
 
