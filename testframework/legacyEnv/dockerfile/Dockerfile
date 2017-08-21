@@ -26,11 +26,8 @@ RUN mkdir workingdir \
 	ca-certificates \
 	openssh-server \
 	gcc \
-	make
-
-RUN curl -sL https://deb.nodesource.com/setup_4.x | bash - \
-	&& apt-get install --no-install-recommends -qqy nodejs \
-	build-essential
+	make \
+	nodejs
 
 COPY dojob.py workingdir/dojob.py
 RUN chmod a+x workingdir/dojob.py
