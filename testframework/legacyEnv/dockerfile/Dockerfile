@@ -27,6 +27,7 @@ RUN mkdir workingdir \
 	openssh-server \
 	gcc \
 	make \
+	build-essential \
 	nodejs
 
 COPY dojob.py workingdir/dojob.py
