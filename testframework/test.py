@@ -125,11 +125,11 @@ def run_tests():
 				file.write(line)
 			for line in StringIO.StringIO(stderr).readlines():
 				file.write(line)
-		dest_folder = folder_path(full_global_report_dir, category_name)
+		dest_folder = folder_path(full_global_report_dir, key)
 		os.mkdir(dest_folder)
 		shutil.copy2(log_file, os.path.join(dest_folder, TEST_CATEGORY_LOG))
 		#copy final report to global report directory
-		final_report_folder = folder_path(value['report_folder'], category_name)
+		final_report_folder = folder_path(value['report_folder'], key)
 		if os.path.isdir(final_report_folder): 
 			copy_dir_contents(final_report_folder, dest_folder)
 
