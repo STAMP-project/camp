@@ -1,7 +1,13 @@
 node {
    stage('Downloading changes') { // for display purposes
+      //git "https://github.com/vassik/third-party-tool.git"
+      checkout scm
+   }
+   stage('Downloading the tool to test') {
+      sh "rm -rf third-party-tool && mkdir third-party-tool && cd third-party-tool"
       git "https://github.com/vassik/third-party-tool.git"
-      //checkout scm
+      sh "cd .."
+      sh "ls -la"
    }
    stage('Building Compilers') {
       // Run the maven build
