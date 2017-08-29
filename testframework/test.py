@@ -32,6 +32,7 @@ GENERAL_ROOT_TEST_FOLDER = 'root_test_folder'
 GENERAL_TEST_WORKING_FOLDER = 'test_working_folder'
 GENERAL_GLOBAL_REPORT_DIR = 'global_report_dir'
 GENERAL_THINGML_REPO = 'thingml_repo'
+GENERAL_CONFIG_TESTING_FOLDER = 'config_testing_folder'
 
 TEST_CATEGORY_NAME = 'category_name'
 TEST_SCRIPT_NAME = 'category_test_script'
@@ -62,6 +63,7 @@ def copy_dir_contents(src, dst, symlinks=False, ignore=None):
 		else:
 			shutil.copy2(s, d)
 
+
 def run_tests():
 	root_test_folder = SCRIP_ABSOLUTE_PATH
 
@@ -71,10 +73,12 @@ def run_tests():
 	test_working_folder = config.get(CONFIG_GENERAL_SEC, GENERAL_TEST_WORKING_FOLDER)
 	global_report_dir = config.get(CONFIG_GENERAL_SEC, GENERAL_GLOBAL_REPORT_DIR)
 	thingml_repo = config.get(CONFIG_GENERAL_SEC, GENERAL_THINGML_REPO)
+	config_testing_folder = config.get(CONFIG_GENERAL_SEC, GENERAL_CONFIG_TESTING_FOLDER)
 
 	full_test_working_folder = folder_path(root_test_folder, test_working_folder)
 	full_global_report_dir = folder_path(root_test_folder, global_report_dir)
 	full_thingml_repo_dir = folder_path(root_test_folder, thingml_repo)
+	full_config_testing_dir = folder_path(full_thingml_repo_dir, config_testing_folder)
 
 	#clean working directory and report directories
 	if os.path.isdir(full_test_working_folder):
@@ -98,7 +102,7 @@ def run_tests():
 		os.mkdir(test_category_working_folder)
 
 		category_run_script = config.get(section, TEST_SCRIPT_NAME)
-		run_script_folder = folder_path(root_test_folder, category_name)
+		run_script_folder = folder_path(full_config_testing_dir, category_name)
 		run_script_path = folder_path(run_script_folder, category_run_script)
 
 		test_category_data = {}
