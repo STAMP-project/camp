@@ -29,6 +29,7 @@ RUN echo 'jenkins:jenkins' | chpasswd \
 	&& mkdir /var/run/sshd	
 
 #copy everithing in the current folder
+#requires that the tool to test is packaged together with the testing tool
 COPY . "$JENKINS_HOME"/
 
 #starup scritp, runs sshd and than jenkins.sh from jenkins:latest
