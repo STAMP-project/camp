@@ -31,8 +31,8 @@ CONFIG_GENERAL_SEC = 'general'
 GENERAL_ROOT_TEST_FOLDER = 'root_test_folder'
 GENERAL_TEST_WORKING_FOLDER = 'test_working_folder'
 GENERAL_GLOBAL_REPORT_DIR = 'global_report_dir'
-GENERAL_THINGML_REPO = 'thingml_repo'
-GENERAL_CONFIG_TESTING_FOLDER = 'config_testing_folder'
+GENERAL_SYSTEM_UNDER_TEST = 'system_under_test'
+GENERAL_SUT_CONFIG_TESTING_FOLDER = 'sut_config_testing_folder'
 
 TEST_CATEGORY_NAME = 'category_name'
 TEST_SCRIPT_NAME = 'category_test_script'
@@ -72,13 +72,13 @@ def run_tests():
 
 	test_working_folder = config.get(CONFIG_GENERAL_SEC, GENERAL_TEST_WORKING_FOLDER)
 	global_report_dir = config.get(CONFIG_GENERAL_SEC, GENERAL_GLOBAL_REPORT_DIR)
-	thingml_repo = config.get(CONFIG_GENERAL_SEC, GENERAL_THINGML_REPO)
-	config_testing_folder = config.get(CONFIG_GENERAL_SEC, GENERAL_CONFIG_TESTING_FOLDER)
+	system_under_test = config.get(CONFIG_GENERAL_SEC, GENERAL_SYSTEM_UNDER_TEST)
+	config_testing_folder = config.get(CONFIG_GENERAL_SEC, GENERAL_SUT_CONFIG_TESTING_FOLDER)
 
 	full_test_working_folder = folder_path(root_test_folder, test_working_folder)
 	full_global_report_dir = folder_path(root_test_folder, global_report_dir)
-	full_thingml_repo_dir = folder_path(root_test_folder, thingml_repo)
-	full_config_testing_dir = folder_path(full_thingml_repo_dir, config_testing_folder)
+	full_system_under_test_dir = folder_path(root_test_folder, system_under_test)
+	full_config_testing_dir = folder_path(full_system_under_test_dir, config_testing_folder)
 
 	#clean working directory and report directories
 	if os.path.isdir(full_test_working_folder):
@@ -114,7 +114,7 @@ def run_tests():
 
 	#running jobs as subprocesses
 	for key, value in test_scripts.iteritems():
-		command = [value['script'], key, value['working_folder'], value['report_folder'], full_thingml_repo_dir]
+		command = [value['script'], key, value['working_folder'], value['report_folder'], full_system_under_test_dir]
 		print "Starting: " + " ".join(command)
 		proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		test_scripts[key]['proc'] = proc
