@@ -19,4 +19,4 @@ docker build --rm -t $IMAGE .
 docker run -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/$SHARED:/var/jenkins_home/report/ -e MASTER_SSH_PORT=22 -e MASTER_SLAVE_USER=jenkins -e MASTER_SLAVE_PWD=jenkins -e DOCKER_GID=$DOCKERGID --name $APP $IMAGE
 #docker run -d -v /var/run/docker.sock:/var/run/docker.sock -e MASTER_SSH_PORT=22 -e MASTER_SLAVE_USER=jenkins -e MASTER_SLAVE_PWD=jenkins -e DOCKER_GID=998 --name $APP $IMAGE
 #docker exec -it $APP bash -c "su - jenkins"
-docker exec -it $APP bash
+#docker exec -it $APP bash
