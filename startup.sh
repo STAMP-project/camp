@@ -24,7 +24,7 @@
 #setting up permissions for docker.sock
 if ! grep -q docker /etc/group; then
   if [[ -e "/var/run/docker.sock" ]] && [[ -n "$DOCKER_GID" ]] ; then
-  	echo "Setting permissions for docker.sock"
+  	echo "Setting permissions for docker.sock, gid is $DOCKER_GID"
   	groupadd -g "$DOCKER_GID" docker
   	usermod -aG docker jenkins
   	echo "Added jenkins to the docker group"
@@ -33,11 +33,15 @@ else
   echo "docker group already exists"
 fi
 
-echo "export MASTER_SSH_PORT=$MASTER_SSH_PORT" >> "$JENKINS_HOME"/.bashrc
-echo "export MASTER_SLAVE_PWD=$MASTER_SLAVE_PWD" >> "$JENKINS_HOME"/.bashrc
-echo "export MASTER_SLAVE_USER=$MASTER_SLAVE_USER" >> "$JENKINS_HOME"/.bashrc
+#echo "export MASTER_SSH_PORT=$MASTER_SSH_PORT" >> "$JENKINS_HOME"/.bashrc
+#echo "export MASTER_SLAVE_PWD=$MASTER_SLAVE_PWD" >> "$JENKINS_HOME"/.bashrc
+#echo "export MASTER_SLAVE_USER=$MASTER_SLAVE_USER" >> "$JENKINS_HOME"/.bashrc
 
 chown -R jenkins:jenkins "$JENKINS_HOME"
 
+#echo "Starting ssh daemon"
+#/usr/sbin/sshd -D
 echo "Starting ssh daemon"
-/usr/sbin/sshd -D
+/usr/sbin/sshd -D &
+echo "Running testing"
+su - jenkins -c "export MASTER_SSH_PORT=$MASTER_SSH_PORT && export MASTER_SLAVE_PWD=$MASTER_SLAVE_PWD && export MASTER_SLAVE_USER=$MASTER_SLAVE_USER && ./testframework/test.py"
