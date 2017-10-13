@@ -18,7 +18,7 @@ node {
           allowMissing: false,
           alwaysLinkToLastBuild: false,
           keepAll: true,
-          reportDir: 'htmlreports',
+          reportDir: 'report/htmlreports',
           reportFiles: 'index.html',
           reportName: "Test Execution Report"
         ])      
