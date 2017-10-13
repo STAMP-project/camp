@@ -5,7 +5,7 @@ node {
    }
    stage('Downloading a tool and building') {
       sh "rm -rf third-party-tool"
-      sh "git clone https://github.com/songhui/third-party-tool"
+      sh "git clone https://github.com/vassik/third-party-tool"
       
       //this should be commented once in master...
       //sh "cd third-party-tool/ && git branch --track config-testing_env_folder origin/config-testing_env_folder && git checkout config-testing_env_folder && cd .."
@@ -18,7 +18,7 @@ node {
           allowMissing: false,
           alwaysLinkToLastBuild: false,
           keepAll: true,
-          reportDir: 'htmlreports',
+          reportDir: 'report/htmlreports',
           reportFiles: 'index.html',
           reportName: "Test Execution Report"
         ])      
