@@ -80,14 +80,14 @@ def run_tests():
 	full_system_under_test_dir = folder_path(root_test_folder, system_under_test)
 	full_config_testing_dir = folder_path(full_system_under_test_dir, config_testing_folder)
 
-	#clean working directory and report directories
+	#clean working directory and clean directories
 	if os.path.isdir(full_test_working_folder):
 		shutil.rmtree(full_test_working_folder)
-	os.mkdir(full_test_working_folder)
+	os.makedirs(full_test_working_folder)
 
 	if os.path.isdir(full_global_report_dir):
 		shutil.rmtree(full_global_report_dir)
-	os.mkdir(full_global_report_dir)
+	os.makedirs(full_global_report_dir)
 
 
  	test_scripts = {}
