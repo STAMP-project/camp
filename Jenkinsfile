@@ -4,8 +4,8 @@ node {
       checkout scm
    }
    stage('Downloading a tool and building') {
-      sh "rm -rf third-party-tool"
-      sh "git clone https://github.com/vassik/third-party-tool.git"
+      sh "rm -rf bvr-diversity"
+      sh "git clone https://github.com/vassik/bvr-diversity.git"
       
       //this should be commented once in master...
       //sh "cd third-party-tool/ && git branch --track config-testing_env_folder origin/config-testing_env_folder && git checkout config-testing_env_folder && cd .."
