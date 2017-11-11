@@ -1,0 +1,15 @@
+services:
+  web:
+    imgfeature: [xwiki]
+    mandatory: true
+  mysql:
+    imgfeature: [mysql]
+  postgres:
+    imgfeature: [postgres]
+images:
+  Mysql5: {name: mysql, tag: "5", features: [mysql5]}
+  Mysql5: {name: mysql, tag: "9", features: [mysql8]}
+  Postgres9: {name: postgres, tag: "9", features: [postgres9]}
+  Postgres10: {name: postgres, tag: "10", features: [postgres10]}
+
+
