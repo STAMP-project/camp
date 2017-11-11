@@ -1,5 +1,8 @@
 #!/bin/bash
 
+mkdir ./workingdir/build
+mkdir ./workingdir/out
+
 python ozepy/stamp/dockerbuild.py -d ./workingdir
 cp ./workingdir/out/ampimages.yml ./workingdir/ampimages.yml
 cp ./workingdir/out/genimages.yml ./workingdir/genimages.yml
