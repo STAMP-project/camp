@@ -28,7 +28,7 @@ Finally, we have an addtional constraint requiring that Tomcat7 and Tomcat8 cann
 In the [docker-compose](docker-compose) folder, we need a [seed docker-compose file](docker-compose/docker-compose.yml) which defines the basic settings of the containers of client, backend and database. This sample seed template is based on the [official one recommended by XWiki](https://hub.docker.com/_/xwiki/). I combined the two files for MySQL and Postgres into a single file, and make the DB_HOST environment (Line 43) relevant the actually dependency. (NB: This is not necessary. A simpler solution is to give the same container\_name to the two database services, but it shows what we can do.) If the docker-compose file need addtional resource, just put it in the same folder.
 
 # Run configuration testing amplification
-```bash docker run -v $(pwd):/root/workingdir```
+```bash docker run -v $(pwd):/root/workingdir songhui/stamp-config-amp```
 
 # Output
 In this example, we generate four different images for the XWiki backend
