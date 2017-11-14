@@ -13,6 +13,7 @@ cp ./workingdir/out/ampcompose.yml ./workingdir/ampcompose.yml
 python conf-test-ampli/dockergen/src/dockerfilegen.py -i ./workingdir/genimages.yml
 python conf-test-ampli/dockergen/src/composegen.py -i ./workingdir/ampcompose.yml
 
-echo "Searching finished."
-echo "Build all images by: bash <your_dir>/build/build.sh"
+echo ""
+echo "===========Searching finished.========="
+echo "Build all the generated images by: bash <your_dir>/build/build.sh"
 echo "Launch one of the configurations by: docker-compose <your_dir>/docker-compose/docker-comopose-<number>.yml up"
