@@ -1,5 +1,10 @@
 #!/bin/bash
 
+rm -rf ./workingdir/build
+rm -rf ./workdingdir/out
+rm -f ./workingdir/ampimages.yml
+rm -f ./workingdir/genimages.yml
+rm -f ./workingdir/ampcompose.yml
 mkdir ./workingdir/build
 mkdir ./workingdir/out
 
