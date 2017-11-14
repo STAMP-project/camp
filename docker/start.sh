@@ -1,7 +1,7 @@
 #!/bin/bash
 
 rm -rf ./workingdir/build
-rm -rf ./workdingdir/out
+rm -rf ./workingdir/out
 rm -f ./workingdir/ampimages.yml
 rm -f ./workingdir/genimages.yml
 rm -f ./workingdir/ampcompose.yml
