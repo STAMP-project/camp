@@ -38,7 +38,7 @@ In this example, we generate four different images for the XWiki backend
 - Xwiki9Postgres -> Tomcat8 -> OpenJdk8
 These four images covers all the features we defined on xwiki, tomcat and java.
 
-You can build all the images by ```bash bash ./build/build.sh```
+You can build all the images by ```bash cd ./build && bash ./build/build.sh```
 
 We also generate three docker-compose files, in the [docker-compose](docker-compose) folder. These files describes three different compositions of the the client, the backend and the database. Run one of them by ```bash docker-compose -f ./docker-compose/docker-compose-1.yml```.
 
