@@ -20,5 +20,5 @@ python conf-test-ampli/dockergen/src/composegen.py -i ./workingdir/ampcompose.ym
 
 echo ""
 echo "===========Searching finished.========="
-echo "Build all the generated images by: bash <your_dir>/build/build.sh"
+echo "Build all the generated images by: cd <your_dir>/build && bash ./build.sh"
 echo "Launch one of the configurations by: docker-compose <your_dir>/docker-compose/docker-comopose-<number>.yml up"
