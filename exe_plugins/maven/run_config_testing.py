@@ -115,8 +115,37 @@ def execute_testing(working_dir, global_report_dir, sut_dir, sut_config_testing_
 		file.write(final_report_contents)
 
 
-def generate_environments():
-	pass
+def generate_environments(sut_config_testing_dir, env_list_dir, tool_name):
+	print "Generating environments"
+	to_replace = "%(env)s"
+	to_replace_config_env = "%(tool)s"
+	tmpl_config_contents, new_contig_contents = "", ""
+	tmpl_env_dir = os.path.join(sut_config_testing_dir, "env")
+	config_file = os.path.join(sut_config_testing_dir, "config.ini")
+	with open(config_file, 'r') as file:
+		tmpl_config_contents = file.read()
+
+	for item in os.listdir(env_list_dir):
+		sub_dir = os.path.join(env_list_dir, item)
+		if os.path.isdir(sub_dir):
+			print "Generating for " + sub_dir
+			env_dir = os.path.join(sut_config_testing_dir, item)
+			copy_dir_contents(tmpl_env_dir, env_dir)
+			docker_env_dir = os.path.join(env_dir, "dockerfile")
+			copy_dir_contents(sub_dir, docker_env_dir)
+			new_contig_contents = new_contig_contents + tmpl_config_contents.replace(to_replace, item) + "\n"
+
+			config_env_file = os.path.join(env_dir, "config.ini")
+			tmpl_config_env_contents, new_config_env_contents = "", ""
+			with open(config_env_file, 'r') as file:
+				tmpl_config_env_contents = config_env_file.read()
+			new_config_env_contents = tmpl_config_env_contents.replace(to_replace, item)
+			new_config_env_contents = new_config_env_contents.replace(to_replace_config_env, tool_name)
+			with open(config_env_file, 'w') as file:
+				file.write(new_config_env_contents)
+
+	with open(config_file, 'w') as file:
+		file.write(new_contig_contents)
 
 
 if __name__ == "__main__":
@@ -125,6 +154,7 @@ if __name__ == "__main__":
 	sut_dir = sys.argv[3]
 	sut_config_testing_dir = sys.argv[4]
 	env_list_dir = sys.argv[5]
-	
+
+	generate_environments(sut_config_testing_dir, env_list_dir, os.path.basename(sut_dir) + "tool")
 	execute_testing(working_dir, global_report_dir, sut_dir, sut_config_testing_dir)
 	print "All test suits are completed!"
