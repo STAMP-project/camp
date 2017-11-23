@@ -124,5 +124,7 @@ if __name__ == "__main__":
 	global_report_dir = sys.argv[2]
 	sut_dir = sys.argv[3]
 	sut_config_testing_dir = sys.argv[4]
+	env_list_dir = sys.argv[5]
+	
 	execute_testing(working_dir, global_report_dir, sut_dir, sut_config_testing_dir)
 	print "All test suits are completed!"
