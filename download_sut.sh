@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SUT_URL="https://github.com/vassik/xwiki-platform.git"
+SUT_URL="https://github.com/xwiki/xwiki-platform.git"
 SUT_NAME="xwiki-platform"
 
 if [[ -d $SUT_NAME ]]; then
