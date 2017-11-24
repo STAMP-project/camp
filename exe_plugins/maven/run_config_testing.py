@@ -128,7 +128,7 @@ def generate_environments(sut_config_testing_dir, env_list_dir, tool_name):
 	for item in os.listdir(env_list_dir):
 		sub_dir = os.path.join(env_list_dir, item)
 		if os.path.isdir(sub_dir):
-			print "Generating for " + sub_dir
+			print "Generating from " + sub_dir
 			env_dir = os.path.join(sut_config_testing_dir, item)
 			copy_dir_contents(tmpl_env_dir, env_dir)
 			docker_env_dir = os.path.join(env_dir, "dockerfile")

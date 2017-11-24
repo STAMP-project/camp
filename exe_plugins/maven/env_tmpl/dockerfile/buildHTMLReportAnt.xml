@@ -1,0 +1,17 @@
+<project name="genTestReport" default="gen" basedir=".">
+        <description>
+                Generate the HTML report from JUnit XML files
+        </description>
+
+        <target name="gen">
+                <property name="genReportDir" location="${basedir}/tmp"/>
+                <delete dir="${genReportDir}"/>
+                <mkdir dir="${genReportDir}"/>
+                <junitreport todir="${basedir}/tmp">
+                        <fileset dir="${basedir}">
+                                <include name="**/xwiki-platform-distribution-flavor-test-misc/target/surefire-reports/TEST-*.xml"/>
+                        </fileset>
+                        <report format="frames" todir="${genReportDir}"/>
+                </junitreport>
+        </target>
+</project>
