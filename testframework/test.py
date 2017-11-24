@@ -62,9 +62,12 @@ def execute_framework(full_sut_plugin_dir, full_env_list_dir, full_test_working_
 	print_std(stdout, stderr)
 
 
-def set_up_exe_plugin(full_system_under_test_dir, full_exe_plugin_dir):
+def set_up_exe_plugin(full_exe_plugin_dir, full_sut_plugin_dir):
 	print "Setting up an execution plugin"
-	shutil.copytree(full_exe_plugin_dir, full_sut_plugin_dir, symlinks=False) 
+	if os.path.isdir(full_sut_plugin_dir):
+		shutil.rmtree(full_sut_plugin_dir)
+	os.makedirs(full_sut_plugin_dir)
+	shutil.copytree(full_exe_plugin_dir, full_sut_plugin_dir)
 
 
 def set_up_infr_pluging():
@@ -89,6 +92,10 @@ if __name__ == "__main__":
 	full_exe_plugin_dir = folder_path(root_test_folder, exe_plugin_folder)
 	full_env_list_dir = folder_path(root_test_folder, env_list_folder)
 	full_sut_plugin_dir = folder_path(full_system_under_test_dir, 'config-testing')
+
+	if not os.path.isdir(full_system_under_test_dir):
+		print "failed to find SUT at: " + full_system_under_test_dir
+		sys.exit(1)
 
 	#clean working directory and clean directories
 	if os.path.isdir(full_test_working_folder):
