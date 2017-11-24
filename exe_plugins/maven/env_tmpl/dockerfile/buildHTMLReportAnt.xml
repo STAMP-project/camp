@@ -9,7 +9,7 @@
                 <mkdir dir="${genReportDir}"/>
                 <junitreport todir="${basedir}/tmp">
                         <fileset dir="${basedir}">
-                                <include name="**/xwiki-platform-distribution-flavor-test-misc/target/surefire-reports/TEST-*.xml"/>
+                                <include name="**/sut/target/surefire-reports/TEST-*.xml"/>
                         </fileset>
                         <report format="frames" todir="${genReportDir}"/>
                 </junitreport>
