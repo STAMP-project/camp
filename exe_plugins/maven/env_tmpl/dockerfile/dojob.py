@@ -17,6 +17,7 @@
 #
 
 import os
+import re
 import sys
 import subprocess
 import StringIO
@@ -43,19 +44,31 @@ def check_and_print_std(stdout, stderr):
 		return 1
 	return 0
 
+def check_maven_build_failure(stdout):
+	failure_str = 'BUILD FAILURE'
+	match = re.search(failure_str, stdout)
+	if not match:
+		return 0
+
+	stderrprint("MAVEN BUILD FAILURE\n")
+	return 1
+
 def run_routine(master_host_ip, master_ssh_port, master_ssh_user, master_ssh_pass, master_workspace):
+
+	sut_folder = "./sut"
 
 	#execute test cases
 	command = ["mvn", "clean", "install"]
-
-
-	sut_folder = "./sut"
 
 	print "Executing: " + " ".join(command)
 	proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=sut_folder)
 	stdout, stderr = proc.communicate()
 
 	if check_and_print_std(stdout, stderr):
+		print_failure()
+		return
+
+	if check_maven_build_failure(stdout):
 		print_failure()
 		return
 
