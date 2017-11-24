@@ -120,7 +120,7 @@ def generate_environments(sut_config_testing_dir, env_list_dir, tool_name):
 	to_replace = "%(env)s"
 	to_replace_config_env = "%(tool)s"
 	tmpl_config_contents, new_contig_contents = "", ""
-	tmpl_env_dir = os.path.join(sut_config_testing_dir, "env")
+	tmpl_env_dir = os.path.join(sut_config_testing_dir, "env_tmpl")
 	config_file = os.path.join(sut_config_testing_dir, "config.ini")
 	with open(config_file, 'r') as file:
 		tmpl_config_contents = file.read()
