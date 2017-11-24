@@ -138,7 +138,7 @@ def generate_environments(sut_config_testing_dir, env_list_dir, tool_name):
 			config_env_file = os.path.join(env_dir, "config.ini")
 			tmpl_config_env_contents, new_config_env_contents = "", ""
 			with open(config_env_file, 'r') as file:
-				tmpl_config_env_contents = config_env_file.read()
+				tmpl_config_env_contents = file.read()
 			new_config_env_contents = tmpl_config_env_contents.replace(to_replace, item)
 			new_config_env_contents = new_config_env_contents.replace(to_replace_config_env, tool_name)
 			with open(config_env_file, 'w') as file:
