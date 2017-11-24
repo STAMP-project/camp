@@ -66,7 +66,7 @@ def set_up_exe_plugin(full_exe_plugin_dir, full_sut_plugin_dir):
 	print "Setting up an execution plugin"
 	if os.path.isdir(full_sut_plugin_dir):
 		shutil.rmtree(full_sut_plugin_dir)
-	os.makedirs(full_sut_plugin_dir)
+
 	shutil.copytree(full_exe_plugin_dir, full_sut_plugin_dir)
 
 
