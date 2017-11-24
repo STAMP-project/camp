@@ -28,10 +28,10 @@ downloadimages:
     name: maven
     tag: 3-ibmjava-8-alpine
 buildingrules:
-  XWiki8Debian:
+  Xwiki8Debian:
     requires: [java, debian]
     adds: [xwiki8]
-  XWiki8Alpine:
+  Xwiki8Alpine:
     requires: [java, alpine]
     adds: [xwiki8]
 mandatoryfeature: [xwiki]
