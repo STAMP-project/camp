@@ -20,7 +20,7 @@ RUN wget https://github.com/Z3Prover/z3/releases/download/z3-4.5.0/z3-4.5.0-x64-
     rm -rf *    
 
 WORKDIR /root
-RUN git clone https://github.com/SINTEF-9012/ozepy && \
+RUN git clone -b multi-root https://github.com/SINTEF-9012/ozepy && \
     git clone -b metamodel-sintef https://songhui@gitlab.ow2.org/stamp/conf-test-ampli.git && \
     pip install -r conf-test-ampli/dockergen/requirements.txt
 
