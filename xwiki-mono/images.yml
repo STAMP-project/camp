@@ -3,6 +3,10 @@ downloadimages:
     features: [openjdk8, debian]
     name: maven
     tag: 3
+  MavenOpenJdk7:
+    features: [openjdk8, debian]
+    name: maven
+    tag: 3-jdk-7
   MavenOpenJdk9:
     features: [openjdk9, debian]
     name: maven
