@@ -115,10 +115,11 @@ def execute_testing(working_dir, global_report_dir, sut_dir, sut_config_testing_
 		file.write(final_report_contents)
 
 
-def generate_environments(sut_config_testing_dir, env_list_dir, tool_name):
+def generate_environments(sut_config_testing_dir, env_list_dir):
 	print "Generating environments"
 	to_replace = "%(env)s"
 	to_replace_config_env = "%(tool)s"
+	tool_name = os.path.basename(sut_config_testing_dir.replace(os.path.basename(sut_config_testing_dir), "").strip("/"))
 	tmpl_config_contents, new_contig_contents = "", ""
 	tmpl_env_dir = os.path.join(sut_config_testing_dir, "env_tmpl")
 	config_file = os.path.join(sut_config_testing_dir, "config.ini")
@@ -155,6 +156,6 @@ if __name__ == "__main__":
 	sut_config_testing_dir = sys.argv[4]
 	env_list_dir = sys.argv[5]
 
-	generate_environments(sut_config_testing_dir, env_list_dir, os.path.basename(sut_dir) + "tool")
+	generate_environments(sut_config_testing_dir, env_list_dir)
 	execute_testing(working_dir, global_report_dir, sut_dir, sut_config_testing_dir)
 	print "All test suits are completed!"
