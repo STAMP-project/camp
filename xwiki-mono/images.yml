@@ -1,0 +1,38 @@
+downloadimages:
+  MavenOpenJdk8:
+    features: [openjdk8, debian]
+    name: maven
+    tag: 3
+  MavenOpenJdk9:
+    features: [openjdk9, debian]
+    name: maven
+    tag: 3-jdk-9
+  MavenOpenJdk8Alpine:
+    features: [openjdk8, alpine]
+    name: maven
+    tag: alpine
+  MavenIBM8:
+    features: [ibmjdk8, debian]
+    name: maven
+    tag: ibmjava
+  MavenIBM9:
+    features: [ibmjdk9, debian]
+    name: maven
+    tag: 3-ibmjava-9
+  MavenIBM9Alpine:
+    features: [ibmjdk9, alpine]
+    name: maven
+    tag: 3-ibmjava-9-alpine
+  MavenIBM8Alpine:
+    features: [ibmjdk8, alpine]
+    name: maven
+    tag: 3-ibmjava-8-alpine
+buildingrules:
+  XWiki8Debian:
+    requires: [java, debian]
+    adds: [xwiki8]
+  XWiki8Alpine:
+    requires: [java, alpine]
+    adds: [xwiki8]
+mandatoryfeature: [xwiki]
+maximal: 8

@@ -12,12 +12,18 @@ python ozepy/stamp/dockerbuild.py -d ./workingdir
 cp ./workingdir/out/ampimages.yml ./workingdir/ampimages.yml
 cp ./workingdir/out/genimages.yml ./workingdir/genimages.yml
 
-python ozepy/stamp/dockercompose.py -d ./workingdir
-cp ./workingdir/out/ampcompose.yml ./workingdir/ampcompose.yml
+if [ -f ./workingdir/composite.yml ]
+then
+    python ozepy/stamp/dockercompose.py -d ./workingdir
+    cp ./workingdir/out/ampcompose.yml ./workingdir/ampcompose.yml
+fi
 
 python conf-test-ampli/dockergen/src/dockerfilegen.py -i ./workingdir/genimages.yml
-python conf-test-ampli/dockergen/src/composegen.py -i ./workingdir/ampcompose.yml
 
+if [ -f ./workingdir/composite ]
+then
+    python conf-test-ampli/dockergen/src/composegen.py -i ./workingdir/ampcompose.yml
+fi
 echo ""
 echo "===========Searching finished.========="
 echo "Build all the generated images by: cd <your_dir>/build && bash ./build.sh"
