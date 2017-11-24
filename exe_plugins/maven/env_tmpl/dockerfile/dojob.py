@@ -49,7 +49,7 @@ def run_routine(master_host_ip, master_ssh_port, master_ssh_user, master_ssh_pas
 	command = ["mvn", "clean", "install"]
 
 
-	sut_folder = "./xwiki-platform-distribution-flavor-test-misc"
+	sut_folder = "./sut"
 
 	print "Executing: " + " ".join(command)
 	proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=sut_folder)

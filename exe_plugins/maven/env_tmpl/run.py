@@ -71,7 +71,7 @@ def build_docker_image(dockerfile_path, docker_image_name, sut_folder):
 		if (os.path.isdir(os.path.join(directory, 'config-testing')) and 'config-testing' in contents) or \
 			(os.path.isdir(os.path.join(directory, '.git')) and '.git' in contents) else []
 
-	shutil.copytree(sut_folder, dockerfile_abs + "/xwiki-platform-distribution-flavor-test-misc", symlinks=False, ignore=ignore_config_testing)
+	shutil.copytree(sut_folder, os.path.join(dockerfile_abs, "sut"), symlinks=False, ignore=ignore_config_testing)
 	
 	command = ['docker', 'build', '--rm', '-t', docker_image_name, '.']
 	print 'Building image: ' + ' '.join(command) + ' in ' + dockerfile_abs
