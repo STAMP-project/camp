@@ -1,9 +1,8 @@
 node {
-   stage('Downloading changes') { // for display purposes
-      //git "https://github.com/vassik/third-party-tool.git"
+   stage('Updating CTF') { // for display purposes
       checkout scm
    }
-   stage('Downloading a tool and building') {
+   stage('Downloading SUT') {
       sh "./download_sut.sh"
    }
    stage('Testing') {
