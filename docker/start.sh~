@@ -24,6 +24,9 @@ if [ -f ./workingdir/composite.yml ]
 then
     python conf-test-ampli/dockergen/src/composegen.py -i ./workingdir/ampcompose.yml
 fi
+
+chmod -R a+rw . 
+
 echo ""
 echo "===========Searching finished.========="
 echo "Build all the generated images by: cd <your_dir>/build && bash ./build.sh"
