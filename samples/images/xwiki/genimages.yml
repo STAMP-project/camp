@@ -1,0 +1,16 @@
+buildchains:
+- - {rule: Xwiki9Mysql}
+  - {rule: Tomcat7}
+  - {name: openjdk, tag: 9}
+- - {rule: Xwiki8Mysql}
+  - {rule: Tomcat85}
+  - {name: openjdk, tag: 8}
+- - {rule: Xwiki8Postgres}
+  - {rule: Tomcat9}
+  - {name: openjdk, tag: 8}
+- - {rule: Xwiki9Postgres}
+  - {rule: Tomcat8}
+  - {name: openjdk, tag: 8}
+- - {rule: Xwiki9Postgres}
+  - {rule: Tomcat8}
+  - {name: openjdk, tag: 8}

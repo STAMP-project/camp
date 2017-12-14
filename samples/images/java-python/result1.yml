@@ -1,0 +1,11 @@
+buildchains:
+ -
+  - {rule: tomcat8jre78alpine}
+  - {rule: openjdk7alpine}
+  - {rule: python27alpine}
+  - {name: alpine, tag: "3.6"}
+ -
+  - {rule: tomcat8jre78alpine}
+  - {rule: openjdk8alpine}
+  - {rule: python27alpine}
+  - {name: alpine, tag: "3.6"}

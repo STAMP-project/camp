@@ -1,0 +1,45 @@
+networks:
+  bridge:
+    driver: bridge
+services:
+  postgres:
+    container_name: xwiki-postgres-db
+    environment:
+    - POSTGRES_ROOT_PASSWORD=xwiki
+    - POSTGRES_PASSWORD=xwiki
+    - POSTGRES_USER=xwiki
+    - POSTGRES_DB=xwiki
+    - POSTGRES_INITDB_ARGS="--encoding=UTF8"
+    image: postgres:9
+    networks:
+    - bridge
+    volumes:
+    - postgres-data:/var/lib/postgresql/data
+  test:
+    container_name: xwiki-smoke-client-test
+    depends_on:
+    - web
+    image: songhui/xwiki-smoke-client
+    networks:
+    - bridge
+  web:
+    container_name: xwiki-web
+    depends_on:
+    - postgres
+    environment:
+    - DB_USER=xwiki
+    - DB_PASSWORD=xwiki
+    - DB_DATABASE=xwiki
+    - DB_HOST=xwiki-postgres-db
+    image: Xwiki8Postgres:Tomcat7-openjdk-8
+    networks:
+    - bridge
+    ports:
+    - 8080:8080
+    volumes:
+    - xwiki-data:/usr/local/xwiki
+version: '2'
+volumes:
+  mysql-data: {}
+  postgres-data: {}
+  xwiki-data: {}

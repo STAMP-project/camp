@@ -1,0 +1,45 @@
+networks:
+  bridge:
+    driver: bridge
+services:
+  mysql:
+    container_name: xwiki-mysql-db
+    environment:
+    - MYSQL_ROOT_PASSWORD=xwiki
+    - MYSQL_USER=xwiki
+    - MYSQL_PASSWORD=xwiki
+    - MYSQL_DATABASE=xwiki
+    image: mysql:9
+    networks:
+    - bridge
+    volumes:
+    - ./xwiki.cnf:/etc/mysql/conf.d/xwiki.cnf
+    - mysql-data:/var/lib/mysql
+  test:
+    container_name: xwiki-smoke-client-test
+    depends_on:
+    - web
+    image: songhui/xwiki-smoke-client
+    networks:
+    - bridge
+  web:
+    container_name: xwiki-web
+    depends_on:
+    - mysql
+    environment:
+    - DB_USER=xwiki
+    - DB_PASSWORD=xwiki
+    - DB_DATABASE=xwiki
+    - DB_HOST=xwiki-mysql-db
+    image: Xwiki9Mysql:Tomcat9-openjdk-9
+    networks:
+    - bridge
+    ports:
+    - 8080:8080
+    volumes:
+    - xwiki-data:/usr/local/xwiki
+version: '2'
+volumes:
+  mysql-data: {}
+  postgres-data: {}
+  xwiki-data: {}

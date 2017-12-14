@@ -1,0 +1,13 @@
+watching: [mysql, web, postgres]
+composes:
+  compose1:
+    features: [postgres10, tomcat8]
+    services:
+      web: { image: "xwiki9postgres:tomcat9-openjdk-9", depends_on: [postgres] }
+      postgres: { image: "postgres:10" }
+  compose3:
+    features: [tomcat8, mysql8]
+    services:
+      web: { image: "xwiki9mysql:tomcat8-openjdk-9", depends_on: [mysql] }
+      mysql: { image: "mysql:8" }
+

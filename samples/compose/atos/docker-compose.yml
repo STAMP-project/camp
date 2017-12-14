@@ -1,0 +1,29 @@
+version: '2'
+services:
+  esb:
+    image: "supersede/esb"
+    ports:
+      - "9443:9443"
+      - "8280:8280"
+    container_name: supersede-esb
+  postgres:
+    image: "supersede/postgres"
+    container_name: supersede-postgres
+  mysql:
+    image: "supersede/mysql"
+    container_name: supersede-mysql
+  be:
+    image: "supersede/be"
+    ports:
+      - "8081:8081"
+    depends_on:
+      - "esb"
+      - "mysql"
+    environment:
+      - ESBHOST=&($.services.be.depends_on[0] | $.services.@0.container_name)&
+
+
+      
+
+
+
