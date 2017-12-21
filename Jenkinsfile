@@ -1,14 +1,9 @@
 node {
-   stage('Downloading changes') { // for display purposes
-      //git "https://github.com/vassik/third-party-tool.git"
+   stage('Updating CTF') { // for display purposes
       checkout scm
    }
-   stage('Downloading a tool and building') {
-      sh "rm -rf third-party-tool"
-      sh "git clone https://github.com/vassik/third-party-tool"
-      
-      //this should be commented once in master...
-      //sh "cd third-party-tool/ && git branch --track config-testing_env_folder origin/config-testing_env_folder && git checkout config-testing_env_folder && cd .."
+   stage('Downloading SUT') {
+      sh "./download_sut.sh"
    }
    stage('Testing') {
       sh "./testframework/test.py"
