@@ -1,15 +1,11 @@
 #!/bin/bash
 
-IMAGE=vassik/config-testing:latest
+IMAGE=tecor/config-testing:latest
 APP=config-testing
-SHARED=/tmp/testing_report
-SUT=bvr-diversity
 
-if [[ -n $1 ]]; then
-	DOCKERGID=$1
-else
-	DOCKERGID=998
-fi
+SHARED=/tmp/testing_report
+SUT=xwiki-platform
+DOCKERGID=998
 
 echo "copying SUT"
 rm -rf ./$SUT
