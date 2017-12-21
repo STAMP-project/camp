@@ -1,6 +1,6 @@
 # Test Configuration Executor (TECOR)
 TECOR is a prototype tool to execute test cases against multiple configurations. The tool can be integrated into existing continious delivery pipeline og can be run from a command line.
-![Alt text](docs/overview_container.png "TECOR inside Jenkins, core components")
+![Alt text](testframework/docs/overview_container.png "TECOR inside Jenkins, core components")
 
 TECOR executes test cases by delegating testing to dedicated executors each of which is run in a separate docker container. Thereafter, results are collected by TECOR and published as an accumulated report. TECOR expects 
 - a system under test (SUT) - a directory to the folder where TECOR locates the source code of the tool to test
