@@ -2,9 +2,8 @@ import unittest
 
 class TestRegExpEngine(unittest.TestCase):
 
-	def setUP(self):
+	def setUp(self):
 		pass
 
-	def simple_e2e_reg_exp_engine(self):
-		print "hello!!!!!!!!!!!"
+	def test_simple_e2e_reg_exp_engine(self):
 		self.assertTrue(False)
