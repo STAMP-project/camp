@@ -1,0 +1,29 @@
+variable: variable1
+  options: [value1, value2]
+
+    value1:
+      substitutions: [substituion1, substituion2, substituion3]
+
+        substituion1: 
+          type: regexp
+          filename: "/name/Dockerfile"
+          placement: "some_string"
+          replacement: "another_string"
+
+        substituion2:
+          type: regexp
+          filename: "/name/Dockerfile1"
+          placement: "some_string"
+          replacement: "another_string"
+
+        substituion3:
+          type: othertype
+          #some other parameters
+    value2:
+      substitutions: [substituion1]
+
+        substituion1: 
+          type: regexp
+          filename: "/name/Dockerfile"
+          placement: "some_string"
+          replacement: "another_string"
