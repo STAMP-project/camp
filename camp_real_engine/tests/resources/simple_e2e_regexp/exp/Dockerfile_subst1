@@ -1,0 +1,15 @@
+FROM jenkins:lts
+
+USER root
+RUN apt-get update && apt-get install -y vim
+COPY apache-maven-3.3.9-bin.tar.gz /usr/share/
+RUN cd /usr/share/ && \
+    tar xzf apache-maven-3.3.9-bin.tar.gz && \
+    ln -s /usr/share/apache-maven-3.3.9 /usr/share/maven
+
+ARG MAVEN_VERSION=3.3.9
+ENV PATH "$PATH:/usr/share/maven/bin"
+ENV MAVEN_HOME /usr/share/maven
+ENV MAVEN_CONFIG "$JENKINS_HOME/.m2"
+
+USER jenkins
