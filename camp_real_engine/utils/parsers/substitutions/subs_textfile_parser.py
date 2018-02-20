@@ -1,6 +1,6 @@
 
 
-class TextFileParser(object):
+class RegExpFileSubstParser(object):
 
 	def parse(self, subst_obj):
 		pass
@@ -13,3 +13,6 @@ class TextFileParser(object):
 
 	def get_replacement_str(self):
 		return ''
+
+	def set_file_content(self, content):
+		pass
