@@ -20,5 +20,6 @@ setup(
     test_requires=[
         "nose"
         "mock>=2.0.0"
+        "pyyaml"
     ]
 )
