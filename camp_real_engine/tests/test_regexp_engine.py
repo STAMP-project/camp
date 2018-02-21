@@ -1,9 +1,10 @@
 import yaml
 import unittest
 
-from camp_real_engine.plugins.regexp import RegExp
-from camp_real_engine.utils.parsers.substitutions.subs_textfile_parser import RegExpFileSubstParser
+from mock import MagicMock, patch
 
+from camp_real_engine.plugins.regexp import RegExp
+from camp_real_engine.plugins.model.realization import RegExpFileSubstNode
 
 
 class DummySubstParser(object):
@@ -18,7 +19,7 @@ class DummySubstParser(object):
 	def parse(self, subst_obj):
 		return  True
 
-	def get_file_content(self):
+	def get_file_name(self):
 		return self.file_contents
 
 	def get_placement_str(self):
@@ -52,15 +53,28 @@ substituion1:
 		RUN cp ~/something ~/something_else
 		'''
 
-	def test_simple_substitution(self):
-		self.dummy_subst_parser = DummySubstParser()
-		self.regexp = RegExp(_parser_subst = self.dummy_subst_parser)
+		self.expected_file_name = "/name/Dockerfile"
+
+	@patch('camp_real_engine.plugins.regexp.RegExpFileSubstNode')
+	@patch('camp_real_engine.plugins.regexp.FileContentCommiter')
+	def test_simple_substitution(self, mock_FileContentCommiter, mock_RegExpFileSubstNode):
+		mock_regexp_subst = mock_RegExpFileSubstNode.return_value
+		mock_regexp_subst.get_file_name.return_value = self.expected_file_name
+		mock_regexp_subst.get_placement_str.return_value = "some_string"
+		mock_regexp_subst.get_replacement_str.return_value = "another_string"
+		mock_regexp_subst.parse.return_value = True
+
+		mock_dao = mock_FileContentCommiter.return_value
+		mock_dao.read_content.return_value = self.init_file_contents
+
+		self.regexp = RegExp()
 		self.regexp.execute_subst(self.substitution)
-		self.assertTrue(self.expected_file_contents == self.dummy_subst_parser.get_file_content(), 'failed to perform substitution')
+		mock_dao.write_content.assert_called_once_with(self.expected_file_name, self.expected_file_contents)
+
 
 	def test_reg_exp_file_subst(self):
 		obj = yaml.load(self.substitution)
-		subs_parser = RegExpFileSubstParser()
+		subs_parser = RegExpFileSubstNode()
 		is_regexp = subs_parser.parse(obj)
 		self.assertTrue(is_regexp, "faled to recognize regexp subst")
 
