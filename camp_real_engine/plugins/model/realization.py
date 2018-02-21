@@ -1,11 +1,11 @@
 
+class RegExpFileSubstNode(object):
 
-class RegExpFileSubstParser(object):
 
 	def parse(self, subst_obj):
 		pass
 
-	def get_file_content(self):
+	def get_file_name(self):
 		return ''
 
 	def get_placement_str(self):
@@ -13,6 +13,3 @@ class RegExpFileSubstParser(object):
 
 	def get_replacement_str(self):
 		return ''
-
-	def set_file_content(self, content):
-		pass
