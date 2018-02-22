@@ -1,8 +1,8 @@
 
 class FileContentCommiter(object):
 	
-	def read_content(self):
-		pass
+	def read_content(self, file_path):
+		return ""
 
-	def write_content(self):
+	def write_content(self, file_path, content):
 		pass

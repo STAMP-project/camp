@@ -5,6 +5,8 @@ from mock import MagicMock, patch
 
 from camp_real_engine.plugins.regexp import RegExp
 from camp_real_engine.plugins.model.realization import RegExpFileSubstNode
+from camp_real_engine.plugins.model.realization import YamlRealizationModel
+from camp_real_engine.plugins.dao.daos import FileContentCommiter
 
 
 class DummySubstParser(object):
@@ -71,7 +73,6 @@ substituion1:
 		self.regexp.execute_subst(self.substitution)
 		mock_dao.write_content.assert_called_once_with(self.expected_file_name, self.expected_file_contents)
 
-
 	def test_reg_exp_file_subst(self):
 		obj = yaml.load(self.substitution)
 		subs_parser = RegExpFileSubstNode()
@@ -81,3 +82,52 @@ substituion1:
 		self.assertTrue("some_string" == subs_parser.get_placement_str())
 		self.assertTrue("another_string" == subs_parser.get_replacement_str())
 		self.assertTrue("/name/Dockerfile" == subs_parser.get_file_name())
+
+	def test_file_commiter(self):
+		file_commiter = FileContentCommiter()
+		content = file_commiter.read_content('/resouces/simple_e2e_regexp/Dockerfile')
+		file_commiter.write_content('/resouces/simple_e2e_regexp/tmp/Dockerfile', content)
+		saved_content = file_commiter.read_content('/resouces/simple_e2e_regexp/tmp/Dockerfile')
+
+		self.assertTrue(content == saved_content, "files are not identical")
+
+
+	def test_realization_model(self):
+		file_reader = FileContentCommiter();
+		content = file_reader.read_content('/resouces/simple_e2e_regexp/realmodel.yaml')
+		yaml_obj = yaml.load(content)
+
+		real_model = YamlRealizationModel()
+		real_model.parse(yaml_obj)
+
+		variable_list = real_model.get_variables()
+		self.assertTrue(len(variable_list) == 1)
+		variable = variable_list[0]
+		variable_name = variable.get_variable_label()
+		self.assertTrue(variable_name == 'variable1')
+
+		values = real_model.get_values_by_variable(variable)
+		self.assertTrue(len(values) == 1)
+		value = values[0]
+		value_label = value.get_value_label()
+		self.assertTrue(value_label == 'value1')
+
+		substitutions = real_model.get_substitutions_by_value(val)
+		self.assertTrue(len(substitutions) == 2)
+		substitution1, substitution2 = substitution[0], substitution[1]
+		self.asserTrue(substituion1.get_subst_label() == 'substituion1')
+		self.asserTrue(substituion2.get_subst_label() == 'substituion2')
+
+		self.asserTrue(substitution1.get_type() == 'regexp')
+		self.asserTrue(substitution2.get_type() == 'regexp')
+
+		self.assertTrue(substitution1.get_file_name() == '/name/Dockerfile')
+		self.assertTrue(substitution2.get_file_name() == '/name/Dockerfile1')
+
+		self.assertTrue(substitution1.get_placement_str() == 'some_string')
+		self.assertTrue(substitution2.get_placement_str() == 'some_string')
+
+		self.assertTrue(substitution1.get_replacement_str() == 'another_string')
+		self.assertTrue(substitution2.get_replacement_str() == 'another_string')
+
+
