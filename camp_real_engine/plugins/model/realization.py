@@ -1,3 +1,7 @@
+from camp_real_engine.plugins.abstract.abc_vistor import ABCRealizationNode
+
+
+
 
 class RegExpFileSubstNode(object):
 
@@ -17,9 +21,15 @@ class RegExpFileSubstNode(object):
 		return ''
 
 
-class VariableNode(object):
+class VariableNode(ABCRealizationNode):
+
+	def __init__(self, _instance = None):
+		pass
 
 	def get_variable_label(self):
+		pass
+
+	def add_value(self):
 		pass
 
 
@@ -29,10 +39,22 @@ class ValueNode(object):
 		pass
 
 
+class ComponentFactory(object):
+
+	def create_variable(self, _yaml_instance, _label = None):
+		pass
+
+
 class YamlRealizationModel(object):
 
-	def parse(self, subst_obj):
-		pass
+	def __init__(self):
+		self.cfacotry = ComponentFactory()
+
+	def parse(self, yaml_obj):
+		variables = yaml_obj['variables']
+		for variable in variables:
+			cvar = self.cfacotry.create_variable(yaml_obj['variables'], _label = variable)
+			
 
 	def get_variables(self):
 		pass
