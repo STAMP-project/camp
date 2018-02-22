@@ -57,6 +57,24 @@ substituion1:
 
 		self.expected_file_name = "/name/Dockerfile"
 
+		self.realization_yaml = '''
+variables:
+ -variable1:
+   values:
+    -value1:
+      substitutions:
+       -substituion1: 
+         type: regexp
+         filename: "/name/Dockerfile"
+         placement: "some_string"
+         replacement: "another_string"
+       -substituion2:
+         type: regexp
+         filename: "/name/Dockerfile1"
+         placement: "some_string"
+         replacement: "another_string"
+'''
+
 	@patch('camp_real_engine.plugins.regexp.RegExpFileSubstNode')
 	@patch('camp_real_engine.plugins.regexp.FileContentCommiter')
 	def test_simple_substitution(self, mock_FileContentCommiter, mock_RegExpFileSubstNode):
@@ -93,26 +111,28 @@ substituion1:
 
 
 	def test_realization_model(self):
-		file_reader = FileContentCommiter();
-		content = file_reader.read_content('/resouces/simple_e2e_regexp/realmodel.yaml')
-		yaml_obj = yaml.load(content)
+		yaml_obj = yaml.load(self.realization_yaml)
 
 		real_model = YamlRealizationModel()
 		real_model.parse(yaml_obj)
 
 		variable_list = real_model.get_variables()
+		self.assertIsNotNone(variable_list)
 		self.assertTrue(len(variable_list) == 1)
 		variable = variable_list[0]
 		variable_name = variable.get_variable_label()
 		self.assertTrue(variable_name == 'variable1')
 
 		values = real_model.get_values_by_variable(variable)
+		self.assertIsNotNone(values)
 		self.assertTrue(len(values) == 1)
 		value = values[0]
 		value_label = value.get_value_label()
 		self.assertTrue(value_label == 'value1')
 
 		substitutions = real_model.get_substitutions_by_value(val)
+		self.assertIsNotNone(substitutions)
+
 		self.assertTrue(len(substitutions) == 2)
 		substitution1, substitution2 = substitution[0], substitution[1]
 		self.asserTrue(substituion1.get_subst_label() == 'substituion1')
