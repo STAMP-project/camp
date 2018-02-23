@@ -121,33 +121,33 @@ variables:
 		self.assertTrue(len(variable_list) == 1)
 		variable = variable_list[0]
 		variable_name = variable.get_variable_label()
-		self.assertTrue(variable_name == 'variable1')
+		self.assertEqual(variable_name, 'variable1')
 
 		values = real_model.get_values_by_variable(variable)
 		self.assertIsNotNone(values)
 		self.assertTrue(len(values) == 1)
 		value = values[0]
 		value_label = value.get_value_label()
-		self.assertTrue(value_label == 'value1')
+		self.assertEqual(value_label, 'value1')
 
 		substitutions = real_model.get_substitutions_by_value(val)
 		self.assertIsNotNone(substitutions)
 
 		self.assertTrue(len(substitutions) == 2)
 		substitution1, substitution2 = substitution[0], substitution[1]
-		self.asserTrue(substituion1.get_subst_label() == 'substituion1')
-		self.asserTrue(substituion2.get_subst_label() == 'substituion2')
+		self.assertEqual(substituion1.get_subst_label(), 'substituion1')
+		self.assertEqual(substituion2.get_subst_label(), 'substituion2')
 
-		self.asserTrue(substitution1.get_type() == 'regexp')
-		self.asserTrue(substitution2.get_type() == 'regexp')
+		self.assertEqual(substitution1.get_type(),'regexp')
+		self.assertEqual(substitution2.get_type(), 'regexp')
 
-		self.assertTrue(substitution1.get_file_name() == '/name/Dockerfile')
-		self.assertTrue(substitution2.get_file_name() == '/name/Dockerfile1')
+		self.assertEqual(substitution1.get_file_name(), '/name/Dockerfile')
+		self.assertEqual(substitution2.get_file_name(), '/name/Dockerfile1')
 
-		self.assertTrue(substitution1.get_placement_str() == 'some_string')
-		self.assertTrue(substitution2.get_placement_str() == 'some_string')
+		self.assertEqual(substitution1.get_placement_str(), 'some_string')
+		self.assertEqual(substitution2.get_placement_str(), 'some_string')
 
-		self.assertTrue(substitution1.get_replacement_str() == 'another_string')
-		self.assertTrue(substitution2.get_replacement_str() == 'another_string')
+		self.assertEqual(substitution1.get_replacement_str(), 'another_string')
+		self.assertEqual(substitution2.get_replacement_str(), 'another_string')
 
 
