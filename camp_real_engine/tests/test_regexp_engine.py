@@ -59,20 +59,20 @@ substituion1:
 
 		self.realization_yaml = '''
 variables:
- -variable1:
-   values:
-    -value1:
-      substitutions:
-       -substituion1: 
-         type: regexp
-         filename: "/name/Dockerfile"
-         placement: "some_string"
-         replacement: "another_string"
-       -substituion2:
-         type: regexp
-         filename: "/name/Dockerfile1"
-         placement: "some_string"
-         replacement: "another_string"
+ - variable1:
+    values:
+     - value1:
+        substitutions:
+         - substituion1:
+            type: regexp
+            filename: "/name/Dockerfile"
+            placement: "some_string"
+            replacement: "another_string"
+         - substituion2:
+            type: regexp
+            filename: "/name/Dockerfile1"
+            placement: "some_string"
+            replacement: "another_string"
 '''
 
 	@patch('camp_real_engine.plugins.regexp.RegExpFileSubstNode')
@@ -130,13 +130,13 @@ variables:
 		value_label = value.get_value_label()
 		self.assertEqual(value_label, 'value1')
 
-		substitutions = real_model.get_substitutions_by_value(val)
+		substitutions = real_model.get_substs_by_value(value)
 		self.assertIsNotNone(substitutions)
 
 		self.assertTrue(len(substitutions) == 2)
-		substitution1, substitution2 = substitution[0], substitution[1]
-		self.assertEqual(substituion1.get_subst_label(), 'substituion1')
-		self.assertEqual(substituion2.get_subst_label(), 'substituion2')
+		substitution1, substitution2 = substitutions[0], substitutions[1]
+		self.assertEqual(substitution1.get_subst_label(), 'substituion1')
+		self.assertEqual(substitution2.get_subst_label(), 'substituion2')
 
 		self.assertEqual(substitution1.get_type(),'regexp')
 		self.assertEqual(substitution2.get_type(), 'regexp')

@@ -47,7 +47,8 @@ class ValueNode(ABCRealizationNode, ABCValueNode):
 class RegExpFileSubstNode(ABCRealizationNode, ABCSubstitutionNode):
 
 	def __init__(self, *args, **kwagrs):
-		self.value, self.label, self.filename, self.placement, self.replacement = None, None, None, None, None
+		self.value, self.label, self.filename = None, None, None
+		self.placement, self.replacement, self.type = None, None, None
 
 	def parse(self, subst_obj):
 		pass
@@ -56,13 +57,16 @@ class RegExpFileSubstNode(ABCRealizationNode, ABCSubstitutionNode):
 		return self.label
 
 	def get_file_name(self):
-		return self.replacement
+		return self.filename
 
 	def get_placement_str(self):
 		return self.placement
 
 	def get_replacement_str(self):
 		return self.replacement
+
+	def get_type(self):
+		return self.type
 
 	def set_subst_label(self, _label):
 		self.label = _label
@@ -78,6 +82,9 @@ class RegExpFileSubstNode(ABCRealizationNode, ABCSubstitutionNode):
 
 	def set_value_node(self, _value):
 		self.value = _value
+
+	def set_type(self, _type):
+		self.type = _type
 
 
 class ComponentFactory(object):
@@ -95,24 +102,27 @@ class ComponentFactory(object):
 class YamlVisitor(Visitor):
 
 	def visit_variable_node(self, comp_var, **kwagrs):
-		comp_var.set_variable_label(kwagrs['label'])
+		variable_label = kwagrs['yaml_var'].keys()[0]
+		comp_var.set_variable_label(variable_label)
 
 	def visit_value_node(self, comp_val, **kwagrs):
-		comp_val.set_value_label(kwagrs['label'])
+		comp_val.set_value_label(kwagrs['yaml_value'].keys()[0])
 		comp_variable_node = kwagrs['var_node']
 		comp_val.set_variable_node(comp_variable_node)
 		comp_variable_node.add_value_node(comp_val)
 
 	def visit_substitution_node(self, comp_subs, **kwagrs):
-		label = kwagrs['label']
+		yaml_subst = kwagrs['yaml_subst']
 		comp_value_node = kwagrs['value_node']
 		comp_subs.set_value_node(comp_value_node)
 		comp_value_node.add_subst_node(comp_subs)
 
-		comp_subs.set_subst_label(label)
-		comp_subs.set_file_name(kwagrs['yaml_substitutions'][label]['filename'])
-		comp_subs.set_placement_str(kwagrs['yaml_substitutions'][label]['placement'])
-		comp_subs.set_replacement_str(kwagrs['yaml_substitutions'][label]['replacement'])
+		subs_label = yaml_subst.keys()[0]
+		comp_subs.set_subst_label(yaml_subst.keys()[0])
+		comp_subs.set_file_name(yaml_subst[subs_label]['filename'])
+		comp_subs.set_placement_str(yaml_subst[subs_label]['placement'])
+		comp_subs.set_replacement_str(yaml_subst[subs_label]['replacement'])
+		comp_subs.set_type(yaml_subst[subs_label]['type'])
 
 
 class YamlRealizationModel(object):
@@ -126,15 +136,15 @@ class YamlRealizationModel(object):
 		variables = yaml_obj['variables']
 		for variable in variables:
 			cvar = self.cfacotry.create_variable()
-			cvar.accept(self.yaml_visitor, yaml_vars = yaml_obj['variables'], label = variable)
-			values = yaml_obj['variables'][variable]['values']
+			cvar.accept(self.yaml_visitor, yaml_var = variable)
+			values = variable.values()[0]['values']
 			for value in values:
 				cvalue = self.cfacotry.create_value()
-				cvalue.accept(self.yaml_visitor, var_node = cvar, yaml_values = values, label = value)
-				substitutions = yaml_obj['variables'][variable]['values'][value]['substitutions']
+				cvalue.accept(self.yaml_visitor, var_node = cvar, yaml_value = value)
+				substitutions = value.values()[0]['substitutions']
 				for substitution in substitutions:
 					csubsitution = self.cfacotry.create_substitution()
-					csubsitution.accept(self.yaml_visitor, value_node = cvalue, yaml_substitutions = substitutions, label = substitution)
+					csubsitution.accept(self.yaml_visitor, value_node = cvalue, yaml_subst = substitution)
 			self.realization.append(cvar)
 
 	def get_variables(self):
