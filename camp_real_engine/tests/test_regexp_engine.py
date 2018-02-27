@@ -9,32 +9,8 @@ from camp_real_engine.plugins.model.realization import YamlRealizationModel
 from camp_real_engine.plugins.dao.daos import FileContentCommiter
 
 
-class DummySubstParser(object):
-
-
-	def __init__(self):
-		self.file_contents = '''
-		FROM ubuntu:some_string
-		RUN cp ~/something ~/something_else
-		'''
-	
-	def parse(self, subst_obj):
-		return  True
-
-	def get_file_name(self):
-		return self.file_contents
-
-	def get_placement_str(self):
-		return 'some_string'
-
-	def get_replacement_str(self):
-		return 'another_string'
-
-	def set_file_content(self, content):
-		self.file_contents = content
-
-
 class TestRegExpEngine(unittest.TestCase):
+
 
 	def setUp(self):
 		self.substitution = '''
