@@ -50,13 +50,15 @@ class ABCProductRealNode(Visitee):
 	__metaclass__ = ABCMeta
 
 	def accept(self, visitor, **kwagrs):
+		result = None
 		if isinstance(self, ABCProductRoot):
-			visitor.visit_product_root(self, **kwagrs)
+			result = visitor.visit_product_root(self, **kwagrs)
 		elif isinstance(self, ABCProduct):
-			visitor.visit_product(self, **kwagrs)
+			result = visitor.visit_product(self, **kwagrs)
 		elif isinstance(self, ABCProductReal):
-			visitor.visit_product_real(self, **kwagrs)
+			result = visitor.visit_product_real(self, **kwagrs)
 		elif isinstance(self, ABCProductVar):
-			visitor.visit_product_var(self, **kwagrs)
+			result = visitor.visit_product_var(self, **kwagrs)
 		else:
 			print "Unknown node to visit: " + str(self)
+		return result
