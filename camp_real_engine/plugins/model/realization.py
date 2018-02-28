@@ -1,5 +1,4 @@
-from camp_real_engine.plugins.abstract.abc_vistor import ABCRealizationNode, ABCVariableNode, ABCValueNode, ABCSubstitutionNode
-from camp_real_engine.plugins.abstract.abc_vistor import Visitor
+from camp_real_engine.plugins.abstract.abc_real_data_model import ABCRealizationNode, ABCVariableNode, ABCValueNode, ABCSubstitutionNode, Visitor
 
 
 
@@ -49,9 +48,6 @@ class RegExpFileSubstNode(ABCRealizationNode, ABCSubstitutionNode):
 	def __init__(self, *args, **kwagrs):
 		self.value, self.label, self.filename = None, None, None
 		self.placement, self.replacement, self.type = None, None, None
-
-	def parse(self, subst_obj):
-		pass
 
 	def get_subst_label(self):
 		return self.label
