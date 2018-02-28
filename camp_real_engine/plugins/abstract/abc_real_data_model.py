@@ -1,14 +1,8 @@
 from abc import ABCMeta
 from abc import abstractmethod
 
+from camp_real_engine.plugins.abstract.abc_vistor import Visitee
 
-class Visitee(object):
-
-	__metaclass__ = ABCMeta
-
-	@abstractmethod
-	def accept(self, visitor, **kwagrs):
-		pass
 
 class ABCVariableNode(object):
 
@@ -29,7 +23,7 @@ class ABCSubstitutionNode(object):
 		pass
 
 
-class Visitor(object):
+class ABCRealVisitor(object):
 
 	__metaclass__ = ABCMeta
 

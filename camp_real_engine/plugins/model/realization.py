@@ -1,4 +1,4 @@
-from camp_real_engine.plugins.abstract.abc_real_data_model import ABCRealizationNode, ABCVariableNode, ABCValueNode, ABCSubstitutionNode, Visitor
+from camp_real_engine.plugins.abstract.abc_real_data_model import ABCRealizationNode, ABCVariableNode, ABCValueNode, ABCSubstitutionNode, ABCRealVisitor
 
 
 
@@ -95,7 +95,7 @@ class ComponentFactory(object):
 		return RegExpFileSubstNode()
 
 
-class YamlVisitor(Visitor):
+class YamlVisitor(ABCRealVisitor):
 
 	def visit_variable_node(self, comp_var, **kwagrs):
 		variable_label = kwagrs['yaml_var'].keys()[0]
