@@ -17,7 +17,9 @@ class RegExp(ABC_subst_realizer):
 		if not (isinstance(substitution, ABCSubstitutionNode) and substitution.get_type() == "regexp"):
 			return
 
-		file_content = self.content_commiter.read_content(substitution.get_file_name())
+		self.content_commiter.set_read_file(substitution.get_file_name())
+		self.content_commiter.set_write_file(substitution.get_file_name())
+		file_content = self.content_commiter.read_content()
 
 		placement = substitution.get_placement_str()
 		replacement = substitution.get_replacement_str()
@@ -28,4 +30,4 @@ class RegExp(ABC_subst_realizer):
 			return
 		modified_content = re.sub(pattern, replacement, file_content)
 
-		self.content_commiter.write_content(substitution.get_file_name(), modified_content)
+		self.content_commiter.write_content(modified_content)

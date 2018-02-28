@@ -55,15 +55,18 @@ substituion1:
 
 		self.regexp = RegExp()
 		self.regexp.exe_subst(mock_regexp_subst)
-		mock_dao.write_content.assert_called_once_with(self.expected_file_name, self.expected_file_contents)
+		mock_dao.write_content.assert_called_once_with(self.expected_file_contents)
 
 
 	def test_file_commiter(self):
 		file_commiter = FileContentCommiter()
-		content = file_commiter.read_content('camp_real_engine/tests/resources/simple_e2e_regexp/Dockerfile')
+		file_commiter.set_read_file('camp_real_engine/tests/resources/simple_e2e_regexp/Dockerfile')
+		content = file_commiter.read_content()
 		docker_file_path = os.path.join(self.tmp_path, 'Dockerfile')
-		file_commiter.write_content(docker_file_path, content)
-		saved_content = file_commiter.read_content(docker_file_path)
+		file_commiter.set_write_file(docker_file_path)
+		file_commiter.write_content(content)
+		file_commiter.set_read_file(docker_file_path)
+		saved_content = file_commiter.read_content()
 
 		self.assertTrue(content != '')
 		self.assertTrue(content == saved_content, "files are not identical")
