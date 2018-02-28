@@ -24,6 +24,10 @@ class ABCSubstitutionNode(object):
 
 	__metaclass__ = ABCMeta
 
+	@abstractmethod
+	def get_type(self):
+		pass
+
 
 class Visitor(object):
 
