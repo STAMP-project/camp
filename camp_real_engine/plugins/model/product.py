@@ -1,5 +1,6 @@
-from camp_real_engine.plugins.abstract.abc_visitor import Visitee
+import yaml
 
+from camp_real_engine.plugins.abstract.abc_visitor import Visitee
 from camp_real_engine.plugins.abstract.abc_prod_data_model import ABCProductRoot, ABCProduct, ABCProductReal
 from camp_real_engine.plugins.abstract.abc_prod_data_model import ABCProductVar, ABCProductVisitor, ABCProductRealNode
 
@@ -15,7 +16,6 @@ class ProductRootNode(ABCProductRealNode, ABCProductRoot):
 
 	def get_products(self):
 		return self.products
-
 
 class ProductNode(ABCProductRealNode, ABCProduct):
 	
@@ -100,6 +100,7 @@ class YamlProductVisitor(ABCProductVisitor):
 
 	def visit_product_root(self, visitee, **kwargs):
 		yaml_root = kwargs.get("yaml_obj")
+		return visitee
 
 	def visit_product(self, visitee, **kwargs):
 		prod_root = kwargs.get("prod_root")
@@ -109,9 +110,8 @@ class YamlProductVisitor(ABCProductVisitor):
 		prod_name = yaml_prod.keys()[0]
 		prod_dir = yaml_prod.values()[0]['product_dir']
 		visitee.set_prod_name(prod_name)
-
 		visitee.set_prod_dir(prod_dir)
-
+		return visitee
 
 	def visit_product_real(self, visitee, **kwargs):
 		prod = kwargs.get('prod')
@@ -119,6 +119,7 @@ class YamlProductVisitor(ABCProductVisitor):
 
 		prod.set_prod_real(visitee)
 		visitee.set_real_path(yaml_real['path'])
+		return visitee
 
 	def visit_product_var(self, visitee, **kwargs):
 		real = kwargs.get("prod_real")
@@ -127,6 +128,7 @@ class YamlProductVisitor(ABCProductVisitor):
 		real.append_prod_vars(visitee)
 		visitee.set_var_name(yaml_var.keys()[0])
 		visitee.set_var_value(yaml_var.values()[0])
+		return visitee
 
 
 class YamlProductPrinterVisitor(ABCProductVisitor):
@@ -144,9 +146,9 @@ class YamlProductPrinterVisitor(ABCProductVisitor):
 		pass
 
 
-class YamlProductModelBulder(object):
+class YamlProductModelParser(object):
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self):
 		self.visitor = YamlProductVisitor()
 		self.factory = ProductComponentFactory()
 
@@ -165,3 +167,14 @@ class YamlProductModelBulder(object):
 				cvar.accept(self.visitor, prod_real = creal, yaml_var = variable)
 		return croot
 
+
+class YamlProductModelBuilder(object):
+
+	def __init__(self):
+		self.visitor = YamlProductPrinterVisitor()
+
+	def build(self, node_obj):
+		yaml_obj = node_obj.accept(self.visitor)
+
+	def print_element(self, yaml_dict_obj):
+		return yaml.dump(yaml_dict_obj, default_flow_style=False)

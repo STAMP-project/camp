@@ -1,7 +1,7 @@
 import yaml
 import unittest
 
-from camp_real_engine.plugins.model.product import YamlProductModelBulder
+from camp_real_engine.plugins.model.product import YamlProductModelParser, YamlProductModelBuilder
 
 class TestProductRealModel(unittest.TestCase):
 
@@ -26,7 +26,7 @@ products:
 
 	def test_product_model(self):
 		yaml_obj = yaml.load(self.product_model_str)
-		builder = YamlProductModelBulder()
+		builder = YamlProductModelParser()
 		product_root = builder.parse(yaml_obj)
 
 		products = product_root.get_products()
@@ -63,3 +63,17 @@ products:
 		self.assertEqual(variable1.get_var_value(), "value1")
 		self.assertEqual(variable2.get_var_name(), "variable1")
 		self.assertEqual(variable2.get_var_value(), "value2")
+
+
+	def test_poduct_model_ser(self):
+		yaml_obj = yaml.load(self.product_model_str)
+		parser = YamlProductModelParser()
+		product_root = parser.parse(yaml_obj)
+
+		builder = YamlProductModelBuilder()
+		yaml_dict = builder.build(product_root)
+		actual_str = builder.print_element(yaml_dict)
+
+		exp_str = yaml.dump(yaml_obj, default_flow_style=False)
+
+		self.assertEqual(exp_str, actual_str)
