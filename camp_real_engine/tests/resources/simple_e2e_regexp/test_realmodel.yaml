@@ -5,13 +5,13 @@ variables:
         substitutions:
          - substituion1:
             type: regexp
-            filename: "real_model/Dockerfile"
+            filename: "images/Dockerfile"
             placement: "jenkins:latest"
             replacement: "jenkins:lts"
      - value2:
         substitutions:
          - substituion2:
             type: regexp
-            filename: "real_model/Dockerfile"
+            filename: "images/Dockerfile"
             placement: "USER jenkins"
             replacement: ""
