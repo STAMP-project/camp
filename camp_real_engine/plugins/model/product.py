@@ -134,16 +134,34 @@ class YamlProductVisitor(ABCProductVisitor):
 class YamlProductPrinterVisitor(ABCProductVisitor):
 
 	def visit_product_root(self, visitee, **kwargs):
-		pass
+		products = visitee.get_products()
+		product_list = []
+		for product in products:
+			prod_dict = product.accept(self)
+			prod_dict and product_list.append(product.accept(self))
+		return dict(products = product_list)
 
 	def visit_product(self, visitee, **kwargs):
-		pass
+		prod_name = visitee.get_prod_name()
+		prod_path = visitee.get_prod_dir()
+		prod_dict = dict()
+		prod_real = visitee.get_prod_real()
+		prod_dict[prod_name] = dict(
+			product_dir = prod_path,
+			realization = prod_real.accept(self))
+		return prod_dict
 
 	def visit_product_real(self, visitee, **kwargs):
-		pass
+		prod_dict = dict(path = visitee.get_real_path(), variables = [])
+		for variable in visitee.get_prod_vars():
+			var_dict = variable.accept(self)
+			var_dict and prod_dict['variables'].append(variable.accept(self))
+		return prod_dict
 
 	def visit_product_var(self, visitee, **kwargs):
-		pass
+		var_dict = dict()
+		var_dict[visitee.get_var_name()] = visitee.get_var_value()
+		return var_dict
 
 
 class YamlProductModelParser(object):
@@ -174,7 +192,8 @@ class YamlProductModelBuilder(object):
 		self.visitor = YamlProductPrinterVisitor()
 
 	def build(self, node_obj):
-		yaml_obj = node_obj.accept(self.visitor)
+		dict_yaml_obj = node_obj.accept(self.visitor)
+		return dict_yaml_obj
 
 	def print_element(self, yaml_dict_obj):
 		return yaml.dump(yaml_dict_obj, default_flow_style=False)
