@@ -151,3 +151,12 @@ class YamlRealizationModel(object):
 
 	def get_substs_by_value(self, value):
 		return value.get_subst_nodes()
+
+	def get_subst_by_var_val(self, var_val):
+		for variable in self.realization:
+			if variable.get_variable_label() == var_val[0]:
+				values = variable.get_value_nodes()
+				for value in values:
+					if value.get_value_label() == var_val[1]:
+						return value.get_subst_nodes()
+		return []
