@@ -13,10 +13,9 @@ class TestCampRealizeCLI(unittest.TestCase):
 		mock_product = MagicMock(ProductNode)
 		mock_real_engine.get_products.return_value = [mock_product]
 		
-		#camp_realize.py realize --model /dir/some/file.yaml
-		command = ['realize']
-		params = {'--model' : '/dir/some/file.yaml'}
-		cli = CLI(*command, **params)
+		#camp_realize.py realize /dir/some/file.yaml
+		command = ['realize', '/dir/some/file.yaml']
+		cli = CLI(command)
 		cli.execute()
 
 		mock_real_engine.get_products.assert_called_once_with('/dir/some/file.yaml')
