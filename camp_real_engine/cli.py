@@ -5,20 +5,21 @@ from camp_real_engine.engine import RealizationEngine
 
 class CLI(object):
 
-	def __init__(self, command):
+	def __init__(self):
 		self.parser = argparse.ArgumentParser(prog='rcamp', description='CAMP Realization Tool')
-		self.parser.add_argument('command', nargs=1, help='command to start realization', choices=['realize'])
-		self.parser.add_argument('model', nargs=1, help='path to file with with model to realize')
-		self.parsed_args = self.parser.parse_args(command)
+		self.parser.add_argument('realize', nargs=1, help='realize is a command to start realization')
+		self.parser.add_argument('path', nargs=1, help='path to file with with model to realize')
 
 
-	def execute(self):
-		d = vars(self.parsed_args)
-		print d
-
-		model_path = d.get('model')[0]
-
-		real_engine = RealizationEngine()
-		products = real_engine.get_products(model_path)
-		for product in products:
-			real_engine.realize_product()
+	def execute(self, command):
+		parsed_args = self.parser.parse_args(command)
+		args_dict = vars(parsed_args)
+		command = args_dict.get('realize')[0]
+		if command == 'realize':
+			model_path = args_dict.get('path')[0]
+			real_engine = RealizationEngine()
+			products = real_engine.get_products(model_path)
+			for product in products:
+				real_engine.realize_product(product)
+		else:
+			self.parser.print_help()
