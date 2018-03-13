@@ -12,10 +12,11 @@ from jsonpath_rw import jsonpath, parse
 HELPTEXT = 'composegen.py -i <inputfile> -d <working dir> (optional)'
 
 class Service:
-    def __init__(self, name=None, image=None, depends_on=[]):
+    def __init__(self, name=None, image=None, depends_on=[], attribute=[]):
         self.name = name
         self.image = image
         self.depends_on = depends_on
+        self.attribute = attribute
 
 class Compose:
     def __init__(self, services=[]):
@@ -147,6 +148,22 @@ def generate(seedfile, workingdir, amp_result_file):
         stream = open('%s/docker-compose/docker-compose-%d.yml'%(workingdir, i), 'w')
         stream.write(str)
         stream.close()
+    resol = dict()
+    products = []
+    resol['products'] = products
+    with open("%s/variables.yml" % workdingdir, 'r') as stream:
+        variables = yaml.load(stream)
+    def resolve_var(value):
+        return any(v for v in variables if value in variables[v])
+    for amp, i in zip(amplified, range(1, 1000)):
+        product = dict()
+        products.append({'compose%d' % i: product})
+        product['product_dir'] = "%s/compose%d" % (workingdir, i)
+        product['realization'] = {
+            'path': "%s/variables.yml" % workdingdir,
+            'variables': [{resolve_var(v): v} for v in amp['attributes']]
+        }
+
 
 
 
