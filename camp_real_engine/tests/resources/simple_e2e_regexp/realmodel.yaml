@@ -1,12 +1,13 @@
-- variable1:
-    - value1:
-        - substituion1:
-            type: regexp
-            filename: "/name/Dockerfile"
-            placement: "some_string"
-            replacement: "another_string"
-        - substituion2:
-            type: regexp
-            filename: "/name/Dockerfile1"
-            placement: "some_string"
-            replacement: "another_string"
+variable1:
+    value1:
+        operations:
+            - substituion1:
+                engine: regexp
+                filename: "/name/Dockerfile"
+                placement: "some_string"
+                replacement: "another_string"
+            - substituion2:
+                engine: regexp
+                filename: "/name/Dockerfile1"
+                placement: "some_string"
+                replacement: "another_string"

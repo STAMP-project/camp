@@ -8,24 +8,21 @@ class TestRealizationModel(unittest.TestCase):
 
 	def setUp(self):
 		self.realization_yaml = '''
-- variable1:
-  - value1:
-    - substituion1:
-       type: regexp
-       filename: "/name/Dockerfile"
-       placement: "some_string"
-       replacement: "another_string"
-    - substituion2:
-       type: regexp
-       filename: "/name/Dockerfile1"
-       placement: "some_string"
-       replacement: "another_string"
-  - value2:
-    - substituion1:
-       type: regexp
-       filename: "/name/Dockerfile"
-       placement: "some_string"
-       replacement: "another_string"
+variable1:
+ value1:
+  type: int
+  value: 10
+  operations:
+   - substituion1:
+      engine: regexp
+      filename: "/name/Dockerfile"
+      placement: "some_string"
+      replacement: "another_string"
+   - substituion2:
+      engine: regexp
+      filename: "/name/Dockerfile1"
+      placement: "some_string"
+      replacement: "another_string"
 '''
 
 	def test_realization_model(self):
@@ -43,10 +40,12 @@ class TestRealizationModel(unittest.TestCase):
 
 		values = real_model.get_values_by_variable(variable)
 		self.assertIsNotNone(values)
-		self.assertTrue(len(values) == 2)
+		self.assertTrue(len(values) == 1)
 		value = values[0]
 		value_label = value.get_value_label()
 		self.assertEqual(value_label, 'value1')
+		self.assertEqual(value.get_value_type(), 'int')
+		self.assertEqual(value.get_value_value(), 10)
 
 		substitutions = real_model.get_substs_by_value(value)
 		self.assertIsNotNone(substitutions)
