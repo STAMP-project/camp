@@ -1,16 +1,12 @@
-variables:
- - variable1:
-    values:
-     - value1:
-        substitutions:
-         - substituion1:
+- variable1:
+    - value1:
+        - substituion1:
             type: regexp
             filename: "images/Dockerfile"
             placement: "jenkins:latest"
             replacement: "jenkins:lts"
-     - value2:
-        substitutions:
-         - substituion2:
+    - value2:
+        - substituion2:
             type: regexp
             filename: "images/Dockerfile"
             placement: "USER jenkins"

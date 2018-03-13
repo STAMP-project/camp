@@ -129,16 +129,13 @@ class YamlRealizationModel(object):
 		self.realization = []
 
 	def parse(self, yaml_obj):
-		variables = yaml_obj['variables']
-		for variable in variables:
+		for variable in yaml_obj:
 			cvar = self.cfacotry.create_variable()
 			cvar.accept(self.yaml_visitor, yaml_var = variable)
-			values = variable.values()[0]['values']
-			for value in values:
+			for value in variable.values()[0]:
 				cvalue = self.cfacotry.create_value()
 				cvalue.accept(self.yaml_visitor, var_node = cvar, yaml_value = value)
-				substitutions = value.values()[0]['substitutions']
-				for substitution in substitutions:
+				for substitution in value.values()[0]:
 					csubsitution = self.cfacotry.create_substitution()
 					csubsitution.accept(self.yaml_visitor, value_node = cvalue, yaml_subst = substitution)
 			self.realization.append(cvar)
