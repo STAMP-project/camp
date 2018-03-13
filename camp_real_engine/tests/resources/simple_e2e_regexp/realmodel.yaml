@@ -1,14 +1,11 @@
-variables:
- - variable1:
-    values:
-     - value1:
-        substitutions:
-         - substituion1:
+- variable1:
+    - value1:
+        - substituion1:
             type: regexp
             filename: "/name/Dockerfile"
             placement: "some_string"
             replacement: "another_string"
-         - substituion2:
+        - substituion2:
             type: regexp
             filename: "/name/Dockerfile1"
             placement: "some_string"
