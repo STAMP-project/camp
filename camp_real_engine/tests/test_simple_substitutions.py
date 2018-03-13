@@ -11,18 +11,19 @@ class TestSimpleSubstitutins(unittest.TestCase):
 	def setUp(self):
 
 		self.realization_yaml_test_2_subs = '''
-- variable1:
-  - value1:
-    - substituion1:
-       type: regexp
-       filename: "camp_real_engine/tests/resources/simple_e2e_regexp/tmp/Dockerfile"
-       placement: "jenkins:latest"
-       replacement: "jenkins:lts"
-    - substituion2:
-       type: regexp
-       filename: "camp_real_engine/tests/resources/simple_e2e_regexp/tmp/Dockerfile"
-       placement: "USER jenkins"
-       replacement: ""
+variable1:
+ value1:
+  operations:
+   - substituion1:
+      engine: regexp
+      filename: "camp_real_engine/tests/resources/simple_e2e_regexp/tmp/Dockerfile"
+      placement: "jenkins:latest"
+      replacement: "jenkins:lts"
+   - substituion2:
+      engine: regexp
+      filename: "camp_real_engine/tests/resources/simple_e2e_regexp/tmp/Dockerfile"
+      placement: "USER jenkins"
+      replacement: ""
 '''
 
 		self.test_2_sub_tmp_path = "camp_real_engine/tests/resources/simple_e2e_regexp/tmp"

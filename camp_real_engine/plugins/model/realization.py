@@ -26,6 +26,14 @@ class ValueNode(ABCRealizationNode, ABCValueNode):
 	def __init__(self, *args, **kwagrs):
 		self.variable = None
 		self.substitutions = []
+		self.type = None
+		self.value = None
+
+	def get_value_type(self):
+		return self.type
+
+	def get_value_value(self):
+		return self.value
 
 	def get_value_label(self):
 		return self.label
@@ -38,6 +46,12 @@ class ValueNode(ABCRealizationNode, ABCValueNode):
 
 	def set_variable_node(self, _variable):
 		self.variable = _variable
+
+	def set_value_type(self, _type):
+		self.type = _type
+
+	def set_value_value(self, _value):
+		self.value = _value
 
 	def add_subst_node(self, _substitution):
 		self.substitutions.append(_substitution)
@@ -103,6 +117,8 @@ class YamlVisitor(ABCRealVisitor):
 
 	def visit_value_node(self, comp_val, **kwagrs):
 		comp_val.set_value_label(kwagrs['yaml_value'].keys()[0])
+		comp_val.set_value_type(kwagrs['yaml_value'].values()[0].get('type'))
+		comp_val.set_value_value(kwagrs['yaml_value'].values()[0].get('value'))
 		comp_variable_node = kwagrs['var_node']
 		comp_val.set_variable_node(comp_variable_node)
 		comp_variable_node.add_value_node(comp_val)
@@ -118,7 +134,7 @@ class YamlVisitor(ABCRealVisitor):
 		comp_subs.set_file_name(yaml_subst[subs_label]['filename'])
 		comp_subs.set_placement_str(yaml_subst[subs_label]['placement'])
 		comp_subs.set_replacement_str(yaml_subst[subs_label]['replacement'])
-		comp_subs.set_type(yaml_subst[subs_label]['type'])
+		comp_subs.set_type(yaml_subst[subs_label]['engine'])
 
 
 class YamlRealizationModel(object):
@@ -129,13 +145,17 @@ class YamlRealizationModel(object):
 		self.realization = []
 
 	def parse(self, yaml_obj):
-		for variable in yaml_obj:
+		for var_key, var_value in yaml_obj.iteritems():
+			variable = dict()
+			variable[var_key] = var_value
 			cvar = self.cfacotry.create_variable()
 			cvar.accept(self.yaml_visitor, yaml_var = variable)
-			for value in variable.values()[0]:
+			for val_key, val_value in var_value.iteritems():
+				value = dict()
+				value[val_key] = val_value
 				cvalue = self.cfacotry.create_value()
 				cvalue.accept(self.yaml_visitor, var_node = cvar, yaml_value = value)
-				for substitution in value.values()[0]:
+				for substitution in val_value['operations']:
 					csubsitution = self.cfacotry.create_substitution()
 					csubsitution.accept(self.yaml_visitor, value_node = cvalue, yaml_subst = substitution)
 			self.realization.append(cvar)
