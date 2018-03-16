@@ -22,7 +22,7 @@ RUN wget https://github.com/Z3Prover/z3/releases/download/z3-4.5.0/z3-4.5.0-x64-
 WORKDIR /root
 RUN git clone -b multi-root https://github.com/SINTEF-9012/ozepy && \
     git clone https://github.com/STAMP-project/camp && \
-    pip install -r camp/dockergen/requirements.txt && \
+    pip install -r camp/requirements.txt && \
     git clone https://github.com/SINTEF-9012/camp-realize 
 COPY start.sh /root/start.sh
 
