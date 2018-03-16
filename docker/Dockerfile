@@ -21,11 +21,11 @@ RUN wget https://github.com/Z3Prover/z3/releases/download/z3-4.5.0/z3-4.5.0-x64-
 
 WORKDIR /root
 RUN git clone -b multi-root https://github.com/SINTEF-9012/ozepy && \
-    git clone -b metamodel-sintef https://songhui@gitlab.ow2.org/stamp/conf-test-ampli.git && \
-    pip install -r conf-test-ampli/dockergen/requirements.txt
-
+    git clone https://github.com/STAMP-project/camp && \
+    pip install -r camp/dockergen/requirements.txt && \
+    git clone https://github.com/SINTEF-9012/camp-realize 
 COPY start.sh /root/start.sh
 
-ENV PYTHONPATH=/root/ozepy
+ENV PYTHONPATH=/root/ozepy:/root/camp-realize
 CMD ["/bin/bash", "./start.sh"]
 
