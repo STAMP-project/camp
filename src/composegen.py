@@ -12,7 +12,7 @@ from jsonpath_rw import jsonpath, parse
 HELPTEXT = 'composegen.py -i <inputfile> -d <working dir> (optional)'
 
 class Service:
-    def __init__(self, name=None, image=None, depends_on=[], attribute=[]):
+    def __init__(self, name=None, image=None, depends_on=[], attribute=dict()):
         self.name = name
         self.image = image
         self.depends_on = depends_on
@@ -66,7 +66,7 @@ def load_ampresult(ampresult):
     for comp in ampresult['composes'].values():
         services = []
         for srvname, srv in comp['services'].iteritems():
-            services.append(Service(srvname, srv['image'], srv.get('depends_on', [])))
+            services.append(Service(srvname, srv['image'], srv.get('depends_on', []), srv.get('attribute', dict())))
         composes.append(Compose(services))
 
     return composes
@@ -145,24 +145,34 @@ def generate(seedfile, workingdir, amp_result_file):
             value = immvalues[-1]
             print value
             str = str.replace(placeholder, value)
-        stream = open('%s/docker-compose/docker-compose-%d.yml'%(workingdir, i), 'w')
+        stream = open('%s/compose%d/docker-compose.yml'%(workingdir, i), 'w')
         stream.write(str)
         stream.close()
     resol = dict()
     products = []
     resol['products'] = products
-    with open("%s/variables.yml" % workdingdir, 'r') as stream:
+    with open("%s/variables.yml" % workingdir, 'r') as stream:
         variables = yaml.load(stream)
     def resolve_var(value):
-        return any(v for v in variables if value in variables[v])
+        return next(v for v in variables if value in variables[v])
     for amp, i in zip(amplified, range(1, 1000)):
         product = dict()
         products.append({'compose%d' % i: product})
         product['product_dir'] = "%s/compose%d" % (workingdir, i)
+        varvalues = []
+        valvalues = []
         product['realization'] = {
-            'path': "%s/variables.yml" % workdingdir,
-            'variables': [{resolve_var(v): v} for v in amp['attributes']]
+            'path': "%s/variables.yml" % workingdir,
+            'variables': varvalues,
+            'values': valvalues
         }
+        for srv in amp.services:
+            for k, v in srv.attribute.iteritems():
+                varvalues.append({resolve_var(k):k})
+                valvalues.append({k: v})
+    with open("%s/resolmodel.yml"%workingdir, 'w') as stream:
+        yaml.dump(resol, stream)
+        stream.close()
 
 
 
