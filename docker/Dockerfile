@@ -25,6 +25,7 @@ RUN git clone -b multi-root https://github.com/SINTEF-9012/ozepy && \
     pip install -r camp/requirements.txt && \
     git clone https://github.com/SINTEF-9012/camp-realize 
 COPY start.sh /root/start.sh
+COPY allinone.sh /root/allinone.sh
 
 ENV PYTHONPATH=/root/ozepy:/root/camp-realize
 # CMD ["/bin/bash", "./start.sh"]
