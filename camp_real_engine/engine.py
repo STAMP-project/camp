@@ -8,6 +8,9 @@ from camp_real_engine.plugins.dao.daos import FileContentCommiter
 
 class RealizationEngine(object):
 
+	def __init__(self):
+		self.yaml_obj = None
+
 	def get_products(self, file_path):
 
 		content = ""
@@ -15,9 +18,11 @@ class RealizationEngine(object):
 			content = file.read()
 
 		yaml_obj = yaml.load(content)
+		self.yaml_obj = yaml_obj
 		yaml_parser = YamlProductModelParser()
 		product_root = yaml_parser.parse(yaml_obj)
 		return product_root.get_products()
+		
 
 	def realize_product(self, product):
 		prod_dir = product.get_prod_dir()
@@ -35,7 +40,9 @@ class RealizationEngine(object):
 		yaml_obj = yaml.load(content)
 		real_model = YamlRealizationModel()
 		real_model.parse(yaml_obj)
-
+		prod_dict = next(next(v for k, v in d.iteritems()) for d in self.yaml_obj['products'] if product.get_prod_name() in d)
+		print prod_dict
+		val_val = prod_dict['realization']['values']
 		dao = FileContentCommiter(search_dir = prod_dir)
 		regexp = RegExp(_content_commiter = dao)
 		for variable in variables:
@@ -44,8 +51,14 @@ class RealizationEngine(object):
 			if not subs or not len(subs):
 				print "cannot find any substitutions for " + str(var_val)
 				continue
-
 			for sub in subs:
+				for d in val_val:
+					for k,v in d.iteritems():
+						if k.strip() == variable.get_var_value().strip():
+							print sub.get_replacement_str()
+							print sub.get_replacement_str().replace('${value}', str(v))
+							sub.set_replacement_str(sub.get_replacement_str().replace('${value}', str(v)))
+							print sub.get_replacement_str()
 				regexp.exe_subst(sub)
 
 

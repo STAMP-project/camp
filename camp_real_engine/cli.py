@@ -20,6 +20,7 @@ class CLI(object):
 			real_engine = RealizationEngine()
 			products = real_engine.get_products(model_path)
 			for product in products:
+				print product
 				real_engine.realize_product(product)
 		else:
 			self.parser.print_help()
