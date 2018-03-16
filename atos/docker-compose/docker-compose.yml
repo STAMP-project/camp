@@ -1,0 +1,48 @@
+version: '2'
+
+services:
+  db:
+    image: ./db
+    container_name: my_db
+    environment:
+      - max_connections=500
+      - shared_buffers=256
+      - port=5432
+      - POSTGRES_DB=------------------
+      - POSTGRES_USER=---------------------
+      - POSTGRES_PASSWORD=-------------------
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+  apache:
+    image: ./apache
+    container_name: my_apache
+    environment:
+      - StartServers=2
+      - MinSpareThreads=25
+      - MaxSpareThreads=75
+      - ThreadLimit=64
+      - ThreadsPerChild=25
+      - MaxRequestWorkers=150
+      - MaxConnectionsPerChild=0
+      - MinSpareServers=5
+      - MaxSpareServers=10
+  web:
+    image: ./webapp/ShowcaseServer
+    container_name: my_web
+    environment:
+      - PYTHONUSERBASE=.webapp/ShowcaseServer/
+    volumes:
+      -  ./webapp:/webapp
+    ports:
+      - "8000:8000"
+    command: python /webapp/ShowcaseServer/manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+      - apache
+
+volumes:
+  db_data:
+    external: true

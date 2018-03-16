@@ -25,6 +25,12 @@ then
     python conf-test-ampli/dockergen/src/composegen.py -i ./workingdir/ampcompose.yml
 fi
 
+if [ -f ./workingdir/resolmodel.yml ]
+then
+    cp ./working/out/ampcompose.yml ./workingdir/ampcompose.yml
+    python camp-realize/camp_real_engine/rcamp.py -i workingdir/resolmodel.yml
+fi
+
 chmod -R a+rw . 
 
 echo ""

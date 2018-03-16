@@ -1,0 +1,11 @@
+products:
+- compose1:
+    product_dir: camp-samples/atos/compose1
+    realization:
+      path: camp-samples/atos/variables.yml
+      values:
+      - {ThreadPerChildFree: 0}
+      - {ThreadLimit64: 64}
+      variables:
+      - {ThreadPerChild: ThreadPerChildFree}
+      - {ThreadLimit: ThreadLimit64}
