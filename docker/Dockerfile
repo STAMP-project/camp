@@ -27,5 +27,5 @@ RUN git clone -b multi-root https://github.com/SINTEF-9012/ozepy && \
 COPY start.sh /root/start.sh
 
 ENV PYTHONPATH=/root/ozepy:/root/camp-realize
-CMD ["/bin/bash", "./start.sh"]
+# CMD ["/bin/bash", "./start.sh"]
 
