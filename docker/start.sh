@@ -18,11 +18,11 @@ then
     cp ./workingdir/out/ampcompose.yml ./workingdir/ampcompose.yml
 fi
 
-python conf-test-ampli/dockergen/src/dockerfilegen.py -i ./workingdir/genimages.yml
+python camp/src/dockerfilegen.py -i ./workingdir/genimages.yml
 
 if [ -f ./workingdir/composite.yml ]
 then
-    python conf-test-ampli/dockergen/src/composegen.py -i ./workingdir/ampcompose.yml
+    python camp/src/composegen.py -i ./workingdir/ampcompose.yml
 fi
 
 if [ -f ./workingdir/resolmodel.yml ]
