@@ -42,7 +42,7 @@ class RealizationEngine(object):
 		real_model.parse(yaml_obj)
 		prod_dict = next(next(v for k, v in d.iteritems()) for d in self.yaml_obj['products'] if product.get_prod_name() in d)
 		print prod_dict
-		val_val = prod_dict['realization']['values']
+		val_val = prod_dict['realization']['variables']
 		dao = FileContentCommiter(search_dir = prod_dir)
 		regexp = RegExp(_content_commiter = dao)
 		for variable in variables:
