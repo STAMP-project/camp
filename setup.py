@@ -21,5 +21,10 @@ setup(
         "nose"
         "mock>=2.0.0"
         "pyyaml"
-    ]
+    ],
+    entry_points={  # Optional
+        'console_scripts': [
+            'rcamp=camp_real_engine:main',
+        ],
+    }
 )
