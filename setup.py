@@ -24,7 +24,7 @@ setup(
     ],
     entry_points={  # Optional
         'console_scripts': [
-            'rcamp=camp_real_engine:main',
+            'rcamp=camp_real_engine.rcamp:rcamp_main',
         ],
     }
 )
