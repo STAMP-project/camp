@@ -1,5 +1,5 @@
 import sys, getopt, os
-from cli import CLI
+from camp_real_engine.cli import CLI
 
 HELPTEXT = 'ramp.py -i <inputfile>'
 
@@ -20,6 +20,10 @@ def main(argv):
     command = ['realize', inputfile]
     cli = CLI()
     cli.execute(command)
+
+
+def rcamp_main():
+    print "Call your main application code here"
 
 if __name__ == "__main__":
     main(sys.argv[1:])
