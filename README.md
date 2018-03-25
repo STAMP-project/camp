@@ -1,4 +1,17 @@
+## Table of contents
+  - [What is CAMP?](#what-is-camp)
+  - [Quick start](#quick-start-with-maven)
+  - [How does CAMP work?](#how-does-camp-work)
+  - [CAMP Input](#camp-input)
+  - [CAMP Output](#camp-output)
+  - [Running CAMP on your project](#running-camp-on-your-project)
+
+## What is CAMP?
+
+CAMP (Configuration AMPlification) takes as input a sample testing configuration and generates automatically a number of diverse configurations. The generation is guided by predefined features and constraints, and utilizes a set of reusable pieces. The current version of CAMP is focused on the Docker environment, and the input and output configurations are specified as Dockerfiles or docker-compose files.
+
 # Configuration amplification based on Dockder
+
 
 This folder contains the "generator" part as show in the following architecture.
 It utilizes sample docker files (namely Dockerfile for images and docker-compose.yml for containers and their connections),
