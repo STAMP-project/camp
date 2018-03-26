@@ -3,7 +3,7 @@
 [![codecov](https://codecov.io/gh/SINTEF-9012/camp-realize/branch/master/graph/badge.svg)](https://codecov.io/gh/SINTEF-9012/camp-realize)
 
 # CAMP-realize
-CAMP-realize is a standalone tool to perform arbitrary modifications of any given artefact to yield a new artefact which is different from the given one. The tool is used in conjunction with [CAMP](https://github.com/STAMP-project/camp) to modify variables (variation points) in configuration files.
+CAMP-realize is a standalone tool to perform arbitrary modifications of any given artifact to yield a new artifact which is different from the given one. The tool is used in conjunction with [CAMP](https://github.com/STAMP-project/camp) to modify variables (variation points) in configuration files.
 
 ## How to use
 ### Testing
@@ -20,13 +20,13 @@ To install from the source code:
 The tool is not yet available in any public repository and therefore could be installed using pip
 
 ### Execution
-The following command generates new artefacts by modifing existing artefacts given in a product model, i.e. realizes the product model.
+The following command generates new artifacts by modifying existing artifacts given in a product model, i.e. realizes the product model.
 ``` 
 > rcamp realize examples/product_model.yaml
 ```
 ## Models
 ### Product model
-A product model contains a description of products to realize. Each description for the product contains: name, pruduct path, path to a realization model, variables to realize. Example:
+A product model contains a description of products to realize. Each description for the product contains: name, product path, path to a realization model, variables to realize. Example:
 ```
 products:
   - product1:
@@ -37,7 +37,7 @@ products:
           - variable1: value1
           - variable2: value1
 ```
-1. ```product_dir``` contains a path to product artefacts. The path is realative to the directory where we run the tool.
+1. ```product_dir``` contains a path to product artifacts. The path is relative to the directory where we run the tool.
 2. ```path``` contains a path to a realization model. The realization model contains definitions to variables and values defined in the variables section.
 3. ```variables``` contains two variables, i.e. ```variable1```, ```variable2``` which should be resolved to ```value1```.
 
@@ -63,8 +63,8 @@ variable2:
                 placement: "USER jenkins"
                 replacement: ""
 ```
-The realization model containes definition of two variables, and operations which the tool needs to execute to materialize the variables. For example:
+The realization model contains definition of two variables, and operations which the tool needs to execute to materialize the variables. For example:
 1. ```variable2``` is a name of the variable with only one possible value, i.e. ```value1```.
-2. ```operations``` containes a list of operations to execute, i.e. one operation with name ```substitution1```.
-3. ```substitution1``` - a regexp operation which substitutetes the placement "USER jenkins" with an empty string in the file "images/Dockerfile"
+2. ```operations``` contains a list of operations to execute, i.e. one operation with name ```substitution1```.
+3. ```substitution1``` - a regexp operation which substitutes the placement "USER jenkins" with an empty string in the file "images/Dockerfile"
 4. ```filename``` is a path to the file which is relative to a product directory
