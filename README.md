@@ -37,8 +37,8 @@ products:
           - variable1: value1
           - variable2: value1
 ```
-1. ```product_dir``` contains a path to product artifacts(the path is relative to the directory where we run the tool).
-2. ```path``` contains a path to a realization model (the path is relative to the directory where we run the tool, i.e. examples). The realization model contains definitions to variables and values defined in the variables section.
+1. ```product_dir``` contains a path to product artifacts, i.e. product directory.
+2. ```path``` contains a path to a realization model. The realization model contains definitions to variables and values defined in the variables section.
 3. ```variables``` contains two variables, i.e. ```variable1```, ```variable2``` which should be resolved to ```value1```.
 
 ### Realization model
