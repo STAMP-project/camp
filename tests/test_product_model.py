@@ -9,16 +9,16 @@ class TestProductRealModel(unittest.TestCase):
 		self.product_model_str = '''
 products:
   - product1:
-      product_dir: "camp_real_engine/tests/resources/simple_e2e_regexp/tmp/product1"
+      product_dir: "tests/resources/simple_e2e_regexp/tmp/product1"
       realization:
-        path: "camp_real_engine/tests/resources/simple_e2e_regexp/tmp/test_realmodel.yaml"
+        path: "tests/resources/simple_e2e_regexp/tmp/test_realmodel.yaml"
         variables:
           - variable1: value1
           - variable1: value2
   - product2:
-      product_dir: "camp_real_engine/tests/resources/simple_e2e_regexp/tmp/product2"
+      product_dir: "tests/resources/simple_e2e_regexp/tmp/product2"
       realization:
-        path: "camp_real_engine/tests/resources/simple_e2e_regexp/tmp/test_realmodel.yaml"
+        path: "tests/resources/simple_e2e_regexp/tmp/test_realmodel.yaml"
         variables:
           - variable1: value1
           - variable1: value2
@@ -37,11 +37,11 @@ products:
 		self.assertEqual(product1.get_prod_name(), "product1")
 		self.assertEqual(product2.get_prod_name(), "product2")
 
-		self.assertEqual(product1.get_prod_dir(), "camp_real_engine/tests/resources/simple_e2e_regexp/tmp/product1")
-		self.assertEqual(product2.get_prod_dir(), "camp_real_engine/tests/resources/simple_e2e_regexp/tmp/product2")
+		self.assertEqual(product1.get_prod_dir(), "tests/resources/simple_e2e_regexp/tmp/product1")
+		self.assertEqual(product2.get_prod_dir(), "tests/resources/simple_e2e_regexp/tmp/product2")
 
 		realization = product1.get_prod_real()
-		self.assertEqual(realization.get_real_path(), "camp_real_engine/tests/resources/simple_e2e_regexp/tmp/test_realmodel.yaml")
+		self.assertEqual(realization.get_real_path(), "tests/resources/simple_e2e_regexp/tmp/test_realmodel.yaml")
 
 		variables = realization.get_prod_vars()
 		self.assertEqual(len(variables), 2)
@@ -53,7 +53,7 @@ products:
 		self.assertEqual(variable2.get_var_value(), "value2")
 
 		realization = product2.get_prod_real()
-		self.assertEqual(realization.get_real_path(), "camp_real_engine/tests/resources/simple_e2e_regexp/tmp/test_realmodel.yaml")
+		self.assertEqual(realization.get_real_path(), "tests/resources/simple_e2e_regexp/tmp/test_realmodel.yaml")
 
 		variables = realization.get_prod_vars()
 		self.assertEqual(len(variables), 2)

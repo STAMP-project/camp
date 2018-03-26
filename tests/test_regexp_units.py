@@ -34,7 +34,7 @@ substituion1:
 
 		self.expected_file_name = "/name/Dockerfile"
 
-		self.tmp_path = "camp_real_engine/tests/resources/simple_e2e_regexp/tmp"
+		self.tmp_path = "tests/resources/simple_e2e_regexp/tmp"
 
 		if os.path.exists(self.tmp_path):
 			shutil.rmtree(self.tmp_path)
@@ -60,7 +60,7 @@ substituion1:
 
 	def test_file_commiter(self):
 		file_commiter = FileContentCommiter()
-		file_commiter.set_read_file('camp_real_engine/tests/resources/simple_e2e_regexp/Dockerfile')
+		file_commiter.set_read_file('tests/resources/simple_e2e_regexp/Dockerfile')
 		content = file_commiter.read_content()
 		docker_file_path = os.path.join(self.tmp_path, 'Dockerfile')
 		file_commiter.set_write_file(docker_file_path)

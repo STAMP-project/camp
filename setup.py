@@ -13,15 +13,11 @@ setup(
     description='realization module for camp',
 
     # This must correspond to the actual packages in the plugin.
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests']),
 
-    license='LICENSE',
+    license='MIT LICENSE',
     zip_safe=False,
-    test_requires=[
-        "nose"
-        "mock>=2.0.0"
-        "pyyaml"
-    ],
+    install_requires=['pyyaml'],
     entry_points={  # Optional
         'console_scripts': [
             'rcamp=camp_real_engine.rcamp:rcamp_main',
