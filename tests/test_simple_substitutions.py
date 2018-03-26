@@ -4,7 +4,7 @@ import yaml
 import unittest
 
 from camp_real_engine.plugins.regexp import RegExp
-from camp_real_engine.plugins.model.realization import YamlRealizationModel
+from camp_real_engine.model.realization import YamlRealizationModel
 
 class TestSimpleSubstitutins(unittest.TestCase):
 

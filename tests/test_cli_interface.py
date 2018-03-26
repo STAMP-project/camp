@@ -1,7 +1,7 @@
 import unittest
 from mock import patch, MagicMock
 from camp_real_engine.cli import CLI
-from camp_real_engine.plugins.model.product import ProductNode
+from camp_real_engine.model.product import ProductNode
 
 
 class TestCampRealizeCLI(unittest.TestCase):

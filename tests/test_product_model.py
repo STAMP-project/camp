@@ -1,7 +1,7 @@
 import yaml
 import unittest
 
-from camp_real_engine.plugins.model.product import YamlProductModelParser, YamlProductModelBuilder
+from camp_real_engine.model.product import YamlProductModelParser, YamlProductModelBuilder
 
 class TestProductRealModel(unittest.TestCase):
 

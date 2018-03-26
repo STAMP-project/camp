@@ -1,9 +1,9 @@
 import re
 
-from camp_real_engine.plugins.abstract.abc_subst_realizer import ABC_subst_realizer
-from camp_real_engine.plugins.model.realization import RegExpFileSubstNode
-from camp_real_engine.plugins.dao.daos import FileContentCommiter
-from camp_real_engine.plugins.abstract.abc_real_data_model import ABCSubstitutionNode
+from camp_real_engine.abstract.abc_subst_realizer import ABC_subst_realizer
+from camp_real_engine.model.realization import RegExpFileSubstNode
+from camp_real_engine.dao.daos import FileContentCommiter
+from camp_real_engine.abstract.abc_real_data_model import ABCSubstitutionNode
 
 
 

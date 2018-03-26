@@ -1,7 +1,7 @@
 from abc import ABCMeta
 from abc import abstractmethod
 
-from camp_real_engine.plugins.abstract.abc_visitor import Visitee
+from camp_real_engine.abstract.abc_visitor import Visitee
 
 
 class ABCProductRoot(object):
