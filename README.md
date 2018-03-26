@@ -22,7 +22,7 @@ The tool is not yet available in any public repository and therefore could be in
 ### Execution
 The following command generates new artifacts by modifying existing artifacts given in a product model, i.e. realizes the product model.
 ``` 
-> cd examples/ && rcamp realize examples/product_model.yaml
+> cd examples/ && rcamp realize product_model.yaml
 ```
 ## Models
 ### Product model
