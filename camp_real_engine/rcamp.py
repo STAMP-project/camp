@@ -3,6 +3,12 @@ from camp_real_engine.cli import CLI
 
 HELPTEXT = 'ramp.py -i <inputfile>'
 
+
+def execute_cli_command(commands):
+    cli = CLI()
+    cli.execute(commands)
+
+
 def main(argv):
     inputfile = ''
     try:
@@ -17,13 +23,18 @@ def main(argv):
         elif opt in ("-i", "--ifile"):
             inputfile = arg
     
-    command = ['realize', inputfile]
-    cli = CLI()
-    cli.execute(command)
+    if not os.path.isfile(inputfile):
+        print 'file does not exist: ' + inputfile
+        sys.exit()
+
+    commands = ['realize', inputfile]
+    execute_cli_command(commands)
 
 
 def rcamp_main():
-    print "Call your main application code here"
+    commands = sys.argv[1:]
+    execute_cli_command(commands)
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])

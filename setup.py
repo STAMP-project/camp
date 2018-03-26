@@ -1,5 +1,5 @@
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # Replace the place holders with values for your project
 
@@ -13,7 +13,7 @@ setup(
     description='realization module for camp',
 
     # This must correspond to the actual packages in the plugin.
-    packages=['camp_real_engine'],
+    packages=find_packages(),
 
     license='LICENSE',
     zip_safe=False,

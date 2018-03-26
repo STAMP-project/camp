@@ -7,7 +7,7 @@ class CLI(object):
 
 	def __init__(self):
 		self.parser = argparse.ArgumentParser(prog='rcamp', description='CAMP Realization Tool')
-		self.parser.add_argument('realize', nargs=1, help='realize is a command to start realization')
+		self.parser.add_argument('realize', nargs=1, help='"realize" is a command to start realization')
 		self.parser.add_argument('path', nargs=1, help='path to file with with model to realize')
 
 
