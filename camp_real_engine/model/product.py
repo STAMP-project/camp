@@ -1,8 +1,8 @@
 import yaml
 
-from camp_real_engine.plugins.abstract.abc_visitor import Visitee
-from camp_real_engine.plugins.abstract.abc_prod_data_model import ABCProductRoot, ABCProduct, ABCProductReal
-from camp_real_engine.plugins.abstract.abc_prod_data_model import ABCProductVar, ABCProductVisitor, ABCProductRealNode
+from camp_real_engine.abstract.abc_visitor import Visitee
+from camp_real_engine.abstract.abc_prod_data_model import ABCProductRoot, ABCProduct, ABCProductReal
+from camp_real_engine.abstract.abc_prod_data_model import ABCProductVar, ABCProductVisitor, ABCProductRealNode
 
 
 

@@ -6,8 +6,8 @@ import shutil
 from mock import MagicMock, patch
 
 from camp_real_engine.plugins.regexp import RegExp
-from camp_real_engine.plugins.model.realization import RegExpFileSubstNode
-from camp_real_engine.plugins.dao.daos import FileContentCommiter
+from camp_real_engine.model.realization import RegExpFileSubstNode
+from camp_real_engine.dao.daos import FileContentCommiter
 
 
 class TestRegExpElements(unittest.TestCase):

@@ -1,4 +1,4 @@
-from camp_real_engine.plugins.abstract.abc_real_data_model import ABCRealizationNode, ABCVariableNode, ABCValueNode, ABCSubstitutionNode, ABCRealVisitor
+from camp_real_engine.abstract.abc_real_data_model import ABCRealizationNode, ABCVariableNode, ABCValueNode, ABCSubstitutionNode, ABCRealVisitor
 
 
 

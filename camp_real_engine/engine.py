@@ -1,9 +1,9 @@
 import yaml
 
 from camp_real_engine.plugins.regexp import RegExp
-from camp_real_engine.plugins.model.product import YamlProductModelParser
-from camp_real_engine.plugins.model.realization import YamlRealizationModel
-from camp_real_engine.plugins.dao.daos import FileContentCommiter
+from camp_real_engine.model.product import YamlProductModelParser
+from camp_real_engine.model.realization import YamlRealizationModel
+from camp_real_engine.dao.daos import FileContentCommiter
 
 
 class RealizationEngine(object):
