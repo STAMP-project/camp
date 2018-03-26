@@ -7,14 +7,14 @@ from camp_real_engine.engine import RealizationEngine
 class TestE2ERealization(unittest.TestCase):
 
 	def setUp(self):
-		self.src_dockerimage = "camp_real_engine/tests/resources/simple_e2e_regexp/Dockerfile"
-		self.sub_first_sub = "camp_real_engine/tests/resources/simple_e2e_regexp/exp/Dockerfile_subst1"
-		self.sub_second_sub = "camp_real_engine/tests/resources/simple_e2e_regexp/exp/Dockerfile_subst1_2"
-		self.src_realmodel = "camp_real_engine/tests/resources/simple_e2e_regexp/test_realmodel.yaml"
+		self.src_dockerimage = "tests/resources/simple_e2e_regexp/Dockerfile"
+		self.sub_first_sub = "tests/resources/simple_e2e_regexp/exp/Dockerfile_subst1"
+		self.sub_second_sub = "tests/resources/simple_e2e_regexp/exp/Dockerfile_subst1_2"
+		self.src_realmodel = "tests/resources/simple_e2e_regexp/test_realmodel.yaml"
 
-		self.src_prodmodel = "camp_real_engine/tests/resources/simple_e2e_regexp/resolmodel.yaml"
+		self.src_prodmodel = "tests/resources/simple_e2e_regexp/product_model.yaml"
 
-		self.tmp_dir = "camp_real_engine/tests/resources/simple_e2e_regexp/tmp"
+		self.tmp_dir = "tests/resources/simple_e2e_regexp/tmp"
 		self.prod1_dir = os.path.join(self.tmp_dir, 'product1')
 		self.prod2_dir = os.path.join(self.tmp_dir, 'product2')
 
