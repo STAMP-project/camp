@@ -9,20 +9,20 @@ CAMP-realize is a standalone tool to perform arbitrary modifications of any give
 ### Testing
 To execute test cases, run the following command:
 ```
-tox -e py27local
+> tox -e py27local
 ```
 
 ### Installation
 To install from the source code:
 ```
-python setup.py install
+> python setup.py install
 ```
 The tool is not yet available in any public repository and therefore could be installed using pip
 
 ### Execution
 The following command generates new artefacts by modifing existing artefacts given in a product model, i.e. realizes the product model.
 ``` 
-rcamp realize examples/product_model.yaml
+> rcamp realize examples/product_model.yaml
 ```
 ## Models
 ### Product model
