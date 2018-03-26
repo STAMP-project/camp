@@ -5,7 +5,7 @@
 # CAMP-realize
 CAMP-realize is a standalone tool to perform arbitrary modifications of any given artefact to yield a new artefact which is different from the given one. The tool is used in conjunction with [CAMP](https://github.com/STAMP-project/camp) to modify variables (variation points) in configuration files.
 
-## Usage
+## How to use
 ### Testing
 To execute test cases, run the following command:
 ```
@@ -26,7 +26,7 @@ The following command generates new artefacts by modifing existing artefacts giv
 ```
 ## Models
 ### Product model
-A product model contains descriptions of products to realize. Each product description contains: name, path to the product, path to realization model, set of variables to realize. Example:
+A product model contains a description of products to realize. Each description for the product contains: name, pruduct path, path to a realization model, variables to realize. Example:
 ```
 products:
   - product1:
@@ -37,8 +37,9 @@ products:
           - variable1: value1
           - variable2: value1
 ```
-1. product_dir - a path to product's artefacts. The path is realative to the directory where we run the tool.
-2. path - path to a realization model. The realization model contains definitions to variables and values defined in the variables section
+1. ```product_dir``` contains a path to product artefacts. The path is realative to the directory where we run the tool.
+2. ```path``` contains a path to a realization model. The realization model contains definitions to variables and values defined in the variables section.
+3. ```variables``` contains two variables, i.e. ```variable1```, ```variable2``` which should be resolved to ```value1```.
 
 ### Realization model
 A realization model contains a list of variables with their values. In addition, it defines how variables and values should be materialized. Example:
@@ -63,7 +64,7 @@ variable2:
                 replacement: ""
 ```
 The realization model containes definition of two variables, and operations which the tool needs to execute to materialize the variables. For example:
-1. variable2 - name of the variable with only one possible value, i.e. value1
-2. operations - containe list of operation to execute, i.e. one operation with name substitution1
-3. substitution2 - a regexp operation, which substitutetes the placement "USER jenkins" with an empty string in the file "images/Dockerfile"
-4. filename - path to a file which is relative to a product directory
+1. ```variable2``` is a name of the variable with only one possible value, i.e. ```value1```.
+2. ```operations``` containes a list of operations to execute, i.e. one operation with name ```substitution1```.
+3. ```substitution1``` - a regexp operation which substitutetes the placement "USER jenkins" with an empty string in the file "images/Dockerfile"
+4. ```filename``` is a path to the file which is relative to a product directory
