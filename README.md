@@ -2,5 +2,68 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ce234e0552f34484abf4ce89360c5b8a)](https://www.codacy.com/app/vassik/camp-realize?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=SINTEF-9012/camp-realize&amp;utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/SINTEF-9012/camp-realize/branch/master/graph/badge.svg)](https://codecov.io/gh/SINTEF-9012/camp-realize)
 
-# camp-realize
-a tool to perform arbitrary modifications of given configurations to yield new configurations
+# CAMP-realize
+CAMP-realize is a standalone tool to perform arbitrary modifications of any given artefact to yield a new artefact which is different from the given one. The tool is used in conjunction with [CAMP](https://github.com/STAMP-project/camp) to modify variables (variation points) in configuration files.
+
+## Usage
+### Testing
+To execute test cases, run the following command:
+```
+tox -e py27local
+```
+
+### Installation
+To install from the source code:
+```
+python setup.py install
+```
+The tool is not yet available in any public repository and therefore could be installed using pip
+
+### Execution
+The following command generates new artefacts by modifing existing artefacts given in a product model, i.e. realizes the product model.
+``` 
+rcamp realize examples/product_model.yaml
+```
+## Models
+### Product model
+A product model contains descriptions of products to realize. Each product description contains: name, path to the product, path to realization model, set of variables to realize. Example:
+```
+products:
+  - product1:
+      product_dir: "tests/resources/simple_e2e_regexp/tmp/product1/"
+      realization:
+        path: "tests/resources/simple_e2e_regexp/tmp/test_realmodel.yaml"
+        variables:
+          - variable1: value1
+          - variable2: value1
+```
+1. product_dir - a path to product's artefacts. The path is realative to the directory where we run the tool.
+2. path - path to a realization model. The realization model contains definitions to variables and values defined in the variables section
+
+### Realization model
+A realization model contains a list of variables with their values. In addition, it defines how variables and values should be materialized. Example:
+```
+variable1:
+    value1:
+        type: int
+        value: 10
+        operations:
+            - substituion1:
+                engine: regexp
+                filename: "images/Dockerfile"
+                placement: "jenkins:latest"
+                replacement: "jenkins:lts"
+variable2:
+    value1:
+        operations:
+            - substituion1:
+                engine: regexp
+                filename: "images/Dockerfile"
+                placement: "USER jenkins"
+                replacement: ""
+```
+The realization model containes definition of two variables, and operations which the tool needs to execute to materialize the variables. For example:
+1. variable2 - name of the variable with only one possible value, i.e. value1
+2. operations - containe list of operation to execute, i.e. one operation with name substitution1
+3. substitution2 - a regexp operation, which substitutetes the placement "USER jenkins" with an empty string in the file "images/Dockerfile"
+4. filename - path to a file which is relative to a product directory
