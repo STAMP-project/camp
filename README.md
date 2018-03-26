@@ -22,7 +22,7 @@ The tool is not yet available in any public repository and therefore could be in
 ### Execution
 The following command generates new artifacts by modifying existing artifacts given in a product model, i.e. realizes the product model.
 ``` 
-> rcamp realize examples/product_model.yaml
+> cd examples/ && rcamp realize examples/product_model.yaml
 ```
 ## Models
 ### Product model
@@ -37,8 +37,8 @@ products:
           - variable1: value1
           - variable2: value1
 ```
-1. ```product_dir``` contains a path to product artifacts. The path is relative to the directory where we run the tool.
-2. ```path``` contains a path to a realization model. The realization model contains definitions to variables and values defined in the variables section.
+1. ```product_dir``` contains a path to product artifacts(the path is relative to the directory where we run the tool).
+2. ```path``` contains a path to a realization model (the path is relative to the directory where we run the tool, i.e. examples). The realization model contains definitions to variables and values defined in the variables section.
 3. ```variables``` contains two variables, i.e. ```variable1```, ```variable2``` which should be resolved to ```value1```.
 
 ### Realization model
