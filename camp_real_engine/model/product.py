@@ -99,7 +99,6 @@ class ProductComponentFactory(object):
 class YamlProductVisitor(ABCProductVisitor):
 
 	def visit_product_root(self, visitee, **kwargs):
-		yaml_root = kwargs.get("yaml_obj")
 		return visitee
 
 	def visit_product(self, visitee, **kwargs):
@@ -138,7 +137,8 @@ class YamlProductPrinterVisitor(ABCProductVisitor):
 		product_list = []
 		for product in products:
 			prod_dict = product.accept(self)
-			prod_dict and product_list.append(product.accept(self))
+			if prod_dict:
+				product_list.append(prod_dict)
 		return dict(products = product_list)
 
 	def visit_product(self, visitee, **kwargs):
@@ -155,7 +155,8 @@ class YamlProductPrinterVisitor(ABCProductVisitor):
 		prod_dict = dict(path = visitee.get_real_path(), variables = [])
 		for variable in visitee.get_prod_vars():
 			var_dict = variable.accept(self)
-			var_dict and prod_dict['variables'].append(variable.accept(self))
+			if var_dict:
+				prod_dict['variables'].append(var_dict)
 		return prod_dict
 
 	def visit_product_var(self, visitee, **kwargs):

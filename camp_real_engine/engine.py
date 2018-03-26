@@ -14,8 +14,8 @@ class RealizationEngine(object):
 	def get_products(self, file_path):
 
 		content = ""
-		with open(file_path, 'r') as file:
-			content = file.read()
+		with open(file_path, 'r') as f:
+			content = f.read()
 
 		yaml_obj = yaml.load(content)
 		self.yaml_obj = yaml_obj
@@ -34,10 +34,10 @@ class RealizationEngine(object):
 			return
 
 		content = ""
-		with open(real_path, 'r') as file:
-			content = file.read()
+		with open(real_path, 'r') as f:
+			content = f.read()
 
-		yaml_obj = yaml.load(content)
+		yaml_obj = yaml.safe_load(content)
 		real_model = YamlRealizationModel()
 		real_model.parse(yaml_obj)
 		prod_dict = next(next(v for k, v in d.iteritems()) for d in self.yaml_obj['products'] if product.get_prod_name() in d)
@@ -60,8 +60,3 @@ class RealizationEngine(object):
 							sub.set_replacement_str(sub.get_replacement_str().replace('${value}', str(v)))
 							print sub.get_replacement_str()
 				regexp.exe_subst(sub)
-
-
-
-
-	

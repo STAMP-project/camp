@@ -22,7 +22,7 @@ def main(argv):
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
-    
+
     if not os.path.isfile(inputfile):
         print 'file does not exist: ' + inputfile
         sys.exit()
