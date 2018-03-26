@@ -23,7 +23,9 @@ WORKDIR /root
 RUN git clone -b multi-root https://github.com/SINTEF-9012/ozepy && \
     git clone https://github.com/STAMP-project/camp && \
     pip install -r camp/requirements.txt && \
-    git clone https://github.com/SINTEF-9012/camp-realize 
+    git clone https://github.com/SINTEF-9012/camp-realize && \
+    python camp-realize/setup.py install
+
 COPY start.sh /root/start.sh
 COPY allinone.sh /root/allinone.sh
 
