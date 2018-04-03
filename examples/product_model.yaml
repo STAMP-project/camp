@@ -5,11 +5,10 @@ products:
         path: "tests/resources/simple_e2e_regexp/tmp/test_realmodel.yaml"
         variables:
           - variable1: value1
-          - variable1: value2
+          - variable2: value1
   - product2:
       product_dir: "tests/resources/simple_e2e_regexp/tmp/product2/"
       realization:
         path: "tests/resources/simple_e2e_regexp/tmp/test_realmodel.yaml"
         variables:
           - variable1: value1
-          - variable1: value2
