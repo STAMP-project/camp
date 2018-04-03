@@ -1,6 +1,6 @@
 ## Table of contents
   - [What is CAMP?](#what-is-camp)
-  - [Quick start](#quick-start-with-maven)
+  - [Quick start](#quick-start)
   - [How does CAMP work?](#how-does-camp-work)
   - [CAMP Input](#camp-input)
   - [CAMP Output](#camp-output)
@@ -10,6 +10,18 @@
 
 CAMP (Configuration AMPlification) takes as input a sample testing configuration and generates automatically a number of diverse configurations. The generation is guided by predefined features and constraints, and utilizes a set of reusable pieces. The current version of CAMP is focused on the Docker environment, and the input and output configurations are specified as Dockerfiles or docker-compose files.
 
+## Quick start
+
+```
+git clone https://github.com/STAMP-project/camp-samples 
+cd camp-samples/atos
+docker run -it -v $(pwd):/root/workingdir songhui/camp /bin/bash allinone.sh
+```
+
+## How does CAMP work
+CAMP extract from the input file an abstract configuration model, and and try to synthesis new models based on the features, variables and constraints. The new models
+
+# Old README from here on, we will remove them gradually
 # Configuration amplification based on Dockder
 
 
