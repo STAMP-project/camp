@@ -19,7 +19,16 @@ docker run -it -v $(pwd):/root/workingdir songhui/camp /bin/bash allinone.sh
 ```
 
 ## How does CAMP work
-CAMP extract from the input file an abstract configuration model, and and try to synthesis new models based on the features, variables and constraints. The new models
+CAMP extract from the input Docker specifications an abstract configuration model, and and try to synthesis new models based on the features, variables and constraints. The new models will then be translate back into Docker specifications. These specifications can be executed in the same way as the original input, and therefore to replace the original testing configuration during either the manual testing or in a continuous integration pipeline.
+
+## CAMP Input
+
+The input to CAMP comprises two parts, i.e., the sample configuration and the scope definition.
+
+The sample configuration, in the current set up, are Docker specifications, i.e., Dockerfiles and docker-compose files. A docker-compose file defines the architecture of a testing set-up, consisting of components for the application, the testing client, or the supportive services such databases. A Dockerfile defines how to build an image from a base one. Each of these components maps to a docker service in the docker-compose specification. The application itself may consist of multiple components, especially following a microservices architecture. Each docker service corresponds to an docker image. A docker image can be either directly downloaded (pulled) from a docker repository, such as the Docker Hub, or built locally. In the latter case, the CAMP users should provide a Dockerfile which defines how to build the image from a base one. If there are multiple images to be built locally, or an image can be built in alternative ways, the users should provide multiple Dockerfiles.
+
+
+## CAMP Output
 
 # Old README from here on, we will remove them gradually
 # Configuration amplification based on Dockder
