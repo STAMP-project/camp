@@ -3,10 +3,14 @@ downloadimages:
     features: [ubuntu]
     name: ubuntu
     tag: latest
+  Python:
+    features: [python]
+    name: python
+    tag: 2.7
 buildingrules:
-  Apache:
-    requires: [ubuntu]
-    adds: [apache]
+  Showcase:
+    requires: [python]
+    adds: [showcase]
     svar: [ThreadLimit, ThreadPerChild]
     depends: [postgres]
   Postgres:
@@ -14,4 +18,4 @@ buildingrules:
     adds: [postgres]
 maxfreebuild: 3
 constraints:
-  - BuildImage.forall(bi1, Not(And(bi1.features.contains(features['apache']), bi1.features.contains(features['postgres']))))
+  - BuildImage.forall(bi1, Not(And(bi1.features.contains(features['showcase']), bi1.features.contains(features['postgres']))))
