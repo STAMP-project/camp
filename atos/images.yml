@@ -8,13 +8,10 @@ buildingrules:
     requires: [ubuntu]
     adds: [apache]
     svar: [ThreadLimit, ThreadPerChild]
+    depends: [postgres]
   Postgres:
     requires: [ubuntu]
     adds: [postgres]
-  ShowcaseServer:
-    requires: [ubuntu]
-    adds: [showcase]
-    depends: [apache, postgres]
 maxfreebuild: 3
 constraints:
   - BuildImage.forall(bi1, Not(And(bi1.features.contains(features['apache']), bi1.features.contains(features['postgres']))))
