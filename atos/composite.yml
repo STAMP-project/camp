@@ -2,7 +2,7 @@ services:
   db:
     imgfeature: [postgres]
   web:
-    imgfeature: [apache]
+    imgfeature: [showcase]
 constraints:
   - services['web'].alive()
   - varconst(services['web'], 'ThreadPerChild', iv1, varconst(services['web'], 'ThreadLimit', iv2, iv1.value < iv2.value))
