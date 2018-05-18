@@ -1,0 +1,4 @@
+java:
+  openjdk: [openjdk7, openjdk9, openjdk8, ibmjdk8, ibmjdk9]
+linux: [alpine, debian]
+xwiki: [xwiki8]
