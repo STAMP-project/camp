@@ -2,6 +2,9 @@ FROM ubuntu
 
 MAINTAINER  Fernando Mendez Requena <fernando.mendez@atos.net>
 
+#Updated line to solve while testing CAMP
+RUN apt-get update && apt-get install -my wget gnupg
+
 # Add the PostgreSQL PGP key to verify their Debian packages.
 # It should be the same key as https://www.postgresql.org/media/keys/ACCC4CF8.asc
 RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
