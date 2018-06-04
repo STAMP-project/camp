@@ -150,6 +150,11 @@ def generate(seedfile, workingdir, amp_result_file):
         stream = open('%s/compose%d/docker-compose.yml'%(workingdir, i), 'w')
         stream.write(str)
         stream.close()
+
+    if not os.path.isfile("%s/variables.yml" % workingdir):
+        print "No variables.yml, sipping variable resolution!"
+        return
+
     resol = dict()
     products = []
     resol['products'] = products
