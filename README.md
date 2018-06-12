@@ -11,12 +11,21 @@
 CAMP (Configuration AMPlification) takes as input a sample testing configuration and generates automatically a number of diverse configurations. The generation is guided by predefined features and constraints, and utilizes a set of reusable pieces. The current version of CAMP is focused on the Docker environment, and the input and output configurations are specified as Dockerfiles or docker-compose files.
 
 ## Quick start
-
+To get start, you need to copy the current repository:
 ```
-git clone https://github.com/STAMP-project/camp-samples 
-cd camp-samples/atos
-docker run -it -v $(pwd):/root/workingdir songhui/camp /bin/bash allinone.sh
+git clone https://github.com/STAMP-project/camp 
 ```
+Once copied, go to the docker folder to build a image that contains the tool:
+```
+cd docker/
+docker build -t camp-tool:latest .
+```
+To run the tool, please go to the samples folder:
+```
+cd samples/xwiki
+docker run -it -v $(pwd):/root/workingdir camp-tool:latest /bin/bash start.sh
+```
+The tool should produce four folders ```samples/xwiki/compose1```, ```samples/xwiki/compose2```, ```samples/xwiki/compose3```, ```samples/xwiki/compose3```. Each folder contains a docker compose file which a result of the amplification of the source compose file in ```samples/xwiki/docker-compose/docker-compose.yml```
 
 ## How does CAMP work
 CAMP extract from the input Docker specifications an abstract configuration model, and and try to synthesis new models based on the features, variables and constraints. The new models will then be translate back into Docker specifications. These specifications can be executed in the same way as the original input, and therefore to replace the original testing configuration during either the manual testing or in a continuous integration pipeline.
