@@ -28,7 +28,9 @@ docker run -it -v $(pwd):/root/workingdir camp-tool:latest /bin/bash start.sh
 The tool should produce four folders ```samples/xwiki/compose1```, ```samples/xwiki/compose2```, ```samples/xwiki/compose3```, ```samples/xwiki/compose3```. Each folder contains a docker compose file which a result of the amplification of the source compose file in ```samples/xwiki/docker-compose/docker-compose.yml```
 
 ## How does CAMP work
-CAMP extract from the input Docker specifications an abstract configuration model, and and try to synthesis new models based on the features, variables and constraints. The new models will then be translate back into Docker specifications. These specifications can be executed in the same way as the original input, and therefore to replace the original testing configuration during either the manual testing or in a continuous integration pipeline.
+CAMP extract from the input Docker specifications an abstract configuration model, and and try to synthesis new models based on the features, variables and constraints. The figure below illustrates the approach:
+![Alt text](src/docs/camp_idea.png "CAMP approach")
+The new models will then be translate back into Docker specifications. These specifications can be executed in the same way as the original input, and therefore to replace the original testing configuration during either the manual testing or in a continuous integration pipeline.
 
 ## CAMP Input
 
