@@ -40,6 +40,16 @@ The sample configuration, in the current set up, are Docker specifications, i.e.
 
 
 ## CAMP Output
+TO DO
+
+## Examples
+In the samples directory of the repository, there are two examples. In the first example, we have set up CAMP to test an open-source project XWiki. XWiki is an ultimate wiki platform to facilitate collaborative process inside any organization. XWiki can be in principle set up in various environments and various configurations. CAMP provides means to capture this variations in environment and configurations, generate those different environments and configurations. CAMP also facilitates testing against those generated configurations.
+
+To generate ready 
+
+## Running CAMP on your project
+TODO
+
 
 # Old README from here on, we will remove them gradually
 # Configuration amplification based on Dockder
