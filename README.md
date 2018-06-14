@@ -22,7 +22,7 @@ docker build -t camp-tool:latest .
 ```
 To run the tool, please go to the samples folder:
 ```
-cd samples/xwiki
+cd samples/stamp/xwiki
 docker run -it -v $(pwd):/root/workingdir camp-tool:latest /bin/bash start.sh
 ```
 The tool should produce four folders ```samples/xwiki/compose1```, ```samples/xwiki/compose2```, ```samples/xwiki/compose3```, ```samples/xwiki/compose3```. Each folder contains a docker compose file which a result of the amplification of the source compose file in ```samples/xwiki/docker-compose/docker-compose.yml```
@@ -43,9 +43,56 @@ The sample configuration, in the current set up, are Docker specifications, i.e.
 TO DO
 
 ## Examples
-In the samples directory of the repository, there are two examples. In the first example, we have set up CAMP to test an open-source project XWiki. XWiki is an ultimate wiki platform to facilitate collaborative process inside any organization. XWiki can be in principle set up in various environments and various configurations. CAMP provides means to capture this variations in environment and configurations, generate those different environments and configurations. CAMP also facilitates testing against those generated configurations.
+In the samples directory of the repository, there are two examples. 
 
-To generate ready 
+In the first example, we have set up CAMP to test an open-source project XWiki. XWiki is an ultimate wiki platform to facilitate collaborative process inside any organization. XWiki can be in principle set up in various environments and various configurations. CAMP provides means to capture this variations in environment and configurations, generate those different environments and configurations. CAMP also facilitates testing against those generated configurations.
+
+In the second example, CAMP is set up against a CityGo application by ATOS. CityGo can be set up in various environments and configurations. In this example, we demonstrate how CAMP can vary not just elements which map to docker images and services, but also arbitrary parameters and commands in docker files.
+
+
+### XWike example
+To execute CAMP on XWiki.
+```
+git clone https://github.com/STAMP-project/camp 
+cd camp/docker/ && docker build -t camp-tool:latest .
+cd ../samples/stamp/xwiki/ && docker run -it -v $(pwd):/root/workingdir camp-tool:latest /bin/bash start.sh
+```
+This should generate four folders, i.e. ```camp/samples/stamp/xwiki/compose1, camp/samples/stamp/xwiki/compose2, camp/samples/stamp/xwiki/compose3, camp/samples/stamp/xwiki/compose4```. Each folder contains four docker-compose files which set up XWiki differently. Possible options are on the picture below
+![Alt text](src/doc/xwiki_var.png "Possible variation in XWiki").
+XWiki can run on different application servers, different version of java, and can be hooked up to various DBs. These variations are captured in ```camp/samples/stamp/xwiki/features.yml```
+```
+java:
+  openjdk: [openjdk9, openjdk8]
+appsrv:
+  tomcat: [tomcat7, tomcat8, tomcat85, tomcat9]
+db:
+  mysql: [mysql8, mysql5]
+  postgres: [postgres9, postgres10]
+xwiki: [xwiki9mysql, xwiki9postgres, xwiki8mysql, xwiki8postgres]
+```
+We call these possible variations - features, e.g. the feature ```java``` contains a sub-feature, which in return contains other features, i.e. ```openjdk8```, ```openjdk9```. To build docker files from a feature selection, we need to define rules. Those rules are found in ```camp/samples/stamp/xwiki/images.yml```. See below:
+```
+downloadimages:
+  OpenJdk8:
+    features: [openjdk8]
+    name: openjdk
+    tag: 8
+...
+buildingrules:
+  Tomcat7:
+    requires: [java]
+    adds: [tomcat7]
+  Xwiki9Mysql:
+    requires: [tomcat]
+    adds: [xwiki9mysql]
+    depends: [mysql]
+...
+``` 
+
+
+To generate ready
+
+### CityGo example 
 
 ## Running CAMP on your project
 TODO
