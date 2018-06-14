@@ -4,10 +4,10 @@
   - [How does CAMP work?](#how-does-camp-work)
   - [CAMP Input](#camp-input)
   - [CAMP Output](#camp-output)
+  - [Examples](#examples)
   - [Running CAMP on your project](#running-camp-on-your-project)
 
 ## What is CAMP?
-
 CAMP (Configuration AMPlification) takes as input a sample testing configuration and generates automatically a number of diverse configurations. The generation is guided by predefined features and constraints, and utilizes a set of reusable pieces. The current version of CAMP is focused on the Docker environment, and the input and output configurations are specified as Dockerfiles or docker-compose files.
 
 ## Quick start
@@ -50,7 +50,7 @@ In the first example, we have set up CAMP to test an open-source project XWiki. 
 In the second example, CAMP is set up against a CityGo application by ATOS. CityGo can be set up in various environments and configurations. In this example, we demonstrate how CAMP can vary not just elements which map to docker images and services, but also arbitrary parameters and commands in docker files.
 
 
-### XWike example
+### XWike
 To execute CAMP on XWiki.
 ```
 git clone https://github.com/STAMP-project/camp 
@@ -117,7 +117,26 @@ constraints:
 ``` 
 The file defines a skeleton for a docker-compose file, the file represents 150% model, which contains all possible services. We also associate each service with a feature, e.g. ```web``` is associated with ```xwiki```. We also define rules in the ```image``` section, e.g. ```Postgres9``` realizes the ```postgres9``` feature. The images is built from a default image with the label ```postgres:9```. We also define a constraint which postulates that we cannot have mysql and postgres in the same docker-compose file. Each service is filled with data from the ```/camp/samples/stamp/xwiki/docker-compose/docker-compose.yml```, where ```image``` is substituted with **diverse deployment environment**, e.g. ```xwiki8postgres:tomcat7-openjdk-8``` realizes the feature ```xwiki``` and therefore, the image implements the ```web``` service. The ```postgres:9``` image realizes the feature ```postgres``` and therefore, it implements the service ```postgres```. In the given example, CAMP generates four different docker-compose files by varying the services in ```camp/samples/stamp/xwiki/composite.yml``` and generated **diverse deployment environment**s
 
-### CityGo example 
+### CityGo
+To execute CAMP on CityGo.
+```
+git clone https://github.com/STAMP-project/camp 
+cd camp/docker/ && docker build -t camp-tool:latest .
+cd ../samples/stamp/atos/ && docker run -it -v $(pwd):/root/workingdir camp-tool:latest /bin/bash allinone.sh
+``` 
+CAMP generates two various configurations. Each configuration tweaks parameters of the apache server. The meta-model of CAMP specifies variables. Variable is an abstraction which allows specifying arbitrary modifications of docker files. In the given example, we modify parameters of the docker-compose file in ```/camp/samples/stamp/atos/docker-compose/docker-compose.yml```. In CityGo there are two variables in ```camp/samples/stamp/atos/images.yml```.
+```
+...
+buildingrules:
+  Showcase:
+    requires: [python]
+    adds: [showcase]
+    svar: [ThreadLimit, ThreadPerChild]
+    depends: [postgres]
+...
+```
+```ThreadLimit``` defines a thread limit and ```ThreadPerChild``` specifies a number of threads per child. Implementation 
+
 
 ## Running CAMP on your project
 TODO
