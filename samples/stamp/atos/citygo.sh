@@ -1,6 +1,9 @@
 #!/bin/bash
 # -*- ENCODING: UTF-8 -*-
 #This script download CityGo app from Atos Repository
+#
+# Author: Fernando Mendez - fernando.mendez@atos.net
+#
 
 rm -rf ./repo
 #Clone citygo from ARI gitlab
