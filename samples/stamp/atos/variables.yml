@@ -17,7 +17,7 @@ ThreadLimit:
           filename: "docker-compose.yml"
           placement: "ThreadLimit=64"
           replacement: "ThreadLimit=128"
-ThreadPerChild:
+ThreadsPerChild:
   ThreadPerChildFree:
     type: Int
     operations:
