@@ -8,11 +8,11 @@ rm -rf ./repo
 rm -rf ./docker-compose
 
 #Clone citygo repo from ARI gitlab
-git clone https://gitlab.atosresearch.eu/ari/stamp_docker_citygoApp.git
+#git clone https://gitlab.atosresearch.eu/ari/stamp_docker_citygoApp.git
 
 #Copy required files to deploy citygo APP
 echo "Copy requiered files to deploy citygo APP"
-mkdir ./repo
+mkdir -p ./repo
 cp -R stamp_docker_citygoApp/repo/Showcase repo/
 cp -R stamp_docker_citygoApp/repo/Postgres repo/
 mkdir ./docker-compose
@@ -29,13 +29,13 @@ docker build repo/Postgres/ -t postgres:ubuntu-latest
 
 #Copy Stress Test script
 echo "Creating tests stress..."
-mkdir ./Tests
+mkdir -p ./Tests
 cp -R stamp_docker_citygoApp/Tests/version2/Test-version2.jmx Tests/
 cp -R stamp_docker_citygoApp/Tests/version2/executeCamp.sh Tests/
 cp -R stamp_docker_citygoApp/Tests/version2/Result.jtl Tests/
 
 #Remove citygo repo
-rm -rf stamp_docker_citygoApp/
+#rm -rf stamp_docker_citygoApp/
 
 echo "Deploying citygo from compose1 folder"
 echo "-------------------------------------"
@@ -44,5 +44,12 @@ docker-compose up -d
 
 echo "Executing stress Test to CityGo Backend"
 echo "---------------------------------------"
-cd ./Tests
+
+echo "Modify MPM parameter before proceeding ..."
+read ignore
+
+cd ../Tests
 ./executeCamp.sh
+
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
