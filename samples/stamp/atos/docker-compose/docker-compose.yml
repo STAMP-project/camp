@@ -3,15 +3,15 @@ version: '2'
 services:
   db:
     build: ../repo/Postgres
+    image: postgresql_showcase:default
     container_name: my_postgres
-    image: postgres:ubuntu-latest
     environment:
       - max_connections=500
       - shared_buffers=256
       - port=5432
-      - POSTGRES_DB=citygo_malaga
+      - POSTGRES_DB=************
       - POSTGRES_USER=citygo
-      - POSTGRES_PASSWORD=5X6sdoq0!?az=v2aSX
+      - POSTGRES_PASSWORD=************
       - PGDATA=/var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
@@ -19,9 +19,10 @@ services:
       - "5432"
   web:
     build: ../repo/Showcase
-    image: showcase:python-2.7
+    image: showcase:default
     container_name: my_web
     environment:
+      - PYTHONUSERBASE=.webapp/ShowcaseServer/
       - StartServers=2
       - MinSpareThreads=25
       - MaxSpareThreads=75
@@ -29,10 +30,13 @@ services:
       - ThreadsPerChild=25
       - MaxRequestWorkers=150
       - MaxConnectionsPerChild=0
-    volumes: 
-      - ../build/showcase--python-2.7/www:/var/www/html
+      - MinSpareServers=5
+      - MaxSpareServers=10
+    volumes:
+      -  ./webapp:/webapp
     ports:
       - "80:80"
+    command: python /webapp/ShowcaseServer/manage.py runserver 0.0.0.0:80
     depends_on:
       - db
       - orion
@@ -75,8 +79,8 @@ services:
     image: fiware/cygnus-ngsi
     container_name: cygnus-ngsi
     environment:
-      - CYGNUS_CARTO_USER=jcarneroatos
-      - CYGNUS_CARTO_KEY=16460edcecd5b634367a5b5eae65708654d260b3
+      - CYGNUS_CARTO_USER=************
+      - CYGNUS_CARTO_KEY=************
       - CYGNUS_LOG_LEVEL=DEBUG
       - CYGNUS_SERVICE_PORT=5050
       - CYGNUS_API_PORT=8081
@@ -90,4 +94,4 @@ services:
 
 volumes:
   db_data:
-    external: true
+external: true
