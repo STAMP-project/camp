@@ -11,7 +11,7 @@ buildingrules:
   Showcase:
     requires: [python]
     adds: [showcase]
-    svar: [ThreadLimit, ThreadPerChild]
+    svar: [ThreadLimit, ThreadsPerChild]
     depends: [postgres]
   Postgres:
     requires: [ubuntu]
