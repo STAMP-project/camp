@@ -21,8 +21,9 @@ cp stamp_docker_citygoApp/docker-compose-camp/docker-compose.yml docker-compose/
 #Start CAMP and build dockerfiles images
 echo "Starting Camp tool"
 cd ../../../../camp/docker && docker build -t camp-tool:latest .
+
 echo "Building Camp dockerfiles"
-cd /samples/stamp/atos/ && docker run -it -v $(pwd):/root/workingdir songhui/camp /bin/bash allinone.sh
+cd ../samples/stamp/atos/ && docker run -it -v $(pwd):/root/workingdir songhui/camp /bin/bash allinone.sh
 docker build repo/Showcase/ -t showcase:python2.7
 docker build repo/Postgres/ -t postgres:ubuntu-latest
 
