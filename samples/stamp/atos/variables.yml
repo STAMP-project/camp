@@ -26,3 +26,12 @@ ThreadsPerChild:
           filename: "docker-compose.yml"
           placement: "ThreadsPerChild=25"
           replacement: "ThreadsPerChild=${value}"
+MaxRequestWorkers:
+  MaxRequestWorkersFree:
+    type: Int
+    operations:
+      - substituion1:
+          engine: regexp
+          filename: "docker-compose.yml"
+          placement: "MaxRequestWorkers=150"
+          replacement: "MaxRequestWorkers=${value}"
