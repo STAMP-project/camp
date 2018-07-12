@@ -49,7 +49,7 @@ In the first example, we have set up CAMP to test an open-source project XWiki. 
 In the second example, CAMP is set up against a CityGo application by ATOS. CityGo can be set up in various environments and configurations. In this example, we demonstrate how CAMP can vary not just elements which map to docker images and services, but also arbitrary parameters and commands in docker files.
 
 
-### XWike
+### XWiki
 To execute CAMP on XWiki.
 ```
 git clone https://github.com/STAMP-project/camp 
