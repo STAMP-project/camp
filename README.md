@@ -24,12 +24,12 @@ To run the tool, please go to the samples folder:
 cd samples/stamp/xwiki
 docker run -it -v $(pwd):/root/workingdir camp-tool:latest /bin/bash start.sh
 ```
-The tool should produce four folders ```samples/xwiki/compose1```, ```samples/xwiki/compose2```, ```samples/xwiki/compose3```, ```samples/xwiki/compose3```. Each folder contains a docker compose file which a result of the amplification of the source compose file in ```samples/xwiki/docker-compose/docker-compose.yml```
+The tool should produce four folders ```samples/xwiki/compose1```, ```samples/xwiki/compose2```, ```samples/xwiki/compose3```, ```samples/xwiki/compose3```. Each folder contains a docker compose file which is a result of the amplification of the source compose file in ```samples/xwiki/docker-compose/docker-compose.yml```
 
 ## How does CAMP work
-CAMP extract from the input Docker specifications an abstract configuration model, and and try to synthesis new models based on the features, variables and constraints. The figure below illustrates the approach:
+CAMP extracts from the input Docker specifications an abstract configuration model, and tries to synthesize new models based on the features, variables and constraints. The figure below illustrates the approach:
 ![Alt text](src/doc/camp_idea.png "CAMP approach")
-The new models will then be translate back into Docker specifications. These specifications can be executed in the same way as the original input, and therefore to replace the original testing configuration during either the manual testing or in a continuous integration pipeline.
+The new models will then be translated back into Docker specifications. These specifications can be executed in the same way as the original input, and therefore to replace the original testing configuration during either the manual testing or in a continuous integration pipeline.
 
 ## CAMP Input/Output
 The input to CAMP comprises two parts, i.e., the sample configuration and the scope definition. The sample configuration, in the current set up, are Docker specifications, i.e., docker files and docker-compose files. A docker-compose file defines the architecture of a testing set-up, consisting of components for the application, the testing client, or the supportive services such databases. A docker file defines how to build an image from a base one. Each of these components maps to a docker service in the docker-compose specification. The application itself may consist of multiple components, especially following a micro-service architecture. Each docker service corresponds to an docker image. A docker image can be either directly downloaded (pulled) from a docker repository, such as the Docker Hub, or built locally. In the latter case, the CAMP users should provide a docker file which defines how to build the image from a base one. If there are multiple images to be built locally, or an image can be built in alternative ways, the users should provide multiple docker files.
