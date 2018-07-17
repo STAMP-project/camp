@@ -9,7 +9,7 @@ for (( i = 0; i < 1; i++ )); do
 	cp experiments/images_${i}.yml images.yml
 	echo "Creating result folder"
 	mkdir results/results_${i}
-	for (( j = 0; j < 1; j++ )); do
+	for (( j = 0; j < 10; j++ )); do
 		docker run -it -v $(pwd):/root/workingdir camp-tool:latest /bin/bash start.sh | tee -a results/results_${i}/output_${j}
 	done
 done
