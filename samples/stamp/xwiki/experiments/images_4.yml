@@ -1,0 +1,57 @@
+downloadimages:
+  OpenJdk7-alpine:
+    features: [openjdk7-alpine]
+    name: openjdk
+    tag: 7-alpine
+  OpenJdk7-slim:
+    features: [openjdk7-slim]
+    name: openjdk
+    tag: 7-slim
+  OpenJdk7-jdk:
+    features: [openjdk7-jdk]
+    name: openjdk
+    tag: 7-jdk
+  OpenJdk7:
+    features: [openjdk7]
+    name: openjdk
+    tag: 7
+  OpenJdk8:
+    features: [openjdk8]
+    name: openjdk
+    tag: 8
+  OpenJdk9:
+    features: [openjdk9]
+    name: openjdk
+    tag: 9
+buildingrules:
+  Tomcat7:
+    requires: [java]
+    adds: [tomcat7]
+  Tomcat8:
+    requires: [java]
+    adds: [tomcat8]
+  Tomcat85:
+    requires: [java]
+    adds: [tomcat85]
+  Tomcat9:
+    requires: [java]
+    adds: [tomcat9]
+  Xwiki9Mysql:
+    requires: [tomcat]
+    adds: [xwiki9mysql]
+    depends: [mysql]
+  Xwiki9Postgres:
+    requires: [tomcat]
+    adds: [xwiki9postgres]
+    depends: [postgres]
+  Xwiki8Mysql:
+    requires: [tomcat]
+    adds: [xwiki8mysql]
+    depends: [mysql]
+  Xwiki8Postgres:
+    requires: [tomcat]
+    adds: [xwiki8postgres]
+    depends: [postgres]
+mandatoryfeature: [xwiki]
+constraints:
+  - "BuildImage.forall(e1, Implies(Or(bi1.using == rules['Tomcat7'], bi1.using == rules['Tomcat8']), Not(bi1['from'].features.contains(features['openjdk9']))))"

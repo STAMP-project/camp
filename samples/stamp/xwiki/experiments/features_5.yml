@@ -1,0 +1,8 @@
+java:
+  openjdk: [openjdk9, openjdk8, openjdk7, openjdk7-jdk, openjdk7-slim, openjdk7-alpine, openjdk7-jdk-slim]
+appsrv:
+  tomcat: [tomcat7, tomcat8, tomcat85, tomcat9]
+db:
+  mysql: [mysql8, mysql5]
+  postgres: [postgres9, postgres10]
+xwiki: [xwiki9mysql, xwiki9postgres, xwiki8mysql, xwiki8postgres]
