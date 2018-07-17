@@ -1,8 +1,12 @@
 #!/bin/bash
 
 mkdir results
-echo "Sarting experiment"
-for (( i = 0; i < 6; i++ )); do
+echo "Sarting experiments"
+for (( i = 0; i < 7; i++ )); do
+	echo "Copying files"
+	cp experiments/features_${i}.yml features.yml
+	cp experiments/images_${i}.yml images.yml
+	echo "Creating result folder"
 	mkdir results/results_${i}
 	for (( j = 0; j < 1; i++ )); do
 		docker run -it -v $(pwd):/root/workingdir camp-tool:latest /bin/bash start.sh | tee -a resuls/resuls_${i}/output_${j}
