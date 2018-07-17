@@ -3,7 +3,7 @@
 
 mkdir results
 echo "Starting experiments"
-for (( i = 0; i < 1; i++ )); do
+for (( i = 0; i < 7; i++ )); do
 	echo "Copying files"
 	cp experiments/features_${i}.yml features.yml
 	cp experiments/images_${i}.yml images.yml
