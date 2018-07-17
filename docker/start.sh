@@ -8,6 +8,8 @@ rm -f ./workingdir/ampcompose.yml
 mkdir ./workingdir/build
 mkdir ./workingdir/out
 
+START=$(date +%s.%N)
+
 python ozepy/stamp/dockerbuild.py -d ./workingdir
 cp ./workingdir/out/ampimages.yml ./workingdir/ampimages.yml
 cp ./workingdir/out/genimages.yml ./workingdir/genimages.yml
@@ -36,6 +38,9 @@ then
     fi 
 fi
 
+END=$(date +%s.%N)
+DIFF=$(echo "$END - $START" | bc)
+echo "Generated in $DIFF sec" 
 chmod -R a+rw . 
 
 echo ""

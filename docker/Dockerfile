@@ -5,6 +5,7 @@ RUN apt-get update && \
         unzip \
         python-dev \
         python-pip \
+        bc \
         && \
     apt-get install --reinstall python-pkg-resources && \
     rm -rf /var/lib/apt/lists/* &&\
