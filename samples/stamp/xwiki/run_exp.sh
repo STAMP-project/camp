@@ -13,3 +13,4 @@ for (( i = 0; i < 1; i++ )); do
 		docker run -it -v $(pwd):/root/workingdir camp-tool:latest /bin/bash start.sh | tee -a results/results_${i}/output_${j}
 	done
 done
+echo "All experiments are completed!"
