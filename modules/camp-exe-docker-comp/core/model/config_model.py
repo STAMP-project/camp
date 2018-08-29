@@ -1,0 +1,3 @@
+
+class ConfigRoot(object):
+	pass
