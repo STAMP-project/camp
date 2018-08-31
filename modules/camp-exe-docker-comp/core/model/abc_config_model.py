@@ -22,13 +22,22 @@ class ABCExperiment(object):
 
 class ABCConfigVisitor(object):
 
-	def visit_docker_images(self, visitee):
+	__metaclass__ = ABCMeta
+
+	@abstractmethod
+	def visit_config(self, visitee, **kwargs):
 		pass
 
-	def visit_docker_compose(self, visitee):
+	@abstractmethod
+	def visit_images(self, visitee, **kwargs):
 		pass
 
-	def visit_experiment(self, visitee):
+	@abstractmethod
+	def visit_compose(self, visitee, **kwargs):
+		pass
+
+	@abstractmethod
+	def visit_experiment(self, visitee, **kwargs):
 		pass
 
 
@@ -41,7 +50,11 @@ class ABCConfigVisitee(object):
 		if isinstance(self, ABCConfigRoot):
 			result = visitor.visit_config(self, **kwargs)
 		elif isinstance(self, ABCDockerImages):
-			result = visitor.visit_config(self, **kwargs)
+			result = visitor.visit_images(self, **kwargs)
+		elif isinstance(self, ABCDockerCompose):
+			result = visitor.visit_compose(self, **kwargs)
+		elif isinstance(self, ABCExperiment):
+			result = visitor.visit_experiment(self, **kwargs)
 		else:
-			print 'Unknown element to visit '
+			print 'Unknown element to visit: ' + str(self)
 		return result
