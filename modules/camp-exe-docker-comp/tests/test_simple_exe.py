@@ -9,7 +9,8 @@ class TestSimpleComp(unittest.TestCase):
 		pass
 
 	def test_config_ini_parsing(self):
-		file = "file/location"
+		file = "tests/resources/config.ini"
+		
 		parser = ConfigINIParser()
 		config = parser.parse(file)
 
