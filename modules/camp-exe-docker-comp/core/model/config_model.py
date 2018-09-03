@@ -4,50 +4,82 @@ from core.model.abc_config_model import ABCConfigVisitee, ABCConfigRoot, ABCDock
 
 class Experiment(ABCExperiment, ABCConfigVisitee):
 
-	def __init__(self, _script, _params):
-		self.script = _script
-		self.params = _params
+	def __init__(self, _script=None, _params=None):
+		self._script = _script
+		self._params = _params
 
-	def get_script(self):
-		return self.script
+	@property
+	def script(self):
+		return self._script
 
-	def get_params(self):
-		return self.params
+	@script.setter
+	def set_script(self, _script):
+		return self._script = _script
+	
+	@property
+	def params(self):
+		return self._params
+	
+	@params.setter
+	def set_params(self, _params):
+		return self._params = _params
+
 
 class DockerCompose(ABCDockerCompose, ABCConfigVisitee):
 
-	def __init__(self, **kwargs):
-		self.compose = dict()
-		for key, value in kwargs.items():
-			self.compose[key] = value
+	def __init__(self, _compose_files=[]):
+		self._compose_files = _compose_files
 
-	def get_compose_files(self):
-		return self.compose.values()
+	@property
+	def compose_files(self):
+		return self._compose_files
+
+	@compose_files.setter
+	def set(self, _compose_files):
+		self._compose_files = _compose_files
+
 
 class DockerImages(ABCDockerImages, ABCConfigVisitee):
 
 	def __init__(self, _script):
-		self.script = _script
+		self._script = _script
 
-	def get_build_script():
-		return self.script
+	@property
+	def build_script(self):
+		return self._script
+	
+	@build_script.setter
+	def set(self, _script):
+		return self._script = _script
 
 
 class ConfigRoot(ABCConfigRoot, ABCConfigVisitee):
 
 	def __init__(self, _images=None, _compose=None, _experiment=None):
-		self.images = _images
-		self.compose = _compose
-		self.experiment = _experiment
+		self._images = _images
+		self._compose = _compose
+		self._experiment = _experiment
 
-	def get_build_script(self):
-		return self.images and self.images.get_build_script()
+	@property
+	def images(self):
+		return self._images
 
-	def get_compose_files(self):
-		return self.compose and self.compose.get_compose_files()
+	@images.setter
+	def set_images(self, _images):
+		self._images = _images
+	
+	@property
+	def compose(self):
+		return self._compose
 
-	def get_exp_script(self):
-		return self.experiment and self.experiment.get_script()
+	@compose.setter
+	def set_compose(self, _compose):
+		self._compose = _compose
 
-	def get_exp_params(self):
-		return self.experiment and self.experiment.get_params()
+	@property
+	def experiment(self):
+		return self._experiment
+	
+	@experiment.setter
+	def sef_experiment(self, _experiment):
+		self._experiment = _experiment
