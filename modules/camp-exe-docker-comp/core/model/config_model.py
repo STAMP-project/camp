@@ -14,7 +14,7 @@ class Experiment(ABCExperiment, ABCConfigVisitee):
 
 	@script.setter
 	def set_script(self, _script):
-		return self._script = _script
+		self._script = _script
 	
 	@property
 	def params(self):
@@ -22,7 +22,7 @@ class Experiment(ABCExperiment, ABCConfigVisitee):
 	
 	@params.setter
 	def set_params(self, _params):
-		return self._params = _params
+		self._params = _params
 
 
 class DockerCompose(ABCDockerCompose, ABCConfigVisitee):
@@ -50,7 +50,7 @@ class DockerImages(ABCDockerImages, ABCConfigVisitee):
 	
 	@build_script.setter
 	def set(self, _script):
-		return self._script = _script
+		self._script = _script
 
 
 class ConfigRoot(ABCConfigRoot, ABCConfigVisitee):
