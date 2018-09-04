@@ -13,6 +13,7 @@ class TestSimpleComp(unittest.TestCase):
 
 		parser = ConfigINIParser()
 		config = parser.parse(file)
+		self.assertIsNotNone(config, 'failed to parse file at: ' + str(file))
 
 		build_script = config.images.build_script
 		self.assertEqual(build_script, 'build/build.sh')

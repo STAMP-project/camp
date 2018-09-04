@@ -1,3 +1,4 @@
+import os
 import ConfigParser
 
 from core.model.config_model import ConfigRoot, DockerImages, DockerCompose, Experiment
@@ -20,15 +21,16 @@ class ConfigModelFactory(object):
 
 class ConfigIniVisitor(ABCConfigVisitor):
 
-	_docker_images_sec = 'docker_images'
-	_docker_images_sec_build = 'build_script'
-	
-	_docker_compose_sec = 'docker_compose'
-	_docker_compose_sec_compose = 'compose_files'
+	def __init__(self):
+		self._docker_images_sec = 'docker_images'
+		self._docker_images_sec_build = 'build_script'
+		
+		self._docker_compose_sec = 'docker_compose'
+		self._docker_compose_sec_compose = 'compose_files'
 
-	_exp_sec = 'experiment'
-	_exp_sec_script = 'script'
-	_exp_sec_params = 'params'
+		self._exp_sec = 'experiment'
+		self._exp_sec_script = 'script'
+		self._exp_sec_params = 'params'		
 
 	def visit_config(self, visitee, **kwargs):
 		visitee.images = kwargs.get('images')
@@ -38,22 +40,22 @@ class ConfigIniVisitor(ABCConfigVisitor):
 
 	def visit_images(self, visitee, **kwargs):
 		config=kwargs['config']
-		docker_images_sec_build_val = config.get(_docker_images_sec, _docker_images_sec_build)
+		docker_images_sec_build_val = config.get(self._docker_images_sec, self._docker_images_sec_build)
 		if docker_images_sec_build_val:
 			visitee.build_script = docker_images_sec_build_val
 		return visitee
 
 	def visit_compose(self, visitee, **kwargs):
 		config = kwargs['config']
-		compose_str = config.get(_docker_compose_sec, _docker_compose_sec_compose)
+		compose_str = config.get(self._docker_compose_sec, self._docker_compose_sec_compose)
 		if compose_str:
 			visitee.compose_files = filter(lambda x: x, [x.strip() for x in compose_str.split(';')])
 		return visitee
 
 	def visit_experiment(self, visitee, **kwargs):
 		config = kwargs['config']
-		exp_sec_script_val = config.get(_exp_sec, _exp_sec_script)
-		exp_sec_params_val = config.get(_exp_sec, _exp_sec_params)
+		exp_sec_script_val = config.get(self._exp_sec, self._exp_sec_script)
+		exp_sec_params_val = config.get(self._exp_sec, self._exp_sec_params)
 		if exp_sec_script_val:
 			visitee.script = exp_sec_script_val
 		if exp_sec_params_val:
@@ -67,9 +69,14 @@ class ConfigINIParser(object):
 
 	def parse(self, _file):
 		_config = ConfigParser.RawConfigParser()
-		result = _config.read(_file)
 
-		if len(result):
+		if not os.path.isfile(_file):
+			print 'failed to locate file at:' + file
+			return None
+
+		result = _config.read(_file)
+		if not len(result):
+			print 'failed to parse config file at: ' + _file
 			return None
 
 		docker_images_obj = ConfigModelFactory().create_docker_images()
@@ -80,7 +87,5 @@ class ConfigINIParser(object):
 		docker_images_obj.accept(self.visitor, config=_config)
 		docker_compose_obj.accept(self.visitor, config=_config)
 		experiment_obj.accept(self.visitor, config=_config)
-		config_obj.accept(self.visitor, images=docker_compose_obj, compose=docker_compose, experiment=experiment_obj)
-		
+		config_obj.accept(self.visitor, images=docker_images_obj, compose=docker_compose_obj, experiment=experiment_obj)
 		return config_obj
-
