@@ -1,7 +1,7 @@
 import os
 import ConfigParser
 
-from core.model.config_model import ConfigRoot, DockerImages, DockerCompose, Experiment
+from core.model.config_model import ConfigRoot, PrePost, DockerCompose, Experiment
 from core.model.abc_config_model import ABCConfigVisitor
 
 
@@ -10,8 +10,8 @@ class ConfigModelFactory(object):
 	def create_config(self):
 		return ConfigRoot()
 
-	def create_docker_images(self):
-		return DockerImages()
+	def create_prepost(self):
+		return PrePost()
 
 	def create_docker_compose(self):
 		return DockerCompose()
@@ -22,8 +22,8 @@ class ConfigModelFactory(object):
 class ConfigIniVisitor(ABCConfigVisitor):
 
 	def __init__(self):
-		self._docker_images_sec = 'docker_images'
-		self._docker_images_sec_build = 'build_script'
+		self._docker_images_sec = 'pre_post'
+		self._docker_images_sec_build = 'setup'
 		
 		self._docker_compose_sec = 'docker_compose'
 		self._docker_compose_sec_compose = 'compose_files'
@@ -33,16 +33,16 @@ class ConfigIniVisitor(ABCConfigVisitor):
 		self._exp_sec_params = 'params'		
 
 	def visit_config(self, visitee, **kwargs):
-		visitee.images = kwargs.get('images')
+		visitee.prepost = kwargs.get('prepost')
 		visitee.compose = kwargs.get('compose')
 		visitee.experiment = kwargs.get('experiment')
 		return visitee
 
-	def visit_images(self, visitee, **kwargs):
+	def visit_prepost(self, visitee, **kwargs):
 		config=kwargs['config']
 		docker_images_sec_build_val = config.get(self._docker_images_sec, self._docker_images_sec_build)
 		if docker_images_sec_build_val:
-			visitee.build_script = docker_images_sec_build_val
+			visitee.setup = docker_images_sec_build_val
 		return visitee
 
 	def visit_compose(self, visitee, **kwargs):
@@ -79,7 +79,7 @@ class ConfigINIParser(object):
 			print 'failed to parse config file at: ' + _file
 			return None
 
-		docker_images_obj = ConfigModelFactory().create_docker_images()
+		docker_images_obj = ConfigModelFactory().create_prepost()
 		docker_compose_obj = ConfigModelFactory().create_docker_compose()
 		experiment_obj = ConfigModelFactory().create_experiment()
 		config_obj = ConfigModelFactory().create_config()
@@ -87,5 +87,5 @@ class ConfigINIParser(object):
 		docker_images_obj.accept(self.visitor, config=_config)
 		docker_compose_obj.accept(self.visitor, config=_config)
 		experiment_obj.accept(self.visitor, config=_config)
-		config_obj.accept(self.visitor, images=docker_images_obj, compose=docker_compose_obj, experiment=experiment_obj)
+		config_obj.accept(self.visitor, prepost=docker_images_obj, compose=docker_compose_obj, experiment=experiment_obj)
 		return config_obj

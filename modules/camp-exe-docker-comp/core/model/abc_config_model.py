@@ -6,7 +6,7 @@ class ABCConfigRoot(object):
 	
 	__metaclass__ = ABCMeta
 
-class ABCDockerImages(object):
+class ABCPrePost(object):
 
 	__metaclass__ = ABCMeta
 
@@ -29,7 +29,7 @@ class ABCConfigVisitor(object):
 		pass
 
 	@abstractmethod
-	def visit_images(self, visitee, **kwargs):
+	def visit_prepost(self, visitee, **kwargs):
 		pass
 
 	@abstractmethod
@@ -49,8 +49,8 @@ class ABCConfigVisitee(object):
 		result = None
 		if isinstance(self, ABCConfigRoot):
 			result = visitor.visit_config(self, **kwargs)
-		elif isinstance(self, ABCDockerImages):
-			result = visitor.visit_images(self, **kwargs)
+		elif isinstance(self, ABCPrePost):
+			result = visitor.visit_prepost(self, **kwargs)
 		elif isinstance(self, ABCDockerCompose):
 			result = visitor.visit_compose(self, **kwargs)
 		elif isinstance(self, ABCExperiment):

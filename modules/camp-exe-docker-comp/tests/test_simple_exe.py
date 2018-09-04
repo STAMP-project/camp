@@ -6,6 +6,10 @@ from core.parser.parsers import ConfigINIParser
 class TestSimpleComp(unittest.TestCase):
 
 	def test_docker_compose_exe(self):
+		#parser = ConfigINIParser()
+		#config = parser.parser(file)
+		#result = SetUpScript().exectute()
+		#self.assertTrue(result.status)
 		pass
 
 	def test_config_ini_parsing(self):
@@ -15,7 +19,7 @@ class TestSimpleComp(unittest.TestCase):
 		config = parser.parse(file)
 		self.assertIsNotNone(config, 'failed to parse file at: ' + str(file))
 
-		build_script = config.images.build_script
+		build_script = config.prepost.setup
 		self.assertEqual(build_script, 'build/build.sh')
 
 		compose_files = config.compose.compose_files
