@@ -13,7 +13,7 @@ class Experiment(ABCExperiment, ABCConfigVisitee):
 		return self._script
 
 	@script.setter
-	def set_script(self, _script):
+	def script(self, _script):
 		self._script = _script
 	
 	@property
@@ -21,7 +21,7 @@ class Experiment(ABCExperiment, ABCConfigVisitee):
 		return self._params
 	
 	@params.setter
-	def set_params(self, _params):
+	def params(self, _params):
 		self._params = _params
 
 
@@ -35,13 +35,13 @@ class DockerCompose(ABCDockerCompose, ABCConfigVisitee):
 		return self._compose_files
 
 	@compose_files.setter
-	def set(self, _compose_files):
+	def compose_files(self, _compose_files):
 		self._compose_files = _compose_files
 
 
 class DockerImages(ABCDockerImages, ABCConfigVisitee):
 
-	def __init__(self, _script):
+	def __init__(self, _script=None):
 		self._script = _script
 
 	@property
@@ -49,7 +49,7 @@ class DockerImages(ABCDockerImages, ABCConfigVisitee):
 		return self._script
 	
 	@build_script.setter
-	def set(self, _script):
+	def build_script(self, _script):
 		self._script = _script
 
 
@@ -65,7 +65,7 @@ class ConfigRoot(ABCConfigRoot, ABCConfigVisitee):
 		return self._images
 
 	@images.setter
-	def set_images(self, _images):
+	def images(self, _images):
 		self._images = _images
 	
 	@property
@@ -73,7 +73,7 @@ class ConfigRoot(ABCConfigRoot, ABCConfigVisitee):
 		return self._compose
 
 	@compose.setter
-	def set_compose(self, _compose):
+	def compose(self, _compose):
 		self._compose = _compose
 
 	@property
@@ -81,5 +81,5 @@ class ConfigRoot(ABCConfigRoot, ABCConfigVisitee):
 		return self._experiment
 	
 	@experiment.setter
-	def sef_experiment(self, _experiment):
+	def experiment(self, _experiment):
 		self._experiment = _experiment
