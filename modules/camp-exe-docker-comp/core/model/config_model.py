@@ -1,4 +1,4 @@
-from core.model.abc_config_model import ABCConfigVisitee, ABCConfigRoot, ABCDockerImages, ABCDockerCompose, ABCExperiment
+from core.model.abc_config_model import ABCConfigVisitee, ABCConfigRoot, ABCPrePost, ABCDockerCompose, ABCExperiment
 
 
 
@@ -39,34 +39,35 @@ class DockerCompose(ABCDockerCompose, ABCConfigVisitee):
 		self._compose_files = _compose_files
 
 
-class DockerImages(ABCDockerImages, ABCConfigVisitee):
+class PrePost(ABCPrePost, ABCConfigVisitee):
 
-	def __init__(self, _script=None):
-		self._script = _script
+	def __init__(self, _setup=None, _teardown=None):
+		self._setup = _setup
+		self._teardown = _teardown
 
 	@property
-	def build_script(self):
-		return self._script
+	def setup(self):
+		return self._setup
 	
-	@build_script.setter
-	def build_script(self, _script):
-		self._script = _script
+	@setup.setter
+	def setup(self, _setup):
+		self._setup = _setup
 
 
 class ConfigRoot(ABCConfigRoot, ABCConfigVisitee):
 
-	def __init__(self, _images=None, _compose=None, _experiment=None):
-		self._images = _images
+	def __init__(self, _prepost=None, _compose=None, _experiment=None):
+		self._prepost = _prepost
 		self._compose = _compose
 		self._experiment = _experiment
 
 	@property
-	def images(self):
-		return self._images
+	def prepost(self):
+		return self._prepost
 
-	@images.setter
-	def images(self, _images):
-		self._images = _images
+	@prepost.setter
+	def prepost(self, _prepost):
+		self._prepost = _prepost
 	
 	@property
 	def compose(self):
