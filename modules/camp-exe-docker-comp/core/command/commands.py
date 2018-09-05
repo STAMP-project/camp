@@ -24,6 +24,10 @@ class SimpleCommand(ABCCommand):
 	def status(self):
 		return self._status
 
+	@property
+	def logs(self):
+		return self._logs
+	
 
 class Script(ABCRunner):
 
