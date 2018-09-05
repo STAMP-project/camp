@@ -35,18 +35,16 @@ class TestSimpleComp(unittest.TestCase):
 	def test_script(self, mock_simple_command, mock_path):
 		mock_path.isfile.return_value = True
 		script_obj = Script("tests/resources/setup.sh")
-		mock_simple_command.return_value.status = PropertyMock(return_value=0)
+		type(mock_simple_command.return_value).status = PropertyMock(return_value=0)
 		
 		result = script_obj.run()
 		commands = script_obj.get_result()
 
 		mock_path.isfile.assert_called_once_with("tests/resources/setup.sh")
 		mock_simple_command.return_value.execute.assert_called_once()
-		print mock_simple_command.return_value.status
 
 		self.assertTrue(result)
 		self.assertEqual(len(commands), 1)
-		self.assertTrue(result.command)
 
 
 	@patch('core.command.commands.SimpleCommand')
