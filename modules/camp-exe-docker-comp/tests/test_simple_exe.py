@@ -1,16 +1,66 @@
 import unittest
 
+from mock import patch, MagicMock, PropertyMock
+
+from core.command.commands import Script, DockerCompose
+
 from core.parser.parsers import ConfigINIParser
+from core.model.config_model import ConfigRoot, DockerCompose, Experiment, PrePost
 
 
 class TestSimpleComp(unittest.TestCase):
 
-	def test_docker_compose_exe(self):
-		#parser = ConfigINIParser()
-		#config = parser.parser(file)
-		#result = SetUpScript().exectute()
-		#self.assertTrue(result.status)
+	def setUp(self):
+
+		mock_prepost = MagicMock(PrePost)
+		mock_prepost.setup.return_value = "tests/resources/setup.sh"
+
+		mock_compose = MagicMock(DockerCompose)
+		mock_compose.compose_files.return_value = ["tests/resources/docker-compose.yml"]
+
+		mock_experiment = MagicMock(Experiment)
+		mock_experiment.script.return_value = "tests/resources/experiment.sh"
+		mock_experiment.params.return_value = "param1 param2"
+
+		mock_config_root = MagicMock(ConfigRoot)
+		mock_config_root.prepost.return_value = mock_prepost
+		mock_config_root.compose.return_value = mock_compose
+		mock_config_root.experiment.return_value = mock_experiment
+
+		self.parser = MagicMock(ConfigINIParser)
+		self.parser.parse.return_value = mock_config_root
+
+	@patch('os.path')
+	@patch('core.command.commands.SimpleCommand')
+	def test_script(self, mock_simple_command, mock_path):
+		mock_path.isfile.return_value = True
+		script_obj = Script("tests/resources/setup.sh")
+		mock_simple_command.return_value.status = PropertyMock(return_value=0)
+		
+		result = script_obj.run()
+		commands = script_obj.get_result()
+
+		mock_path.isfile.assert_called_once_with("tests/resources/setup.sh")
+		mock_simple_command.return_value.execute.assert_called_once()
+		print mock_simple_command.return_value.status
+
+		self.assertTrue(result)
+		self.assertEqual(len(commands), 1)
+		self.assertTrue(result.command)
+
+
+	@patch('core.command.commands.SimpleCommand')
+	def test_docker_compose(self, mock_SimpleCommand):
 		pass
+		#compose_files = config.compose.compose_files
+		#result = DockerCompose(compose_files[0]).run()
+		#self.assertTrue(result.status)
+		
+		#result = Script(config.experiment.script, config.experiment.params).run()
+		#self.assertTrue(result.status)
+
+		#result = Script(config.prepost.teardown).run()
+		#self.assertTrue(result.status)
 
 	def test_config_ini_parsing(self):
 		file = "tests/resources/config.ini"
