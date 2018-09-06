@@ -22,15 +22,38 @@ class ConfigModelFactory(object):
 class ConfigIniVisitor(ABCConfigVisitor):
 
 	def __init__(self):
-		self._docker_images_sec = 'pre_post'
-		self._docker_images_sec_build = 'setup'
+		self._prepost_sec = 'pre_post'
+		self._prepost_mapping = {
+			'setup' : {'property' : 'setup'},
+			'setup_params' : {'property' : 'setup_params', 'type' : 'array', 'delimiter' : ' '},
+			'teardown' : {'property' : 'teardown'},
+			'teardown_params' : {'property' : 'teardown_params', 'type' : 'array', 'delimiter' : ' '}
+		}
 		
 		self._docker_compose_sec = 'docker_compose'
-		self._docker_compose_sec_compose = 'compose_files'
+		self._docker_compose_mapping = {
+			'compose_files' : {'property' : 'compose_files', 'type' : 'array', 'delimiter' : ';'}
+		}
 
 		self._exp_sec = 'experiment'
-		self._exp_sec_script = 'script'
-		self._exp_sec_params = 'params'		
+		self._exp_mapping = {
+			'script' : {'property' : 'script'},
+			'params' : {'property' : 'params', 'type' : 'array', 'delimiter' : ' '}
+		}
+
+
+	def _fill_in_object(self, objct, section, mapping, config):
+		if not config.has_section(section):
+			return
+
+		for key, value in mapping.iteritems():
+			if config.has_option(section, key):
+				prop_name = value['property']
+				option_value = config.get(section, key)
+				if value.get('type') == 'array':
+					delimiter = value['delimiter']
+					option_value = filter(lambda x: x, [x.strip() for x in option_value.split(delimiter)])
+				objct.__setattr__(prop_name, option_value)
 
 	def visit_config(self, visitee, **kwargs):
 		visitee.prepost = kwargs.get('prepost')
@@ -39,27 +62,18 @@ class ConfigIniVisitor(ABCConfigVisitor):
 		return visitee
 
 	def visit_prepost(self, visitee, **kwargs):
-		config=kwargs['config']
-		docker_images_sec_build_val = config.get(self._docker_images_sec, self._docker_images_sec_build)
-		if docker_images_sec_build_val:
-			visitee.setup = docker_images_sec_build_val
+		self._fill_in_object(visitee, self._prepost_sec,
+			self._prepost_mapping, kwargs['config'])
 		return visitee
 
 	def visit_compose(self, visitee, **kwargs):
-		config = kwargs['config']
-		compose_str = config.get(self._docker_compose_sec, self._docker_compose_sec_compose)
-		if compose_str:
-			visitee.compose_files = filter(lambda x: x, [x.strip() for x in compose_str.split(';')])
+		self._fill_in_object(visitee, self._docker_compose_sec,
+			self._docker_compose_mapping, kwargs['config'])
 		return visitee
 
 	def visit_experiment(self, visitee, **kwargs):
-		config = kwargs['config']
-		exp_sec_script_val = config.get(self._exp_sec, self._exp_sec_script)
-		exp_sec_params_val = config.get(self._exp_sec, self._exp_sec_params)
-		if exp_sec_script_val:
-			visitee.script = exp_sec_script_val
-		if exp_sec_params_val:
-			visitee.params = exp_sec_params_val
+		self._fill_in_object(visitee, self._exp_sec,
+			self._exp_mapping, kwargs['config'])
 		return visitee
 
 class ConfigINIParser(object):
