@@ -34,7 +34,7 @@ class Script(ABCRunner):
 	def __init__(self, _script_path, _script_pstr = None):
 		self._script_path = _script_path
 		self._script_pstr = _script_pstr or ''
-		self.command = []
+		self.commands = []
 
 	def run(self):
 		if not os.path.isfile(self._script_path):
@@ -48,11 +48,11 @@ class Script(ABCRunner):
 
 		command_obj = SimpleCommand(cmd_array, dir_name)
 		command_obj.execute()
-		self.command.append(command_obj)
+		self.commands.append(command_obj)
 		return not command_obj.status
 
 	def get_result(self):
-		return self.command
+		return self.commands
 
 
 class DockerComposeScript(ABCRunner):
@@ -60,14 +60,24 @@ class DockerComposeScript(ABCRunner):
 	def __init__(self, _docker_compose_path, _docker_compose_pstr = None):
 		self._docker_compose_path = _docker_compose_path
 		self._docker_compose_pstr = _docker_compose_pstr or ''
-		self.command = []
+		self.commands = []
 
 	def run(self):
 		if not os.path.isfile(self._docker_compose_path):
 			return None
 
+		dir_name = os.path.dirname(self._docker_compose_path)
+		cmd_array = ['docker-compose up -d', self._docker_compose_pstr]
+		dir_name = dir_name or None
+
+		command_obj = SimpleCommand(cmd_array, dir_name)
+		command_obj.execute()
+		self.commands.append(command_obj)
+		return not command_obj.status
+
 	def get_result(self):
-		pass
+		return self.commands
+
 
 class DockerComposeScriptKillable(ABCRunnerKillable):
 
@@ -75,10 +85,26 @@ class DockerComposeScriptKillable(ABCRunnerKillable):
 		self._docker_compose = _docker_compose
 
 	def run(self):
-		self._docker_compose.run()
+		commands = self.get_result()
+		#only run if run command was not run
+		if not len(commands):
+			return self._docker_compose.run()
+
+		return not commands[0].status
 
 	def get_result(self):
-		self._docker_compose.get_result()
+		return self._docker_compose.get_result()
 
 	def kill(self):
-		pass
+		commands = self.get_result()
+		#only run if the run command was success
+		if not (len(commands) and not commands[0].status):
+			return False
+
+		dir_name = os.path.dirname(self._docker_compose._docker_compose_path)
+		cmd_array = ['docker-compose down']
+
+		command_obj = SimpleCommand(cmd_array, dir_name)
+		command_obj.execute()
+		self._docker_compose.commands.append(command_obj)
+		return not command_obj.status
