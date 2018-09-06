@@ -46,7 +46,7 @@ class TestSimpleComp(unittest.TestCase):
 
 		mock_isfile.assert_called_once_with("tests/resources/setup.sh")
 		mock_SimpleCommand.return_value.execute.assert_called_once()
-		expected_constr_call = [call(['./setup.sh', ''], 'tests/resources')]
+		expected_constr_call = [call(['./setup.sh'], 'tests/resources')]
 		self.assertEqual(mock_SimpleCommand.call_args_list, expected_constr_call)
 		self.assertTrue(result)
 		self.assertEqual(len(commands), 1)
