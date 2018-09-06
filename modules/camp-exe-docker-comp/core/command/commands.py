@@ -11,9 +11,10 @@ class SimpleCommand(ABCCommand):
 		self._command_wd = _command_wd
 
 	def execute(self):
+		print self._command_array
+		print self._command_wd
 		proc = subprocess.Popen(self._command_array, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self._command_wd)
 		stdout, stderr = proc.communicate()
-
 		self._status = proc.returncode
 
 		self._logs = dict()
@@ -67,7 +68,7 @@ class DockerComposeScript(ABCRunner):
 			return None
 
 		dir_name = os.path.dirname(self._docker_compose_path)
-		cmd_array = ['docker-compose up -d', self._docker_compose_pstr]
+		cmd_array = ['docker-compose', 'up','-d']
 		dir_name = dir_name or None
 
 		command_obj = SimpleCommand(cmd_array, dir_name)
@@ -102,7 +103,7 @@ class DockerComposeScriptKillable(ABCRunnerKillable):
 			return False
 
 		dir_name = os.path.dirname(self._docker_compose._docker_compose_path)
-		cmd_array = ['docker-compose down']
+		cmd_array = ['docker-compose', 'down']
 
 		command_obj = SimpleCommand(cmd_array, dir_name)
 		command_obj.execute()

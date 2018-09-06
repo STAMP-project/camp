@@ -64,7 +64,7 @@ class TestSimpleComp(unittest.TestCase):
 		commads = dcomp_script_obj.get_result()
 
 		mock_SimpleCommand.return_value.execute.assert_called_once()
-		expected_constr_call = [call(['docker-compose up -d', ''], 'tests/resources')]
+		expected_constr_call = [call(['docker-compose', 'up', '-d'], 'tests/resources')]
 		self.assertEqual(mock_SimpleCommand.call_args_list, expected_constr_call)
 		self.assertTrue(result)
 		self.assertEqual(len(commads), 1)
@@ -75,8 +75,8 @@ class TestSimpleComp(unittest.TestCase):
 
 		expected_execute_calls = [call.execute(), call.execute()]
 		self.assertEqual(mock_SimpleCommand.return_value.method_calls, expected_execute_calls)
-		expected_constr_call = [call(['docker-compose up -d', ''], 'tests/resources'),
-			call(['docker-compose down'], 'tests/resources')]
+		expected_constr_call = [call(['docker-compose', 'up', '-d'], 'tests/resources'),
+			call(['docker-compose', 'down'], 'tests/resources')]
 		self.assertEqual(mock_SimpleCommand.call_args_list, expected_constr_call)
 		self.assertTrue(result)
 		self.assertEqual(len(commads), 2)
@@ -91,6 +91,10 @@ class TestSimpleComp(unittest.TestCase):
 
 		build_script = config.prepost.setup
 		self.assertEqual(build_script, 'build/build.sh')
+		self.assertFalse(config.prepost.setup_params)
+
+		self.assertEqual(config.prepost.teardown, 'build/cleanup.sh')
+		self.assertEquals(config.prepost.teardown_params, ['param1', 'param2'])
 
 		compose_files = config.compose.compose_files
 		self.assertEqual(len(compose_files), 2)
@@ -99,4 +103,4 @@ class TestSimpleComp(unittest.TestCase):
 		self.assertEqual(exp_script, 'experiment/executeExp.sh')
 
 		exp_params = config.experiment.params
-		self.assertEqual(exp_params, 'param1 param2')
+		self.assertEqual(exp_params, ['param1', 'param2'])

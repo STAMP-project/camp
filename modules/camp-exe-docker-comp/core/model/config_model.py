@@ -4,7 +4,7 @@ from core.model.abc_config_model import ABCConfigVisitee, ABCConfigRoot, ABCPreP
 
 class Experiment(ABCExperiment, ABCConfigVisitee):
 
-	def __init__(self, _script=None, _params=None):
+	def __init__(self, _script=None, _params=[]):
 		self._script = _script
 		self._params = _params
 
@@ -41,17 +41,43 @@ class DockerCompose(ABCDockerCompose, ABCConfigVisitee):
 
 class PrePost(ABCPrePost, ABCConfigVisitee):
 
-	def __init__(self, _setup=None, _teardown=None):
+	def __init__(self, _setup=None, _teardown=None, _setup_params=[], _teardown_params=[]):
 		self._setup = _setup
 		self._teardown = _teardown
+		self._setup_params = _setup_params
+		self._teardown_params = _teardown_params
 
 	@property
 	def setup(self):
 		return self._setup
-	
+
 	@setup.setter
 	def setup(self, _setup):
 		self._setup = _setup
+
+	@property
+	def teardown(self):
+		return self._teardown
+
+	@teardown.setter
+	def teardown(self, _teardown):
+		self._teardown = _teardown
+
+	@property
+	def setup_params(self):
+		return self._setup_params
+
+	@setup_params.setter
+	def setup_params(self, _setup_params):
+		self._setup_params = _setup_params
+
+	@property
+	def teardown_params(self):
+		return self._teardown_params
+
+	@teardown_params.setter
+	def teardown_params(self, _teardown_params):
+		self._teardown_params = _teardown_params
 
 
 class ConfigRoot(ABCConfigRoot, ABCConfigVisitee):
