@@ -1,6 +1,6 @@
 import unittest
 
-from mock import patch, MagicMock, PropertyMock
+from mock import patch, MagicMock, PropertyMock, call
 
 from core.command.commands import Script, DockerCompose
 
@@ -30,19 +30,20 @@ class TestSimpleComp(unittest.TestCase):
 		self.parser = MagicMock(ConfigINIParser)
 		self.parser.parse.return_value = mock_config_root
 
-	@patch('os.path')
+	@patch('os.path.isfile')
 	@patch('core.command.commands.SimpleCommand')
-	def test_script(self, mock_simple_command, mock_path):
-		mock_path.isfile.return_value = True
+	def test_script(self, mock_simple_command, mock_isfile):
+		mock_isfile.return_value = True
 		script_obj = Script("tests/resources/setup.sh")
 		type(mock_simple_command.return_value).status = PropertyMock(return_value=0)
 		
 		result = script_obj.run()
 		commands = script_obj.get_result()
 
-		mock_path.isfile.assert_called_once_with("tests/resources/setup.sh")
+		mock_isfile.assert_called_once_with("tests/resources/setup.sh")
 		mock_simple_command.return_value.execute.assert_called_once()
-
+		expected_constr_call = [call(['./setup.sh', ''], 'tests/resources')]
+		self.assertEqual(mock_simple_command.call_args_list, expected_constr_call)
 		self.assertTrue(result)
 		self.assertEqual(len(commands), 1)
 
