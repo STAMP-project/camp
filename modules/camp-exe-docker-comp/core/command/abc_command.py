@@ -29,3 +29,11 @@ class ABCRunner(object):
 	@abstractmethod
 	def get_result(self):
 		pass
+
+class ABCRunnerKillable(ABCRunner):
+
+	__metaclass__ = ABCMeta
+
+	@abstractmethod
+	def kill(self):
+		pass

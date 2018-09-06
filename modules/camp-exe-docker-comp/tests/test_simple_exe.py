@@ -2,7 +2,7 @@ import unittest
 
 from mock import patch, MagicMock, PropertyMock, call
 
-from core.command.commands import Script, DockerCompose
+from core.command.commands import Script, DockerComposeScript, DockerComposeScriptKillable
 
 from core.parser.parsers import ConfigINIParser
 from core.model.config_model import ConfigRoot, DockerCompose, Experiment, PrePost
@@ -13,53 +13,73 @@ class TestSimpleComp(unittest.TestCase):
 	def setUp(self):
 
 		mock_prepost = MagicMock(PrePost)
-		mock_prepost.setup.return_value = "tests/resources/setup.sh"
+		mock_prepost.return_value.setup = "tests/resources/setup.sh"
 
 		mock_compose = MagicMock(DockerCompose)
-		mock_compose.compose_files.return_value = ["tests/resources/docker-compose.yml"]
+		mock_compose.return_value.compose_files = ["tests/resources/docker-compose.yml"]
 
 		mock_experiment = MagicMock(Experiment)
-		mock_experiment.script.return_value = "tests/resources/experiment.sh"
-		mock_experiment.params.return_value = "param1 param2"
+		mock_experiment.return_value.script = "tests/resources/experiment.sh"
+		mock_experiment.return_value.params = "param1 param2"
 
 		mock_config_root = MagicMock(ConfigRoot)
-		mock_config_root.prepost.return_value = mock_prepost
-		mock_config_root.compose.return_value = mock_compose
-		mock_config_root.experiment.return_value = mock_experiment
+		mock_config_root.return_value.prepost = mock_prepost.return_value
+		mock_config_root.return_value.compose = mock_compose.return_value
+		mock_config_root.return_value.experiment = mock_experiment.return_value
 
-		self.parser = MagicMock(ConfigINIParser)
-		self.parser.parse.return_value = mock_config_root
+		parser = MagicMock(ConfigINIParser)
+		parser.return_value.parse.return_value = mock_config_root.return_value
+		self.mocked_parser = parser.return_value
+
 
 	@patch('os.path.isfile')
 	@patch('core.command.commands.SimpleCommand')
-	def test_script(self, mock_simple_command, mock_isfile):
+	def test_script(self, mock_SimpleCommand, mock_isfile):
 		mock_isfile.return_value = True
 		script_obj = Script("tests/resources/setup.sh")
-		type(mock_simple_command.return_value).status = PropertyMock(return_value=0)
+		#also possible
+		#mock_SimpleCommand.return_value.status = 0
+		type(mock_SimpleCommand.return_value).status = PropertyMock(return_value=0)
 		
 		result = script_obj.run()
 		commands = script_obj.get_result()
 
 		mock_isfile.assert_called_once_with("tests/resources/setup.sh")
-		mock_simple_command.return_value.execute.assert_called_once()
+		mock_SimpleCommand.return_value.execute.assert_called_once()
 		expected_constr_call = [call(['./setup.sh', ''], 'tests/resources')]
-		self.assertEqual(mock_simple_command.call_args_list, expected_constr_call)
+		self.assertEqual(mock_SimpleCommand.call_args_list, expected_constr_call)
 		self.assertTrue(result)
 		self.assertEqual(len(commands), 1)
 
 
+	@patch('os.path.isfile')
 	@patch('core.command.commands.SimpleCommand')
-	def test_docker_compose(self, mock_SimpleCommand):
-		pass
-		#compose_files = config.compose.compose_files
-		#result = DockerCompose(compose_files[0]).run()
-		#self.assertTrue(result.status)
-		
-		#result = Script(config.experiment.script, config.experiment.params).run()
-		#self.assertTrue(result.status)
+	def test_docker_compose_up_down(self, mock_SimpleCommand, mock_isfile):
+		mock_isfile.return_value = True
+		dcomp_script_obj = DockerComposeScriptKillable(
+			DockerComposeScript("tests/resources/docker-compose.yml"))
 
-		#result = Script(config.prepost.teardown).run()
-		#self.assertTrue(result.status)
+		result = dcomp_script_obj.run()
+		commads = dcomp_script_obj.get_result()
+
+		mock_SimpleCommand.return_value.execute.assert_called_once()
+		expected_constr_call = [call(['docker-compose up -d', ''], 'tests/resources')]
+		self.assertEqual(mock_SimpleCommand.call_args_list, expected_constr_call)
+		self.assertTrue(result)
+		self.assertEqual(len(commads), 1)
+
+		#kill services
+		result = dcomp_script_obj.kill()
+		commads = dcomp_script_obj.get_result()
+
+		expected_execute_calls = [call.execute(), call.execute()]
+		self.assertEqual(mock_SimpleCommand.return_value.method_calls, expected_execute_calls)
+		expected_constr_call = [call(['docker-compose up -d', ''], 'tests/resources'),
+			call(['docker-compose down', ''], 'tests/resources')]
+		self.assertEqual(mock_SimpleCommand.call_args_list, expected_constr_call)
+		self.assertTrue(result)
+		self.assertEqual(len(commads), 2)
+
 
 	def test_config_ini_parsing(self):
 		file = "tests/resources/config.ini"

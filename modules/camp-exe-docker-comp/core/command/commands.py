@@ -2,7 +2,7 @@ import os
 import subprocess
 import StringIO
 
-from core.command.abc_command import ABCCommand, ABCRunner
+from core.command.abc_command import ABCCommand, ABCRunner, ABCRunnerKillable
 
 class SimpleCommand(ABCCommand):
 
@@ -55,10 +55,30 @@ class Script(ABCRunner):
 		return self.command
 
 
-class DockerCompose(ABCRunner):
+class DockerComposeScript(ABCRunner):
+
+	def __init__(self, _docker_compose_path, _docker_compose_pstr = None):
+		self._docker_compose_path = _docker_compose_path
+		self._docker_compose_pstr = _docker_compose_pstr or ''
+		self.command = []
 
 	def run(self):
-		pass
+		if not os.path.isfile(self._docker_compose_path):
+			return None
 
 	def get_result(self):
+		pass
+
+class DockerComposeScriptKillable(ABCRunnerKillable):
+
+	def __init__(self, _docker_compose):
+		self._docker_compose = _docker_compose
+
+	def run(self):
+		self._docker_compose.run()
+
+	def get_result(self):
+		self._docker_compose.get_result()
+
+	def kill(self):
 		pass
