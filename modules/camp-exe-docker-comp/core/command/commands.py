@@ -32,9 +32,9 @@ class SimpleCommand(ABCCommand):
 
 class Script(ABCRunner):
 
-	def __init__(self, _script_path, _script_pstr = None):
+	def __init__(self, _script_path, _script_params = []):
 		self._script_path = _script_path
-		self._script_pstr = _script_pstr or ''
+		self._script_params = _script_params
 		self.commands = []
 
 	def run(self):
@@ -44,7 +44,8 @@ class Script(ABCRunner):
 		dir_name = os.path.dirname(self._script_path)
 		file_name = os.path.basename(self._script_path)
 
-		cmd_array = ['./' + file_name, self._script_pstr]
+		cmd_array = ['./' + file_name]
+		map(lambda x: cmd_array.append(x), self._script_params)
 		dir_name = dir_name or None
 
 		command_obj = SimpleCommand(cmd_array, dir_name)
@@ -58,9 +59,9 @@ class Script(ABCRunner):
 
 class DockerComposeScript(ABCRunner):
 
-	def __init__(self, _docker_compose_path, _docker_compose_pstr = None):
+	def __init__(self, _docker_compose_path, _docker_compose_pstr = []):
 		self._docker_compose_path = _docker_compose_path
-		self._docker_compose_pstr = _docker_compose_pstr or ''
+		self._docker_compose_pstr = _docker_compose_pstr
 		self.commands = []
 
 	def run(self):
@@ -69,6 +70,7 @@ class DockerComposeScript(ABCRunner):
 
 		dir_name = os.path.dirname(self._docker_compose_path)
 		cmd_array = ['docker-compose', 'up','-d']
+		map(lambda x: cmd_array.append(x), self._docker_compose_pstr)
 		dir_name = dir_name or None
 
 		command_obj = SimpleCommand(cmd_array, dir_name)
