@@ -8,7 +8,7 @@ from core.parser.parsers import ConfigINIParser
 from core.model.config_model import ConfigRoot, DockerCompose, Experiment, PrePost
 
 
-class TestSimpleComp(unittest.TestCase):
+class TestSimpleUnits(unittest.TestCase):
 
 	def setUp(self):
 
