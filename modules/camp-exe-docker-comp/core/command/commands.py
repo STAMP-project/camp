@@ -11,8 +11,6 @@ class SimpleCommand(ABCCommand):
 		self._command_wd = _command_wd
 
 	def execute(self):
-		print self._command_array
-		print self._command_wd
 		proc = subprocess.Popen(self._command_array, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self._command_wd)
 		stdout, stderr = proc.communicate()
 		self._status = proc.returncode
@@ -111,3 +109,15 @@ class DockerComposeScriptKillable(ABCRunnerKillable):
 		command_obj.execute()
 		self._docker_compose.commands.append(command_obj)
 		return not command_obj.status
+
+
+class ConductExperimentRunner(ABCRunner):
+
+	def __init__(self, _config):
+		pass
+
+	def run(self):
+		pass
+
+	def get_result(self):
+		pass

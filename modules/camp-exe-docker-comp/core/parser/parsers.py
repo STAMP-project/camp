@@ -85,7 +85,7 @@ class ConfigINIParser(object):
 		_config = ConfigParser.RawConfigParser()
 
 		if not os.path.isfile(_file):
-			print 'failed to locate file at:' + file
+			print 'failed to locate file at:' + str(file)
 			return None
 
 		result = _config.read(_file)
