@@ -56,8 +56,8 @@ class TestSimpleComp(unittest.TestCase):
 	@patch('core.command.commands.SimpleCommand')
 	def test_docker_compose_up_down(self, mock_SimpleCommand, mock_isfile):
 		mock_isfile.return_value = True
-		dcomp_script_obj = DockerComposeScriptKillable(
-			DockerComposeScript("tests/resources/docker-compose.yml"))
+		dcomp_script_obj = DockerComposeScript("tests/resources/docker-compose.yml")
+		dcomp_killable_script_obj = DockerComposeScriptKillable(dcomp_script_obj)
 		mock_SimpleCommand.return_value.status = 0
 
 		result = dcomp_script_obj.run()
@@ -70,16 +70,17 @@ class TestSimpleComp(unittest.TestCase):
 		self.assertEqual(len(commads), 1)
 
 		#kill services
-		result = dcomp_script_obj.kill()
-		commads = dcomp_script_obj.get_result()
+		result = dcomp_killable_script_obj.kill()
+		commads = dcomp_killable_script_obj.get_result()
 
+		self.assertTrue(result)
+		self.assertEqual(len(commads), 1)
+		
 		expected_execute_calls = [call.execute(), call.execute()]
 		self.assertEqual(mock_SimpleCommand.return_value.method_calls, expected_execute_calls)
 		expected_constr_call = [call(['docker-compose', 'up', '-d'], 'tests/resources'),
 			call(['docker-compose', 'down'], 'tests/resources')]
 		self.assertEqual(mock_SimpleCommand.call_args_list, expected_constr_call)
-		self.assertTrue(result)
-		self.assertEqual(len(commads), 2)
 
 
 	def test_config_ini_parsing(self):
