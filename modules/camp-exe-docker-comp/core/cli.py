@@ -25,7 +25,8 @@ class CLI(object):
 
 			experiment = ConductExperimentRunner(config)
 			result = experiment.run()
-			message = result and 'Completed with failures. Please check logs!' or 'Completed!'
+
+			message = result and 'Completed!\n' or 'Completed with failures. Please check logs!\n'
 			output_message(message)
 		else:
 			self.parser.print_help()
