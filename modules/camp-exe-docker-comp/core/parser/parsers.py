@@ -3,6 +3,7 @@ import ConfigParser
 
 from core.model.config_model import ConfigRoot, PrePost, DockerCompose, Experiment
 from core.model.abc_config_model import ABCConfigVisitor
+from core.utility.tools import output_message_error
 
 
 class ConfigModelFactory(object):
@@ -85,12 +86,12 @@ class ConfigINIParser(object):
 		_config = ConfigParser.RawConfigParser()
 
 		if not os.path.isfile(_file):
-			print 'failed to locate file at:' + str(file)
+			output_message_error('failed to locate file at:' + str(file))
 			return None
 
 		result = _config.read(_file)
 		if not len(result):
-			print 'failed to parse config file at: ' + _file
+			output_message_error('failed to parse config file at: ' + _file)
 			return None
 
 		docker_images_obj = ConfigModelFactory().create_prepost()
