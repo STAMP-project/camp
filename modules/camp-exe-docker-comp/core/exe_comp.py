@@ -1,8 +1,10 @@
 import sys, getopt
 
+from core.cli import CLI
 
-def main(argv):
-	pass
+def main(commands):
+    cli = CLI()
+    cli.execute(commands)
 
 
 def exe_comp_cli(argv):

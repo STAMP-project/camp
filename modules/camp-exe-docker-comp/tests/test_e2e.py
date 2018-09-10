@@ -77,7 +77,7 @@ class TestE2E(unittest.TestCase):
 		
 		exp_command = commands[2]
 		self.assertEqual(exp_command.status, 0)
-		self.assertEqual(exp_command.logs['stdout'].strip(), 'Hello World! I have been seen 1 times. param1:param1 param2:param2')
+		self.assertEqual(exp_command.logs['stdout'].strip(), 'Hello World! I have been called. param1:param1 param2:param2')
 		self.assertEqual(exp_command.logs['stderr'].strip(), '')
 
 		docker_down_command = commands[3]
