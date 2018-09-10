@@ -27,7 +27,7 @@ To run the example, please go to camp/modules/camp-exe-docker-comp and execute t
 ```
 $ campexe docker-compose examples/simple/config.ini
 ```
-In this example, CAMP-exe runs a simple web application, makes a request to the application and kills the application. The output should look as follows:
+In this example, CAMP-exe deploys a simple web application, makes a request to the application and kills the application. The output should look as follows:
 ```
 Executing: ./setup_composetest.sh param1 at examples/simple/scripts
 setup! param1
@@ -53,7 +53,7 @@ Completed!
 
 ```
 
-A single execution of CAMP-exe is guided by the configuration file. A single execution of CAMP-exe can be think of as of a unit test case for the deployment described in the docker-compose file. The configuration file defines a set of scripts to set up and tear down the test environment, a deployment of the application to test and an experiment to execute on the deployed application. The content of the configuration files looks as follows:
+A single execution of CAMP-exe is guided by the configuration file. A single execution of CAMP-exe can be thought of as a unit test case for the deployment described in the docker-compose file. The configuration file defines a set of scripts to set up, tear down the test experiment, deploy the application, and execute the experiment on the deployed application. The content of the configuration file may look as follows:
 ```
 [pre_post]
 setup = examples/simple/scripts/setup_composetest.sh
