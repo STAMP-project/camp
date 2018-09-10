@@ -13,6 +13,7 @@ class SimpleCommand(ABCCommand):
 		self._command_wd = _command_wd
 
 	def execute(self):
+		output_message('Executing: ' + ' '.join(self._command_array) + ' at ' + self._command_wd + '\n')
 		proc = subprocess.Popen(self._command_array, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self._command_wd)
 		stdout, stderr = proc.communicate()
 		self._status = proc.returncode
