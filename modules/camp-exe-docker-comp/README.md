@@ -53,7 +53,7 @@ Completed!
 
 ```
 
-A single execution of CAMP-exe is guided by the configuration file. A single execution of CAMP-exe can be thought of as a unit test case for the deployment described in the docker-compose file. The configuration file defines a set of scripts to set up, tear down the test experiment, deploy the application, and execute the experiment on the deployed application. The content of the configuration file may look as follows:
+A single execution of CAMP-exe is guided by a configuration file. An execution of CAMP-exe can be thought of as a unit test case for the deployment described in a docker-compose file. The configuration file defines a set of scripts to set up, tear down a test experiment, deploy the application, and execute the experiment on the deployed application. The content of the configuration file may look as follows:
 ```
 [pre_post]
 setup = examples/simple/scripts/setup_composetest.sh
@@ -68,3 +68,10 @@ compose_files = examples/simple/composetest/docker-compose.yml
 script = examples/simple/scripts/exp_composetest.sh
 params = param1 param2
 ```
+The configuration file consiste of three sections, i.e. ```[pre_post]```, ```[docker_compose]```, ```[experiment]```.
+
+The ```[pre_post]``` section contains paths to setup and tear down scripts along with the parameters for these scripts. The parameters is a string seperated by whitespaces. The string is parsed and fed into a command line as arguments for a corresponding script, e.g. a ```setup_params``` string is fed into a ```setup``` script.
+
+The ```[experiment]``` section references a script to perform an experiment on a running systems which is spawn off with help of docker-compose. The experiment can be thought of as a test to check properties of the running system. This section also has the ```params``` field with paramers to feed into the experiment script. The ```params``` field contains a string with parameters seperated by whitespaces.
+
+The ```[docker_compose]``` has the ```compose_files``` field with a list of docker-compose files seperated by semicolons. CAMP-exe executes setup, tear down and experiment script for each docker-compose files.
