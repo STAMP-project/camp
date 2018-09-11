@@ -118,22 +118,24 @@ class ConductExperimentRunner(ABCRunner):
 
 	def run(self):
 		anyfailuer = True
-		setup_script = Script(self._config.prepost.setup,
-			self._config.prepost.setup_params)
-		result = setup_script.run()
-		map(lambda x: self.commands.append(x), setup_script.get_result())
-
-		command = (result == True or result == False) and setup_script.get_result()[0] or None
-		command and output_message(command.logs['stdout'])
-		command and output_message_error(command.logs['stderr'])
-		if not result:
-			command and output_message_error('Aborting: failed to execute setup script at: ' \
-				+ self._config.prepost.setup) or \
-					output_message_error('Aborting: failed to locate setup script at:' \
-						+ self._config.prepost.setup)
-			return False
 
 		for compose_file in self._config.compose.compose_files:
+			setup_script = Script(self._config.prepost.setup,
+				self._config.prepost.setup_params)
+			result = setup_script.run()
+			map(lambda x: self.commands.append(x), setup_script.get_result())
+
+			command = (result == True or result == False) and setup_script.get_result()[0] or None
+			command and output_message(command.logs['stdout'])
+			command and output_message_error(command.logs['stderr'])
+			if not result:
+				command and output_message_error('Aborting: failed to execute setup script at: ' \
+					+ self._config.prepost.setup) or \
+						output_message_error('Aborting: failed to locate setup script at:' \
+							+ self._config.prepost.setup)
+				anyfailuer = False
+				continue
+
 			docker_up = DockerComposeScript(compose_file)
 			result = docker_up.run()
 			map(lambda x: self.commands.append(x), docker_up.get_result())
@@ -178,20 +180,20 @@ class ConductExperimentRunner(ABCRunner):
 							+ compose_file + ' due to docker-compose up is not succesfully completed')
 				anyfailuer = False
 	
-		teardown_script = Script(self._config.prepost.teardown,
-			self._config.prepost.teardown_params)
-		result = teardown_script.run()
-		map(lambda x: self.commands.append(x), teardown_script.get_result())
+			teardown_script = Script(self._config.prepost.teardown,
+				self._config.prepost.teardown_params)
+			result = teardown_script.run()
+			map(lambda x: self.commands.append(x), teardown_script.get_result())
 
-		command = (result == True or result == False) and teardown_script.get_result()[0] or None
-		command and output_message(command.logs['stdout'])
-		command and output_message_error(command.logs['stderr'])
-		if not result:
-			command and output_message_error('Failed to clean up: ' \
-				+ self._config.prepost.teardown) or \
-					output_message_error('Failed to locate clean up script: ' \
-						+ self._config.prepost.teardown)
-			anyfailuer = False
+			command = (result == True or result == False) and teardown_script.get_result()[0] or None
+			command and output_message(command.logs['stdout'])
+			command and output_message_error(command.logs['stderr'])
+			if not result:
+				command and output_message_error('Failed to clean up: ' \
+					+ self._config.prepost.teardown) or \
+						output_message_error('Failed to locate clean up script: ' \
+							+ self._config.prepost.teardown)
+				anyfailuer = False
 
 		return anyfailuer
 
