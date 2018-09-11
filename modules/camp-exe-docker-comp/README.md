@@ -1,4 +1,4 @@
-# CAMP-exe for docker compose
+# CAMP-Exe for docker-compose
 The modules allows to exactute docker-compose files and experiments required to asses a given configuration of the software defined in a docker-compose file.
 
 ## How to use
