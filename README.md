@@ -165,7 +165,7 @@ In the example, each variable has one possible value, which does not have to be 
 To set CAMP on your project. There are two prerequisites:
 * Your project should be dockerised.
 * New configuration of the project can be achieved by:
-..* By substituting the FROM statement of a Dockerimage file
-..* By substituting an image of a docker-compose file
+  * By substituting the FROM statement of a Dockerimage file
+  * By substituting an image of a docker-compose file
 
 Further, we need to identify variation points of your configuration, e.g., java versions. We fill out feature.yml with this information. We also need to define building rules which are used to build new docker files. This information is filled in images.yml file. This allows generating various docker files which are various possible configuration of your application. If we need to generate various docker-compose file, we need to fill in compose.yml. However, this is optional. 
