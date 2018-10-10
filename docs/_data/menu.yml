@@ -1,0 +1,23 @@
+- name: CAMP
+  url: /index
+
+- name: Getting Started
+  url: /pages/getting_started
+  children:
+    - name: Installation
+      url: /pages/installation
+
+- name: Case Studies
+  url: 
+  children:
+    - name: XWiki
+      url: /pages/xwiki
+    - name: CityGo
+      url: /pages/citygo
+
+- name: Other
+  url:
+  children:
+    - name: Publications
+      url: /pages/publications
+
