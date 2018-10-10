@@ -1,6 +1,8 @@
 title: CAMP
 description: >-
   Amplify your testing with more configurations!
+url: https://stamp-project.github.io/camp
+
 theme: jekyll-theme-minimal
 
 exclude:
