@@ -54,14 +54,14 @@ follows:
       url: pages/installation
 
 - name: Case Studies
-  url: 
+  url:
   children:
     - name: XWiki
       url: pages/xwiki
     - name: CityGo
       url: pages/citygo
-	- name: Awesome Case-study     # <-- Here I added a new menu entry
-	  url: pages/awesome           # No file extension
+    - name: Awesome Case-study     # <-- Here I added a new menu entry
+      url: pages/awesome           # No file extension
 
 - name: Other
   url:
