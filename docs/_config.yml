@@ -2,7 +2,7 @@ title: CAMP
 description: >-
   Amplify your testing with more configurations!
 url: https://stamp-project.github.io/
-baseurl: ''
+baseurl: /camp
 
 theme: jekyll-theme-minimal
 
