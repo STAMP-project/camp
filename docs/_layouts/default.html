@@ -45,13 +45,13 @@
 	  {% for item in site.data.menu %}
 	  <li class="dropdown">
 	    {% if item.children == nil %}
-	    <a class="dropbtn" href="{{ item.url }}.html" >{{ item.name }}</a>
+	    <a class="dropbtn" href="{{ site.baseurl }}{{ item.url }}.html" >{{ item.name }}</a>
 	    {% else %}
 	    <a class="dropbtn" href="javascript:void(0)" >{{ item.name }}&nbsp;&#9662;</a>
 	    <ul class="dropdown-content">
 	      {% for child in item.children %}
 	      <li>
-		<a href="{{ child.url }}.html">{{ child.name }}</a>
+		<a href="{{ site.baseurl }}{{ child.url }}.html">{{ child.name }}</a>
 	      </li>
               {% endfor %}
 	    </ul>
