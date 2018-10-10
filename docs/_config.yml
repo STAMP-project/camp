@@ -1,1 +1,9 @@
+title: CAMP
+description: >-
+  Amplify your testing with more configurations!
 theme: jekyll-theme-minimal
+
+exclude:
+ - README.md
+ - Gemfile.lock
+ - Gemfile
