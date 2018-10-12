@@ -5,7 +5,7 @@
   url: /pages/getting_started
   children:
     - name: Installation
-      url: /pages/installation
+      url: /pages/setup
 
 - name: Case Studies
   url: 
