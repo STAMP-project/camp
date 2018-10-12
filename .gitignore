@@ -83,7 +83,7 @@ celerybeat-schedule
 
 # Environments
 .env
-.venv
+.venv*/
 env/
 venv/
 ENV/
@@ -106,5 +106,9 @@ venv.bak/
 # jekyll
 _site/
 .sass-cache/
+
+# Emacs
 \#*\#
 *~
+.\#*
+
