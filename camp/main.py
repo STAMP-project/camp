@@ -17,8 +17,7 @@ from sys import argv
 
 from camp import About
 from camp.arguments import Arguments
-from camp.composegen import generate
-from camp.solver.dockerfile import Solver
+from camp.images.generator import Solver
 
 
 
@@ -26,18 +25,19 @@ class Runner(object):
 
 
     def __init__(self):
-        self._solver = Solver()
+        self._image_generator = Solver()
         self._arguments = None
 
 
     def start_camp(self, command_line):
         self._arguments = Arguments.extract_from(command_line)
-        self._say_hello()
+        self._welcome()
         self._prepare_working_directory()
         self._generate()
+        self._goodbye()
 
 
-    def _say_hello(self):
+    def _welcome(self):
         print "%s v%s (%s)" % (About.PROGRAM, About.VERSION, About.LICENSE)
         print About.COPYRIGHT
 
@@ -54,7 +54,11 @@ class Runner(object):
 
 
     def _generate(self):
-        self._solver.generate(self._arguments.working_directory)
+        self._image_generator.generate(self._arguments.working_directory)
+
+
+    def _goodbye(self):
+        print "That's all folks!"
 
 
 
