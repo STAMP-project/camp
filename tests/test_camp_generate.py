@@ -10,7 +10,7 @@
 
 
 from os import makedirs
-from os.path import isfile, isdir, join
+from os.path import isfile, isdir, join, exists
 
 from shutil import rmtree, copytree
 
@@ -54,12 +54,20 @@ class GenerateXWikiTests(TestCase):
     def verify_generated_files(self):
         for each in self.EXPECTED_GENERATED_FILES:
             path = join(self.WORKING_DIRECTORY, each)
-            self.assertTrue(isfile(path),
+            self.assertTrue(exists(path),
                             "Expecting file '%s', but could not find it!" % each)
 
 
 
     EXPECTED_GENERATED_FILES = [
         "out/genimages.yml",
-        "out/ampimages.yml"
+        "out/ampimages.yml",
+        "build/tomcat7--openjdk-9",
+        "build/tomcat85--openjdk-9",
+        "build/tomcat8--openjdk-8",
+        "build/tomcat9--openjdk-9",
+        "build/xwiki8mysql--tomcat8-openjdk-8",
+        "build/xwiki8postgres--tomcat7-openjdk-9",
+        "build/xwiki9mysql--tomcat85-openjdk-9",
+        "build/xwiki9postgres--tomcat9-openjdk-9"
     ]
