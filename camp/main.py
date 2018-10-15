@@ -18,6 +18,7 @@ from sys import argv
 from camp import About
 from camp.arguments import Arguments
 from camp.images.generator import Solver
+from camp.images.builder import Builder
 
 
 
@@ -26,6 +27,7 @@ class Runner(object):
 
     def __init__(self):
         self._image_generator = Solver()
+        self._image_builder = Builder()
         self._arguments = None
 
 
@@ -55,6 +57,7 @@ class Runner(object):
 
     def _generate(self):
         self._image_generator.generate(self._arguments.working_directory)
+        self._image_builder.build()
 
 
     def _goodbye(self):

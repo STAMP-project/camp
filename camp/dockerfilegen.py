@@ -1,20 +1,10 @@
-#
-# CAMP
-#
-# Copyright (C) 2017, 2018 SINTEF Digital
-# All rights reserved.
-#
-# This software may be modified and distributed under the terms
-# of the MIT license.  See the LICENSE file for details.
-#
-
-
+"""
+    Hui Song: hui.song@sintef.no
+"""
 
 from plumbum import local
 import sys, getopt, os
 import yaml
-
-
 
 cp = local['cp']
 mv = local['mv']
@@ -34,7 +24,6 @@ def makebuilddir(dir, newfrom, name, tag):
         else:
             newDockerfile.write(line)
     newDockerfile.close()
-
 
 def generate(file, dir):
     inputdata = None
@@ -66,8 +55,41 @@ def generate(file, dir):
     f.close()
 
 
-
 class Builder(object):
-
+    
     def build(self):
-        generate("temp/xwiki/out/genimages.yml", "temp/xwiki/")
+        generate("genimages.yml", "temp/xwiki/out")
+        
+
+
+# DEAD CODE below this
+def main(argv):
+    inputfile = ''
+    workingdir = ''
+    try:
+        opts, args = getopt.getopt(argv,"hi:d:",["ifile=","dir="])
+    except getopt.GetoptError:
+        print 'dockerfilegen.py -i <inputfile> -d <working dir>'
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print 'dockerfilegen.py -i <inputfile> -d <workding dir>'
+            sys.exit()
+        elif opt in ("-i", "--ifile"):
+            inputfile = arg
+        elif opt in ("-d", "--dir"):
+            workingdir = arg
+
+    if workingdir == '':
+        workingdir = os.path.dirname(inputfile)
+    print 'Input file is ', inputfile
+    print 'Working directory is ', workingdir
+    if inputfile == '':
+        print 'input file and working directory required: dockerfilegen.py -i <inputfile> -d <working dir>'
+        exit()
+    generate(inputfile, workingdir)
+
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
