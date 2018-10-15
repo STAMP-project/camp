@@ -8,8 +8,17 @@
 # of the MIT license.  See the LICENSE file for details.
 #
 
-__VERSION__ = "1.0.0"
 
-__COPYRIGHT__ = "Copyright (C) 2017, 2018 SINTEF Digital"
+class About:
 
-__LICENSE__ = "MIT"
+    PROGRAM = "CAMP"
+    
+    VERSION = "1.0.0"
+    
+    LICENSE = "MIT"
+
+    COPYRIGHT = "Copyright (C) 2017, 2018 SINTEF Digital"
+
+    DESCRIPTION = "Amplify your configuration tests!"
+    
+    

@@ -11,12 +11,12 @@
 
 from setuptools import setup
 
-from camp import __VERSION__
+from camp import ABOUT
 
 
 setup(name="camp",
-      version=__VERSION__,
-      description="Amplify your configuration tests!",
+      version=About.VERSION,
+      description=About.DESCRIPTION,
       author="Hui Song",
       author_email="hui.song@sintef.no",
       url="https://github.com/STAMP-project/camp",

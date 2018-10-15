@@ -12,6 +12,8 @@
 
 from argparse import ArgumentParser
 
+from camp import About
+
 
 
 class Arguments(object):
@@ -24,7 +26,8 @@ class Arguments(object):
 
     @staticmethod
     def extract_from(command_line):
-        parser = ArgumentParser(prog="CAMP")
+        parser = ArgumentParser(prog=About.PROGRAM,
+                                description=About.DESCRIPTION)
         subparsers = parser.add_subparsers()
         generate = subparsers.add_parser(
             "generate",

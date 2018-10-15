@@ -9,12 +9,13 @@
 #
 
 
+
 from os import makedirs
 from os.path import isdir, join
 
 from sys import argv
 
-from camp import __VERSION__, __COPYRIGHT__, __LICENSE__
+from camp import About
 from camp.arguments import Arguments
 from camp.composegen import generate
 from camp.solver.dockerfile import Solver
@@ -37,8 +38,8 @@ class Runner(object):
 
 
     def _say_hello(self):
-        print "CAMP v%s (%s)" % (__VERSION__, __LICENSE__)
-        print __COPYRIGHT__
+        print "%s v%s (%s)" % (About.PROGRAM, About.VERSION, About.LICENSE)
+        print About.COPYRIGHT
 
 
     def _prepare_working_directory(self):
