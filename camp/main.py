@@ -16,7 +16,7 @@ from os.path import isdir, join
 from sys import argv
 
 from camp import About
-from camp.arguments import Arguments
+from camp.commands import Command
 from camp.stacks.generator import Finder as SFinder
 from camp.stacks.builder import Builder as SBuilder
 from camp.orchestrations.generator import Finder as OFinder
@@ -36,7 +36,7 @@ class Runner(object):
 
 
     def start_camp(self, command_line):
-        self._arguments = Arguments.extract_from(command_line)
+        self._arguments = Command.extract_from(command_line)
         self._welcome()
         self._prepare_working_directory()
         self._generate()
