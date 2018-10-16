@@ -29,7 +29,7 @@ setup(name="camp",
       test_suite="tests",
       entry_points = {
           'console_scripts': [
-              'camp = camp.main:start'
+              'camp = camp.run:main'
           ]
       }
 )
