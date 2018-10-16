@@ -11,7 +11,7 @@
 
 from setuptools import setup
 
-from camp import ABOUT
+from camp import About
 
 
 setup(name="camp",
@@ -21,6 +21,10 @@ setup(name="camp",
       author_email="hui.song@sintef.no",
       url="https://github.com/STAMP-project/camp",
       packages=["camp"],
+      include_package_data = True,
+      package_data = {
+          "camp": ["data/images.yml"]
+      },
       license="MIT",
       test_suite="tests",
       entry_points = {
