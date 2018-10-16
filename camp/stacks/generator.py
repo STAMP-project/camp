@@ -324,37 +324,8 @@ def generate(workingdir):
         stream.close()
 
 
-class Solver:
+class Finder:
 
 
-    def generate(self, working_directory):
+    def find(self, working_directory):
         generate(working_directory)
-
-
-        
-HELPTEXT = 'dockerbuild.py -d <working dir>'
-def main(argv):
-    workingdir = ''
-    try:
-        opts, args = getopt.getopt(argv,"hd:",["dir="])
-    except getopt.GetoptError:
-        print HELPTEXT
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print HELPTEXT
-            sys.exit()
-        elif opt in ("-d", "--dir"):
-            workingdir = arg
-
-    print 'Working directory is ', workingdir
-
-    if workingdir == '':
-        print 'working directory required: ' + HELPTEXT
-        exit()
-
-    generate(workingdir)
-
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
