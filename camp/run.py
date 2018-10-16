@@ -10,8 +10,6 @@
 
 
 
-
-
 from sys import argv
 
 from camp import About

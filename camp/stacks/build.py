@@ -11,9 +11,13 @@
 
 
 from plumbum import local
+
 import sys, getopt, os
 import yaml
 
+
+from os.path import join, isdir
+from os import makedirs
 
 
 cp = local['cp']
@@ -69,5 +73,14 @@ def generate(file, dir):
 
 class Builder(object):
 
-    def build(self):
-        generate("temp/xwiki/out/genimages.yml", "temp/xwiki/")
+    def __call__(self, arguments):
+        self._verify_resources(arguments)
+        input_file = join(arguments.working_directory, "out", "genimages.yml")
+        generate(input_file, arguments.working_directory)
+
+
+    def _verify_resources(self, arguments):
+        build_directory = join(arguments.working_directory, "build")
+        if not isdir(build_directory):
+            makedirs(build_directory)
+    

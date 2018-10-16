@@ -10,40 +10,21 @@
 
 
 
-from os import makedirs
-from os.path import isdir, join
-
-
-
 class Camp(object):
 
 
     def __init__(self, sfinder, sbuilder, ofinder, obuilder):
-        self._stack_finder = sfinder
-        self._stack_builder = sbuilder
-        self._orchestration_finder = ofinder
-        self._orchestration_builder = obuilder
+        self._find_stacks = sfinder
+        self._build_stacks = sbuilder
+        self._find_orchestrations = ofinder
+        self._build_orchestrations = obuilder
 
 
     def generate(self, arguments):
-        self._prepare_working_directory(arguments)
-        self._stack_finder.find(arguments.working_directory)
-        self._stack_builder.build()
-        self._orchestration_finder.find(arguments.working_directory)
-        self._orchestration_builder.build(arguments.working_directory)
-
-
-    @staticmethod
-    def _prepare_working_directory(arguments):
-        Camp._create_subdirectory(arguments, "out")
-        Camp._create_subdirectory(arguments, "build")
-
-
-    @staticmethod
-    def _create_subdirectory(arguments, subdirectory):
-        path = join(arguments.working_directory, subdirectory)
-        if not isdir(path):
-            makedirs(path)
+        self._find_stacks(arguments)
+        self._build_stacks(arguments)
+        self._find_orchestrations(arguments)
+        self._build_orchestrations(arguments)
 
 
     def realize(self, arguments):
