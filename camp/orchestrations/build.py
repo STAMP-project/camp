@@ -11,12 +11,12 @@
 
 
 import yaml
-import sys, getopt, os
+import sys, os
 import copy
 import re
 from jsonpath_rw import jsonpath, parse
 
-from os.path import join
+from os.path import join, exists
 
 
 
@@ -110,7 +110,7 @@ def generate(seedfile, workingdir, amp_result_file):
 
     outputs = [threewaycomp(reference, seed, amp) for amp in amplified]
 
-    for output, i in zip(outputs, range(1, 1000)):
+    for i, output in enumerate(outputs, 1):
         str = yaml.dump(output, default_flow_style=False)
         root = output
         while True:
@@ -135,7 +135,7 @@ def generate(seedfile, workingdir, amp_result_file):
         stream.close()
 
     if not os.path.isfile("%s/variables.yml" % workingdir):
-        print "No variables.yml, sipping variable resolution!"
+        print "No variables.yml, skipping variable resolution!"
         return
 
     resol = dict()
@@ -145,7 +145,8 @@ def generate(seedfile, workingdir, amp_result_file):
         variables = yaml.load(stream)
     def resolve_var(value):
         return next(v for v in variables if value in variables[v])
-    for amp, i in zip(amplified, range(1, 1000)):
+
+    for i, amp in enumerate(amplified, 1):
         product = dict()
         products.append({'compose%d' % i: product})
         product['product_dir'] = "%s/compose%d" % (workingdir, i)
@@ -160,15 +161,32 @@ def generate(seedfile, workingdir, amp_result_file):
             for k, v in srv.attribute.iteritems():
                 varvalues.append({resolve_var(k):k})
                 valvalues.append({k: v})
+
     with open("%s/resolmodel.yml"%workingdir, 'w') as stream:
         yaml.dump(resol, stream)
-        stream.close()
 
+
+class MissingResource(Exception):
+
+    def __init__(self, resource):
+        super(Exception, self).__init__("Missing resource '%s'" % resource)
 
 
 class Builder(object):
 
-    def build(self, working_directory):
-        seed = join(working_directory, "docker-compose", "docker-compose.yml")
-        input_file = join(working_directory, "out", "ampcompose.yml")
-        generate(seed, working_directory, input_file)
+    def __call__(self, arguments):
+        self._verify_resources(arguments)
+        seed = join(arguments.working_directory, "docker-compose", "docker-compose.yml")
+        input_file = join(arguments.working_directory, "out", "ampcompose.yml")
+        generate(seed, arguments.working_directory, input_file)
+
+    def _verify_resources(self, arguments):
+        resources = [
+            ["docker-compose", "docker-compose.yml"],
+            ["out", "ampcompose.yml"]
+        ]
+
+        for each_resource in resources:
+            path = join(arguments.working_directory, *each_resource)
+            if not exists(path):
+                raise MissingResource(path)

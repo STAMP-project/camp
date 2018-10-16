@@ -19,6 +19,11 @@ import timeit
 import itertools
 import sys, getopt, os
 
+from os import makedirs
+from os.path import isdir, join
+
+
+
 NSPAR = 2
 
 classes_yaml = """
@@ -327,5 +332,14 @@ def generate(workingdir):
 class Finder:
 
 
-    def find(self, working_directory):
-        generate(working_directory)
+    def __call__(self, arguments):
+        self._verify_resources(arguments)
+        generate(arguments.working_directory)
+
+    def _verify_resources(self, arguments):
+        out_directory = join(arguments.working_directory, "out")
+        if not isdir(out_directory):
+            makedirs(out_directory)
+                             
+
+    

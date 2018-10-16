@@ -45,6 +45,10 @@ class Finder(object):
         self._composes = dict()
 
 
+    def __call__(self, arguments):
+        self.find(arguments.working_directory)
+
+        
     def find(self, workingdir):
         start_over()
 
