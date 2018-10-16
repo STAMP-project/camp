@@ -23,6 +23,7 @@ from camp.stacks.find import Finder as SFinder
 from camp.stacks.build import Builder as SBuilder
 from camp.orchestrations.find import Finder as OFinder
 from camp.orchestrations.build import Builder as OBuilder
+from camp.realize.engine import RealizationEngine
 
 
 
@@ -52,7 +53,8 @@ class GenerateXWikiTests(TestCase):
         runner = Runner(Camp(SFinder(),
                              SBuilder(),
                              OFinder(),
-                             OBuilder()))
+                             OBuilder(),
+                             RealizationEngine()))
         runner.start(["generate", "-d", self.WORKING_DIRECTORY])
 
 
