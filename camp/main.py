@@ -17,9 +17,9 @@ from sys import argv
 
 from camp import About
 from camp.arguments import Arguments
-from camp.images.generator import Solver
-from camp.images.builder import Builder
-from camp.orchestrations.generator import Finder
+from camp.stacks.generator import Finder as SFinder
+from camp.stacks.builder import Builder as SBuilder
+from camp.orchestrations.generator import Finder as OFinder
 from camp.orchestrations.builder import Builder as OBuilder
 
 
@@ -28,9 +28,9 @@ class Runner(object):
 
 
     def __init__(self):
-        self._image_generator = Solver()
-        self._image_builder = Builder()
-        self._orchestration_finder = Finder()
+        self._stack_finder = SFinder()
+        self._stack_builder = SBuilder()
+        self._orchestration_finder = OFinder()
         self._orchestration_builder = OBuilder()
         self._arguments = None
 
@@ -60,8 +60,8 @@ class Runner(object):
 
 
     def _generate(self):
-        self._image_generator.generate(self._arguments.working_directory)
-        self._image_builder.build()
+        self._stack_finder.find(self._arguments.working_directory)
+        self._stack_builder.build()
         self._orchestration_finder.find(self._arguments.working_directory)
         self._orchestration_builder.build(self._arguments.working_directory)
 
