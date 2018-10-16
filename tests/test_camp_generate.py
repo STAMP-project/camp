@@ -9,6 +9,7 @@
 #
 
 
+
 from os import makedirs
 from os.path import isfile, isdir, join, exists
 
@@ -16,7 +17,12 @@ from shutil import rmtree, copytree
 
 from unittest import TestCase
 
-from camp.main import Runner
+from camp.run import Runner
+from camp.core import Camp
+from camp.stacks.find import Finder as SFinder
+from camp.stacks.build import Builder as SBuilder
+from camp.orchestrations.find import Finder as OFinder
+from camp.orchestrations.build import Builder as OBuilder
 
 
 
@@ -43,8 +49,11 @@ class GenerateXWikiTests(TestCase):
 
 
     def invoke_camp_generate(self):
-        runner = Runner()
-        runner.start_camp(["generate", "-d", self.WORKING_DIRECTORY])
+        runner = Runner(Camp(SFinder(),
+                             SBuilder(),
+                             OFinder(),
+                             OBuilder()))
+        runner.start(["generate", "-d", self.WORKING_DIRECTORY])
 
 
     def verify_generated_files(self):
