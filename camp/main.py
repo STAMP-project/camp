@@ -19,6 +19,7 @@ from camp import About
 from camp.arguments import Arguments
 from camp.images.generator import Solver
 from camp.images.builder import Builder
+from camp.orchestrations.generator import Finder
 
 
 
@@ -28,6 +29,7 @@ class Runner(object):
     def __init__(self):
         self._image_generator = Solver()
         self._image_builder = Builder()
+        self._orchestration_finder = Finder()
         self._arguments = None
 
 
@@ -58,6 +60,7 @@ class Runner(object):
     def _generate(self):
         self._image_generator.generate(self._arguments.working_directory)
         self._image_builder.build()
+        self._orchestration_finder.find(self._arguments.working_directory)
 
 
     def _goodbye(self):
@@ -66,6 +69,5 @@ class Runner(object):
 
 
 def start():
-    """Entry point of CAMP as a command line tool"""
     runner = Runner()
     runner.start_camp(argv[1:])
