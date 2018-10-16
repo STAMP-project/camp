@@ -1,6 +1,14 @@
-"""
-    Hui Song: hui.song@sintef.no
-"""
+#
+# CAMP
+#
+# Copyright (C) 2017, 2018 SINTEF Digital
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+
+
 
 import yaml
 import sys, getopt, os
@@ -8,8 +16,9 @@ import copy
 import re
 from jsonpath_rw import jsonpath, parse
 
+from os.path import join
 
-HELPTEXT = 'composegen.py -i <inputfile> -d <working dir> (optional)'
+
 
 class Service:
     def __init__(self, name=None, image=None, depends_on=[], attribute=dict()):
@@ -18,7 +27,9 @@ class Service:
         self.depends_on = depends_on
         self.attribute = attribute
 
+
 class Compose:
+
     def __init__(self, services=[]):
         self.services = services
 
@@ -31,34 +42,6 @@ class Compose:
 
     def __contains__(self, name):
         return any(service.name == name for service in self.services)
-
-
-
-def mock_amplifier(seed):
-
-    ampresult_atos=[
-        Compose([
-            Service('mysql', 'supersede/mysql'),
-            Service('be', 'supersede/be', ['mysql'])
-        ]),
-        Compose([
-            Service('mysql', 'supersede/mysql:old'),
-            Service('be', 'supersede/be', ['mysql'])
-        ]),
-        Compose([
-            Service('mysql', 'supersede/mysql'),
-            Service('postgres', 'supersede/postgres'),
-            Service('be', 'supersede/be:postgres', ['postgres'])
-        ])
-    ]
-
-    ampresult_xwiki = [
-        Compose([
-            Service('postgres', 'postgres:10'),
-            Service('web', 'xwiki:postgres-tomcat', ['postgres'])
-        ])
-    ]
-    return ampresult_xwiki
 
 
 def load_ampresult(ampresult):
@@ -183,39 +166,9 @@ def generate(seedfile, workingdir, amp_result_file):
 
 
 
+class Builder(object):
 
-
-def main(argv):
-    inputfile = ''
-    workingdir = ''
-    try:
-        opts, args = getopt.getopt(argv,"hi:d:",["ifile=","dir="])
-    except getopt.GetoptError:
-        print HELPTEXT
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print HELPTEXT
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-            inputfile = arg
-        elif opt in ("-d", "--dir"):
-            workingdir = arg
-
-    if workingdir == '':
-        workingdir = os.path.dirname(inputfile)
-
-    print 'Input file is ', inputfile
-    print 'Working directory is ', workingdir
-
-    if inputfile == '':
-        print 'input file and working directory required: ' + HELPTEXT
-        exit()
-
-    seedfile = workingdir + "/docker-compose/docker-compose.yml"
-    generate(seedfile, workingdir, inputfile)
-
-
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
+    def build(self, working_directory):
+        seed = join(working_directory, "docker-compose", "docker-compose.yml")
+        input_file = join(working_directory, "out", "ampcompose.yml")
+        generate(seed, working_directory, input_file)
