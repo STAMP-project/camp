@@ -20,6 +20,7 @@ from camp.arguments import Arguments
 from camp.images.generator import Solver
 from camp.images.builder import Builder
 from camp.orchestrations.generator import Finder
+from camp.orchestrations.builder import Builder as OBuilder
 
 
 
@@ -30,6 +31,7 @@ class Runner(object):
         self._image_generator = Solver()
         self._image_builder = Builder()
         self._orchestration_finder = Finder()
+        self._orchestration_builder = OBuilder()
         self._arguments = None
 
 
@@ -61,6 +63,7 @@ class Runner(object):
         self._image_generator.generate(self._arguments.working_directory)
         self._image_builder.build()
         self._orchestration_finder.find(self._arguments.working_directory)
+        self._orchestration_builder.build(self._arguments.working_directory)
 
 
     def _goodbye(self):
