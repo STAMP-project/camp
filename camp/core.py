@@ -13,11 +13,12 @@
 class Camp(object):
 
 
-    def __init__(self, sfinder, sbuilder, ofinder, obuilder):
+    def __init__(self, sfinder, sbuilder, ofinder, obuilder, realize):
         self._find_stacks = sfinder
         self._build_stacks = sbuilder
         self._find_orchestrations = ofinder
         self._build_orchestrations = obuilder
+        self._realize = realize
 
 
     def generate(self, arguments):
@@ -28,4 +29,6 @@ class Camp(object):
 
 
     def realize(self, arguments):
-        pass
+	products = self._realize.get_products(arguments.products_file)
+	for each_product in products:
+	    self._realize.realize_product(each_product)

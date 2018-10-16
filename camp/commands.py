@@ -37,10 +37,14 @@ class Command(object):
         realize = subparsers.add_parser(
             "realize",
             help="Realize the variables in the test configurations")
+        realize.add_argument(
+            "-p",
+            "--products",
+            dest="products",
+            help="the file that describes the products to realize")
+            
 
         values = parser.parse_args(command_line)
-        print(values)
-
         return Command.from_namespace(values)
 
 
@@ -49,7 +53,7 @@ class Command(object):
         if namespace.command == "generate":
             return Generate(namespace.working_directory)
         elif namespace.command == "realize":
-            return Realize()
+            return Realize(namespace.products)
         else:
             message = "The command '%s' is not yet implemented." % namespace.command
             raise NotImplementedError(message)
@@ -87,9 +91,14 @@ class Realize(Command):
     Encapsulate a call to 'camp realize'
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, products_file):
+        self._products_file = products_file
 
+
+    @property
+    def products_file(self):
+        return self._products_file
+    
     def send_to(self, camp):
         camp.realize(self)
 

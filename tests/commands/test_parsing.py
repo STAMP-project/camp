@@ -47,3 +47,12 @@ class RealizeTest(TestCase):
         command = Command.extract_from(command_line)
 
         self.assertIsInstance(command, Realize)
+
+
+    def test_with_a_given_resolution_model(self):
+        command_line = ["realize", "-p", "my_model.yml"]
+
+        command = Command.extract_from(command_line)
+
+        self.assertIsInstance(command, Realize)
+        self.assertEqual("my_model.yml", command.products_file)

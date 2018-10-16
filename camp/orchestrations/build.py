@@ -128,6 +128,7 @@ def generate(seedfile, workingdir, amp_result_file):
             value = immvalues[-1]
             print value
             str = str.replace(placeholder, value)
+
         if not os.path.exists("%s/compose%d"%(workingdir, i)):
             os.makedirs("%s/compose%d"%(workingdir, i))
         stream = open('%s/compose%d/docker-compose.yml'%(workingdir, i), 'w')
