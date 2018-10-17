@@ -10,7 +10,7 @@
 
 # Production Requirements
 PyYAML == 3.12
-plumbum == 1.6.3
+plumbum == 1.6.7
 jsonpath-rw == 1.4.0
 argparse == 1.2.1
 git+https://github.com/STAMP-project/ozepy.git@v1.0.0

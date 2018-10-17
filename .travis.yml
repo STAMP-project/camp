@@ -24,7 +24,9 @@ install:
   - docker build -t $DOCKER_USERNAME/$NAME:dev .
 
 script:
-  - docker run $DOCKER_USERNAME/$NAME:dev python setup.py test
+  - docker run $DOCKER_USERNAME/$NAME:dev python setup.py test -s tests.test_camp_generate
+  - python setup.py test -s tests.realize
+  - python setup.py test -s tests.execute
 
 after_success:
   - |
