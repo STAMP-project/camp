@@ -6,6 +6,12 @@
   children:
     - name: Installation
       url: /pages/setup
+    - name: camp generate
+      url: /pages/generate
+    - name: camp realize
+      url: /pages/realize
+    - name: camp execute
+      url: /pages/execute
 
 - name: Case Studies
   url: 
@@ -20,4 +26,5 @@
   children:
     - name: Publications
       url: /pages/publications
-
+    - name: Credits
+      url: /pages/contributors
