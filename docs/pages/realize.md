@@ -12,7 +12,9 @@ the given one. The tool is used in conjunction with
 
 # Usage
 
-The following command generates new artifacts by modifying existing artifacts given in a product model, i.e. realizes the product model.
+The following command generates new artifacts by modifying existing
+artifacts given in a product model, i.e. realizes the product model.
+
 ```bash
 $> camp realize -p product_model.yaml
 ```
@@ -52,10 +54,10 @@ addition, it defines how variables and values should be
 materialized. Example:
 
 ```yaml
-variable1: 
-    value1: 
-       type: int 
-       value: 10 
+variable1:
+    value1:
+       type: int
+       value: 10
        operations:
             - substituion1:
                 engine: regexp
@@ -65,22 +67,26 @@ variable1:
 variable2:
     value1:
         operations:
-            - substituion1: 
-                engine: regexp 
-                filename: "images/Dockerfile" 
+            - substituion1:
+                engine: regexp
+                filename: "images/Dockerfile"
                 placement: "USER jenkins"
-                replacement: "" 
-``` 
+                replacement: ""
+```
 
 The realization model contains definition of two variables, and
 operations which the tool needs to execute to materialize the
 variables. For example:
+
 1. `variable2` is a name of the variable with only one possible value,
    i.e., `value1`.
+
 2. `operations` contains a list of operations to execute, i.e. one
    operation with name `substitution1`
+
 3. `substitution1` - a regexp operation which substitutes the
    placement "USER jenkins" with an empty string in the file
    "images/Dockerfile"
-4. `filename` is a path to the file which is relative to a product directory
 
+4. `filename` is a path to the file which is relative to a product
+   directory
