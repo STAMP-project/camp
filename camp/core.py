@@ -10,6 +10,11 @@
 
 
 
+from camp.execute.parsers import ConfigINIParser
+from camp.execute.command.commands import ConductExperimentRunner
+
+
+
 class Camp(object):
 
 
@@ -32,3 +37,10 @@ class Camp(object):
 	products = self._realize.get_products(arguments.products_file)
 	for each_product in products:
 	    self._realize.realize_product(each_product)
+
+            
+    def execute(self, arguments):
+        parser = ConfigINIParser()
+	config = parser.parse(arguments.configuration_file)
+	experiment = ConductExperimentRunner(config)
+	result = experiment.run()
