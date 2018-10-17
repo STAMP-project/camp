@@ -1,4 +1,4 @@
-
+[![Build Status](https://travis-ci.org/STAMP-project/camp.svg?branch=master)](https://travis-ci.org/STAMP-project/camp)
 
 # CAMP &mdash; Amplify your Configuration Tests!
 
