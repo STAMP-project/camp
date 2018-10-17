@@ -12,7 +12,7 @@
 
 from unittest import TestCase
 
-from camp.commands import Command, Generate, Realize
+from camp.commands import Command, Generate, Realize, Execute
 
 
 
@@ -56,3 +56,26 @@ class RealizeTest(TestCase):
 
         self.assertIsInstance(command, Realize)
         self.assertEqual("my_model.yml", command.products_file)
+
+
+
+class ExecuteTest(TestCase):
+
+    def test_extract_the_given_configuration_file(self):
+        command_line = ["execute", "-c", "config.yml"]
+
+        command = Command.extract_from(command_line)
+
+        self.assertIsInstance(command, Execute)
+        self.assertEqual("config.yml",
+                         command.configuration_file) 
+
+    def test_use_default_when_nothing_is_given(self):
+        command_line = ["execute"]
+
+        command = Command.extract_from(command_line)
+
+        self.assertIsInstance(command, Execute)
+        self.assertEqual(Execute.DEFAULT_CONFIGURATION_FILE,
+                         command.configuration_file) 
+        
