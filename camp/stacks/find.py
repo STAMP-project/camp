@@ -145,9 +145,14 @@ def get_wanted(model):
 
 ampimages = dict()
 
+
 def print_model_deploy(model):
     result = cast_all_objects(model)
     v = get_wanted(model)
+
+    for each_feature in v["features"]:
+        print "   - ", each_feature
+              
     toprint = '\# %s: ' % v['features']
 
     for elem in result.itervalues():
@@ -179,11 +184,11 @@ def print_model_deploy(model):
             newkey = newkey + v['using']
             for x in image_spec['buildingrules'][v['using']].get('depends', []):
                 dep.append(x)
-            toprint = toprint + '%s(%s, %s) -> '%(v['name'], v['using'], [result[s]['show'] for s in v['ival']])
+            toprint = toprint + "\n" + '%s(%s, %s) -> '%(v['name'], v['using'], [result[s]['show'] for s in v['ival']])
             chain.append({'rule': v['using']})
             v = result[v['from']]
         else:
-            toprint = toprint + v['name']
+            toprint = toprint + "\n" + v['name']
             dimage = image_spec['downloadimages'][v['name']]
             chain.append({'name': dimage['name'], 'tag': dimage['tag']})
             newtag = '%s-%s-%s' % (newtag, dimage['name'], dimage['tag'])
@@ -195,7 +200,7 @@ def print_model_deploy(model):
         'features': newfeatures,
         'dep': dep
     }
-    print toprint
+    #print toprint
 
 covered = []
 
@@ -205,7 +210,7 @@ def find_covered_features(model):
         for i in get_all_objects():
             if i.name == f and not (i in covered):
                 covered.append(i)
-    print 'features covered: %s' % covered
+    #print 'features covered: %s' % covered
 
 
 def declare_feature(spec, parent):
@@ -229,7 +234,8 @@ def generate(workingdir):
     # print features
     prepare_all_sup()
 
-    print "Start searching for images"
+    print ""
+    print "Searching for stacks ..."
 
     with open(workingdir + '/images.yml', 'r') as stream:
         image_spec = yaml.load(stream)
@@ -309,7 +315,7 @@ def generate(workingdir):
     solver.push()
     for i in range(0, maxi):
         oldlen = len(covered)
-        print 'Image number %d in %.2f seconds.>>' % (i, timeit.timeit(solver.check, number=1))
+        print ' - Stack %d (in %.2f s.)' % (i+1, timeit.timeit(solver.check, number=1))
 
         find_covered_features(solver.model())
         if len(covered) == oldlen:
