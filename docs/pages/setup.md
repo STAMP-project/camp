@@ -13,18 +13,25 @@ must installed on your machine.
 ## Installing using Git & Docker
 
 The simplest solution is to use [docker](https://www.docker.com/) to
-install CAMP and all its dependencies in one container.
+run CAMP and all its dependencies in one container, using the
+following command:
 
-Once copied, go to the docker folder to build a image that contains the tool:
 ```bash
-$> cd docker/
-docker build -t camp-tool:latest .
-```
-To run the tool, please go to the samples folder:
-```bash
-cd samples/stamp/xwiki
-docker run -it -v $(pwd):/root/workingdir camp-tool:latest /bin/bash start.sh
+docker run -it -v $(pwd):/camp/workspace fchauvel/camp:v1.0.0 camp generate -d workspace
 ``` 
+
+This command will fetch the CAMP Docker image named
+`fchauvel/camp:v1.0.0` from [Docker
+Hub](https://hub.docker.com/r/fchauvel/camp/) and run it with your
+working directory ($pwd) mounted in the container at `/workspace`.
+
+We follow the following convention for tags on our Docker images:
+
+ * `vX.Y.Z` define the version of CAMP that is running
+ * `latest` define the latest released of CAMP (i.e., the higgest
+   version vX.Y.Z)
+ * `dev` define the latest commit that passed the CI checks.
+
 
 
 ## Installing from Scratch
@@ -166,7 +173,7 @@ z3: error while loading shared libraries: libgomp.so.1: cannot open shared objec
 
 ```
 
-Installing this library seems to be a prerequisite. It eventually solved the problem:
+**FIX** Installing this library seems to be a prerequisite. It eventually solved the problem:
 ```bash
-$> apt-get install libgcomp1
+$> apt-get install libgomp1
 ```
