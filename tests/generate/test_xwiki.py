@@ -15,6 +15,8 @@ from os.path import isfile, isdir, join, exists
 
 from shutil import rmtree, copytree
 
+from time import sleep
+
 from unittest import TestCase
 
 from camp.run import Runner
@@ -45,7 +47,7 @@ class GenerateXWikiTests(TestCase):
 
     def test_that_camp_generates_files(self):
         self.invoke_camp_generate()
-
+        
         self.verify_generated_files()
 
 
@@ -56,13 +58,13 @@ class GenerateXWikiTests(TestCase):
                              OBuilder(),
                              RealizationEngine()))
         runner.start(["generate", "-d", self.WORKING_DIRECTORY])
-
+        sleep(1)
 
     def verify_generated_files(self):
         for each in self.EXPECTED_GENERATED_FILES:
             path = join(self.WORKING_DIRECTORY, each)
             self.assertTrue(exists(path),
-                            "Expecting file '%s', but could not find it!" % each)
+                            "Expecting file '%s', but could not find it!" % path)
 
 
 
