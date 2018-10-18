@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/STAMP-project/camp.svg?branch=master)](https://travis-ci.org/STAMP-project/camp)
+![GitHub tag](https://img.shields.io/github/tag/STAMP-project/camp.svg)
+
 
 # CAMP &mdash; Amplify your Configuration Tests!
 
