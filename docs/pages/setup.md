@@ -9,6 +9,7 @@ uses the [Z3 theorem prover](https://github.com/Z3Prover/z3) behind
 the scenes. These are therefore the two mandatory dependencies that
 must installed on your machine.
 
+
 ## Installing using Git & Docker
 
 The simplest solution is to use [docker](https://www.docker.com/) to
@@ -36,6 +37,7 @@ install it yourself, please follow the instruction given on the
 
 
 ### Installing Z3 Solver
+
 
 First, download and unzip the last version of the Z3 solver from the
 [GitHub releases](https://github.com/Z3Prover/z3/releases/). At the
@@ -126,3 +128,45 @@ $> camp version
 ```
 ---
 
+## Troubleshooting
+
+### If the Z3 Python bindings cannot find `libz3.so`
+
+Depending on the Z3 version you are running, the Z3 Python bindings
+may not be able to find the Z3 library, though it is properly
+installed. On Debian Jessie, we saw this when testing the Python
+bindings as follows:
+
+```bash
+$> python -c "from z3 import *"
+Could not find libz3.so; consider adding the directory containing it to
+  - your system's PATH environment variable,
+  - the Z3_LIBRARY_PATH environment variable, or 
+  - to the custom Z3_LIBRARY_DIRS Python-builtin before importing the z3 module, e.g. via
+    import __builtin__
+    __builtin__.Z3_LIB_DIRS = [ '/path/to/libz3.so' ] 
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python2.7/z3/__init__.py", line 1, in <module>
+    from .z3 import *
+  File "/usr/lib/python2.7/z3/z3.py", line 44, in <module>
+    from . import z3core
+  File "/usr/lib/python2.7/z3/z3core.py", line 64, in <module>
+    raise Z3Exception("libz3.%s not found." % _ext)
+z3.z3types.Z3Exception: libz3.so not found.
+```
+
+We found this message very misleading as setting these environment
+variables did not help. Eventually, a more relevant error message is
+returned by Z3 itself when we tried to run it from the command line:
+
+```bash
+$> z3 --version
+z3: error while loading shared libraries: libgomp.so.1: cannot open shared object file: No such file or directory
+
+```
+
+Installing this library seems to be a prerequisite. It eventually solved the problem:
+```bash
+$> apt-get install libgcomp1
+```
