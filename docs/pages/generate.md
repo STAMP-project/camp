@@ -11,7 +11,7 @@ whereas the orchestrations are compositions of services that we
 defined in docker-compose files.
 
 
-Here is the tyical directory structure that CAMP generate
+Here is the typical directory structure that CAMP generate
 expects. There are three main configuration files, which must appear at
 the root of our working directory.
 
@@ -47,7 +47,7 @@ To generate the new configurations, simply run the following command:
 $> camp generate -d workspace 
 ```
 
-CAMP will then create two new directories namely `out`and `build`,
+CAMP will then create two new directories namely `out` and `build`,
 that contains the new configurations.
 
 
