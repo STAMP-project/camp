@@ -70,8 +70,8 @@ class Finder(object):
 
         with open(workingdir + '/out/ampimages.yml', 'r') as stream:
             ampspec = yaml.load(stream)
-            if not "image" in self._specification:
-                self._specification['images'] = {}
+            #if not "image" in self._specification:
+            #    self._specification['images'] = {}
             for k, v in ampspec['images'].iteritems():
                 self._specification['images'][k] = v
 
