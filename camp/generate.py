@@ -23,6 +23,8 @@ from yaml import load as load_yaml
 from z3 import Optimize, sat
 
 
+COUNT = 0
+
 
 class Z3Problem(object):
 
@@ -30,12 +32,16 @@ class Z3Problem(object):
     @staticmethod
     def from_model(model):
         start_over()
+        import ozepy, z3
+        reload(ozepy)
+        reload(z3)
         context = Context()
         context.load_metamodel()
         context.load_model(model)
 
         solver = Optimize()
 
+    
         generate_meta_constraints()
         generate_config_constraints()
 
@@ -51,6 +57,13 @@ class Z3Problem(object):
             constraint = RUNNING_SERVICE.format(each_running_service.name)
             solver.add(context.evaluate(constraint.strip()))
 
+        global COUNT
+        COUNT += 1
+        name  = "sexpr_%d" % COUNT
+        with open(name, "w") as output:
+            output.write(solver.sexpr())
+
+            
         return Z3Problem(model, context, solver)
 
 
@@ -70,7 +83,9 @@ class Z3Problem(object):
 
     def solve(self):
         z3_solution = cast_all_objects(self._solver.model())
+
         #import pprint ; pprint.pprint(z3_solution)
+            
         self._solver.add(self._context.evaluate(self._as_constraint(z3_solution)))
         return self._extract_from(z3_solution)
 
@@ -301,12 +316,22 @@ INTEGRITY_CONSTRAINTS = [
              var["domain"].contains(val))))
     """,
 
-    # Should have only one value for each setting defined in its definition
+    # Each variable in the component settings should have one
+    # corresponding value in the instance configuration
     """
     CInstance.forall(ci,
        ci.definition.settings.forall(var,
           ci.configuration.filter(val, var.domain.contains(val)).count() == 1))
     """,
+
+    # Each value in the instance configuration should have one
+    # corresponding variable in the component settings
+    """
+    CInstance.forall(ci,
+       ci.configuration.forall(val,
+          ci.definition.settings.filter(var, var.domain.contains(val)).count() == 1))
+    """,
+
 
     # Instances that do not require services cannot have any
     # service provider
