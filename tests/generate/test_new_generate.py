@@ -10,7 +10,7 @@
 
 
 
-from unittest import TestCase
+from unittest import TestCase, skip
 
 from StringIO import StringIO
 
@@ -18,7 +18,7 @@ from camp.codecs import YAMLCodec
 from camp.generate import Z3Problem
 
 
-
+#@skip("Conflict with older test that use Z3")
 class SimplestModelTest(TestCase):
 
 
