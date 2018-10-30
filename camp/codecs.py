@@ -11,7 +11,7 @@
 
 from camp.entities.model import Model, Component, Service, Goals, Variable, Feature
 
-from yaml import load
+from yaml import load, dump as yaml_dump
 
 
 
@@ -22,6 +22,28 @@ class YAMLCodec(object):
         self._warnings = []
 
 
+    def save_configuration(self, configuration, stream):
+        dictionary = self._as_dictionary(configuration)
+        yaml_dump(dictionary, stream, default_flow_style=False)
+
+    def _as_dictionary(self, configuration):
+        dictionary = {}
+        dictionary["instances"] = []
+        for each_instance in configuration.instances:
+            instance = {}
+            instance["name"] = each_instance.name
+            instance["definition"] = each_instance.definition.name
+            instance["feature_provider"] = each_instance.feature_provider
+            instance["service_providers"] = [ each.name \
+                                              for each in each_instance.service_providers]
+            instance["configuration"] = {}
+            for variable, value in each_instance.configuration:
+                instance["configuration"][variable.name] = value
+                
+            dictionary["instances"].append(instance)
+        return dictionary
+    
+
     def load_model_from(self, stream):
         data = load(stream)
         components = []
@@ -29,13 +51,10 @@ class YAMLCodec(object):
         for key, item in data.items():
             if key == Keys.COMPONENTS:
                 components = self._parse_components(item)
-
             elif key == Keys.GOALS:
                 goals = self._parse_goals(item)
-
             else:
                 self._warn(IgnoredEntry(key))
-
         return Model(components, goals)
 
 

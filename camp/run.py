@@ -10,16 +10,18 @@
 
 
 
-from sys import argv
+
 
 from camp import About
+from camp.codecs import YAMLCodec
 from camp.core import Camp
 from camp.commands import Command
-from camp.stacks.find import Finder as SFinder
-from camp.stacks.build import Builder as SBuilder
-from camp.orchestrations.find import Finder as OFinder
-from camp.orchestrations.build import Builder as OBuilder
+from camp.generate import Z3Problem
 from camp.realize.engine import RealizationEngine
+
+from StringIO import StringIO
+from sys import argv, stderr
+
 
 
 class Runner(object):
@@ -39,19 +41,21 @@ class Runner(object):
     def _welcome(self):
         print "%s v%s (%s)" % (About.PROGRAM, About.VERSION, About.LICENSE)
         print About.COPYRIGHT
+        print 
 
 
     def _goodbye(self):
+        print
         print "That's all folks!"
 
 
 
 def main():
     runner = Runner(Camp(
-        SFinder(),
-        SBuilder(),
-        OFinder(),
-        OBuilder(),
+        YAMLCodec(),
+        Z3Problem,
         RealizationEngine()
     ))
+
+    stderr = StringIO()
     runner.start(argv[1:])
