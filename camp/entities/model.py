@@ -169,15 +169,17 @@ class Component(NamedElement):
                  required_features=[],
                  provided_services=[],
                  required_services=[],
-                 variables=[]):
+                 variables=[],
+                 implementation=None):
         super(Component, self).__init__(name)
         self._required_features = [each for each in required_features]
         self._provided_features = [each for each in provided_features]
         self._required_services = [each for each in required_services]
         self._provided_services = [each for each in provided_services]
         self._variables = {each.name: each for each in variables}
+        self._implementation = implementation
 
-
+        
     @property
     def required_features(self):
         return [each for each in self._required_features]
@@ -203,6 +205,11 @@ class Component(NamedElement):
         return [each for each in self._variables.values()]
 
 
+    @property
+    def implementation(self):
+        return self._implementation
+
+
 
 class Variable(NamedElement):
 
@@ -216,6 +223,69 @@ class Variable(NamedElement):
     def domain(self):
         return [each for each in self._values]
 
+
+
+class Implementation(object):
+    pass
+
+
+
+class DockerFile(Implementation):
+    """
+    Value objects
+    """
+
+    def __init__(self, file_path):
+        assert type(file_path) is str, "Docker file must be a string!"
+        self._docker_file = file_path
+
+
+    @property
+    def docker_file(self):
+        return self._docker_file
+
+
+    def __eq__(self, other):
+        if type(other) != DockerFile:
+            return False
+        return self._docker_file == other.docker_file
+
+
+    def __hash__(self):
+        return hash(self._docker_file)
+
+
+    def __repr__(self):
+        return "DockerFile('%s')" % self._docker_file
+
+
+class DockerImage(Implementation):
+    """
+    Value objects
+    """
+
+    def __init__(self, image):
+        assert type(image) is str, "Docker image must be a string!"
+        self._docker_image = image
+
+
+    @property
+    def docker_image(self):
+        return self._docker_image
+
+
+    def __eq__(self, other):
+        if type(other) != DockerImage:
+            return False
+        return self._docker_image == other.docker_image
+
+
+    def __hash__(self):
+        return hash(self._docker_image)
+
+
+    def __repr__(self):
+        return "DockerImage('%s')" % self._docker_image
 
 
 class Instance(NamedElement):

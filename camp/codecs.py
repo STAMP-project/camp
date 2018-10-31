@@ -9,7 +9,8 @@
 #
 
 
-from camp.entities.model import Model, Component, Service, Goals, Variable, Feature
+from camp.entities.model import Model, Component, Service, Goals, Variable, \
+    Feature, DockerFile, DockerImage
 
 from yaml import load, dump as yaml_dump
 
@@ -50,11 +51,17 @@ class YAMLCodec(object):
         goals = Goals()
         for key, item in data.items():
             if key == Keys.COMPONENTS:
+                if type(item) != dict:
+                    self._wrong_type(dict, type(item), key)
+                    continue
                 components = self._parse_components(item)
             elif key == Keys.GOALS:
+                if type(item) != dict:
+                    self._wrong_type(dict, type(item), key)
+                    continue
                 goals = self._parse_goals(item)
             else:
-                self._warn(IgnoredEntry(key))
+                self._ignore(key)
         return Model(components, goals)
 
 
@@ -71,30 +78,52 @@ class YAMLCodec(object):
         provided_features = []
         required_features = []
         variables = []
+        implementation = None
 
-        for key, items in data.items():
+        for key, item in data.items():
 
             if key == Keys.PROVIDES_SERVICES:
-                for each_name in data[Keys.PROVIDES_SERVICES]:
-                    provided_services.append(Service(each_name))
+                if type(item) != list:
+                    self._wrong_type(list, type(item), Keys.COMPONENTS, name, key)
+                    continue
+                for each_name in item:
+                    provided_services.append(Service(self._escape(each_name)))
 
             elif key == Keys.REQUIRES_SERVICES:
-                for each_name in data[Keys.REQUIRES_SERVICES]:
-                    required_services.append(Service(each_name))
+                if type(item) != list:
+                    self._wrong_type(list, type(item), Keys.COMPONENTS, name, key)
+                    continue
+                for each_name in item:
+                    required_services.append(Service(self._escape(each_name)))
 
             elif key == Keys.PROVIDES_FEATURES:
-                for each_name in data[Keys.PROVIDES_FEATURES]:
-                    provided_features.append(Feature(each_name))
+                if type(item) != list:
+                    self._wrong_type(list, type(item), Keys.COMPONENTS, name, key)
+                    continue
+                for each_name in item:
+                    provided_features.append(Feature(self._escape(each_name)))
 
             elif key == Keys.REQUIRES_FEATURES:
-                for each_name in data[Keys.REQUIRES_FEATURES]:
-                    required_features.append(Feature(each_name))
+                if type(item) != list:
+                    self._wrong_type(list, type(item), Keys.COMPONENTS, name, key)
+                    continue
+                for each_name in item:
+                    required_features.append(Feature(self._escape(each_name)))
 
             elif key == Keys.VARIABLES:
-                variables = self._parse_variables(data[Keys.VARIABLES])
+                if type(item) != dict:
+                    self._wrong_type(dict, type(item), Keys.COMPONENTS, name, key)
+                    continue
+                variables = self._parse_variables(item)
 
+            elif key == Keys.IMPLEMENTATION:
+                if type(item) != dict:
+                    self._wrong_type(dict, type(item), Keys.COMPONENTS, name, key)
+                    continue
+                implementation = self._parse_implementation(name, item)
+                
             else:
-                self._warn(IgnoredEntry(Keys.COMPONENTS, name, key))
+                self._ignore(Keys.COMPONENTS, name, key)
 
 
         return Component(name,
@@ -102,8 +131,13 @@ class YAMLCodec(object):
                          required_services=required_services,
                          provided_features=provided_features,
                          required_features=required_features,
-                         variables=variables)
+                         variables=variables,
+                         implementation=implementation)
 
+    def _escape(self, name):
+        if type(name) is not str:
+            return "_" + str(name)
+        return name
 
     def _parse_variables(self, data):
         variables = []
@@ -120,20 +154,49 @@ class YAMLCodec(object):
         return Variable(name, domain)
 
 
+    def _parse_implementation(self, name, data):
+        implementation = None
+        for key, item in data.items():
+            if key == Keys.DOCKER:
+                implementation = self._parse_docker(name, item)
+            else:
+                self._ignore(Keys.COMPONENTS, name, Keys.IMPLEMENTATION, key)
+        return implementation
+
+
+    def _parse_docker(self, name, data):
+        docker = None
+        for key, item in data.items():
+            if key == Keys.FILE:
+                docker = DockerFile(self._escape(item))
+            elif key == Keys.IMAGE:
+                docker = DockerImage(self._escape(item))
+            else:
+                self._ignore(Keys.COMPONENTS, name, Keys.IMPLEMENTATION, Keys.DOCKER, key)
+        return docker
+
+
     def _parse_goals(self, data):
         running_services = []
         for key, item in data.items():
             if key == Keys.RUNNING:
-                for each_name in item:
-                    running_services.append(Service(each_name))
+                if type(item) != list:
+                    self._wrong_type(list, type(item), Keys.GOALS, key)
+                    continue
+                for index, each_name in enumerate(item, 1):
+                    running_services.append(Service(str(each_name)))
             else:
-                self._warn(IgnoredEntry(Keys.GOALS, key))
+                self._ignore(Keys.GOALS, key)
                 
         return Goals(running_services)
 
 
-    def _warn(self, warning):
-        self._warnings.append(warning)
+    def _ignore(self, *path):
+        self._warnings.append(IgnoredEntry(*path))
+
+
+    def _wrong_type(self, expected, found, *path):
+        self._warnings.append(WrongType(expected, found, *path))
 
 
     @property
@@ -146,10 +209,14 @@ class Keys:
     """
     The labels that are fixed in the YAML
     """
-
+    
     COMPONENTS = "components"
+    DOCKER = "docker"
     DOMAIN = "domain"
+    FILE = "file"
     GOALS = "goals"
+    IMAGE = "image"
+    IMPLEMENTATION = "implementation"
     PROVIDES_FEATURES = "provides_features"
     PROVIDES_SERVICES = "provides_services"
     REQUIRES_FEATURES = "requires_features"
@@ -159,17 +226,48 @@ class Keys:
 
 
 
-class IgnoredEntry(object):
-
+class Warning(object):
 
     def __init__(self, *path):
-        self._path = '/'.join(path)
+        self._path = "/".join(path)
 
 
     @property
     def path(self):
         return self._path
+    
 
+
+class IgnoredEntry(Warning):
+
+    def __init__(self, *path):
+        super(IgnoredEntry, self).__init__(*path)
 
     def __str__(self):
         return "Entry '%s' ignored!" % self._path
+
+
+    
+class WrongType(Warning):
+
+    def __init__(self, expected, found, *path):
+        super(WrongType, self).__init__(*path)
+        self._expected = expected.__name__
+        self._found = found.__name__
+
+    @property
+    def found(self):
+        return self._found
+
+
+    @property
+    def expected(self):
+        return self._expected
+
+
+    def __str__(self):
+        return "Wrong type at '%s'! Expected '%s' but found '%s'." % (self._path,
+                                                                  self._expected,
+                                                                  self._found)
+
+    
