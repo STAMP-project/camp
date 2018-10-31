@@ -17,7 +17,7 @@ from camp.codecs import YAMLCodec
 from camp.core import Camp
 from camp.commands import Command
 from camp.generate import Z3Problem
-from camp.realize.engine import RealizationEngine
+from camp.realize import Builder
 
 from StringIO import StringIO
 from sys import argv, stderr
@@ -54,7 +54,7 @@ def main():
     runner = Runner(Camp(
         YAMLCodec(),
         Z3Problem,
-        RealizationEngine()
+        Builder()
     ))
 
     stderr = StringIO()
