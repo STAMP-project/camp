@@ -24,7 +24,7 @@ install:
   - docker build -t $DOCKER_USERNAME/$NAME:dev .
 
 script:
-  - python setup.py test -s tests.entities test -s tests.codecs
+  - docker run -it $DOCKER_USERNAME/$NAME:dev python setup.py test -s tests.entities test -s tests.codecs
   - docker run -it $DOCKER_USERNAME/$NAME:dev python setup.py test -s tests.generate
   - python setup.py test -s tests.realize
   - python setup.py test -s tests.execute
