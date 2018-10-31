@@ -12,7 +12,7 @@
 from unittest import TestCase
 
 from camp.entities.model import Model, Service, Feature, Component, \
-    Variable, Goals
+    Variable, Goals, DockerFile
 from camp.entities.validation import *
 
 
@@ -63,6 +63,16 @@ class TestModelIsInvalid(TestCase):
         self._validate_model()
 
         self._verify_errors(EmptyVariableDomain)
+
+        
+    def test_when_a_docker_file_does_not_exists(self):
+        self._components = [Component(name="c1",
+                                      provided_services=[Service("S1")],
+                                      implementation=DockerFile("this/file/does_not_exist"))]
+
+        self._validate_model()
+
+        self._verify_errors(DockerFileNotFound)
 
 
     def _verify_errors(self, *expected_errors):

@@ -10,6 +10,10 @@
 
 
 
+from os.path import isfile, isdir, join as join_paths
+
+
+
 class Error(object):
 
     def __init__(self, problem, hint):
@@ -78,10 +82,23 @@ class EmptyVariableDomain(Error):
     HINT = "Variable must have at least one possible value."
 
 
+    
+class DockerFileNotFound(Error):
+
+    def __init__(self, component, docker_file, workspace):
+        super(DockerFileNotFound, self).__init__(
+            self.PROBLEM % (docker_file, component.name),
+            self.HINT % workspace)
+
+    PROBLEM = "The Dockerfile '%s' of component '%s' cannot be found."
+    HINT = "Is this the relative path from your workspace '%s'?"
+
+    
 
 class Checker(object):
 
-    def __init__(self):
+    def __init__(self, workspace=None):
+        self._workspace = workspace or "temp"
         self._errors = []
 
 
@@ -141,6 +158,8 @@ class Checker(object):
         self._provided_services_are_defined(model, component)
         for each_variable in component.variables:
             each_variable.accept(self, model, component)
+        if component.implementation:
+            component.implementation.accept(self, model, component)
 
 
     def _required_features_are_defined(self, model, component):
@@ -179,6 +198,18 @@ class Checker(object):
         if len(variable.domain) == 0:
             self._report(EmptyVariableDomain(component, variable))
 
+
+    def visit_dockerfile(self, dockerfile, model, component):
+        path = join_paths(self._workspace, dockerfile.docker_file)
+        if not isfile(dockerfile.docker_file):
+            self._report(DockerFileNotFound(component,
+                                            dockerfile.docker_file,
+                                            self._workspace))
+            
+
+    def visit_dockerimage(self, dockerimage, model, component):
+        pass
+    
 
     def _report(self, new_error):
         self._errors.append(new_error)
