@@ -9,6 +9,7 @@
 #
 
 
+
 from camp.entities.model import DockerFile, DockerImage
 
 from os import makedirs
@@ -68,7 +69,6 @@ class Builder(object):
     def _model_docker_file(self, instance):
         return join_paths(self._workspace,
                           instance.definition.implementation.docker_file)
-
 
     def _docker_file_for(self, instance):
         return join_paths(self._directory_for(instance),"Dockerfile")

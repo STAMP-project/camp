@@ -66,7 +66,7 @@ class BuilderTest(TestCase):
     def generated_components(self):
         return [each_file \
                 for each_file in listdir(self.image_directory)\
-                if isdir(each_file) ]
+                if isdir(join_paths(self.image_directory, each_file)) ]
 
 
     def assert_docker_file_built_from(self, source_image, component):
@@ -146,7 +146,7 @@ class DockerFileGenerated(BuilderTest):
                                                 jdk_0 ])
         self.build(configuration)
 
-        self.assert_directory_structure(["server_0"])
+        self.assert_directory_structure(["server_0", "jdk_0"])
         self.assert_docker_file_built_from("camp-jdk_0", "server_0")
         self.assert_docker_file_built_from("openjdk:8-jre", "jdk_0")
 
