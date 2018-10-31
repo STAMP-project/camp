@@ -10,14 +10,13 @@
 
 
 
-from abc import ABCMeta, abstractmethod
+
+from unittest import TestCase
 
 
 
-class Visitee(object):
+class FilesAreGenerated(TestCase):
 
-	__metaclass__ = ABCMeta
 
-	@abstractmethod
-	def accept(self, visitor, **kwagrs):
-		pass
+    def test_that_passes(self):
+        self.assertTrue(True)

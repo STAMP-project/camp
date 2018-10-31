@@ -9,13 +9,6 @@
 #
 
 
-from abc import ABCMeta, abstractmethod
+class Builder(object):
 
-
-class ABC_subst_realizer(object):
-
-	__metaclass__ = ABCMeta
-
-	@abstractmethod
-	def exe_subst(self, substitution):
-		pass
+    pass

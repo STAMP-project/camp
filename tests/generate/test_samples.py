@@ -12,7 +12,7 @@
 from camp.codecs import YAMLCodec
 from camp.core import Camp
 from camp.generate import Z3Problem
-from camp.realize.engine import RealizationEngine
+from camp.realize import Builder
 from camp.run import Runner
 
 
@@ -77,7 +77,7 @@ class FilesAreGenerated(TestCase):
     def invoke_camp_generate(self):
         runner = Runner(Camp(YAMLCodec(),
                              Z3Problem,
-                             RealizationEngine()))
+                             Builder()))
         runner.start(["generate", "-d", self._working_directory])
 
 
