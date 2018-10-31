@@ -1,6 +1,0 @@
-instances:
-- configuration: {}
-  definition: server
-  feature_provider: null
-  name: server_0
-  service_providers: []
