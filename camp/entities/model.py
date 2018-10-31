@@ -225,7 +225,7 @@ class Variable(NamedElement):
 
 
 
-class Implementation(object):
+class Implementation(Visitee):
     pass
 
 
