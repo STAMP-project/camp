@@ -12,6 +12,9 @@
 components:
   server:
     provides_services: [ Awesome ]
+    implementation:
+      docker:
+        file: server/Dockerfile
 goals:
   running:
     - Awesome
