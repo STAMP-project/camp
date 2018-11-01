@@ -16,14 +16,14 @@
 #
 
 FROM jenkins:2.32.1
-MAINTAINER Anatoly Vasilevskiy <Anatoly.Vasilevskiy@sintef.no>
+LABEL maintainer "Anatoly Vasilevskiy <Anatoly.Vasilevskiy@sintef.no>"
 
 USER root
 
-RUN apt-get update && apt-get install -y openssl \
-						sshpass \
-						openssh-server \
-						git
+RUN apt-get update && \
+    apt-get install -y openssl sshpass openssh-server git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN echo 'jenkins:jenkins' | chpasswd \
 	&& mkdir /var/run/sshd	
