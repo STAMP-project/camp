@@ -43,13 +43,14 @@ class BuilderTest(TestCase):
 
         self._builder = Builder()
 
-    WORKING_DIRECTORY = "temp/realize"
+    WORKING_DIRECTORY = "temp/realize/docker"
 
     DOCKER_FILE = ("FROM openjdk:8-jre\n"
                    "RUN echo this is nice\n")
 
     def build(self, configuration):
-        self._builder.build(configuration, self.WORKING_DIRECTORY)
+        destination = join_paths(self.WORKING_DIRECTORY, "out")
+        self._builder.build(configuration, self.WORKING_DIRECTORY, destination)
 
 
     def assert_directory_structure(self, expected_components):
@@ -60,7 +61,7 @@ class BuilderTest(TestCase):
 
     @property
     def image_directory(self):
-        return join_paths(self.WORKING_DIRECTORY, "images")
+        return join_paths(self.WORKING_DIRECTORY, "out", "images")
 
 
     def generated_components(self):

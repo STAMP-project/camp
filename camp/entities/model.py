@@ -355,12 +355,12 @@ class DockerImage(Implementation):
 
 class Instance(NamedElement):
 
-    def __init__(self, name, definition):
+    def __init__(self, name, definition, configuration=None):
         super(Instance, self).__init__(name)
         self._definition = definition
         self._feature_provider = None
         self._service_providers = []
-        self._configuration = []
+        self._configuration = configuration if configuration else []
 
     @property
     def definition(self):
