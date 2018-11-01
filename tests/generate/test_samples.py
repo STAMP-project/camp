@@ -30,8 +30,8 @@ from unittest import TestCase
 class FilesAreGenerated(TestCase):
 
 
-    def test_one(self):
-        self.prepare_sample("one")
+    def test_single_component(self):
+        self.prepare_sample("single_component")
         
         self.invoke_camp_generate()
         
