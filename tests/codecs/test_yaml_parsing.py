@@ -267,40 +267,75 @@ class IgnoredEntriesAreReported(TestCase):
         text = ("components:\n"
                 "   server:\n"
                 "      provides_services: [ Wonderful ]\n"
-                "extra: this should not be there!\n"
+                "extra: this entry should be reported!\n"
                 "goals:\n"
                 "   running:\n"
                 "      - Wonderful\n")
 
         model = self._codec.load_model_from(StringIO(text))
 
-        self.assertEqual(1, len(self._codec.warnings))
-        self.assertEqual("extra",
-                         self._codec.warnings[0].path)
+        self.assert_extra_is("extra")
 
-
+        
     def test_when_an_extra_entry_is_in_a_component(self):
         text = ("components:\n"
                 "   server:\n"
                 "      provides_services: [ Wonderful ]\n"
-                "      extra: this should not be there!\n"
+                "      extra: this entry should be reported!\n"
                 "goals:\n"
                 "   running:\n"
                 "      - Wonderful\n")
 
         model = self._codec.load_model_from(StringIO(text))
 
-        self.assertEqual(1, len(self._codec.warnings))
-        self.assertEqual("components/server/extra",
-                         self._codec.warnings[0].path)
+        self.assert_extra_is("components/server/extra")
+        
 
+    def test_when_an_extra_entry_is_in_the_variables(self):
+        text = ("components:\n"
+                "   server:\n"
+                "      provides_services: [ Wonderful ]\n"
+                "      variables:\n"
+                "         memory:\n"
+                "            extra: this entry should be reported!\n"
+                "            domain: [ 1GB, 2GB]\n"
+                "goals:\n"
+                "   running:\n"
+                "      - Wonderful\n")
+
+        model = self._codec.load_model_from(StringIO(text))
+
+        self.assert_extra_is("components/server/variables/memory/extra")
+
+    
+    def test_when_an_extra_entry_is_in_a_substitution(self):
+        text = ("components:\n"
+                "   server:\n"
+                "      provides_services: [ Wonderful ]\n"
+                "      variables:\n"
+                "         memory:\n"
+                "            domain: [ 1GB, 2GB]\n"
+                "            realization: \n"
+                "              - targets: [ file1 ]\n"
+                "                pattern: mem=1GB\n"
+                "                extra: this entry should be reported\n"
+                "                replacements: [mem=1GB, mem=2GB]\n"
+                "goals:\n"
+                "   running:\n"
+                "      - Wonderful\n")
+
+        model = self._codec.load_model_from(StringIO(text))
+
+        self.assert_extra_is("components/server/variables/memory/realization/#1/extra")
+
+        
 
     def test_when_an_extra_entry_is_in_the_implementation(self):
         text = ("components:\n"
                 "   server:\n"
                 "      provides_services: [ Wonderful ]\n"
                 "      implementation:\n"
-                "         extra: this should not be there!\n"
+                "         extra: this entry should be reported!\n"
                 "         docker:\n"
                 "            file: DockerFile\n"
                 "goals:\n"
@@ -309,9 +344,8 @@ class IgnoredEntriesAreReported(TestCase):
 
         model = self._codec.load_model_from(StringIO(text))
 
-        self.assertEqual(1, len(self._codec.warnings))
-        self.assertEqual("components/server/implementation/extra",
-                         self._codec.warnings[0].path)
+        self.assert_extra_is("components/server/implementation/extra")
+        
 
     def test_when_an_extra_entry_is_in_the_docker(self):
         text = ("components:\n"
@@ -319,7 +353,7 @@ class IgnoredEntriesAreReported(TestCase):
                 "      provides_services: [ Wonderful ]\n"
                 "      implementation:\n"
                 "         docker:\n"
-                "            extra: this should not be there!\n"
+                "            extra: this entry should be reported!\n"
                 "            file: DockerFile\n"
                 "goals:\n"
                 "   running:\n"
@@ -327,9 +361,7 @@ class IgnoredEntriesAreReported(TestCase):
 
         model = self._codec.load_model_from(StringIO(text))
 
-        self.assertEqual(1, len(self._codec.warnings))
-        self.assertEqual("components/server/implementation/docker/extra",
-                         self._codec.warnings[0].path)
+        self.assert_extra_is("components/server/implementation/docker/extra")
 
 
     def test_when_an_extra_entry_is_in_the_goals(self):
@@ -337,14 +369,18 @@ class IgnoredEntriesAreReported(TestCase):
                 "   server:\n"
                 "      provides_services: [ Wonderful ]\n"
                 "goals:\n"
-                "   extra: this should not be there!\n"
+                "   extra: this entry should be reported!\n"
                 "   running:\n"
                 "      - Wonderful\n")
 
         model = self._codec.load_model_from(StringIO(text))
 
+        self.assert_extra_is("goals/extra")
+
+    
+    def assert_extra_is(self, expected_path):
         self.assertEqual(1, len(self._codec.warnings))
-        self.assertEqual("goals/extra",
+        self.assertEqual(expected_path,
                          self._codec.warnings[0].path)
 
 
@@ -451,7 +487,6 @@ class TypeMismatchAreReported(TestCase):
         self.assert_warning("dict", "str", "components/server/implementation")
 
 
-
     def test_with_a_string_as_goals(self):
         text = ("components:\n"
                 "   server:\n"
@@ -475,9 +510,53 @@ class TypeMismatchAreReported(TestCase):
         self.assert_warning("list", "str", "goals/running")
 
 
+    def test_with_a_string_as_substitution_replacements(self):
+        text = ("components:\n"
+                "   server:\n"
+                "      provides_services: [ Awesome ]\n"
+                "      variables:\n"
+                "        memory:\n"
+                "          domain: [1GB, 2GB ]\n"
+                "          realization:\n"
+                "             - targets: [ Dockerfile ]\n"
+                "               pattern: xmem=1GB\n"
+                "               replacements: This should not be a string!\n"
+                "goals:\n"
+                "  running: [ Awesome ]\n")
 
-    def assert_warning(self, expected, found, path):
-        self.assertEqual(1, len(self._codec.warnings),
+        model = self._codec.load_model_from(StringIO(text))
+
+        self.assert_warning("list",
+                            "str",
+                            "components/server/variables/memory/realization/#1/replacements",
+                            2)
+
+
+    def test_with_a_string_as_substitution_targets(self):
+        text = ("components:\n"
+                "   server:\n"
+                "      provides_services: [ Awesome ]\n"
+                "      variables:\n"
+                "        memory:\n"
+                "          domain: [1GB, 2GB ]\n"
+                "          realization:\n"
+                "             - targets: This should not be a string!\n"
+                "               pattern: xmem=1GB\n"
+                "               replacements: [xmem=1GB, xmem=2GB]\n"
+                "goals:\n"
+                "  running: [ Awesome ]\n")
+
+        model = self._codec.load_model_from(StringIO(text))
+
+        self.assert_warning("list",
+                            "str",
+                            "components/server/variables/memory/realization/#1/targets",
+                            2)
+
+
+
+    def assert_warning(self, expected, found, path, warning_count=1):
+        self.assertEqual(warning_count, len(self._codec.warnings),
                          [str(w) for w in self._codec.warnings])
         self.assertEqual(path,
                          self._codec.warnings[0].path)
@@ -598,3 +677,97 @@ class TypeMismatchesAreNotReportedWhenStringIsExpected(TestCase):
         model = self._codec.load_model_from(StringIO(text))
 
         self.assertEqual(0, len(self._codec.warnings))
+
+
+
+class MissingMandatoryEntriesAreReported(TestCase):
+
+
+    def setUp(self):
+        self._codec = YAMLCodec()
+
+
+    def test_when_omitting_substitution_targets(self):
+        text = ("components:\n"
+                "   server:\n"
+                "      provides_services: [ Wonderful ]\n"
+                "      variables:\n"
+                "        memory:\n"
+                "          domain: [1GB, 2GB, 4GB]\n"
+                "          realization:\n"
+                "             - pattern: xmem=1GB\n"
+                "               replacements: [xmem=1, xmem=2, xmem=4]\n"
+                "goals:\n"
+                "   running:\n"
+                "      - Wonderful\n")
+
+        model = self._codec.load_model_from(StringIO(text))
+
+        self.assert_missing("components/server/variables/memory/realization/#1",
+                            ["targets"])
+
+
+    def test_when_omitting_substitution_pattern(self):
+        text = ("components:\n"
+                "   server:\n"
+                "      provides_services: [ Wonderful ]\n"
+                "      variables:\n"
+                "        memory:\n"
+                "          domain: [1GB, 2GB, 4GB]\n"
+                "          realization:\n"
+                "             - targets: [ Dockerfile ]\n"
+                "               replacements: [xmem=1, xmem=2, xmem=4]\n"
+                "goals:\n"
+                "   running:\n"
+                "      - Wonderful\n")
+
+        model = self._codec.load_model_from(StringIO(text))
+
+        self.assert_missing("components/server/variables/memory/realization/#1",
+                            ["pattern"])
+        
+
+    def test_when_omitting_substitution_replacements(self):
+        text = ("components:\n"
+                "   server:\n"
+                "      provides_services: [ Wonderful ]\n"
+                "      variables:\n"
+                "        memory:\n"
+                "          domain: [1GB, 2GB, 4GB]\n"
+                "          realization:\n"
+                "             - targets: [ Dockerfile ]\n"
+                "               pattern: xmem=1GB\n"
+                "goals:\n"
+                "   running:\n"
+                "      - Wonderful\n")
+
+        model = self._codec.load_model_from(StringIO(text))
+
+        self.assert_missing("components/server/variables/memory/realization/#1",
+                            ["replacements"])
+
+
+    def test_when_omitting_the_docker_file(self):
+        text = ("components:\n"
+                "   server:\n"
+                "      provides_services: [ Wonderful ]\n"
+                "      implementation:\n"
+                "         docker: {}\n"
+                "goals:\n"
+                "   running:\n"
+                "      - Wonderful\n")
+
+        model = self._codec.load_model_from(StringIO(text))
+
+        self.assert_missing("components/server/implementation/docker",
+                            ["file", "image"])
+        
+
+
+    def assert_missing(self, path, candidates):
+        self.assertEqual(1, len(self._codec.warnings))
+        self.assertEqual(path,
+                         self._codec.warnings[0].path)
+        self.assertItemsEqual(candidates,
+                              self._codec.warnings[0].candidates)
+        
