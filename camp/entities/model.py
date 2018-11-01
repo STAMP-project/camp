@@ -34,7 +34,7 @@ class NamedElement(Visitee):
     """
 
     def __init__(self, name):
-        assert name and type(name) == str, "name must be a string!"
+        assert name and isinstance(name, str), "name must be a string!"
         self._name = name
 
 
@@ -62,19 +62,18 @@ class Model(Visitee):
         for any_feature in self.features:
             if any_feature.name == identifier:
                 return any_feature
-            
+
         else:
             raise KeyError(identifier)
 
 
-    def __contains__(self, object):
-        kind = type(object)
-        if kind == Feature:
-            return object in self.features
-        elif kind == Component:
-            return object.name in self._components
-        elif kind == Service:
-            return object in self.services
+    def __contains__(self, item):
+        if isinstance(item, Feature):
+            return item in self.features
+        elif isinstance(item, Component):
+            return item.name in self._components
+        elif isinstance(item, Service):
+            return item in self.services
         else:
             return None
 
@@ -124,7 +123,8 @@ class Service(NamedElement):
 
 
     def __eq__(self, other):
-        if type(other) != Service: return False
+        if not isinstance(other, Service):
+            return False
         return self._name == other.name
 
 
@@ -148,7 +148,8 @@ class Feature(NamedElement):
 
 
     def __eq__(self, other):
-        if type(other) != Feature: return False
+        if not isinstance(other, Feature):
+            return False
         return self._name == other.name
 
 
@@ -165,21 +166,26 @@ class Component(NamedElement):
 
 
     def __init__(self, name,
-                 provided_features=[],
-                 required_features=[],
-                 provided_services=[],
-                 required_services=[],
-                 variables=[],
+                 provided_features=None,
+                 required_features=None,
+                 provided_services=None,
+                 required_services=None,
+                 variables=None,
                  implementation=None):
         super(Component, self).__init__(name)
-        self._required_features = [each for each in required_features]
-        self._provided_features = [each for each in provided_features]
-        self._required_services = [each for each in required_services]
-        self._provided_services = [each for each in provided_services]
-        self._variables = {each.name: each for each in variables}
+        self._required_features = [each for each in required_features] \
+                                  if required_features else []
+        self._provided_features = [each for each in provided_features] \
+                                  if provided_features else []
+        self._required_services = [each for each in required_services] \
+                                  if required_services else []
+        self._provided_services = [each for each in provided_services] \
+                                  if provided_services else []
+        self._variables = {each.name: each for each in variables} \
+                          if variables else {}
         self._implementation = implementation
 
-        
+
     @property
     def required_features(self):
         return [each for each in self._required_features]
@@ -217,7 +223,8 @@ class Variable(NamedElement):
     def __init__(self, name, values, realization=None):
         super(Variable, self).__init__(name)
         self._values = [each for each in values]
-        self._realization = [each for each in realization] if realization else []
+        self._realization = [each for each in realization] \
+                            if realization else []
 
     @property
     def domain(self):
@@ -237,14 +244,14 @@ class Substitution(Visitee):
 
 
     def __init__(self, targets, pattern, replacements):
-        assert all(type(t) is str for t in targets), \
+        assert all(isinstance(t, str) for t in targets), \
             "Targets must be string objects!"
         self._targets = targets
 
-        assert type(pattern) is str, "Pattern must be a string object"
+        assert isinstance(pattern, str), "Pattern must be a string object"
         self._pattern = pattern
-        
-        assert all(type(r) is str for r in replacements), \
+
+        assert all(isinstance(r, str) for r in replacements), \
             "Replacements must be string objects!"
         self._replacements = replacements
 
@@ -253,7 +260,7 @@ class Substitution(Visitee):
     def targets(self):
         return [each for each in self._targets]
 
-    
+
     @property
     def pattern(self):
         return self._pattern
@@ -265,7 +272,7 @@ class Substitution(Visitee):
 
 
     def __eq__(self, other):
-        if type(other) is not Substitution:
+        if not isinstance(other, Substitution):
             return False
         return set(self._targets) == set(other.targets) \
             and self._pattern == other.pattern \
@@ -278,7 +285,7 @@ class Substitution(Visitee):
                 sorted(self._targets) \
                 + [self._pattern] \
                 + self._replacements))
-                
+
 
 
 class Implementation(Visitee):
@@ -292,7 +299,7 @@ class DockerFile(Implementation):
     """
 
     def __init__(self, file_path):
-        assert type(file_path) is str, "Docker file must be a string!"
+        assert isinstance(file_path, str), "Docker file must be a string!"
         self._docker_file = file_path
 
 
@@ -302,7 +309,7 @@ class DockerFile(Implementation):
 
 
     def __eq__(self, other):
-        if type(other) != DockerFile:
+        if not isinstance(other, DockerFile):
             return False
         return self._docker_file == other.docker_file
 
@@ -315,13 +322,14 @@ class DockerFile(Implementation):
         return "DockerFile('%s')" % self._docker_file
 
 
+
 class DockerImage(Implementation):
     """
     Value objects
     """
 
     def __init__(self, image):
-        assert type(image) is str, "Docker image must be a string!"
+        assert isinstance(image, str), "Docker image must be a string!"
         self._docker_image = image
 
 
@@ -344,6 +352,7 @@ class DockerImage(Implementation):
         return "DockerImage('%s')" % self._docker_image
 
 
+
 class Instance(NamedElement):
 
     def __init__(self, name, definition):
@@ -362,17 +371,17 @@ class Instance(NamedElement):
     def service_providers(self):
         return self._service_providers
 
-    
+
     @service_providers.setter
     def service_providers(self, new_providers):
         self._service_providers = new_providers
 
-        
+
     @property
     def feature_provider(self):
         return self._feature_provider
 
-    
+
     @feature_provider.setter
     def feature_provider(self, new_provider):
         self._feature_provider = new_provider
@@ -392,31 +401,34 @@ class Instance(NamedElement):
 class Configuration(Visitee):
 
 
-    def __init__(self, model, instances=[]):
-        self._instances = {each.name:each for each in instances}
+    def __init__(self, model, instances=None):
+        self._instances = {each.name:each for each in instances} \
+                          if instances else {}
 
 
     def resolve(self, identifier):
         return self._instances[identifier]
-    
+
 
     @property
     def instance_count(self):
         return len(self._instances)
-    
-    
+
+
     @property
     def instances(self):
         return [ each for each in self._instances.values() ]
-    
-    
+
+
 
 class Goals(object):
 
 
-    def __init__(self, services=[], features=[]):
-        self._services = [each for each in services]
-        self._features = [each for each in features]
+    def __init__(self, services=None, features=None):
+        self._services = [each for each in services] \
+                         if services else []
+        self._features = [each for each in features] \
+                         if features else []
 
 
     @property
@@ -427,4 +439,3 @@ class Goals(object):
     @property
     def features(self):
         return [each for each in self._features]
-
