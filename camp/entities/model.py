@@ -214,15 +214,71 @@ class Component(NamedElement):
 class Variable(NamedElement):
 
 
-    def __init__(self, name, values):
+    def __init__(self, name, values, realization=None):
         super(Variable, self).__init__(name)
         self._values = [each for each in values]
-
+        self._realization = [each for each in realization] if realization else []
 
     @property
     def domain(self):
         return [each for each in self._values]
 
+
+    @property
+    def realization(self):
+        return [each for each in self._realization]
+
+
+
+class Substitution(Visitee):
+    """
+    Value object
+    """
+
+
+    def __init__(self, targets, pattern, replacements):
+        assert all(type(t) is str for t in targets), \
+            "Targets must be string objects!"
+        self._targets = targets
+
+        assert type(pattern) is str, "Pattern must be a string object"
+        self._pattern = pattern
+        
+        assert all(type(r) is str for r in replacements), \
+            "Replacements must be string objects!"
+        self._replacements = replacements
+
+
+    @property
+    def targets(self):
+        return [each for each in self._targets]
+
+    
+    @property
+    def pattern(self):
+        return self._pattern
+
+
+    @property
+    def replacements(self):
+        return [each for each in self._replacements]
+
+
+    def __eq__(self, other):
+        if type(other) is not Substitution:
+            return False
+        return set(self._targets) == set(other.targets) \
+            and self._pattern == other.pattern \
+            and self._replacements == other.replacements
+
+
+    def __hash__(self):
+        return hash(
+            tuple(
+                sorted(self._targets) \
+                + [self._pattern] \
+                + self._replacements))
+                
 
 
 class Implementation(Visitee):

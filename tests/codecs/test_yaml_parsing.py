@@ -11,7 +11,7 @@
 
 
 from camp.codecs import YAMLCodec
-from camp.entities.model import DockerFile, DockerImage
+from camp.entities.model import DockerFile, DockerImage, Substitution
 
 from StringIO import StringIO
 
@@ -177,7 +177,33 @@ class BuiltModelAreComplete(TestCase):
         self._assert_goals(model.goals, ["Wonderful"], [])
 
 
+    def test_given_a_component_with_a_realized_variable(self):
+        text = ("components:\n"
+                "   server:\n"
+                "      provides_services: [ Wonderful ]\n"
+                "      variables:\n"
+                "        memory:\n"
+                "          domain: [1GB, 2GB, 4GB]\n"
+                "          realization:\n"
+                "             - targets: [ file1, path/to/file2 ]\n"
+                "               pattern: xmem=1GB\n"
+                "               replacements: [xmem=1, xmem=2, xmem=4]\n"
+                "goals:\n"
+                "   running:\n"
+                "      - Wonderful\n")
 
+        model = self._codec.load_model_from(StringIO(text))
+
+        self.assertEqual(0, len(self._codec.warnings),
+                        ([str(w) for w in self._codec.warnings]))
+
+        server = model.resolve("server")
+        self.assertEqual(server.variables[0].realization,
+                        [ Substitution(
+                            targets=["file1", "path/to/file2"],
+                            pattern="xmem=1GB",
+                            replacements=["xmem=1", "xmem=2", "xmem=4"])])
+        
     def _assert_components(self, model, names):
         self.assertItemsEqual(names,
                               [each.name for each in model.components])

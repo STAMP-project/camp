@@ -10,7 +10,7 @@
 
 
 from camp.entities.model import Model, Component, Service, Goals, Variable, \
-    Feature, DockerFile, DockerImage
+    Feature, DockerFile, DockerImage, Substitution
 
 from yaml import load, dump as yaml_dump
 
@@ -114,7 +114,7 @@ class YAMLCodec(object):
                 if type(item) != dict:
                     self._wrong_type(dict, type(item), Keys.COMPONENTS, name, key)
                     continue
-                variables = self._parse_variables(item)
+                variables = self._parse_variables(name, item)
 
             elif key == Keys.IMPLEMENTATION:
                 if type(item) != dict:
@@ -139,20 +139,51 @@ class YAMLCodec(object):
             return "_" + str(name)
         return name
 
-    def _parse_variables(self, data):
+    def _parse_variables(self, component, data):
         variables = []
         for key, item in data.items():
-            variables.append(self._parse_variable(key, item))
+            variables.append(self._parse_variable(component, key, item))
         return variables
 
 
-    def _parse_variable(self, name, data):
+    def _parse_variable(self, component, name, data):
         domain = []
-        if Keys.DOMAIN in data:
-            for each_value in data[Keys.DOMAIN]:
-                domain.append(str(each_value))
-        return Variable(name, domain)
+        realization = []
+        for key, item in data.items():
+            if key == Keys.DOMAIN:
+                for each_value in data[key]:
+                    domain.append(str(each_value))
+            elif key == Keys.REALIZATION:
+                for index, each in enumerate(data[key], 1):
+                    substitution = self._parse_substitution(component, name, index, each)
+                    realization.append(substitution)
+            else:
+                self._ignore(Keys.COMPONENTS, component, Keys.VARIABLES, name, key)
+                
+        return Variable(name, domain, realization)
 
+
+    def _parse_substitution(self, component, variable, index, data):
+        targets = []
+        pattern = None
+        replacements = []
+        for key, item in data.items():
+            if key == Keys.TARGETS:
+                targets = [each for each in data[key]]
+            elif key == Keys.PATTERN:
+                pattern = data[key]
+            elif key == Keys.REPLACEMENTS:
+                replacements = [each for each in data[key]]
+            else:
+                self._ignore(Keys.COMPONENTS,
+                             component,
+                             Keys.VARIABLES,
+                             variable,
+                             Key.REALIZATION,
+                             "#%d" % index,
+                             key)
+        return Substitution(targets, pattern, replacements)
+    
 
     def _parse_implementation(self, name, data):
         implementation = None
@@ -217,11 +248,15 @@ class Keys:
     GOALS = "goals"
     IMAGE = "image"
     IMPLEMENTATION = "implementation"
+    PATTERN = "pattern"
     PROVIDES_FEATURES = "provides_features"
     PROVIDES_SERVICES = "provides_services"
+    REALIZATION = "realization"
+    REPLACEMENTS = "replacements"
     REQUIRES_FEATURES = "requires_features"
     REQUIRES_SERVICES = "requires_services"
     RUNNING = "running"
+    TARGETS = "targets"
     VARIABLES = "variables"
 
 
