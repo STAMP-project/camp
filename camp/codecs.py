@@ -164,25 +164,48 @@ class YAMLCodec(object):
 
 
     def _parse_substitution(self, component, variable, index, data):
+        path = [Keys.COMPONENTS,
+                component,
+                Keys.VARIABLES,
+                variable,
+                Keys.REALIZATION,
+                "#%d" % index]
+                             
         targets = []
-        pattern = None
+        pattern = self.UNDEFINED_PATTERN
         replacements = []
         for key, item in data.items():
+
             if key == Keys.TARGETS:
+                if type(data[key]) is not list:
+                    self._wrong_type(list, type(data[key]), *(path + [key]))
+                    continue
                 targets = [each for each in data[key]]
+
             elif key == Keys.PATTERN:
                 pattern = data[key]
+
             elif key == Keys.REPLACEMENTS:
+                if type(data[key]) is not list:
+                    self._wrong_type(list, type(data[key]), *(path + [key]))
+                    continue
                 replacements = [each for each in data[key]]
+
             else:
-                self._ignore(Keys.COMPONENTS,
-                             component,
-                             Keys.VARIABLES,
-                             variable,
-                             Key.REALIZATION,
-                             "#%d" % index,
-                             key)
+                self._ignore(*(path + [key]))
+        
+        if not targets:
+            self._missing([Keys.TARGETS], *path)
+
+        if pattern == self.UNDEFINED_PATTERN:
+            self._missing([Keys.PATTERN], *path)
+
+        if not replacements:
+            self._missing([Keys.REPLACEMENTS], *path)
+            
         return Substitution(targets, pattern, replacements)
+
+    UNDEFINED_PATTERN = "missing pattern!"
     
 
     def _parse_implementation(self, name, data):
@@ -204,6 +227,12 @@ class YAMLCodec(object):
                 docker = DockerImage(self._escape(item))
             else:
                 self._ignore(Keys.COMPONENTS, name, Keys.IMPLEMENTATION, Keys.DOCKER, key)
+
+        if not docker:
+            self._missing(
+                [Keys.FILE, Keys.IMAGE],
+                Keys.COMPONENTS, name, Keys.IMPLEMENTATION, Keys.DOCKER)
+            
         return docker
 
 
@@ -229,6 +258,10 @@ class YAMLCodec(object):
     def _wrong_type(self, expected, found, *path):
         self._warnings.append(WrongType(expected, found, *path))
 
+        
+    def _missing(self, *path):
+        self._warnings.append(MissingEntry(*path))
+        
 
     @property
     def warnings(self):
@@ -305,4 +338,19 @@ class WrongType(Warning):
                                                                   self._expected,
                                                                   self._found)
 
-    
+class MissingEntry(Warning):
+
+
+    def __init__(self, candidates, *path):
+        super(MissingEntry, self).__init__(*path)
+        self._candidates = candidates
+
+
+    def __str__(self):
+        return "Incomplete entry '%s'! Possibly missing entries %s" \
+            % (self._path,
+               ", ".join("'%s'" % each for each in self._candidates))
+
+    @property
+    def candidates(self):
+        return [each for each in self._candidates]
