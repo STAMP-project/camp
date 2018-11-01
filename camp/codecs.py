@@ -10,9 +10,9 @@
 
 
 from camp.entities.model import Model, Component, Service, Goals, Variable, \
-    Feature, DockerFile, DockerImage, Substitution
+    Feature, DockerFile, DockerImage, Substitution, Instance, Configuration
 
-from yaml import load, dump as yaml_dump
+from yaml import load as load_yaml, dump as yaml_dump
 
 
 
@@ -43,10 +43,42 @@ class YAMLCodec(object):
                 
             dictionary["instances"].append(instance)
         return dictionary
+
+
+    def load_configuration_from(self, model, stream):
+        data = load_yaml(stream)
+        instances = []
+        for key, item in data["instances"].items():
+            instances.append(
+                Instance(
+                    name=key,
+                    definition=model.resolve(item["definition"])))
+
+        result = Configuration(model, instances)
+
+        for key, item in data["instances"].items():
+            instance = result.resolve(key)
+            if "feature_provider" in item \
+               and item["feature_provider"]:
+                provider = result.resolve(item["feature_provider"])
+                instance.feature_provider = provider
+            if "service_providers" in item:
+                providers = [result.resolve(each_provider)\
+                             for each_provider in item["service_providers"]]
+                instance.service_providers = providers
+            if "configuration" in item:
+                configuration = []
+                for variable_name, value in item["configuration"].items():
+                    for any_variable in instance.definition.variables:
+                        if any_variable.name == variable_name:
+                            configuration.append((any_variable, value))
+                instance.configuration = configuration
+
+        return result
     
 
     def load_model_from(self, stream):
-        data = load(stream)
+        data = load_yaml(stream)
         components = []
         goals = Goals()
         for key, item in data.items():

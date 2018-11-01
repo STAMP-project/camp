@@ -63,6 +63,7 @@ class Builder(object):
     def _copy_docker_compose_file(self):
         template = join_paths(self._input_directory, "docker-compose.yml")
         if exists(template):
+            print " - Copying %s" % template
             copyfile(template,
                      join_paths(self._output_directory, "docker-compose.yml"))
 
@@ -80,6 +81,7 @@ class Builder(object):
     def _directory_for(self, instance):
         return join_paths(self._image_directory,
                           instance.name)
+
 
     def _docker_file_for(self, instance):
         return self._file_for(instance,

@@ -47,15 +47,28 @@ class RealizeTest(TestCase):
         command = Command.extract_from(command_line)
 
         self.assertIsInstance(command, Realize)
+        self.assertEqual(Realize.DEFAULT_WORKING_DIRECTORY,
+                         command.working_directory)
+        self.assertEqual(Realize.DEFAULT_OUTPUT_DIRECTORY,
+                         command.output_directory)
 
 
-    def test_with_a_given_resolution_model(self):
-        command_line = ["realize", "-p", "my_model.yml"]
+    def test_with_a_given_input_directory(self):
+        command_line = ["realize", "-d", "my/directory"]
 
         command = Command.extract_from(command_line)
 
         self.assertIsInstance(command, Realize)
-        self.assertEqual("my_model.yml", command.products_file)
+        self.assertEqual("my/directory", command.working_directory)
+
+
+    def test_with_a_given_output_directory(self):
+        command_line = ["realize", "-o", "my/directory"]
+
+        command = Command.extract_from(command_line)
+
+        self.assertIsInstance(command, Realize)
+        self.assertEqual("my/directory", command.output_directory)
 
 
 
