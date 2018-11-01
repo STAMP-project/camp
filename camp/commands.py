@@ -38,10 +38,15 @@ class Command(object):
             "realize",
             help="Realize the variables in the test configurations")
         realize.add_argument(
-            "-p",
-            "--products",
-            dest="products",
-            help="the file that describes the products to realize")
+            "-d",
+            "--directory",
+            dest="working_directory",
+            help="the directory that describes that contains the input files")
+        realize.add_argument(
+            "-o",
+            "--output",
+            dest="output_directory",
+            help="the directory that contains the generated configurations")
 
         execute = subparsers.add_parser(
             "execute",
@@ -62,7 +67,8 @@ class Command(object):
             return Generate(namespace.working_directory)
 
         elif namespace.command == "realize":
-            return Realize(namespace.products)
+            return Realize(namespace.working_directory,
+                           namespace.output_directory)
 
         elif namespace.command == "execute":
             return Execute(namespace.configuration_file)
@@ -105,13 +111,26 @@ class Realize(Command):
     Encapsulate calls to 'camp realize ...'
     """
 
-    def __init__(self, products_file):
-        self._products_file = products_file
+    def __init__(self, working_directory, output_directory):
+        self._working_directory = working_directory or \
+                                  self.DEFAULT_WORKING_DIRECTORY
+        self._output_directory = output_directory or \
+                                 self.DEFAULT_OUTPUT_DIRECTORY
+
+    DEFAULT_WORKING_DIRECTORY = "/temp/"
+
+    DEFAULT_OUTPUT_DIRECTORY = "/temp/out"
+    
+
+    @property
+    def working_directory(self):
+        return self._working_directory
 
 
     @property
-    def products_file(self):
-        return self._products_file
+    def output_directory(self):
+        return self._output_directory
+
 
     def send_to(self, camp):
         camp.realize(self)
