@@ -23,8 +23,6 @@ from yaml import load as load_yaml
 from z3 import Optimize, sat
 
 
-COUNT = 0
-
 
 class Z3Problem(object):
 
@@ -56,13 +54,6 @@ class Z3Problem(object):
         for each_running_service in model.goals.services:
             constraint = RUNNING_SERVICE.format(each_running_service.name)
             solver.add(context.evaluate(constraint.strip()))
-
-        global COUNT
-        COUNT += 1
-        name  = "sexpr_%d" % COUNT
-        with open(name, "w") as output:
-            output.write(solver.sexpr())
-
             
         return Z3Problem(model, context, solver)
 
