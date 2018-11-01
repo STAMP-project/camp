@@ -39,7 +39,6 @@ class Z3Problem(object):
 
         solver = Optimize()
 
-    
         generate_meta_constraints()
         generate_config_constraints()
 
