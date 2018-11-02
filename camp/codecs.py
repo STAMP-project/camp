@@ -29,7 +29,8 @@ class YAMLCodec(object):
         yaml_dump(dictionary, stream, default_flow_style=False)
 
 
-    def _as_dictionary(self, configuration):
+    @staticmethod
+    def _as_dictionary(configuration):
         dictionary = {}
         dictionary[Keys.INSTANCES] = []
         for each_instance in configuration.instances:
@@ -47,7 +48,8 @@ class YAMLCodec(object):
         return dictionary
 
 
-    def load_configuration_from(self, model, stream):
+    @staticmethod
+    def load_configuration_from(model, stream):
         data = load_yaml(stream)
         
         instances = [ self._create_instance(model, item) \
@@ -95,12 +97,12 @@ class YAMLCodec(object):
         goals = Goals()
         for key, item in data.items():
             if key == Keys.COMPONENTS:
-                if type(item) != dict:
+                if not isinstance(item, dict):
                     self._wrong_type(dict, type(item), key)
                     continue
                 components = self._parse_components(item)
             elif key == Keys.GOALS:
-                if type(item) != dict:
+                if not isinstance(item, dict):
                     self._wrong_type(dict, type(item), key)
                     continue
                 goals = self._parse_goals(item)
@@ -127,41 +129,41 @@ class YAMLCodec(object):
         for key, item in data.items():
 
             if key == Keys.PROVIDES_SERVICES:
-                if type(item) != list:
+                if not isinstance(item, list):
                     self._wrong_type(list, type(item), Keys.COMPONENTS, name, key)
                     continue
                 for each_name in item:
                     provided_services.append(Service(self._escape(each_name)))
 
             elif key == Keys.REQUIRES_SERVICES:
-                if type(item) != list:
+                if not isinstance(item, list):
                     self._wrong_type(list, type(item), Keys.COMPONENTS, name, key)
                     continue
                 for each_name in item:
                     required_services.append(Service(self._escape(each_name)))
 
             elif key == Keys.PROVIDES_FEATURES:
-                if type(item) != list:
+                if not isinstance(item, list):
                     self._wrong_type(list, type(item), Keys.COMPONENTS, name, key)
                     continue
                 for each_name in item:
                     provided_features.append(Feature(self._escape(each_name)))
 
             elif key == Keys.REQUIRES_FEATURES:
-                if type(item) != list:
+                if not isinstance(item, list):
                     self._wrong_type(list, type(item), Keys.COMPONENTS, name, key)
                     continue
                 for each_name in item:
                     required_features.append(Feature(self._escape(each_name)))
 
             elif key == Keys.VARIABLES:
-                if type(item) != dict:
+                if not isinstance(item, dict):
                     self._wrong_type(dict, type(item), Keys.COMPONENTS, name, key)
                     continue
                 variables = self._parse_variables(name, item)
 
             elif key == Keys.IMPLEMENTATION:
-                if type(item) != dict:
+                if not isinstance(item, dict):
                     self._wrong_type(dict, type(item), Keys.COMPONENTS, name, key)
                     continue
                 implementation = self._parse_implementation(name, item)
@@ -178,8 +180,9 @@ class YAMLCodec(object):
                          variables=variables,
                          implementation=implementation)
 
-    def _escape(self, name):
-        if type(name) is not str:
+    @staticmethod
+    def _escape(name):
+        if not isinstance(name, str):
             return "_" + str(name)
         return name
 
@@ -195,10 +198,10 @@ class YAMLCodec(object):
         realization = []
         for key, item in data.items():
             if key == Keys.DOMAIN:
-                for each_value in data[key]:
+                for each_value in item:
                     domain.append(str(each_value))
             elif key == Keys.REALIZATION:
-                for index, each in enumerate(data[key], 1):
+                for index, each in enumerate(item, 1):
                     substitution = self._parse_substitution(component, name, index, each)
                     realization.append(substitution)
             else:
@@ -221,7 +224,7 @@ class YAMLCodec(object):
         for key, item in data.items():
 
             if key == Keys.TARGETS:
-                if type(data[key]) is not list:
+                if not isinstance(data[key], list):
                     self._wrong_type(list, type(data[key]), *(path + [key]))
                     continue
                 targets = [each for each in data[key]]
@@ -230,7 +233,7 @@ class YAMLCodec(object):
                 pattern = data[key]
 
             elif key == Keys.REPLACEMENTS:
-                if type(data[key]) is not list:
+                if not isinstance(data[key], list):
                     self._wrong_type(list, type(data[key]), *(path + [key]))
                     continue
                 replacements = [each for each in data[key]]
@@ -284,7 +287,7 @@ class YAMLCodec(object):
         running_services = []
         for key, item in data.items():
             if key == Keys.RUNNING:
-                if type(item) != list:
+                if not isinstance(item, list):
                     self._wrong_type(list, type(item), Keys.GOALS, key)
                     continue
                 for index, each_name in enumerate(item, 1):
@@ -303,8 +306,8 @@ class YAMLCodec(object):
         self._warnings.append(WrongType(expected, found, *path))
 
         
-    def _missing(self, *path):
-        self._warnings.append(MissingEntry(*path))
+    def _missing(self, candidates, *path):
+        self._warnings.append(MissingEntry(candidates, *path))
         
 
     @property
@@ -344,7 +347,7 @@ class Keys:
 
 
 
-class Warning(object):
+class YAMLWarning(object):
 
     def __init__(self, *path):
         self._path = "/".join(path)
@@ -356,7 +359,7 @@ class Warning(object):
     
 
 
-class IgnoredEntry(Warning):
+class IgnoredEntry(YAMLWarning):
 
     def __init__(self, *path):
         super(IgnoredEntry, self).__init__(*path)
@@ -366,7 +369,7 @@ class IgnoredEntry(Warning):
 
 
     
-class WrongType(Warning):
+class WrongType(YAMLWarning):
 
     def __init__(self, expected, found, *path):
         super(WrongType, self).__init__(*path)
@@ -388,7 +391,7 @@ class WrongType(Warning):
                                                                   self._expected,
                                                                   self._found)
 
-class MissingEntry(Warning):
+class MissingEntry(YAMLWarning):
 
 
     def __init__(self, candidates, *path):

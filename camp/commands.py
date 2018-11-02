@@ -92,6 +92,7 @@ class Generate(Command):
     DEFAULT_WORKING_DIRECTORY = "temp/xwiki"
 
     def __init__(self, working_directory):
+        super(Generate, self).__init__()
         self._working_directory = working_directory or \
                                   self.DEFAULT_WORKING_DIRECTORY
 
@@ -112,6 +113,7 @@ class Realize(Command):
     """
 
     def __init__(self, working_directory, output_directory):
+        super(Realize, self).__init__()
         self._working_directory = working_directory or \
                                   self.DEFAULT_WORKING_DIRECTORY
         self._output_directory = output_directory or \
@@ -147,7 +149,7 @@ class Execute(Command):
 
 
     def __init__(self, configuration_file):
-        super(Command, self).__init__()
+        super(Execute, self).__init__()
         self._configuration_file = configuration_file \
                                    or self.DEFAULT_CONFIGURATION_FILE
 
