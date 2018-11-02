@@ -12,6 +12,7 @@ RUN apt-get update && \
 	git \
         && \
     apt-get install --reinstall python-pkg-resources && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/* 
 
 WORKDIR /root
