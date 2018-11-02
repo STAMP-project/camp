@@ -10,7 +10,7 @@
 
 
 
-from camp.codecs import YAMLCodec
+from camp.codecs.yaml import YAML
 from camp.entities.model import DockerFile, DockerImage, Substitution
 
 from StringIO import StringIO
@@ -23,7 +23,7 @@ class BuiltModelAreComplete(TestCase):
 
 
     def setUp(self):
-        self._codec = YAMLCodec()
+        self._codec = YAML()
 
 
     def test_given_a_one_component_stack(self):
@@ -260,7 +260,7 @@ class BuiltModelAreComplete(TestCase):
 class IgnoredEntriesAreReported(TestCase):
 
     def setUp(self):
-        self._codec = YAMLCodec()
+        self._codec = YAML()
 
 
     def test_when_an_extra_entry_is_in_the_root(self):
@@ -389,7 +389,7 @@ class TypeMismatchAreReported(TestCase):
 
 
     def setUp(self):
-        self._codec = YAMLCodec()
+        self._codec = YAML()
 
 
     def test_with_a_string_as_component(self):
@@ -571,7 +571,7 @@ class TypeMismatchesAreNotReportedWhenStringIsExpected(TestCase):
 
 
     def setUp(self):
-        self._codec = YAMLCodec()
+        self._codec = YAML()
 
 
     def test_with_a_boolean_among_running_items(self):
@@ -684,7 +684,7 @@ class MissingMandatoryEntriesAreReported(TestCase):
 
 
     def setUp(self):
-        self._codec = YAMLCodec()
+        self._codec = YAML()
 
 
     def test_when_omitting_substitution_targets(self):
