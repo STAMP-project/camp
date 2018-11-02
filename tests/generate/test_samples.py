@@ -9,7 +9,7 @@
 #
 
 
-from camp.codecs import YAMLCodec
+from camp.codecs.yaml import YAML
 from camp.core import Camp
 from camp.generate import Z3Problem
 from camp.realize import Builder
@@ -75,10 +75,10 @@ class FilesAreGenerated(TestCase):
 
 
     def invoke_camp_generate(self):
-        runner = Runner(Camp(YAMLCodec(),
+        runner = Runner(Camp(YAML(),
                              Z3Problem,
                              Builder()))
-        runner.start(["generate", "-d", self._working_directory])
+        runner.start(["generate", "-all", "-d", self._working_directory])
 
 
     def assert_configuration_count_is(self, expected):

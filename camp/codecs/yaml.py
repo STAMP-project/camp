@@ -10,6 +10,9 @@
 
 
 
+from __future__ import absolute_import
+
+from camp.codecs.commons import Codec
 from camp.entities.model import Model, Component, Service, Goals, Variable, \
     Feature, DockerFile, DockerImage, Substitution, Instance, Configuration
 
@@ -17,7 +20,7 @@ from yaml import load as load_yaml, dump as yaml_dump
 
 
 
-class YAMLCodec(object):
+class YAML(Codec):
 
 
     def __init__(self):
@@ -37,7 +40,7 @@ class YAMLCodec(object):
             instance = {}
             instance[Keys.NAME] = each_instance.name
             instance[Keys.DEFINITION] = each_instance.definition.name
-            
+
             if each_instance.feature_provider:
                 instance[Keys.FEATURE_PROVIDER] = each_instance.feature_provider.name
             instance[Keys.SERVICE_PROVIDERS] = [ each.name \
@@ -45,7 +48,7 @@ class YAMLCodec(object):
             instance[Keys.CONFIGURATION] = {}
             for variable, value in each_instance.configuration:
                 instance[Keys.CONFIGURATION][variable.name] = value
-                
+
             dictionary[Keys.INSTANCES].append(instance)
         return dictionary
 
@@ -53,18 +56,18 @@ class YAMLCodec(object):
     @staticmethod
     def load_configuration_from(model, stream):
         data = load_yaml(stream)
-        
-        instances = [ YAMLCodec._create_instance(model, item) \
+
+        instances = [ YAML._create_instance(model, item) \
                       for item in data[Keys.INSTANCES].values() ]
 
         result = Configuration(model, instances)
 
         for each in instances:
-            YAMLCodec._connect_instance(result, each, data[Keys.INSTANCES][each.name])
+            YAML._connect_instance(result, each, data[Keys.INSTANCES][each.name])
 
         return result
 
-    
+
     @staticmethod
     def _create_instance(model, data):
         name = data[Keys.NAME]
@@ -169,7 +172,7 @@ class YAMLCodec(object):
                     self._wrong_type(dict, type(item), Keys.COMPONENTS, name, key)
                     continue
                 implementation = self._parse_implementation(name, item)
-                
+
             else:
                 self._ignore(Keys.COMPONENTS, name, key)
 
@@ -208,7 +211,7 @@ class YAMLCodec(object):
                     realization.append(substitution)
             else:
                 self._ignore(Keys.COMPONENTS, component, Keys.VARIABLES, name, key)
-                
+
         return Variable(name, domain, realization)
 
 
@@ -219,7 +222,7 @@ class YAMLCodec(object):
                 variable,
                 Keys.REALIZATION,
                 "#%d" % index]
-                             
+
         targets = []
         pattern = self.UNDEFINED_PATTERN
         replacements = []
@@ -242,7 +245,7 @@ class YAMLCodec(object):
 
             else:
                 self._ignore(*(path + [key]))
-        
+
         if not targets:
             self._missing([Keys.TARGETS], *path)
 
@@ -251,11 +254,11 @@ class YAMLCodec(object):
 
         if not replacements:
             self._missing([Keys.REPLACEMENTS], *path)
-            
+
         return Substitution(targets, pattern, replacements)
 
     UNDEFINED_PATTERN = "missing pattern!"
-    
+
 
     def _parse_implementation(self, name, data):
         implementation = None
@@ -281,7 +284,7 @@ class YAMLCodec(object):
             self._missing(
                 [Keys.FILE, Keys.IMAGE],
                 Keys.COMPONENTS, name, Keys.IMPLEMENTATION, Keys.DOCKER)
-            
+
         return docker
 
 
@@ -296,7 +299,7 @@ class YAMLCodec(object):
                     running_services.append(Service(str(each_name)))
             else:
                 self._ignore(Keys.GOALS, key)
-                
+
         return Goals(running_services)
 
 
@@ -307,10 +310,10 @@ class YAMLCodec(object):
     def _wrong_type(self, expected, found, *path):
         self._warnings.append(WrongType(expected, found, *path))
 
-        
+
     def _missing(self, candidates, *path):
         self._warnings.append(MissingEntry(candidates, *path))
-        
+
 
     @property
     def warnings(self):
@@ -322,7 +325,7 @@ class Keys:
     """
     The labels that are fixed in the YAML
     """
-    
+
     COMPONENTS = "components"
     CONFIGURATION = "configuration"
     DEFINITION = "definition"
@@ -358,7 +361,7 @@ class YAMLWarning(object):
     @property
     def path(self):
         return self._path
-    
+
 
 
 class IgnoredEntry(YAMLWarning):
@@ -370,7 +373,7 @@ class IgnoredEntry(YAMLWarning):
         return "Entry '%s' ignored!" % self._path
 
 
-    
+
 class WrongType(YAMLWarning):
 
     def __init__(self, expected, found, *path):

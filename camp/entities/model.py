@@ -34,7 +34,8 @@ class NamedElement(Visitee):
     """
 
     def __init__(self, name):
-        assert name and isinstance(name, str), "name must be a string!"
+        if not isinstance(name, str):
+            raise AssertionError("name must be a string!")
         self._name = name
 
 
@@ -244,15 +245,16 @@ class Substitution(Visitee):
 
 
     def __init__(self, targets, pattern, replacements):
-        assert all(isinstance(t, str) for t in targets), \
-            "Targets must be string objects!"
+        if not all(isinstance(t, str) for t in targets):
+            raise AssertionError("Targets must be string objects!")
         self._targets = targets
 
-        assert isinstance(pattern, str), "Pattern must be a string object"
+        if not isinstance(pattern, str):
+            raise AssertionError("Pattern must be a string object")
         self._pattern = pattern
 
-        assert all(isinstance(r, str) for r in replacements), \
-            "Replacements must be string objects!"
+        if not all(isinstance(r, str) for r in replacements):
+            raise AssertionError("Replacements must be string objects!")
         self._replacements = replacements
 
 
@@ -299,8 +301,11 @@ class DockerFile(Implementation):
     """
 
     def __init__(self, file_path):
-        assert isinstance(file_path, str), "Docker file must be a string!"
+        if not isinstance(file_path, str):
+            raise AssertionError(self.WRONG_TYPE % type(file_path))
         self._docker_file = file_path
+
+    WRONG_TYPE = "Docker file must be a string (found '%s')."
 
 
     @property
@@ -329,8 +334,11 @@ class DockerImage(Implementation):
     """
 
     def __init__(self, image):
-        assert isinstance(image, str), "Docker image must be a string!"
+        if not isinstance(image, str):
+            raise AssertionError(self.WRONG_TYPE % type(image))
         self._docker_image = image
+
+    WRONG_TYPE = "Docker image must be a string (found '%s')."
 
 
     @property
@@ -418,6 +426,23 @@ class Configuration(Visitee):
     @property
     def instances(self):
         return [ each for each in self._instances.values() ]
+
+
+    @property
+    def stacks(self):
+        def top_services():
+            for each in self.instances:
+                if all(not i.feature_provider is each for i in self.instances):
+                    yield each
+
+        def stack_of(service):
+            stack = [service]
+            while stack[-1].feature_provider:
+                stack.append(stack[-1].feature_provider)
+            return stack
+
+        for each_service in top_services():
+            yield stack_of(each_service)
 
 
 

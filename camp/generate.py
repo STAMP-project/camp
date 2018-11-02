@@ -12,7 +12,7 @@
 
 from camp.entities.model import Configuration, Instance, Component
 
-from ozepy import load_all_classes, DefineObject, ObjectVar, Not, \
+from ozepy import load_all_classes, DefineObject, ObjectVar, \
     get_all_meta_facts, get_all_config_facts, cast_all_objects, \
     generate_config_constraints, generate_meta_constraints, start_over
 
@@ -30,9 +30,6 @@ class Z3Problem(object):
     @staticmethod
     def from_model(model):
         start_over()
-        import ozepy, z3
-        reload(ozepy)
-        reload(z3)
         context = Context()
         context.load_metamodel()
         context.load_model(model)
@@ -53,7 +50,7 @@ class Z3Problem(object):
         for each_running_service in model.goals.services:
             constraint = RUNNING_SERVICE.format(each_running_service.name)
             solver.add(context.evaluate(constraint.strip()))
-            
+
         return Z3Problem(model, context, solver)
 
 
@@ -64,18 +61,35 @@ class Z3Problem(object):
 
 
     def all_solutions(self):
+        self._solver.push()
         while self.has_solution():
-            yield self.solve()
+            yield self._solve()
+
+
+    def coverage(self):
+        self._solver.push()
+        while self.has_solution():
+            self._cover()
+
 
     def has_solution(self):
         return self._solver.check() == sat
 
 
-    def solve(self):
+    def _cover(self):
         z3_solution = cast_all_objects(self._solver.model())
 
-        #import pprint ; pprint.pprint(z3_solution)
-            
+        self._context.mark_as_covered(z3_solution)
+
+        self._solver.add(self._context.evaluate(self._as_constraint(z3_solution)))
+        self._solver.pop()
+        self._solver.push()
+        self._solver.add(self._context.coverage_constraint())
+        return self._extract_from(z3_solution)
+
+
+    def _solve(self):
+        z3_solution = cast_all_objects(self._solver.model())
         self._solver.add(self._context.evaluate(self._as_constraint(z3_solution)))
         return self._extract_from(z3_solution)
 
@@ -135,7 +149,12 @@ class Context(object):
 
     def __init__(self):
         self._definitions = {}
+        self._definitions[self.COVERED_VALUES] = []
+        self._definitions[self.COVERED_COMPONENTS] = []
         exec("from ozepy import Not, Implies, Or, And", self._definitions)
+
+    COVERED_VALUES = "covered_values"
+    COVERED_COMPONENTS = "covered_components"
 
 
     def evaluate(self, constraint):
@@ -258,13 +277,51 @@ class Context(object):
         return identifier in self._definitions
 
 
+    @property
+    def covered_components(self):
+        return self.find(self.COVERED_COMPONENTS)
+
+
+    @property
+    def covered_values(self):
+        return self.find(self.COVERED_VALUES)
+
+
+    def mark_as_covered(self, z3_solution):
+        for key, item in z3_solution.items():
+            if "definition" in item:
+                definition = self.find(item["definition"])
+                if not definition in self.covered_components:
+                    self.covered_components.append(definition)
+                if "configuration" in item:
+                    for each_value in item["configuration"]:
+                        value = self.find(each_value)
+                        if not value in self.covered_values:
+                           self.covered_values.append(value)
+        print "Covered components:", self.covered_components
+        print "Covered values:", self.covered_values
+
+    def coverage_constraint(self):
+        template = ("Or([CInstance.exists(ci, ci.configuration.exists(val, And([%s]))),"
+                    "CInstance.exists(ci, And([%s]))])")
+        values = ",".join("val != %s" % each.name \
+                          for each in self.covered_values)
+        components = ",".join("ci.definition != %s" % each \
+                              for each in self.covered_components)
+        constraint = template % (values, components)
+        print constraint
+        return self.evaluate(constraint)
+
+
+
 
 INTEGRITY_VARIABLES = [
     ("CInstance", ["ci", "spi"]),
     ("Feature", ["fr", "fp"]),
     ("Service", ["sr", "sp"]),
     ("Variable", ["var"]),
-    ("Value", ["val"])
+    ("Value", ["val"]),
+    ("Component", ["cp"])
 ]
 
 
@@ -300,9 +357,9 @@ INTEGRITY_CONSTRAINTS = [
 
     # Should have a value for each setting defined in its definition
     """
-    CInstance.forall(ci, 
-       ci["definition"]["settings"].forall(var, 
-          ci["configuration"].exists(val, 
+    CInstance.forall(ci,
+       ci["definition"]["settings"].forall(var,
+          ci["configuration"].exists(val,
              var["domain"].contains(val))))
     """,
 

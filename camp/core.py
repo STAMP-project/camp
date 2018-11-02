@@ -9,7 +9,7 @@
 #
 
 
-
+from camp.codecs.graphviz import Graphviz
 from camp.execute.parsers import ConfigINIParser
 from camp.execute.command.commands import ConductExperimentRunner
 
@@ -27,32 +27,31 @@ class Camp(object):
         self._codec = codec
         self._problem = solver
         self._builder = realize
+        self._arguments = None
 
 
     def generate(self, arguments):
-        model = self._load_model(arguments)
+        self._arguments = arguments
+        model = self._load_model()
 
         problem = self._problem.from_model(model)
-        print "Searching for alternative configurations ..."
-        for index, each_configuration in enumerate(problem.all_solutions(), 1):
-            directory = join_paths(arguments.working_directory, "config_%d" % index)
-            mkdir(directory)
-            destination = join_paths(directory, self.CONFIGURATION_FILE)
-            print(" - Config. %d in '%s'." % (index, destination))
+
+        if arguments.only_coverage:
+            configurations = problem.coverage()
+        else:
+            configurations = problem.all_solutions()
+
+        print "Searching for configurations ..."        
+        for index, each_configuration in enumerate(configurations, 1):
+            self._save_as_yaml(index, each_configuration)
+            self._save_as_graphviz(index, each_configuration)
             self._summarize(each_configuration)
-
-            with open(destination, "w") as stream:
-
-                self._codec.save_configuration(each_configuration, stream)
-
         print("No more configurations.")
 
         
-    CONFIGURATION_FILE = "configuration.yml"
-        
 
-    def _load_model(self, arguments):
-        path = join_paths(arguments.working_directory, "model.yml")
+    def _load_model(self):
+        path = join_paths(self._arguments.working_directory, "model.yml")
         print("Loading model from '%s' ... " % path)
         with open(path, "r") as stream:
             model = self._codec.load_model_from(stream)
@@ -74,8 +73,34 @@ class Camp(object):
         print text
 
 
+    def _save_as_yaml(self, index, configuration):
+        directory = self._prepare_directory(index)
+        destination = join_paths(directory, self.YAML_CONFIGURATION)
+        with open(destination, "w") as stream:
+            self._codec.save_configuration(configuration, stream)
+        print("\n - Config. %d in '%s'." % (index, destination))
+
+    YAML_CONFIGURATION = "configuration.yml"
+
+
+    def _prepare_directory(self, index):
+        directory = join_paths(self._arguments.working_directory, "config_%d" % index)
+        if not isdir(directory):
+            mkdir(directory)
+        return directory
+
+
+    def _save_as_graphviz(self, index, configuration):
+        directory = self._prepare_directory(index)
+        destination = join_paths(directory, "configuration.dot")
+        with open(destination, "w") as stream:
+            graphviz = Graphviz()
+            graphviz.save_configuration(configuration, stream)
+ 
+
     def realize(self, arguments):
-        model = self._load_model(arguments)
+        self._arguments = arguments
+        model = self._load_model()
         for location, each_configuration in self._load_configurations(model, arguments):
             self._builder.build(each_configuration,
                                 arguments.working_directory,
@@ -88,7 +113,7 @@ class Camp(object):
             path = join_paths(arguments.output_directory, each_file)
             if match(r"^config_[0-9]+$", each_file) \
                and isdir(path):
-                location = join_paths(path, self.CONFIGURATION_FILE)
+                location = join_paths(path, self.YAML_CONFIGURATION)
                 print " - Loading '%s' ..." % location
                 with open(location, "r") as stream:
                     configuration = self._codec.load_configuration_from(model, stream)

@@ -13,7 +13,7 @@
 
 
 from camp import About
-from camp.codecs import YAMLCodec
+from camp.codecs.yaml import YAML
 from camp.core import Camp
 from camp.commands import Command
 from camp.generate import Z3Problem
@@ -52,7 +52,7 @@ class Runner(object):
 
 def main():
     runner = Runner(Camp(
-        YAMLCodec(),
+        YAML(),
         Z3Problem,
         Builder()
     ))

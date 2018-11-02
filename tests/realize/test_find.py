@@ -10,7 +10,7 @@
 
 
 
-from camp.codecs import YAMLCodec
+from camp.codecs.yaml import YAML
 from camp.core import Camp
 from camp.generate import Z3Problem
 from camp.realize import Builder
@@ -127,7 +127,7 @@ class AllYAMLConfigurationsAreBuilt(TestCase):
 
 
     def realize(self):
-        runner = Runner(Camp(YAMLCodec(),
+        runner = Runner(Camp(YAML(),
                              Z3Problem,
                              Builder()))
         runner.start(["realize", "-d", self.INPUT_DIRECTORY,

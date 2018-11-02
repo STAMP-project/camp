@@ -14,7 +14,7 @@ from unittest import TestCase, skip
 
 from StringIO import StringIO
 
-from camp.codecs import YAMLCodec
+from camp.codecs.yaml import YAML
 from camp.generate import Z3Problem
 
 
@@ -35,7 +35,7 @@ class SimplestModelTest(TestCase):
                                    "   running:\n"
                                    "      - MyService\n")
 
-        self._yaml = YAMLCodec()
+        self._yaml = YAML()
 
 
     def test_finds_the_only_configuration(self):

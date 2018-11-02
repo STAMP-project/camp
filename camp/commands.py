@@ -33,7 +33,19 @@ class Command(object):
             "--directory",
             dest="working_directory",
             help="the directory that contains input files")
-
+        generate.add_argument(
+            "-a",
+            "--all",
+            action="store_false",
+            dest="coverage",
+            help="Generate  all possibles configurations")
+        generate.add_argument(
+            "-c",
+            "--coverage",
+            action="store_true",
+            dest="coverage",
+            help="Generate only enough configurations to cover every single variations")
+        
         realize = subparsers.add_parser(
             "realize",
             help="Realize the variables in the test configurations")
@@ -64,7 +76,8 @@ class Command(object):
     @staticmethod
     def from_namespace(namespace):
         if namespace.command == "generate":
-            return Generate(namespace.working_directory)
+            return Generate(namespace.working_directory,
+                            namespace.coverage)
 
         elif namespace.command == "realize":
             return Realize(namespace.working_directory,
@@ -90,17 +103,24 @@ class Generate(Command):
     """
 
     DEFAULT_WORKING_DIRECTORY = "temp/xwiki"
+    DEFAULT_COVERAGE = True
 
-    def __init__(self, working_directory):
+    def __init__(self, working_directory=None, coverage=None):
         super(Generate, self).__init__()
         self._working_directory = working_directory or \
                                   self.DEFAULT_WORKING_DIRECTORY
+        self._coverage = coverage \
+                         if coverage is not None else self.DEFAULT_COVERAGE
 
 
     @property
     def working_directory(self):
         return self._working_directory
 
+
+    @property
+    def only_coverage(self):
+        return self._coverage
 
     def send_to(self, camp):
         camp.generate(self)
