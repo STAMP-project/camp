@@ -9,6 +9,7 @@
 #
 
 
+
 from camp.entities.model import Model, Component, Service, Goals, Variable, \
     Feature, DockerFile, DockerImage, Substitution, Instance, Configuration
 
@@ -27,55 +28,66 @@ class YAMLCodec(object):
         dictionary = self._as_dictionary(configuration)
         yaml_dump(dictionary, stream, default_flow_style=False)
 
+
     def _as_dictionary(self, configuration):
         dictionary = {}
-        dictionary["instances"] = []
+        dictionary[Keys.INSTANCES] = []
         for each_instance in configuration.instances:
             instance = {}
-            instance["name"] = each_instance.name
-            instance["definition"] = each_instance.definition.name
-            instance["feature_provider"] = each_instance.feature_provider
-            instance["service_providers"] = [ each.name \
-                                              for each in each_instance.service_providers]
-            instance["configuration"] = {}
+            instance[Keys.NAME] = each_instance.name
+            instance[Keys.DEFINITION] = each_instance.definition.name
+            instance[Keys.FEATURE_PROVIDER] = each_instance.feature_provider.name
+            instance[Keys.SERVICE_PROVIDERS] = [ each.name \
+                                                 for each in each_instance.service_providers]
+            instance[Keys.CONFIGURATION] = {}
             for variable, value in each_instance.configuration:
-                instance["configuration"][variable.name] = value
+                instance[Keys.CONFIGURATION][variable.name] = value
                 
-            dictionary["instances"].append(instance)
+            dictionary[Keys.INSTANCES].append(instance)
         return dictionary
 
 
     def load_configuration_from(self, model, stream):
         data = load_yaml(stream)
-        instances = []
-        for key, item in data["instances"].items():
-            instances.append(
-                Instance(
-                    name=key,
-                    definition=model.resolve(item["definition"])))
+        
+        instances = [ self._create_instance(model, item) \
+                      for item in data[Keys.INSTANCES].values() ]
 
         result = Configuration(model, instances)
 
-        for key, item in data["instances"].items():
-            instance = result.resolve(key)
-            if "feature_provider" in item \
-               and item["feature_provider"]:
-                provider = result.resolve(item["feature_provider"])
-                instance.feature_provider = provider
-            if "service_providers" in item:
-                providers = [result.resolve(each_provider)\
-                             for each_provider in item["service_providers"]]
-                instance.service_providers = providers
-            if "configuration" in item:
-                configuration = []
-                for variable_name, value in item["configuration"].items():
-                    for any_variable in instance.definition.variables:
-                        if any_variable.name == variable_name:
-                            configuration.append((any_variable, value))
-                instance.configuration = configuration
+        for each in instances:
+            self._connect_instance(result, each, data[Keys.INSTANCES][each.name])
 
         return result
+
     
+    @staticmethod
+    def _create_instance(model, data):
+        name = data[Keys.NAME]
+        definition = model.resolve(data[Keys.DEFINITION])
+        configuration = []
+        if Keys.CONFIGURATION in data:
+            for variable_name, value in data[Keys.CONFIGURATION].items():
+                for any_variable in definition.variables:
+                    if any_variable.name == variable_name:
+                        configuration.append((any_variable, value))
+                        break
+                else:
+                    raise RuntimeError("Variable '%s' has no match in the model" % variable_name)
+        return Instance(name, definition, configuration)
+
+
+    @staticmethod
+    def _connect_instance(configuration, instance, data):
+        if Keys.FEATURE_PROVIDER in data \
+           and data[Keys.FEATURE_PROVIDER]:
+            provider = configuration.resolve(data[Keys.FEATURE_PROVIDER])
+            instance.feature_provider = provider
+        if Keys.SERVICE_PROVIDERS in data:
+            providers = [configuration.resolve(each_provider) \
+                         for each_provider in data[Keys.SERVICE_PROVIDERS]]
+            instance.service_providers = providers
+
 
     def load_model_from(self, stream):
         data = load_yaml(stream)
@@ -307,12 +319,17 @@ class Keys:
     """
     
     COMPONENTS = "components"
+    CONFIGURATION = "configuration"
+    DEFINITION = "definition"
     DOCKER = "docker"
     DOMAIN = "domain"
+    FEATURE_PROVIDER = "feature_provider"
     FILE = "file"
     GOALS = "goals"
     IMAGE = "image"
     IMPLEMENTATION = "implementation"
+    INSTANCES = "instances"
+    NAME = "name"
     PATTERN = "pattern"
     PROVIDES_FEATURES = "provides_features"
     PROVIDES_SERVICES = "provides_services"
@@ -321,6 +338,7 @@ class Keys:
     REQUIRES_FEATURES = "requires_features"
     REQUIRES_SERVICES = "requires_services"
     RUNNING = "running"
+    SERVICE_PROVIDERS = "service_providers"
     TARGETS = "targets"
     VARIABLES = "variables"
 

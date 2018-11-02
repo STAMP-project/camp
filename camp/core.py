@@ -37,7 +37,7 @@ class Camp(object):
         for index, each_configuration in enumerate(problem.all_solutions(), 1):
             directory = join_paths(arguments.working_directory, "config_%d" % index)
             mkdir(directory)
-            destination = join_paths(directory, "configuration.yml")
+            destination = join_paths(directory, self.CONFIGURATION_FILE)
             print(" - Config. %d in '%s'." % (index, destination))
             self._summarize(each_configuration)
 
@@ -47,6 +47,9 @@ class Camp(object):
 
         print("No more configurations.")
 
+        
+    CONFIGURATION_FILE = "configuration.yml"
+        
 
     def _load_model(self, arguments):
         path = join_paths(arguments.working_directory, "model.yml")
@@ -80,17 +83,17 @@ class Camp(object):
 
 
     def _load_configurations(self, model, arguments):
-        print "Searching configuration in '%s' ..." % arguments.output_directory
+        print "Searching configurations in '%s' ..." % arguments.output_directory
         for each_file in listdir(arguments.output_directory):
             path = join_paths(arguments.output_directory, each_file)
             if match(r"^config_[0-9]+$", each_file) \
                and isdir(path):
-                location = join_paths(path, "configuration.yml")
+                location = join_paths(path, self.CONFIGURATION_FILE)
                 print " - Loading '%s' ..." % location
                 with open(location, "r") as stream:
                     configuration = self._codec.load_configuration_from(model, stream)
                     yield path, configuration
-
+                    
 
     def execute(self, arguments):
         parser = ConfigINIParser()

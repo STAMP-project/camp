@@ -91,6 +91,7 @@ class AllYAMLConfigurationsAreBuilt(TestCase):
             configuration_1.write(
                 "instances:\n"
                 "  server_0:\n"
+                "    name: server_0\n"
                 "    definition: server\n"
                 "    feature_provider: null\n"
                 "    services_providers: []\n"
@@ -108,6 +109,7 @@ class AllYAMLConfigurationsAreBuilt(TestCase):
             configuration_1.write(
                 "instances:\n"
                 "  server_0:\n"
+                "    name: server_0\n"
                 "    definition: server\n"
                 "    feature_provider: null\n"
                 "    services_providers: []\n"
