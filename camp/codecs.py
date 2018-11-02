@@ -37,7 +37,9 @@ class YAMLCodec(object):
             instance = {}
             instance[Keys.NAME] = each_instance.name
             instance[Keys.DEFINITION] = each_instance.definition.name
-            instance[Keys.FEATURE_PROVIDER] = each_instance.feature_provider.name
+            
+            if each_instance.feature_provider:
+                instance[Keys.FEATURE_PROVIDER] = each_instance.feature_provider.name
             instance[Keys.SERVICE_PROVIDERS] = [ each.name \
                                                  for each in each_instance.service_providers]
             instance[Keys.CONFIGURATION] = {}
@@ -52,13 +54,13 @@ class YAMLCodec(object):
     def load_configuration_from(model, stream):
         data = load_yaml(stream)
         
-        instances = [ self._create_instance(model, item) \
+        instances = [ YAMLCodec._create_instance(model, item) \
                       for item in data[Keys.INSTANCES].values() ]
 
         result = Configuration(model, instances)
 
         for each in instances:
-            self._connect_instance(result, each, data[Keys.INSTANCES][each.name])
+            YAMLCodec._connect_instance(result, each, data[Keys.INSTANCES][each.name])
 
         return result
 
