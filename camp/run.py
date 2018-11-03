@@ -19,8 +19,7 @@ from camp.commands import Command
 from camp.generate import Z3Problem
 from camp.realize import Builder
 
-from StringIO import StringIO
-from sys import argv, stderr
+from sys import argv
 
 
 
@@ -57,5 +56,4 @@ def main():
         Builder()
     ))
 
-    stderr = StringIO()
     runner.start(argv[1:])

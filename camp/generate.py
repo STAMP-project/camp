@@ -11,6 +11,9 @@
 
 
 from camp.entities.model import Configuration, Instance, Component
+from camp.util import redirect_stderr_to
+
+from os import devnull
 
 from ozepy import load_all_classes, DefineObject, ObjectVar, \
     get_all_meta_facts, get_all_config_facts, cast_all_objects, \
@@ -60,16 +63,18 @@ class Z3Problem(object):
         self._solver = solver
 
 
+    @redirect_stderr_to(devnull)
     def all_solutions(self):
         self._solver.push()
         while self.has_solution():
             yield self._solve()
 
 
+    @redirect_stderr_to(devnull)
     def coverage(self):
         self._solver.push()
         while self.has_solution():
-            self._cover()
+            yield self._cover()
 
 
     def has_solution(self):
@@ -298,9 +303,7 @@ class Context(object):
                         value = self.find(each_value)
                         if not value in self.covered_values:
                            self.covered_values.append(value)
-        print "Covered components:", self.covered_components
-        print "Covered values:", self.covered_values
-
+                           
     def coverage_constraint(self):
         template = ("Or([CInstance.exists(ci, ci.configuration.exists(val, And([%s]))),"
                     "CInstance.exists(ci, And([%s]))])")
@@ -309,7 +312,6 @@ class Context(object):
         components = ",".join("ci.definition != %s" % each \
                               for each in self.covered_components)
         constraint = template % (values, components)
-        print constraint
         return self.evaluate(constraint)
 
 

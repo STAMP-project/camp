@@ -40,7 +40,8 @@ class Camp(object):
             configurations = problem.coverage()
         else:
             configurations = problem.all_solutions()
-
+            
+        print configurations.__name__
         print "Searching for configurations ..."        
         for index, each_configuration in enumerate(configurations, 1):
             self._save_as_yaml(index, each_configuration)
