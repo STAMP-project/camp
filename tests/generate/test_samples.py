@@ -78,7 +78,7 @@ class FilesAreGenerated(TestCase):
         runner = Runner(Camp(YAML(),
                              Z3Problem,
                              Builder()))
-        runner.start(["generate", "-all", "-d", self._working_directory])
+        runner.start(["generate", "--all", "-d", self._working_directory])
 
 
     def assert_configuration_count_is(self, expected):
