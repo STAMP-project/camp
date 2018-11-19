@@ -194,16 +194,16 @@ class Checker(object):
                                                     any_service))
 
 
-    def visit_variable(self, variable, model, component):
-        if len(variable.domain) == 0:
+    def visit_variable(self, variable, model, component):    
+        if len(variable.domain) == 0 and variable.value_type != "Integer":
             self._report(EmptyVariableDomain(component, variable))
 
 
     def visit_dockerfile(self, dockerfile, model, component):
-        path = join_paths(self._workspace, dockerfile.docker_file)
-        if not isfile(dockerfile.docker_file):
+        path = join_paths(self._workspace, "template",  dockerfile.docker_file)
+        if not isfile(path):
             self._report(DockerFileNotFound(component,
-                                            dockerfile.docker_file,
+                                            path,
                                             self._workspace))
             
 
