@@ -45,7 +45,7 @@ components:
             replacements: ["MaxRequestWorkers={value}"]
     implementation:
       docker:
-        file: repo/showcase/Dockerfile
+        file: showcase/Dockerfile
 
   python:
     provides_features: [ Python ]
@@ -58,7 +58,7 @@ components:
     requires_features: [ Ubuntu ]
     implementation:
       docker:
-        file: repo/postgres/Dockerfile
+        file: postgres/Dockerfile
       
   ubuntu:
     provides_features: [ Ubuntu ]

@@ -11,6 +11,7 @@
 
 
 from camp.directories import InputDirectory, OutputDirectory
+from camp.entities.validation import Checker
 from camp.execute.parsers import ConfigINIParser
 from camp.execute.command.commands import ConductExperimentRunner
 
@@ -47,6 +48,13 @@ class Camp(object):
         print "Model loaded from '%s'." % file_name
         for each_warning in warnings:
             print " - WARNING: ", str(each_warning)
+        checker = Checker(workspace=self._input.path)
+        
+        model.accept(checker)
+        if checker.errors:
+            for each_error in checker.errors:
+                print "ERROR: ", str(each_error)
+
         return model
 
 
