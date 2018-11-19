@@ -2,7 +2,7 @@ version: '2'
 
 services:
   db:
-    build: ../repo/Postgres
+    build: ./postgres
     image: postgresql_showcase:default
     container_name: my_postgres
     environment:
@@ -18,7 +18,7 @@ services:
     expose:
       - "5432"
   web:
-    build: ../repo/Showcase
+    build: ./showcase
     image: showcase:default
     container_name: my_web
     environment:

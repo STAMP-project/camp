@@ -1,0 +1,92 @@
+#
+# CAMP
+#
+# Copyright (C) 2017, 2018 SINTEF Digital
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+
+
+
+goals:
+  running:
+    - Showcase
+
+components:
+
+  showcase:
+    provides_services: [ Showcase ]
+    requires_services: [ Postgres ]
+    requires_features: [ Python ]
+    variables:
+      thread_limit:
+        type: Integer
+        values: [ 64, 128 ]
+        realization:
+          - targets: [ docker-compose.yml ]
+            pattern: "ThreadLimit=64"
+            replacements: [ ThreadLimit=64, ThreadLimit=128 ]
+      threads_per_child:
+        type: Integer
+        values:
+          range: [0, 128]
+          coverage: 10
+        realization:
+          - targets: [ docker-compose.yml ]
+            pattern: ThreadsPerChild=25
+            replacements: ["ThreadsPerChild={value}"]
+      max_request_workers:
+        type: Integer
+        realization:
+          - targets: [ docker-compose.yml ]
+            pattern: MaxRequestWorkers=150
+            replacements: ["MaxRequestWorkers={value}"]
+    implementation:
+      docker:
+        file: repo/showcase/Dockerfile
+
+  python:
+    provides_features: [ Python ]
+    implementation:
+      docker:
+        image: python:2.7
+        
+  postgres:
+    provides_services: [ Postgres ]
+    requires_features: [ Ubuntu ]
+    implementation:
+      docker:
+        file: repo/postgres/Dockerfile
+      
+  ubuntu:
+    provides_features: [ Ubuntu ]
+    implementation:
+      docker:
+        image: ubuntu:latest
+
+
+constraints:
+#   # thread_per_child < thread_limit
+ - showcase_0_threads_per_child.value < showcase_0_thread_limit.value
+#   - CInstance.forall(ci, ci.configuration.exists(val1, Implies(val1.variable == variable("showcase", "threads_per_child"), ci.configuration.exists(val2, And([val2.variable == variable("showcase", "thread_limit"), val1.value < val2.value])))))
+   # MaxRequest_workers < 16 * ThreadsPerChild
+ - showcase_0_max_request_workers.value == 16 * showcase_0_threads_per_child.value  
+#   - CInstance.forall(ci, ci.configuration.exists(val1, Implies(val1.variable == variable("showcase", "max_request_workers"), ci.configuration.exists(val2, And([val2.variable == variable("showcase", "threads_per_child"), val1.value < 16 * val2.value])))))
+#   # Or(ThreadsPerChild >= 100 and MaxRequest_workers >= 200,
+#   # ThreadLimit <= 64, max_request_workers >=2
+ - Or([And([showcase_0_threads_per_child.value >= 100, showcase_0_max_request_workers.value >= 200]), And([showcase_0_thread_limit.value <= 64, showcase_0_max_request_workers.value >= 2])])  
+#   - Or([CInstance.forall(ci, ci.configuration.exists(val1, Implies(val1.variable == variable("showcase", "threads_per_child"), ci.configuration.exists(val2, And([val2.variable == variable("showcase", "max_request_workers"), val1.value >= 100, val2.value >= 200]))))), CInstance.forall(ci, ci.configuration.exists(val1, Implies(val1.variable == variable("showcase", "thread_limit"), ci.configuration.exists(val2, And([val2.variable == variable("showcase", "max_request_workers"), val1.value <= 64, val2.value >= 2])))))])
+
+
+
+
+
+
+
+
+
+
+
+  
