@@ -28,3 +28,5 @@
       url: /pages/publications
     - name: Credits
       url: /pages/contributors
+    - name: Change Log
+      url: /pages/changelog

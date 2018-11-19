@@ -2,136 +2,294 @@
 layout: default
 ---
 
-# The XWiki Use-case
+# The X-Wiki Use-case
 
-First, you need to fetch the CAMP sources, which contains the XWiki
-example, using the following command:
+The X-Wiki case-study illustrates how to vary the wiring between both
+the services of the orchestrations, but also between component of a
+single software stack (i.e., within a single container). In
+particular, we details how to:
 
-```bash
-git clone https://github.com/STAMP-project/camp 
+ 1. [Generate all possible configurations](#general-all);
+ 2. Generate enough configurations to [cover all single variations](#coverage)
+ 3. Realize and [run the generated configurations](#realize)
+
+The X-Wiki application is a Java service running on top of Tomcat, in
+turn running on top of a Java Runtime Environment (JRE). X-Wiki uses a
+database to persist its data, either MySQL or Postgres. By contrast,
+with the [CityGo case-study](citygo.html), there is no numerical
+variable involved.
+
+The inputs files are located in the GitHub repository under
+`samples/xwiki`. You may fetch them as follows:
+
+```console
+$ git clone https://github.com/STAMP-project/camp 
+$ cd camp/samples/xwiki
 ```
 
-Then, you are ready to run camp on the XWiki case, whose files are
-stored in `camp/samples/xwiki`.
+We assume hereafter that you already have CAMP up and running. If not,
+please refer to the [installation instructions](setup.html).
 
-```bash
-docker run -it -v $(pwd):/camp/workingspace fchauvel/camp:v1.0.0 camp generate -d workspace
+
+<a name="inputs"/>
+## The Required Inputs
+
+The sample directory contains two main entities:
+
+ 1. the `camp.yml` file that defines what can vary in the X-Wiki
+    orchestration.
+	
+ 2. the `template` directory, which contains a template implementation
+    of the orchestrations using Docker (and docker-compose).
+	
+### The CAMP Model
+
+The CAMP model (i.e., the `camp.yml` file) defines what can be varied
+in the orchestration. In this use-case, we focus on alternative
+services providers and alternative component versions.
+
+Here, our objective is to get the XWiki **service** up and running.
+
+```yaml
+goals:
+  running:
+    - XWiki
+	
+[...]
 ```
 
-This should generate four folders,
-i.e. `camp/samples/stamp/xwiki/compose1`,
-`camp/samples/stamp/xwiki/compose2`,
-`camp/samples/stamp/xwiki/compose3`,
-`camp/samples/stamp/xwiki/compose4`. Each folder contains four
-docker-compose files which set up XWiki differently. Possible options
-are on the picture below.  ![Alt text](/assets/images/xwiki_var.png
-"Possible variation in XWiki") XWiki can run on different application
-servers, different version of java, and can be hooked up to various
-DBs. These variations are captured in
-`camp/samples/stamp/xwiki/features.yml`
+For instance, we define two version of MySQL, one for Version 5 and
+one for Version 8. Both provide the `MySQL` **service**, which is
+required by some of the X-Wiki components.
 
 ```yaml
-java:
-  openjdk: [openjdk9, openjdk8]
-appsrv:
-  tomcat: [tomcat7, tomcat8, tomcat85, tomcat9]
-db:
-  mysql: [mysql8, mysql5]
-  postgres: [postgres9, postgres10]
-xwiki: [xwiki9mysql, xwiki9postgres, xwiki8mysql, xwiki8postgres]
+components:
+  [...]
+
+  xwiki9mysql:
+    provides_services: [XWiki]
+    requires_services: [MySQL]
+    requires_features : [Tomcat]
+    implementation:
+      docker:
+        file: xwiki9mysql/Dockerfile
+		
+  [...]
+
+  mysql5:
+    provides_services: [MySQL]
+    implementation:
+      docker:
+        image: mysql:5
+		
+  mysql8:
+    provides_services: [MySQL]
+    implementation:
+      docker:
+        image: mysql:8
 ```
 
-We call these possible variations - features, e.g. the feature
-`java` contains a sub-feature, which in return contains other
-features, i.e. `openjdk8`, `openjdk9`. To build docker files
-from a feature selection, we need to define rules. Those rules are
-found in `camp/samples/stamp/xwiki/images.yml`. See below:
+We proceed similarly for varying the underlying component that forms a
+container. For instance, we define two versions of the JRE, namely
+`openjdk8` and `openjdk9`. They both provide a **feature** that Tomcat
+components require.
 
 ```yaml
-downloadimages:
-  OpenJdk8:
-    features: [openjdk8]
-    name: openjdk
-    tag: 8
-...
-buildingrules:
-  Tomcat7:
-    requires: [java]
-    adds: [tomcat7]
-  Xwiki8Postgres:
-    requires: [tomcat]
-    adds: [xwiki8postrgres]
-    depends: [postrgres]
-...
+components:
+ [...]
+
+  openjdk8:
+    provides_features: [JRE]
+    implementation:
+      docker:
+        image: openjdk:8
+
+  openjdk9:
+    provides_features: [JRE]
+    implementation:
+      docker:
+        image: openjdk:9
+```
+
+### The Template
+
+In order to build configuration that we can run, CAMP needs a template
+implementation of the orchestrations. This template must include:
+
+ 1. A docker-compose file, which illustrates the bindings and the
+    configuration of each service.
+	
+ 2. Dockerfile (and any other configurations) files for the services
+    whose image must be built from scratch.
+	
+In the X-Wiki case, the template directory specify for implementation
+of every components whose image is not to be downloaded directly from
+the Docker hub.
+
+
+```console
+$ tree template
+├── docker-compose.yml
+├── tomcat7
+│   └── Dockerfile
+├── tomcat8
+│   └── Dockerfile
+├── tomcat85
+│   └── Dockerfile
+├── tomcat9
+│   └── Dockerfile
+├── xwiki8mysql
+│   ├── Dockerfile
+│   ├── mysql
+│   │   └── xwiki.cnf
+│   ├── tomcat
+│   │   └── setenv.sh
+│   └── xwiki
+│       ├── docker-entrypoint.sh
+│       └── hibernate.cfg.xml
+├── [...]
+```
+
+Note the `docker-compose.yml` at in the top-level folder, as well as
+the configuration file given for MySQL, X-Wiki and Tomcat in the
+`xwiki8mysql` sub-directory.
+
+<a name="generate-all"/>
+## How to Generate All Configurations?
+
+As for other case-studies, you can generate all possible
+configurations with the following command:
+
+```console
+$ camp generate -d . --all
+```
+
+For X-Wiki, **there are exactly 64 possible configurations** and the
+generation may take **about 50 minutes**, depending on how fast is your
+machine.
+
+These 64 configurations are basically all the permutations of
+databases (MySQL or Postgres and their possible versions), application
+server (Tomcat), JRE (openjdk) and XWiki.
+
+CAMP generates a directory named `out` that contains a sub-directory
+for each configuration generated.
+
+
+<a name="coverage"/>
+## How to Cover All Single Variations?
+
+The command to search of a subset of configurations that covers all
+single variations is:
+
+```console
+$ camp generate -d . --coverage
+CAMP v0.1.0 (MIT)
+Copyright (C) 2017, 2018 SINTEF Digital
+
+Model loaded from './model.yml'.
+Searching for configurations ...
+
+ - Config. 1 in './out/config_1/configuration.yml'.
+   Includes xwiki8postgres, postgres9, tomcat8, openjdk8
+
+ - Config. 2 in './out/config_2/configuration.yml'.
+   Includes postgres10, tomcat7, xwiki9postgres, openjdk9
+
+ - Config. 3 in './out/config_3/configuration.yml'.
+   Includes openjdk8, mysql5, tomcat9, xwiki8mysql
+
+ - Config. 4 in './out/config_4/configuration.yml'.
+   Includes mysql8, xwiki9mysql, tomcat85, openjdk9
+
+That's all folks!
+```
+
+CAMP finds **a subset of 4 configurations that covers all single
+variations**, that is all versions&mdash;listed in the CAMP
+model&mdash;of all databases, JRE and applications servers are used at
+least once.
+
+The figure below illustrates these configurations.
+
+![X-Wiki coverage]({{site.baseurl}}/assets/images/xwiki_coverage.png
+"The configurations that CAMPS generate to cover the X-Wiki case")
+
+To better visualize these configurations, we can generate such an
+image using Graphviz and Image Magic as follows. The figure below
+illustrates these selected configurations.
+
+```console
+$ find . -name "*.dot" | xargs -I file dot -Tpng file -o file.png
+$ find . -name "*.png" \
+   | tr '\n' ' ' \
+   | montage  -label '%d/%f' @- -geometry 300x300 configurations.png
+
+```
+
+<a name="realize"/>
+## How to Realize the Configurations?
+
+CAMP has generated configuration in the `out`. But so far, CAMP only
+generates a YAML file for each configuration that indicates how
+components are wired and their configurations.
+
+To transform those into real Docker configurations that we can run, we
+invoke the following command:
+
+```console
+$ camp realize -d .
+CAMP v0.1.0 (MIT)
+Copyright (C) 2017, 2018 SINTEF Digital
+
+Model loaded from './model.yml'.
+Searching configurations in './out' ...
+ - Building './out/config_3' ...
+ - Building './out/config_4' ...
+ - Building './out/config_1' ...
+ - Building './out/config_2' ...
+
+That's all folks!
+```
+
+We can see that CAMP has generate modified the template for each
+configurations. For instance:
+
+```console
+$ tree out/config_1
+out/config_1
+├── configuration.dot
+├── configuration.dot.png
+├── configuration.yml
+├── docker-compose.yml
+└── images
+    ├── build_images.sh
+    ├── tomcat8_0
+    │   └── Dockerfile
+    └── xwiki8postgres_0
+        ├── docker-compose.yml
+        ├── Dockerfile
+        ├── Dockerfile~
+        ├── tomcat
+        │   └── setenv.sh
+        └── xwiki
+            ├── docker-entrypoint.sh
+            └── hibernate.cfg.xml
 ``` 
 
-CAMP evaluates and chains such rules. A chain results in a valid
-selection of the features and compliance to constraints and the
-meta-model of CAMP. Each rule corresponds to a docker image. A chain
-of the rules stacks a set of images onto each other yielding a new
-image. A valid chain may look as follows (chains are generated by CAMP
-and could be found in `/camp/samples/stamp/xwiki/genimages.yml`):
+To run these configurations, we must first build the related docker
+images. CAMP generates a shell script (`out/images/build_images.sh`)
+to facilitate just that. We simply run:
 
-```yaml
-- chain:
-  - {rule: Xwiki8Postgres}
-  - {rule: Tomcat7}
-  - {name: openjdk, tag: 8} features: [tomcat7, openjdk8,
-  xwiki8postgres] 
-``` 
+```
+$ cd out/config_1/images 
+$ source ./build_images.sh
+```
 
-An execution of the above chain would result in a new image. CAMP
-takes a docker image from `camp/samples/stamp/xwiki/repo/Tomcat7/` and
-substitutes the from statement with `FROM openjdk:8` yielding a new
-image called `tomcat7:openjdk-8`. A docker file for the image is
-located in
-`camp/samples/stamp/xwiki/repo/build/tomcat7--openjdk-8`. Further,
-CAMP takes another docker image in
-`camp/samples/stamp/xwiki/repo/Xwiki8Postgres/` and substitutes `FROM
-tomcat:8-jre8` with `tomcat7:openjdk-8`. This generates a new docker
-image `xwiki8postgres:tomcat7-openjdk-8` in
-`camp/samples/stamp/xwiki/repo/build/xwiki8postgres--tomcat7-openjdk-8`. T
-CAMP generates the new image which good be used to test XWiki in
-different configurations, e.g. Tomcat 7, openjdk8, Postgres. Depending
-on defined constraints, CAMP can generate multiple images. In the
-given example, CAMP creates 8 new images. Each image gives us a
-**diverse deployment environment**.
+Once the images are built, we can now start our orchestration using
+docker-compose as follows:
 
-To generate a **diverse topology**, CAMP requires
-`camp/samples/stamp/xwiki/composite.yml` as follows:
-
-```yaml
-services:
-  web:
-    imgfeature: [xwiki]
-    mandatory: true
-  mysql:
-    imgfeature: [mysql]
-  postgres:
-    imgfeature: [postgres]
-images:
-  Postgres9: {name: postgres, tag: "9", features: [postgres9]}
-  ...
-constraints:
-  - Not(services['mysql'].alive() == services['postgres'].alive()) ...
-``` 
-
-The file defines a skeleton for a docker-compose file, the file
-represents 150% model, which contains all possible services. We also
-associate each service with a feature, e.g. `web` is associated
-with `xwiki`. We also define rules in the `image` section,
-e.g. `Postgres9` realizes the `postgres9` feature. The images
-is built from a default image with the label `postgres:9`. We also
-define a constraint which postulates that we cannot have mysql and
-postgres in the same docker-compose file. Each service is filled with
-data from the
-`/camp/samples/stamp/xwiki/docker-compose/docker-compose.yml`,
-where `image` is substituted with **diverse deployment
-environment**, e.g. `xwiki8postgres:tomcat7-openjdk-8` realizes
-the feature `xwiki` and therefore, the image implements the
-`web` service. The `postgres:9` image realizes the feature
-`postgres` and therefore, it implements the service
-`postgres`. In the given example, CAMP generates four different
-docker-compose files by varying the services in
-`camp/samples/stamp/xwiki/composite.yml` and generated **diverse
-deployment environment**
+```
+$ cd out/config_1
+$ docker-compose -f docker-compose.yml up 
+```
