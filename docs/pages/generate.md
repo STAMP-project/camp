@@ -2,184 +2,232 @@
 layout: default
 ---
 
-# CAMP Generate
+# CAMP generate
 
-CAMP generate amplify the test configuration. It generates new
-configuration where both the stacks and the orchestration have been
-modified. The stacks are images that run withing Docker container,
-whereas the orchestrations are compositions of services that we
-defined in docker-compose files.
-
-
-Here is the typical directory structure that CAMP generate
-expects. There are three main configuration files, which must appear at
-the root of our working directory.
-
-1. `features.yml`
-2. `images.yml`
-3. `composite.yml`
-
-Here is the structure of our workspace:
-
-```bash
-workspace
-├── composite.yml            # Controls the amplication of orchestrations
-├── docker-compose
-│  ├── docker-compose.yml    # The service orchestration to amplify
-│  └── xwiki.cnf
-├── features.yml             # Defines the features and their variants
-├── images.yml               # Control the amplications of stacks
-└── repo                     # Contains a directory per feature variants
-    ├── Tomcat7
-    ├── Tomcat8
-    ├── Tomcat85
-    ├── Tomcat9
-    ├── Xwiki8Mysql
-    ├── Xwiki8Postgres
-    ├── Xwiki9Mysql
-    └── Xwiki9Postgres
-```
-
-## Generating the Configurations
-To generate the new configurations, simply run the following command:
-
-```bash
-$> camp generate -d workspace 
-```
-
-CAMP will then create two new directories namely `out` and `build`,
-that contains the new configurations.
+CAMP generates new configurations given a description of what
+can be varied. We use here a simple made-up example to explain how to
+generate all configurations, or only the subset that [covers all
+possible variations](#coverage). We then explain how to
+define [variables](#variables) and [constraints](#constraints). We
+also give a few shell commands to [visualize the generated
+configurations](#visualisation).
 
 
-## Defining the Features
-We define the feature in a YAML file called `features.yml`, placed at
-the root of the working directory. This file is needed both for the
-amplification of stacks and orchestrations. Here is an example from the
-XWiki case.
+## CAMP Model
 
-```yml
-java:
-  openjdk:
-    - openjdk9
-    - openjdk8
+### An "Awesome" Example
 
-appsrv:
-  tomcat:
-    - tomcat7
-    - tomcat8
-    - tomcat85
-    - tomcat9
-    
-db:
-  mysql:
-    - mysql8
-    - mysql5
-  postgres:
-    - postgres9
-    - postgres10
+We describe here how to use CAMP to vary the testing configurations of
+a made-up service called *Awesome*.  This example includes the
+following five components:
 
-xwiki:
-  - xwiki9mysql
-  - xwiki9postgres
-  - xwiki8mysql
-  - xwiki8postgres
-``` 
+ 1. The component `tests` provides the `Tests` service and requires the
+   `Awesome` one. It includes a `threads` variable, whose values are
+   range from 10 to 50, and the distance between two
+   subsequent sample shall be at most 40.
 
-It defines what are the features inside our configurations. One may
-read it as: "There is a "db" feature, which is either a `mysql` or
-`postgres` and so one and so forth.
+ 2. The `awesome` component is the system under tests. It provides the
+   `Awesome` services and requires the `DB` service that both components
+   `mysql` and `postgres` provide. To run, it also requires the
+   `Python` feature.
 
-## Amplifying Stacks
+ 3. The `mysql` component provides the DB service and includes a variable
+   to model its two versions, namely v5 and v8.
 
-The file `images.yml` controls the amplication of stacks, that is the
-generation of new Docker images.
+ 4. The `postgres` component also provides the DB services.
 
-This file defines which features are based on remote images (that
-should be downloaded), as well as the dependencies (in terms of
-features) between the images. The section `buildingrules` captures
-these dependencies.
+ 5. The `python` component provides the `Python` feature.
 
-Note that all the feature that are not downloaded, should be found in
-the `repo` subdirectory.
+
+Here is the YAML snippet that captures it:
 
 ```yaml
-downloadimages:
-  OpenJdk8:
-    features: [openjdk8]
-    name: openjdk
-    tag: 8
-  OpenJdk9:
-    features: [openjdk9]
-    name: openjdk
-    tag: 9
-buildingrules:
-  Tomcat7:
-    requires: [java]
-    adds: [tomcat7]
-  Tomcat8:
-    requires: [java]
-    adds: [tomcat8]
-  Tomcat85:
-    requires: [java]
-    adds: [tomcat85]
-  Tomcat9:
-    requires: [java]
-    adds: [tomcat9]
-  Xwiki9Mysql:
-    requires: [tomcat]
-    adds: [xwiki9mysql]
-    depends: [mysql]
-  Xwiki9Postgres:
-    requires: [tomcat]
-    adds: [xwiki9postgres]
-    depends: [postgres]
-  Xwiki8Mysql:
-    requires: [tomcat]
-    adds: [xwiki8mysql]
-    depends: [mysql]
-  Xwiki8Postgres:
-    requires: [tomcat]
-    adds: [xwiki8postgres]
-    depends: [postgres]
-mandatoryfeature: [xwiki]
-constraints:
-  - BuildImage.forall(e1, Implies(Or(bi1.using == rules['Tomcat7'], bi1.using == rules['Tomcat8']), Not(bi1['from'].features.contains(features['openjdk9']))))"
+goals:
+  running: [ Tests ]
+
+components:
+  tests:
+    provides_services: [ Tests ]
+    requires_services: [ Awesome ]
+    variables:
+      threads:
+        values:
+          range: [10, 50]
+          coverage: 40
+  awesome:
+    provides_services: [ Awesome ]
+    requires_services: [ DB ]
+    requires_features: [ Python ]
+  mysql:
+    provides_services: [ DB ]
+    variables:
+      version:
+        values: [ v5, v8 ]
+  postgres:
+    provides_services: [ DB ]
+  python:
+    provides_features: [ Python ]
 ```
 
-## Amplifying Orchestrations
+We can ask CAMP to generate all the possible configurations, as follows:
 
-The files `composite.yml` defines how the orchestrations are
-generated. Here is an example of the one used in the XWiki case.
+```bash
+$ camp generate -d . --all
+```
+
+The figure below shows what configurations CAMP generates.
+
+![Awesome configurations]({{site.baseurl}}/assets/images/configurations.png "The six generated configurations")
+
+
+
+### Variations Coverage
+<a name="coverage"/>
+
+CAMP can enumerate all the possible configurations, but it can also
+generate a smaller subset that covers all possible variations at least
+one (i.e., components and variable values).
+
+```
+$ camp generate --coverage -d .
+```
+
+In the previous example, CAMP generates only the three following
+configurations:
+
+![awesome configurations]({{site.baseurl}}/assets/images/awesome_coverage.png "The
+three generated configurations to cover all features")
+
+
+### Features vs. Services
+
+The CAMP model distinguishes between *services* and
+*features*. Services are endpoints exposed on the network whereas as
+features are capabilities available within the same container.
+
+CAMP only connects component instances when one provides at least one of
+the services the other requires. The same hold for features, the
+only difference is that a component can only use the feature of a
+single component.
+
+
+### Variables
+<a name="variable"/>
+
+CAMP let you defined the variables that may vary in each
+component. When CAMP instantiate these components, it will try to find
+values for each variable defined in related the component. Variables
+may be of several types:
+
+* **Enumerated Variables** are variables whose values are an
+  enumeration of symbols. This is often useful to define version as in
+  the following example:
+
+  ```yaml
+  variables:
+	 version:
+		values: [ v1, v2, v3.1, v3.2, v4]
+  ```
+
+* Numerical Variables are variables whose value is a number (only
+  integer are supported so far). There values can be free, constrained
+  or enumerated as well.
+
+  * **Free integer variables** are numerical variables that are not
+	directly constrained, though constraints may be added separated
+	(i.e., in the `constraint` section)
+
+    ```yaml
+    variables:
+         memory:
+          type: Integer
+     ```
+
+  * **Enumerated integer variables** are the simples. You basically choose
+	what values are legal and CAMP will try to build configuration
+	using only those.
+
+    ```yaml
+    variables:
+         memory:
+          type: Integer
+          values: [10, 20, 21, 40, 25]
+     ```
+
+  * **Range-covering integer variables** are variables whose value is
+	taken from a given interval. CAMP uses values spread
+	regularly through this interval, as in the example below:
+
+    ```yaml
+    variables:
+         memory:
+          type: Integer
+          values:
+             range: [10, 30]
+             coverage: 5
+     ```
+
+	 This declaration forces CAMP to choose a value from [10, 15, 20,
+	 25, 30] for the `memory`variable. The *coverage* attribute
+	 defines the maximal distance between two subsequent values.
+
+
+## Constraints
+<a name="constraints"/>
+
+You can also add constraints using the [Ozepy
+DSL](http://github.com/STAMP-project/ozepy) in order to rule out some
+configurations. This is done in the `constraints` section, placed at
+the top level, as follows:
 
 ```yaml
-services:
-  web:
-    imgfeature: [xwiki]
-    mandatory: true
-  mysql:
-    imgfeature: [mysql]
-  postgres:
-    imgfeature: [postgres]
-
-images:
-  Mysql5: {name: mysql, tag: "5", features: [mysql5]}
-  Mysql8: {name: mysql, tag: "8", features: [mysql8]}
-  Postgres9: {name: postgres, tag: "9", features: [postgres9]}
-  Postgres10: {name: postgres, tag: "10", features: [postgres10]}
-
+goals: ...
+components: ...
 constraints:
-  - Not(services['mysql'].alive() == services['postgres'].alive())
-  - services['web'].alive()
+    - CInstance.forall(ci.configuration.forall(val, val.value == 0))
 ```
 
-The `services` section specifies the features offered by each services
-in the docker-compose file (by convention
-`docker-compose/docker-compose.yml`).
+Here we define a constraint that force all the component instance, to
+have 0 as the value for all their variable. We must refer to the [CAMP
+metamodel](#metamodel) to write correct constraints.
 
-The `images`section defines additional images (besides those defined
-to amplified stacks) that can be used. Each images specify its name
-and tag (to be pulled from remote repositories) as well as the feature
-it will provide.
 
-Eventually, the `constraints` section adds some rules to invalidate
-specific orchestrations.
+## Visualization
+<a name="visualisation"/>
+
+CAMP also generate [Graphviz](https://www.graphviz.org/)
+representation (file named `configuration.dot`) of each configuration
+it generates. Provided that graphviz is installed, you can convert a
+configuration using:
+
+
+```bash
+$ dot -Tpng configuration.dot -o configuration.png
+```
+
+Alternatively, you can convert all configurations using the following
+on-liner:
+
+```bash
+$ find . -name "*.dot" | xargs -I file dot -Tpng file -o file.png
+```
+
+You may also want to gather all these configuration views into a
+single picture. Provided
+the [imagemagick](https://www.imagemagick.org/) tools are available on
+your machine, you can use the following command:
+
+```bash
+$ find . -name "*.png" \
+   | tr '\n' ' ' \
+   | montage  -label '%d/%f' @- -geometry 300x300 configurations.png
+```
+
+### The CAMP Metamodel
+<a name="metamodel"/>
+
+The figure below illustrates the CAMP model. The green classes will be
+generated by the constraint solver, whereas the yellow ones are
+specified in the YAML file.
+
+![CAMP metamodel]({{site.baseurl}}/assets/images/camp_metamodel.png "The underlying CAMP metamodel")

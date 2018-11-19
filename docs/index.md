@@ -11,7 +11,7 @@ version of CAMP is focused on the Docker environment, and the input
 and output configurations are specified as Dockerfiles or
 docker-compose files.
 
-# Quick start
+## Quick start
 The fastest way to start with CAMP is to use our [pre-built Docker
 image](https://hub.docker.com/r/fchauvel/camp/), using the following
 command:
@@ -31,7 +31,46 @@ Here are the three main CAMP commands:
  * `camp execute ...` to run some of these new test configurations
 
 
-## How does CAMP work
+### CAMP Inputs 
+
+CAMP requires two inputs:
+
+ 1. The **CAMP Model**, which is a YAML file that describes the pieces
+   that can vary in the orchestrations. These may be service
+   providers, feature providers, version or other numerical
+   configurations.
+   
+ 2. A **template** orchestration that illustrates how the components
+    listed in the CAMP model are bound and configured together. So
+    far, CAMP only supports the Docker technologies and the
+    orchestration must be a docker-compose file.
+ 
+From there, CAMP will generate, realize and execute alternative
+configurations, each with alternative variations.
+
+
+## Examples
+
+In the samples directory of the repository, there are two examples,
+[XWiki](pages/xwiki.html) and [CityGo](pages/citygo.html).
+
+ * In [XWiki](pages/xwiki.html), we have set up CAMP to test XWiki, a
+   wiki platform to facilitate collaborative process inside any
+   organization. XWiki can be set up in various environments and
+   various configurations. CAMP provides means to capture this
+   variations and generate those different environments and
+   configurations. CAMP also facilitates testing against those
+   generated configurations.
+
+ * In [CityGo](pages/citygo.html), CAMP is set up against the CityGo
+   application by ATOS. CityGo can be set up in various environments
+   and configurations. In this example, we demonstrate how CAMP can
+   vary not just elements which map to docker images and services, but
+   also arbitrary parameters and commands in docker files.
+
+
+## How does CAMP work?
+
 CAMP extracts from the input Docker specifications an abstract
 configuration model, and tries to synthesize new models based on the
 features, variables and constraints. The figure below illustrates the
@@ -41,54 +80,3 @@ specifications. These specifications can be executed in the same way
 as the original input, and therefore to replace the original testing
 configuration during either the manual testing or in a continuous
 integration pipeline.
-
-## CAMP Input/Output
-The input to CAMP comprises two parts, i.e., the sample configuration
-and the scope definition. The sample configuration, in the current set
-up, are Docker specifications, i.e., docker files and docker-compose
-files. A docker-compose file defines the architecture of a testing
-set-up, consisting of components for the application, the testing
-client, or the supportive services such databases. A docker file
-defines how to build an image from a base one. Each of these
-components maps to a docker service in the docker-compose
-specification. The application itself may consist of multiple
-components, especially following a micro-service architecture. Each
-docker service corresponds to an docker image. A docker image can be
-either directly downloaded (pulled) from a docker repository, such as
-the Docker Hub, or built locally. In the latter case, the CAMP users
-should provide a docker file which defines how to build the image from
-a base one. If there are multiple images to be built locally, or an
-image can be built in alternative ways, the users should provide
-multiple docker files.
-
-CAMP outputs a set of specifications, docker files, and docker-compose
-files.
-- `camp/samples/stamp/xwiki/out/genimages.yml` defines a chain of
-  rules to evaluate to build new docker images
-- `camp/samples/stamp/xwiki/out/ampimages.yml` lists docker images
-  with labels to generate
-- `camp/samples/stamp/xwiki/out/ampcompose.yml` lists docker-compose
-  files to build from the template
-- `camp/samples/stamp/xwiki/build/` contains folder with generated
-  docker files
-- `camp/samples/stamp/xwiki/build/build.sh` is a script to build
-  images from generated docker files
-
-## Examples
-In the samples directory of the repository, there are two examples,
-[XWiki](pages/xwiki.html) and [CityGo](pages/citygo.html).
-
-In the first example, we have set up CAMP to test an open-source
-project XWiki. XWiki is an ultimate wiki platform to facilitate
-collaborative process inside any organization. XWiki can be in
-principle set up in various environments and various
-configurations. CAMP provides means to capture this variations in
-environment and configurations, generate those different environments
-and configurations. CAMP also facilitates testing against those
-generated configurations.
-
-In the second example, CAMP is set up against a CityGo application by
-ATOS. CityGo can be set up in various environments and
-configurations. In this example, we demonstrate how CAMP can vary not
-just elements which map to docker images and services, but also
-arbitrary parameters and commands in docker files.
