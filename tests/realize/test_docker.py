@@ -31,13 +31,15 @@ class BuilderTest(TestCase):
             rmtree(self.WORKING_DIRECTORY)
         makedirs(self.WORKING_DIRECTORY)
 
-        makedirs(join_paths(self.WORKING_DIRECTORY, "server"))
-        path = join_paths(self.WORKING_DIRECTORY, "server", "Dockerfile")
+        folder = join_paths(self.WORKING_DIRECTORY, "template", "server")
+        makedirs(folder)
+        path = join_paths(folder, "Dockerfile")
         with open(path, "w") as docker_file:
             docker_file.write(self.DOCKER_FILE)
 
-        makedirs(join_paths(self.WORKING_DIRECTORY, "jdk"))
-        path = join_paths(self.WORKING_DIRECTORY, "jdk", "Dockerfile")
+        folder = join_paths(self.WORKING_DIRECTORY, "template", "jdk")
+        makedirs(folder)
+        path = join_paths(folder, "Dockerfile")
         with open(path, "w") as docker_file:
             docker_file.write(self.DOCKER_FILE)
 

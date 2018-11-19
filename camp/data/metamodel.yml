@@ -8,18 +8,15 @@
 # of the MIT license.  See the LICENSE file for details.
 #
 
+
+# Type level concepts
+
  - name: Service
 
  - name: Feature
 
- - name: Value
-
  - name: Variable
-   reference:
-     - name: domain
-       type: Value
-       multiple: true
-
+   
  - name: Component
    reference:
      - name: provide_services
@@ -38,13 +35,33 @@
        type: Variable
        multiple: true
 
+# Instance level concepts
+
+ - name: Value
+   attribute:
+     - name: value
+       type: Integer
+   reference:
+     - name: variable
+       type: Variable
+       mandatory: true
+
+ - name: Partner
+   reference:
+     - name: endpoint
+       type: CInstance
+       mandatory: true
+     - name: service
+       type: Service
+       mandatory: True
+   
  - name: CInstance
    reference:
      - name: definition
        type: Component
        mandatory: true
-     - name: use_services
-       type: CInstance
+     - name: partners
+       type: Partner
        multiple: true
        mandatory: true
      - name: use_feature

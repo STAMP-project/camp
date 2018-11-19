@@ -85,17 +85,17 @@ class Graphviz(Codec):
 
     def _declare_node(self, instance):
         if instance.configuration:
-            options = "|".join(["%s=%s" % (k.name,v) for k,v in instance.configuration]) 
+            options = "\l".join(["%s=%s" % (k.name,v) for k,v in instance.configuration])
             self._write(
                 "%s [label=\"{%s|%s}\"];" % (
                     self._escape(instance.name),
-                    instance.name,
+                    instance.definition.name,
                     options))
         else:
             self._write(
                 "%s [label=\"%s\"];" % (
                     self._escape(instance.name),
-                    instance.name))
+                    instance.definition.name))
 
 
     def _declare_egde(self, source, target):

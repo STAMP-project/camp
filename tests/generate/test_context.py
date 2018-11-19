@@ -28,6 +28,7 @@ class LoadedContextIncludes(TestCase):
                       provided_services=[Service("S1")],
                       provided_features=[Feature("F1")],
                       variables=[Variable("memory",
+                                          str,
                                           values=["1GB",
                                                   "2GB"])])
         ]
@@ -57,14 +58,15 @@ class LoadedContextIncludes(TestCase):
         for each in self._model.components:
             self.assertIn(each.name, self._context)
 
-    def test_all_variables_and_values_with_qualified_names(self):
+    def test_all_variables_with_qualified_names(self):
         for each_component in self._model.components:
             for each_variable in each_component.variables:
                 qualified_name = "_".join([each_component.name, each_variable.name])
                 self.assertIn(qualified_name, self._context)
-                for each_value in each_variable.domain:
-                    qualified_name = "_".join([each_component.name,
-                                               each_variable.name,
-                                               each_value])
-                    self.assertIn(qualified_name, self._context)
+
+    def test_all_values_slots_with_qualified_names(self):
+        for each_component in self._model.components:
+            for each_variable in each_component.variables:
+                qualified_name = "_".join([each_component.name, "0", each_variable.name])
+                self.assertIn(qualified_name, self._context)
                     
