@@ -17,13 +17,15 @@ from os import devnull
 
 from ozepy import load_all_classes, DefineObject, ObjectVar, \
     get_all_meta_facts, get_all_config_facts, cast_all_objects, \
-    generate_config_constraints, generate_meta_constraints, start_over
+    generate_config_constraints, generate_meta_constraints, start_over, \
+    get_all_objects, ObjectConst
 
 from pkgutil import get_data
+from pprint import pprint
 
 from yaml import load as load_yaml
 
-from z3 import Optimize, sat
+from z3 import Optimize, sat, IntVal
 
 
 
@@ -36,7 +38,7 @@ class Z3Problem(object):
         context = Context()
         context.load_metamodel()
         context.load_model(model)
-
+ 
         solver = Optimize()
 
         generate_meta_constraints()
@@ -46,15 +48,23 @@ class Z3Problem(object):
         solver.add(*get_all_config_facts())
 
         context.declare(INTEGRITY_VARIABLES)
-
+        context.declare_helper_functions()
+        
         for each_constraint in INTEGRITY_CONSTRAINTS:
-            solver.add(context.evaluate(each_constraint.strip()))
+            solver.add(context.evaluate(each_constraint))
 
         for each_running_service in model.goals.services:
             constraint = RUNNING_SERVICE.format(each_running_service.name)
-            solver.add(context.evaluate(constraint.strip()))
+            solver.add(context.evaluate(constraint))
+
+        for each_constraint in model.constraints:
+            solver.add(context.evaluate(each_constraint))
+
+        for each_constraint in context.value_constraints:
+            solver.add(context.evaluate(each_constraint))
 
         return Z3Problem(model, context, solver)
+
 
 
     def __init__(self, model, context, solver):
@@ -63,14 +73,14 @@ class Z3Problem(object):
         self._solver = solver
 
 
-    @redirect_stderr_to(devnull)
+    @redirect_stderr_to("z3_errors.log")
     def all_solutions(self):
         self._solver.push()
         while self.has_solution():
             yield self._solve()
 
 
-    @redirect_stderr_to(devnull)
+    @redirect_stderr_to("z3_errors.log")
     def coverage(self):
         self._solver.push()
         while self.has_solution():
@@ -83,18 +93,25 @@ class Z3Problem(object):
 
     def _cover(self):
         z3_solution = cast_all_objects(self._solver.model())
+        #pprint(z3_solution)
 
         self._context.mark_as_covered(z3_solution)
 
-        self._solver.add(self._context.evaluate(self._as_constraint(z3_solution)))
         self._solver.pop()
         self._solver.push()
+        self._solver.add(self._context.evaluate(self._as_constraint(z3_solution)))
+        self._solver.push()
         self._solver.add(self._context.coverage_constraint())
+        self._solver.maximize(self._context.coverage_gain())
         return self._extract_from(z3_solution)
 
+    
+    
 
     def _solve(self):
+        answer = self._solver.model()
         z3_solution = cast_all_objects(self._solver.model())
+
         self._solver.add(self._context.evaluate(self._as_constraint(z3_solution)))
         return self._extract_from(z3_solution)
 
@@ -106,15 +123,16 @@ class Z3Problem(object):
                 if item["use_feature"] is not None:
                     clauses.append("%s.use_feature != %s" % \
                                    (key, item["use_feature"]))
-                if item["use_services"]:
-                    for each_provider in item["use_services"]:
-                        clauses.append("Not(%s.use_services.contains(%s))" %
-                                   (key, each_provider))
+                if item["partners"]:
+                    for each_partner in item["partners"]:
+                        clauses.append("%s.endpoint != %s" %
+                                   (each_partner, z3_solution[each_partner]["endpoint"]))
                 if item["configuration"]:
                     for each_value in item["configuration"]:
-                        clauses.append("Not(%s.configuration.contains(%s))" %\
-                                   (key, each_value))
+                        clauses.append("Not(%s.value == %s)" %\
+                                       (each_value, z3_solution[each_value]["value"]))
         return "Or(" + ",".join(clauses) + ")"
+    
 
 
     def _extract_from(self, z3_solution):
@@ -132,20 +150,26 @@ class Z3Problem(object):
                 if "use_feature" in item and item["use_feature"]:
                     provider = result.resolve(item["use_feature"])
                     instance.feature_provider = provider
-                if "use_services" in item:
-                    providers = [result.resolve(each) \
-                                 for each in item["use_services"]]
+                if "partners" in item:
+                    providers = [result.resolve(z3_solution[each]["endpoint"]) \
+                                 for each in item["partners"]]
                     instance.service_providers = providers
                 if "configuration" in item:
                     configuration = []
                     for each_value in item["configuration"]:
+                        variable_name = z3_solution[each_value]["variable"]
+                        variable = None
                         for any_variable in instance.definition.variables:
-                            for any_value in any_variable.domain:
-                                if any_variable.name in each_value \
-                                   and any_value in each_value:
-                                    configuration.append((any_variable, any_value))
+                            if variable_name.endswith(any_variable.name):
+                                variable = any_variable
+                                break
+                        else:
+                            raise KeyError("Component '%s' has no variable named '%s'" %
+                                           (instance.definition.name,
+                                            variable_name))
+                        value = variable.value_at(z3_solution[each_value]["value"])
+                        configuration.append((variable, value))
                     instance.configuration = configuration
-
         return result
 
 
@@ -157,20 +181,36 @@ class Context(object):
         self._definitions[self.COVERED_VALUES] = []
         self._definitions[self.COVERED_COMPONENTS] = []
         exec("from ozepy import Not, Implies, Or, And", self._definitions)
+        self._value_constraints = []
 
     COVERED_VALUES = "covered_values"
     COVERED_COMPONENTS = "covered_components"
 
 
+    @property
+    def value_constraints(self):
+        return self._value_constraints
+
+
     def evaluate(self, constraint):
-        return eval(constraint, self._definitions)
+        #print constraint.strip()
+        return eval(constraint.strip(), self._definitions)
+
 
 
     def declare(self, declarations):
         for type_name, variables in declarations:
             for variable_name in variables:
                 self.define(variable_name, ObjectVar(self.find(type_name),
-                                                     variable_name))
+                                                     variable_name))            
+                
+    def declare_helper_functions(self):
+        def variable_helper(component_name, variable_name):
+            variable_name = self.qualified_name(component_name, variable_name)
+            variable_object = self.find(variable_name)
+            return variable_object
+
+        self.define("variable", variable_helper)
 
 
     def load_metamodel(self):
@@ -190,7 +230,7 @@ class Context(object):
     def _define_all_services(self, model):
         for each_service in model.services:
             z3_service = DefineObject(each_service.name,
-                                      self.find("Service"))
+                                      self.find("Service"), suspended=True)
             self.define(each_service.name, z3_service)
 
 
@@ -242,19 +282,9 @@ class Context(object):
                                        self.find("Variable"))
             self.define(qualified_name, z3_variable)
 
-            domain = []
-            for each_value in each_variable.domain:
-                qualified_name = self.qualified_name(component.name,
-                                                     each_variable.name,
-                                                     each_value)
-                z3_value = DefineObject(qualified_name,
-                                        self.find("Value"))
-                domain.append(z3_value)
-                self.define(qualified_name, z3_value)
-                z3_variable.force_value("domain", domain)
 
-
-    def qualified_name(self, *parts):
+    @staticmethod
+    def qualified_name(*parts):
         return "_".join(parts)
 
 
@@ -266,6 +296,49 @@ class Context(object):
                                        suspended=True)
             self.define(instance_name, z3_instance)
             z3_instance.force_value("definition", self.find(component.name))
+
+            # define partners
+            partners = []
+            for each_required_service in component.required_services:
+                partner_name = self.qualified_name(instance_name,
+                                                   each_required_service.name)
+                
+                z3_partner = DefineObject(partner_name,
+                                          self.find("Partner"),
+                                          suspended=True)
+                self.define(partner_name, z3_partner)
+                partners.append(z3_partner)
+
+                z3_partner.force_value("service",
+                                       self.find(each_required_service.name))
+                
+            z3_instance.force_value("partners", partners)
+
+            
+            values = []
+            for each_variable in component.variables:
+                qualified_variable_name = "%s_%s" % (component.name, each_variable.name)
+                value_name = "%s_%s" % (instance_name, each_variable.name)
+                z3_value = DefineObject(value_name,
+                                        self.find("Value"),
+                                        suspended=True)
+                self.define(value_name, z3_value)
+
+                if each_variable.domain:
+                    if each_variable.value_type != "Integer":
+                        self._value_constraints.append(
+                            "And([%s.value >= 0, %s.value < %d])" % (value_name,
+                                                                     value_name,
+                                                                     len(each_variable.domain)))
+                    else:
+                        clauses = ",".join("%s.value == %d" %
+                                           (value_name, v) for v in each_variable.domain)
+                        self._value_constraints.append("Or([" + clauses + "])")
+
+                z3_value.force_value("variable", self.find(qualified_variable_name))
+                
+                values.append(z3_value)
+            z3_instance.force_value("configuration", values)
 
 
     def define(self, key, value):
@@ -300,29 +373,42 @@ class Context(object):
                     self.covered_components.append(definition)
                 if "configuration" in item:
                     for each_value in item["configuration"]:
-                        value = self.find(each_value)
+                        value = z3_solution[each_value]
                         if not value in self.covered_values:
-                           self.covered_values.append(value)
+                           self.covered_values.append((value["variable"], value["value"]))
                            
     def coverage_constraint(self):
         template = ("Or([CInstance.exists(ci, ci.configuration.exists(val, And([%s]))),"
                     "CInstance.exists(ci, And([%s]))])")
-        values = ",".join("val != %s" % each.name \
-                          for each in self.covered_values)
-        components = ",".join("ci.definition != %s" % each \
+        values = ", ".join("Implies(val.variable == %s, val.value != %d)" % (variable, value) \
+                          for variable, value in self.covered_values)
+        components = ", ".join("ci.definition != %s" % each \
                               for each in self.covered_components)
         constraint = template % (values, components)
         return self.evaluate(constraint)
 
 
+    def coverage_gain(self):
+        constraint = "0"
+        if self.covered_values:
+            constraint = "CInstance.filter(ci, ci.configuration.exists(val, And([%s]))).count()"
+            values = ", ".join("Implies(val.variable != %s, val.value != %d)" % (variable, value) \
+                           for variable, value in self.covered_values)
+            constraint = constraint % values
+        constraint += " + CInstance.filter(ci, And([%s])).count()"
+        components = ", ".join("ci.definition != %s" % each for each in self.covered_components)
+        constraint = constraint % components
+        return self.evaluate(constraint)
+
 
 
 INTEGRITY_VARIABLES = [
-    ("CInstance", ["ci", "spi"]),
+    ("CInstance", ["ci", "ci1", "ci2", "spi"]),
     ("Feature", ["fr", "fp"]),
-    ("Service", ["sr", "sp"]),
+    ("Partner", ["partner"]),
+    ("Service", ["service", "sr", "sp"]),
     ("Variable", ["var"]),
-    ("Value", ["val"]),
+    ("Value", ["val", "val1", "val2"]),
     ("Component", ["cp"])
 ]
 
@@ -338,10 +424,10 @@ INTEGRITY_CONSTRAINTS = [
     CInstance.forall(ci, Not(ci["use_feature"] == ci))
     """,
 
-    # Cannot use its own services
+    # An instance cannot use its own services
     """
-    CInstance.forall(ci, Not(ci["use_services"].exists(
-           spi, spi == ci)))
+    CInstance.forall(ci, Not(ci.partners.exists(
+           partner, partner.endpoint == ci)))
     """,
 
     # Can only deploy on something that provides the required features
@@ -350,59 +436,59 @@ INTEGRITY_CONSTRAINTS = [
     fr, ci.use_feature["definition"].provide_features.exists(fp, fp == fr)))
     """,
 
-    # Can only connect to something that provides the required services
+    # All partner shall connect to an endpoint that provides the requested service
     """
-    CInstance.forall(ci, ci["definition"]["require_services"].forall(
-    sr, ci["use_services"].exists(
-    spi, spi["definition"]["provide_services"].contains(sr))))
+    Partner.forall(partner,
+       partner.endpoint.definition.provide_services.exists(service, 
+          service == partner.service))
     """,
-
-    # Should have a value for each setting defined in its definition
-    """
-    CInstance.forall(ci,
-       ci["definition"]["settings"].forall(var,
-          ci["configuration"].exists(val,
-             var["domain"].contains(val))))
-    """,
-
-    # Each variable in the component settings should have one
-    # corresponding value in the instance configuration
-    """
-    CInstance.forall(ci,
-       ci.definition.settings.forall(var,
-          ci.configuration.filter(val, var.domain.contains(val)).count() == 1))
-    """,
-
-    # Each value in the instance configuration should have one
-    # corresponding variable in the component settings
-    """
-    CInstance.forall(ci,
-       ci.configuration.forall(val,
-          ci.definition.settings.filter(var, var.domain.contains(val)).count() == 1))
-    """,
-
 
     # Instances that do not require services cannot have any
     # service provider
     """
     CInstance.forall(ci, Implies(
        ci["definition"]["require_services"].count() == 0,
-       ci["use_services"].count() == 0))
+       ci["partners"].count() == 0))
     """,
 
-    # Instances that do not require features cannot have any
+    # Instances that do not require features cannot have a
     # feature_provider
     """
     CInstance.forall(ci, Implies(ci["definition"]["require_features"].count() == 0,
     ci["use_feature"].undefined()))
     """,
 
-    # Instances that do require features must have any
+    # Instances that do require features must have one
     # feature_provider
     """
     CInstance.forall(ci, Implies(ci["definition"]["require_features"].count() > 0,
     Not(ci["use_feature"].undefined())))
+    """,
+
+    # All provided features must be used
     """
+    CInstance.forall(ci1,
+       Implies(ci1.definition.provide_features.count() > 0,
+               CInstance.exists(ci2, ci2.use_feature == ci1)))
+    """,
+
+    # Only one pending service
+    """
+    CInstance.filter(ci1, 
+          And([ci1.definition.provide_services.count() > 0,
+               CInstance.forall(ci2, ci2.partners.forall(partner, partner.endpoint != ci1))])).count() == 1
+    """
+    
+    # No pending instances 
+    # """
+    # CInstance.forall(ci1, 
+    #     Or([
+    #       Not(ci1.use_feature.undefined()),
+    #       ci1.partners.count() > 0,
+    #       CInstance.exists(ci2, 
+    #           Or([ci2.use_feature == ci1,
+    #               ci2.partners.exists(partner, partner.endpoint == ci1)]))]))
+    # """
 ]
 
 

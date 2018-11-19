@@ -10,6 +10,10 @@
 
 
 
+from logging import warning
+
+
+
 class Visitee(object):
 
 
@@ -47,9 +51,10 @@ class NamedElement(Visitee):
 
 class Model(Visitee):
 
-    def __init__(self, components, goals):
+    def __init__(self, components, goals, constraints=None):
         self._components = {each.name: each for each in components}
         self._goals = goals
+        self._constraints = constraints or []
 
 
     def resolve(self, identifier):
@@ -111,6 +116,11 @@ class Model(Visitee):
     @property
     def goals(self):
         return self._goals
+
+
+    @property
+    def constraints(self):
+        return self._constraints
 
 
 
@@ -221,11 +231,30 @@ class Component(NamedElement):
 class Variable(NamedElement):
 
 
-    def __init__(self, name, values, realization=None):
+    @staticmethod
+    def cover(minimum, maximum, coverage):
+
+        def largest_smaller_divisor():
+            return next(d for d in range(coverage, 0, -1) if width % d == 0)
+
+        width = maximum - minimum
+    
+        divisor = largest_smaller_divisor()
+        return [minimum + i * divisor \
+                for i in range(width / divisor + 1)]
+
+    
+    def __init__(self, name, value_type, values, realization=None):
         super(Variable, self).__init__(name)
-        self._values = [each for each in values]
+        self._value_type = value_type
+        self._values = [each for each in values] 
         self._realization = [each for each in realization] \
                             if realization else []
+
+    @property
+    def value_type(self):
+        return self._value_type
+
 
     @property
     def domain(self):
@@ -235,6 +264,13 @@ class Variable(NamedElement):
     @property
     def realization(self):
         return [each for each in self._realization]
+
+
+    def value_at(self, index):
+        if self._value_type != "Integer" and len(self._values) > 0:
+            return self._values[index]
+        else:
+            return index
 
 
 
@@ -403,6 +439,13 @@ class Instance(NamedElement):
     @configuration.setter
     def configuration(self, new_configuration):
         self._configuration = new_configuration
+
+
+    def __getitem__(self, key):
+        for variable, value in self._configuration:
+            if variable.name == key:
+                return value
+        raise KeyError("Instance '%s' has no value for variable '%s'!" % (self._name, key))
 
 
 

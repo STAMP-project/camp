@@ -57,9 +57,11 @@ class BuiltModelAreComplete(TestCase):
                 "      provides_services: [ Wonderful ]\n"
                 "      variables:\n"
                 "        memory:\n"
-                "          domain: [1GB, 2GB]\n"
+                "          type: Integer\n" 
+                "          values: [1GB, 2GB]\n"
                 "        threads:\n"
-                "          domain: [64, 128, 256]\n"
+                "          type: Integer\n"
+                "          values: [64, 128, 256]\n"
                 "goals:\n"
                 "   running:\n"
                 "      - Wonderful\n")
@@ -77,7 +79,7 @@ class BuiltModelAreComplete(TestCase):
         self._assert_component_services(server, ["Wonderful"], [])
         self._assert_component_features(server, [], [])
         self._assert_variables(server, [ ("memory", ["1GB", "2GB"]),
-                                         ("threads", ["64", "128", "256"])])
+                                         ("threads", [64, 128, 256])])
 
         self._assert_goals(model.goals, ["Wonderful"], [])
 
@@ -183,7 +185,8 @@ class BuiltModelAreComplete(TestCase):
                 "      provides_services: [ Wonderful ]\n"
                 "      variables:\n"
                 "        memory:\n"
-                "          domain: [1GB, 2GB, 4GB]\n"
+                "          type: Text\n"
+                "          values: [1GB, 2GB, 4GB]\n"
                 "          realization:\n"
                 "             - targets: [ file1, path/to/file2 ]\n"
                 "               pattern: xmem=1GB\n"
@@ -298,7 +301,7 @@ class IgnoredEntriesAreReported(TestCase):
                 "      variables:\n"
                 "         memory:\n"
                 "            extra: this entry should be reported!\n"
-                "            domain: [ 1GB, 2GB]\n"
+                "            values: [ 1GB, 2GB]\n"
                 "goals:\n"
                 "   running:\n"
                 "      - Wonderful\n")
@@ -314,7 +317,7 @@ class IgnoredEntriesAreReported(TestCase):
                 "      provides_services: [ Wonderful ]\n"
                 "      variables:\n"
                 "         memory:\n"
-                "            domain: [ 1GB, 2GB]\n"
+                "            values: [ 1GB, 2GB]\n"
                 "            realization: \n"
                 "              - targets: [ file1 ]\n"
                 "                pattern: mem=1GB\n"
@@ -516,7 +519,7 @@ class TypeMismatchAreReported(TestCase):
                 "      provides_services: [ Awesome ]\n"
                 "      variables:\n"
                 "        memory:\n"
-                "          domain: [1GB, 2GB ]\n"
+                "          values: [1GB, 2GB ]\n"
                 "          realization:\n"
                 "             - targets: [ Dockerfile ]\n"
                 "               pattern: xmem=1GB\n"
@@ -538,7 +541,7 @@ class TypeMismatchAreReported(TestCase):
                 "      provides_services: [ Awesome ]\n"
                 "      variables:\n"
                 "        memory:\n"
-                "          domain: [1GB, 2GB ]\n"
+                "          values: [1GB, 2GB ]\n"
                 "          realization:\n"
                 "             - targets: This should not be a string!\n"
                 "               pattern: xmem=1GB\n"
@@ -634,13 +637,13 @@ class TypeMismatchesAreNotReportedWhenStringIsExpected(TestCase):
         self.assertEqual(0, len(self._codec.warnings))
 
 
-    def test_with_a_number_among_variable_domain(self):
+    def test_with_a_number_among_variable_values(self):
         text = ("components:\n"
                 "   server:\n"
                 "      requires_services: [ Awesome ]\n"
                 "      variables:\n"
                 "         memory:\n"
-                "           domain: [ High, 1234]\n"
+                "           values: [ High, 1234]\n"
                 "goals:\n"
                 "  running: [ Awesome ]\n")
 
@@ -693,7 +696,7 @@ class MissingMandatoryEntriesAreReported(TestCase):
                 "      provides_services: [ Wonderful ]\n"
                 "      variables:\n"
                 "        memory:\n"
-                "          domain: [1GB, 2GB, 4GB]\n"
+                "          values: [1GB, 2GB, 4GB]\n"
                 "          realization:\n"
                 "             - pattern: xmem=1GB\n"
                 "               replacements: [xmem=1, xmem=2, xmem=4]\n"
@@ -713,7 +716,7 @@ class MissingMandatoryEntriesAreReported(TestCase):
                 "      provides_services: [ Wonderful ]\n"
                 "      variables:\n"
                 "        memory:\n"
-                "          domain: [1GB, 2GB, 4GB]\n"
+                "          values: [1GB, 2GB, 4GB]\n"
                 "          realization:\n"
                 "             - targets: [ Dockerfile ]\n"
                 "               replacements: [xmem=1, xmem=2, xmem=4]\n"
@@ -733,7 +736,7 @@ class MissingMandatoryEntriesAreReported(TestCase):
                 "      provides_services: [ Wonderful ]\n"
                 "      variables:\n"
                 "        memory:\n"
-                "          domain: [1GB, 2GB, 4GB]\n"
+                "          values: [1GB, 2GB, 4GB]\n"
                 "          realization:\n"
                 "             - targets: [ Dockerfile ]\n"
                 "               pattern: xmem=1GB\n"

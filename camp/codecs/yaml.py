@@ -35,10 +35,9 @@ class YAML(Codec):
     @staticmethod
     def _as_dictionary(configuration):
         dictionary = {}
-        dictionary[Keys.INSTANCES] = []
+        dictionary[Keys.INSTANCES] = {}
         for each_instance in configuration.instances:
             instance = {}
-            instance[Keys.NAME] = each_instance.name
             instance[Keys.DEFINITION] = each_instance.definition.name
 
             if each_instance.feature_provider:
@@ -49,7 +48,7 @@ class YAML(Codec):
             for variable, value in each_instance.configuration:
                 instance[Keys.CONFIGURATION][variable.name] = value
 
-            dictionary[Keys.INSTANCES].append(instance)
+            dictionary[Keys.INSTANCES][each_instance.name] = instance
         return dictionary
 
 
@@ -57,8 +56,8 @@ class YAML(Codec):
     def load_configuration_from(model, stream):
         data = load_yaml(stream)
 
-        instances = [ YAML._create_instance(model, item) \
-                      for item in data[Keys.INSTANCES].values() ]
+        instances = [ YAML._create_instance(model, key, item) \
+                      for key, item in data[Keys.INSTANCES].items() ]
 
         result = Configuration(model, instances)
 
@@ -69,8 +68,7 @@ class YAML(Codec):
 
 
     @staticmethod
-    def _create_instance(model, data):
-        name = data[Keys.NAME]
+    def _create_instance(model, name, data):
         definition = model.resolve(data[Keys.DEFINITION])
         configuration = []
         if Keys.CONFIGURATION in data:
@@ -100,6 +98,7 @@ class YAML(Codec):
         data = load_yaml(stream)
         components = []
         goals = Goals()
+        constraints = []
         for key, item in data.items():
             if key == Keys.COMPONENTS:
                 if not isinstance(item, dict):
@@ -111,9 +110,16 @@ class YAML(Codec):
                     self._wrong_type(dict, type(item), key)
                     continue
                 goals = self._parse_goals(item)
+            elif key == Keys.CONSTRAINTS:
+                if not isinstance(item, list):
+                    self._wrong_type(list, type(item), key)
+                    continue
+                constraints.extend(item)
+
             else:
                 self._ignore(key)
-        return Model(components, goals)
+
+        return Model(components, goals, constraints)
 
 
     def _parse_components(self, data):
@@ -199,21 +205,65 @@ class YAML(Codec):
 
 
     def _parse_variable(self, component, name, data):
-        domain = []
+        path = [Keys.COMPONENTS, component, Keys.VARIABLES, name]
+        value_type = None
+        values = []
         realization = []
         for key, item in data.items():
-            if key == Keys.DOMAIN:
-                for each_value in item:
-                    domain.append(str(each_value))
+            if key == Keys.VALUES:
+                if not isinstance(item, list) and not isinstance(item, dict):
+                    self.wrong_type(list, type(item), *(path + [key]))
+                    continue
+                values = self._parse_values(item, path + [key])
+            elif key == Keys.TYPE:
+                if not isinstance(item, str):
+                    self.wrong_type(str, type(item), *(path + [key]))
+                    continue
+                value_type = item
             elif key == Keys.REALIZATION:
                 for index, each in enumerate(item, 1):
                     substitution = self._parse_substitution(component, name, index, each)
                     realization.append(substitution)
             else:
-                self._ignore(Keys.COMPONENTS, component, Keys.VARIABLES, name, key)
+                self._ignore(*(path + [key]))
 
-        return Variable(name, domain, realization)
+        return Variable(name, value_type, values, realization)
 
+
+    def _parse_values(self, data, path):
+        values = []
+        if isinstance(data, list):
+            values = [each for each in data]
+
+        elif isinstance(data, dict):
+            minimum = None
+            maximum = None
+            coverage = None
+            for key, item in data.items():
+                if key == Keys.RANGE:
+                    minimum = min(item)
+                    maximum = max(item)
+                elif key == Keys.COVERAGE:
+                    if not isinstance(item, int):
+                        self._wrong_type(int, type(item), *(path + [key]))
+                        continue
+                    coverage = item
+                else:
+                    self._ignore(*path + [key])
+
+            if minimum is None or maximum is None:
+                self._missing([Keys.RANGE], *path)
+
+            elif not coverage:
+                self._missing([Keys.COVERAGE], *path)
+
+            else:
+                values = Variable.cover(minimum, maximum, coverage)
+
+        else:
+            self._wrong_type(dict, type(item), *path)
+
+        return values
 
     def _parse_substitution(self, component, variable, index, data):
         path = [Keys.COMPONENTS,
@@ -328,9 +378,10 @@ class Keys:
 
     COMPONENTS = "components"
     CONFIGURATION = "configuration"
+    CONSTRAINTS = "constraints"
+    COVERAGE = "coverage"
     DEFINITION = "definition"
     DOCKER = "docker"
-    DOMAIN = "domain"
     FEATURE_PROVIDER = "feature_provider"
     FILE = "file"
     GOALS = "goals"
@@ -341,6 +392,7 @@ class Keys:
     PATTERN = "pattern"
     PROVIDES_FEATURES = "provides_features"
     PROVIDES_SERVICES = "provides_services"
+    RANGE = "range"
     REALIZATION = "realization"
     REPLACEMENTS = "replacements"
     REQUIRES_FEATURES = "requires_features"
@@ -348,7 +400,9 @@ class Keys:
     RUNNING = "running"
     SERVICE_PROVIDERS = "service_providers"
     TARGETS = "targets"
+    TYPE = "type"
     VARIABLES = "variables"
+    VALUES= "values"
 
 
 

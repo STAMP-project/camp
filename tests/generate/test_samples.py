@@ -16,7 +16,7 @@ from camp.realize import Builder
 from camp.run import Runner
 
 
-from os import listdir
+from os import listdir, makedirs
 from os.path import join, isdir, exists
 
 from re import match
@@ -31,15 +31,36 @@ class FilesAreGenerated(TestCase):
 
 
     def test_single_component(self):
-        self.prepare_sample("single_component")
+        self.prepare_sample(
+            "\n"
+            "components:\n"
+            "  server:\n"
+            "    provides_services: [ Awesome ]\n"
+            "    implementation:\n"
+            "      docker:\n"
+            "        file: server/Dockerfile\n"
+            "goals:\n"
+            "  running:\n"
+            "    - Awesome\n")
         
         self.invoke_camp_generate()
         
         self.assert_configuration_count_is(1)
 
 
+
     def test_variables(self):
-        self.prepare_sample("variables")
+        self.prepare_sample(
+            "components:\n"
+            "  server:\n"
+            "    provides_services: [ Awesome ]\n"
+            "    variables:\n"
+            "      memory:\n"
+            "        values: [1GB, 2GB, 4GB]\n"
+            "goals:\n"
+            "  running:\n"
+            "    - Awesome\n"
+            "        \n")
         
         self.invoke_camp_generate()
 
@@ -47,7 +68,19 @@ class FilesAreGenerated(TestCase):
 
 
     def test_stack(self):
-        self.prepare_sample("stack")
+        self.prepare_sample(
+            "components:\n"
+            "  app:\n"
+            "    provides_services: [ Awesome ]\n"
+            "    requires_features: [ JRE ]\n"
+            "  jre:\n"
+            "    provides_features: [ JRE ]\n"
+            "    variables:\n"
+            "      version:\n"
+            "        values: [v7, v8]\n"
+            "goals:\n"
+            "  running:\n"
+            "    - Awesome\n")
         
         self.invoke_camp_generate()
         
@@ -55,23 +88,38 @@ class FilesAreGenerated(TestCase):
 
 
     def test_orchestrations(self):
-        self.prepare_sample("orchestrations")
+        self.prepare_sample(
+            "components:\n"
+            "  app:\n"
+            "    provides_services: [ Awesome ]\n"
+            "    requires_services: [ DB ]\n"
+            "    requires_features: [ JRE ]\n"
+            "  jre:\n"
+            "    provides_features: [ JRE ]\n"
+            "  mysql:\n"
+            "    provides_services: [ DB ]\n"
+            "  postgresql:\n"
+            "    provides_services: [ DB ]\n"
+            "    \n"
+            "goals:\n"
+            "  running:\n"
+            "    - Awesome\n")
         
         self.invoke_camp_generate()
         
         self.assert_configuration_count_is(2)
+                      
         
-        
-    def prepare_sample(self, sample_name):
-        sample_directory = join(self.SAMPLES_DIRECTORY, sample_name)
-        self._working_directory = join(self.WORKING_DIRECTORY, sample_name)
+    def prepare_sample(self, sample):
+        self._working_directory = self.WORKING_DIRECTORY
         if isdir(self._working_directory):
             rmtree(self._working_directory)
-        copytree(sample_directory, self._working_directory)
+        makedirs(self._working_directory)
+        with open(join(self._working_directory, "camp.yaml"), "w") as stream:
+            stream.write(sample)
 
 
-    WORKING_DIRECTORY = "temp"
-    SAMPLES_DIRECTORY = "samples"
+    WORKING_DIRECTORY = "tmp/generate"
 
 
     def invoke_camp_generate(self):
@@ -83,16 +131,10 @@ class FilesAreGenerated(TestCase):
 
     def assert_configuration_count_is(self, expected):
         generated = []
-        for each_file in listdir(self._working_directory):
+        destination = join(self.WORKING_DIRECTORY, "out")        
+        for each_file in listdir(destination):
             if match(r"config_\d+", each_file):
                 generated.append(each_file)
         self.assertEqual(expected, len(generated), str(generated))
                      
-        
-        
-    def verify_generated_files(self, *expected_files):
-        for each in expected_files:
-            path = join(self._working_directory, each)
-            self.assertTrue(exists(path),
-                            "Expecting file '%s', but could not find it!" % path)
 

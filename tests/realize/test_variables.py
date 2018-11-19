@@ -42,7 +42,7 @@ class VariablesAreRealized(TestCase):
 
 
     def create_docker_file(self):
-        directory = join_paths(self.WORKSPACE, "server")
+        directory = join_paths(self.WORKSPACE, "template", "server")
         makedirs(directory)
         path = join_paths(directory, "Dockerfile")
         with open(path, "w") as docker_file:
@@ -51,13 +51,13 @@ class VariablesAreRealized(TestCase):
 
 
     def create_config_file(self):
-        path = join_paths(self.WORKSPACE, "server", "server.cfg")
+        path = join_paths(self.WORKSPACE, "template", "server", "server.cfg")
         with open(path, "w") as docker_file:
             docker_file.write("mem=XXX")
 
 
     def create_docker_compose_file(self):
-        path = join_paths(self.WORKSPACE, "docker-compose.yml")
+        path = join_paths(self.WORKSPACE, "template", "docker-compose.yml")
         with open(path, "w") as docker_file:
             docker_file.write("mem=XXX")
 
@@ -70,6 +70,7 @@ class VariablesAreRealized(TestCase):
                           variables=[
                               Variable(
                                   name="memory",
+                                  value_type=str,
                                   values=["1GB", "2GB"],
                                   realization=[
                                       Substitution(
@@ -106,6 +107,7 @@ class VariablesAreRealized(TestCase):
                           variables=[
                               Variable(
                                   name="memory",
+                                  value_type=str,
                                   values=["1GB", "2GB"],
                                   realization=[
                                       Substitution(

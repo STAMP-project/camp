@@ -57,7 +57,7 @@ class AllYAMLConfigurationsAreBuilt(TestCase):
                 "    provides_services: [ Awesome ]\n"
                 "    variables:\n"
                 "       memory:\n"
-                "         domain: [ 1GB, 2GB ]\n"
+                "         values: [ 1GB, 2GB ]\n"
                 "         realization:\n"
                 "            - targets: [ server/Dockerfile ]\n"
                 "              pattern: mem=XXX\n"
@@ -70,7 +70,7 @@ class AllYAMLConfigurationsAreBuilt(TestCase):
 
 
     def _create_docker_file(self):
-        directory = join_paths(self.INPUT_DIRECTORY, "server")
+        directory = join_paths(self.INPUT_DIRECTORY, "template", "server")
         makedirs(directory)
         path = join_paths(directory, "Dockerfile")
         with open(path, "w") as docker_file:

@@ -57,7 +57,7 @@ class TestModelIsInvalid(TestCase):
         self._components = [Component(name="c1",
                                       provided_services=[Service("S1")],
                                       provided_features=[Feature("F1")],
-                                      variables=[Variable("memory", [])])
+                                      variables=[Variable("memory", str, [])])
         ]
 
         self._validate_model()
