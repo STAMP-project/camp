@@ -6,6 +6,9 @@ changes that were made.
 * CAMP v0.2
   
   * CAMP v0.2.2
+    * Update the documentation of the CityGo case to explain why there
+      are only 10 configurations possible, as noted in [Issue
+      #24](https://github.com/STAMP-project/camp/issues/23)
     * Fix issue with the "buildall.sh" script as per [Issue
       23](https://github.com/STAMP-project/camp/issues/23)
 	* New documentation page that explains how to contribute to the
