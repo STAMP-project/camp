@@ -103,8 +103,39 @@ configurations with the following command:
 $ camp generate -d . --all
 ```
 
-Note however that the variable `max_request_workers` is not directly
-constrained, and this entails *a very large number of configurations*.
+In general, the presence of an unbound variable, such
+`max_request_workers` entails *an infinte number of configurations*
+Here however, there are only 10 configurations.
+
+There are three variables: 
+ * `thread_limit`, which is either 64 or 128
+ * `thread_per_child`, which ranges from 0 to 128, with a maximum
+   coverage of 10. The actual values are therefore [0, 8, 16, 32, 40,
+   48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128].
+ * `max_request_worker` which is not bounded.
+
+The CAMP model set the three following constraints:
+ 1. `thread_limit` > `thread_per_child`
+ 2. `thread_per_child` * 16 = `max_request_worker`
+ 3. (`thread_per_child` >= 100 and `max_request_worker` >= 200) or
+    (`thread_limit` <= 64 and `max_request_worker` >= 2)
+
+From Constraint 1 and the second part of Constraint 3, we know that
+`thread_per_child`must be lower than thread_per_child, and therefore
+strictly lower than 64. This reduces its possible values to the range
+[0, 56]. From Constraint 2, `max_request_worker` must be above 2, and
+also equals 16 * `thread_per_child`, which rules out the value 0,
+leaving us with the range [8, 56].
+
+From the first part of Constraint 1, we know that `thread_per_child`
+must be above 100, which adds up the range [104, 112, 120, 128]. But
+from Constraint 1, `thread_per_child` must strictly below
+`thread_limit`, which invalidate value 128.
+
+We are left with 10 possible values for `thread_per_child` that are
+[8, 16, 24, 32, 40, 48, 56, 104, 112, 120]. In addition, we need one
+configuration to test every single value, so we need 10
+configurations.
 
 
 <a name="coverage"/>
