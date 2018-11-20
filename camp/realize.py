@@ -195,9 +195,8 @@ class Builder(object):
         for each_instance in self._images:
             if isinstance(each_instance.definition.implementation, DockerFile):
                 tag = self._docker_tag_for(each_instance)
-                docker_file = self._docker_file_for(each_instance).replace(self._image_directory, ".")
-                command = self.BUILD_COMMAND.format(docker_file=docker_file,
-                                                tag=tag)
+                folder = "./" + each_instance.name
+                command = self.BUILD_COMMAND.format(folder=folder, tag=tag)
                 build_commands.append(command)
 
         build_script = self._build_script()
@@ -206,7 +205,7 @@ class Builder(object):
             stream.write(content)
         
                                    
-    BUILD_COMMAND = "docker build -t {tag} -f {docker_file}"
+    BUILD_COMMAND = "docker build -t {tag} {folder}"
 
     def _build_script(self):
         return join_paths(self._image_directory, "build_images.sh")

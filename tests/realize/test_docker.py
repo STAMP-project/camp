@@ -10,12 +10,15 @@
 
 
 
+from camp.directories import InputDirectory, OutputDirectory
 from camp.entities.model import Model, Component, Goals, Configuration, \
     Instance, Service, Feature, DockerImage, DockerFile
 from camp.realize import Builder
 
 from os import listdir, makedirs
 from os.path import isdir, exists, join as join_paths
+
+from re import search
 
 from shutil import rmtree
 
@@ -31,27 +34,25 @@ class BuilderTest(TestCase):
             rmtree(self.WORKING_DIRECTORY)
         makedirs(self.WORKING_DIRECTORY)
 
-        folder = join_paths(self.WORKING_DIRECTORY, "template", "server")
-        makedirs(folder)
-        path = join_paths(folder, "Dockerfile")
-        with open(path, "w") as docker_file:
-            docker_file.write(self.DOCKER_FILE)
+        self._input = InputDirectory(self.WORKING_DIRECTORY)
+        self._output = OutputDirectory(self.WORKING_DIRECTORY + "/out")
 
-        folder = join_paths(self.WORKING_DIRECTORY, "template", "jdk")
-        makedirs(folder)
-        path = join_paths(folder, "Dockerfile")
-        with open(path, "w") as docker_file:
-            docker_file.write(self.DOCKER_FILE)
-
+        self._input.create_template_file("server",
+                                         "Dockerfile",
+                                         self.DOCKER_FILE)
+        self._input.create_template_file("jdk",
+                                         "Dockerfile",
+                                         self.DOCKER_FILE)
+        
         self._builder = Builder()
-
-    WORKING_DIRECTORY = "temp/realize/docker"
+    
+    WORKING_DIRECTORY = "tmp/realize/docker"
 
     DOCKER_FILE = ("FROM openjdk:8-jre\n"
                    "RUN echo this is nice\n")
-
+    
     def build(self, configuration):
-        destination = join_paths(self.WORKING_DIRECTORY, "out")
+        destination = join_paths(self.WORKING_DIRECTORY, "out/config_0")
         self._builder.build(configuration, self.WORKING_DIRECTORY, destination)
 
 
@@ -61,24 +62,56 @@ class BuilderTest(TestCase):
                               self.generated_components())
 
 
-    @property
-    def image_directory(self):
-        return join_paths(self.WORKING_DIRECTORY, "out", "images")
+
+    def assert_generated(self, file_path, with_patterns):
+        self.assertTrue(
+            self._output.has_file(file_path),
+            "Missing file '%s'!" % file_path)
+        content = self._output.content_of(file_path)
+        for each_pattern in with_patterns:
+            if not search(each_pattern, content):
+                self.fail("The file '%s' does not contains pattern '%s'!\n Content is %s" % (file_path, each_pattern, content))
+
+    def assert_no_image_generated(self, config_index):
+        self.assertEqual(0,
+                         len(self._output.images_generated_for(config_index)))
 
 
-    def generated_components(self):
-        return [each_file \
-                for each_file in listdir(self.image_directory)\
-                if isdir(join_paths(self.image_directory, each_file)) ]
+                
 
+class BuildImagesIsGenerated(BuilderTest):
 
-    def assert_docker_file_built_from(self, source_image, component):
-        path = join_paths(self.image_directory, component, "Dockerfile")
-        with open(path, "r") as docker_file:
-            content = docker_file.read()
-            self.assertIn("FROM " + source_image, content)
+    def test_when_a_component_is_implemented_by_a_docker_file(self):
+        model = Model(
+            [
+                Component("server",
+                          provided_services=[Service("Awesome")],
+                          required_features=[Feature("JDK")],
+                          implementation=DockerFile("server/Dockerfile")),
+                Component("jdk",
+                          provided_features=[Feature("JDK")],
+                          implementation=DockerFile("jdk/Dockerfile"))
+                
+            ],
+            Goals(services=[Service("Awesome")])
+        )
 
+        server_0 = Instance("server_0", model.resolve("server"))
+        jdk_0 = Instance("jdk_0", model.resolve("jdk"))
 
+        server_0.feature_provider = jdk_0
+        configuration = Configuration(model, [server_0, jdk_0])
+
+        self.build(configuration)
+
+        self.assert_generated(
+            "config_0/images/build_images.sh",
+             with_patterns=[
+                 "docker build -t camp-server_0 ./server",
+                 "docker build -t camp-jdk_0 ./jdk_0"
+                 ])
+
+        
 
 class DockerFileGenerated(BuilderTest):
 
@@ -97,9 +130,12 @@ class DockerFileGenerated(BuilderTest):
 
         self.build(configuration)
 
-        self.assert_directory_structure(["server_0"])
-        self.assert_docker_file_built_from("openjdk:8-jre", "server_0")
-
+        self.assert_generated(
+            "config_0/images/server_0/Dockerfile",
+            with_patterns=[
+                "FROM openjdk:8-jre"
+            ])
+        
 
     def test_when_a_component_host_is_implemented_by_a_docker_image(self):
         model = Model(
@@ -123,10 +159,13 @@ class DockerFileGenerated(BuilderTest):
                                                 jdk_0 ])
         self.build(configuration)
 
-        self.assert_directory_structure(["server_0"])
-        self.assert_docker_file_built_from("fchauvel/test:1.0.1", "server_0")
+        self.assert_generated(
+            "config_0/images/server_0/Dockerfile",
+            with_patterns=[
+                "FROM fchauvel/test:1.0.1"
+            ])
 
-
+        
     def test_when_a_component_host_is_implemented_by_a_docker_file(self):
         model = Model(
             [
@@ -149,9 +188,18 @@ class DockerFileGenerated(BuilderTest):
                                                 jdk_0 ])
         self.build(configuration)
 
-        self.assert_directory_structure(["server_0", "jdk_0"])
-        self.assert_docker_file_built_from("camp-jdk_0", "server_0")
-        self.assert_docker_file_built_from("openjdk:8-jre", "jdk_0")
+        self.assert_generated(
+            "config_0/images/server_0/Dockerfile",
+            with_patterns=[
+                "FROM camp-jdk_0"
+            ])
+
+        self.assert_generated(
+            "config_0/images/jdk_0/Dockerfile",
+            with_patterns=[
+                "FROM openjdk:8-jre"
+            ])
+
 
 
 
@@ -174,4 +222,4 @@ class NoDockerFileIsGenerated(BuilderTest):
 
         self.build(configuration)
 
-        self.assert_directory_structure([])
+        self.assert_no_image_generated(0)

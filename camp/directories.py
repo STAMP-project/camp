@@ -11,9 +11,10 @@
 
 
 from camp.codecs.graphviz import Graphviz
+from camp.codecs.yaml import YAML
 
 from os import makedirs, listdir
-from os.path import isdir, join as join_paths, dirname
+from os.path import exists, isdir, join as join_paths, dirname
 
 from re import search
 
@@ -36,9 +37,9 @@ class Directory(object):
 class InputDirectory(Directory):
 
 
-    def __init__(self, path, codec):
+    def __init__(self, path, codec=None):
         super(InputDirectory, self).__init__(path)
-        self._codec = codec
+        self._codec = codec or YAML()
 
 
     @property
@@ -57,20 +58,41 @@ class InputDirectory(Directory):
                     return any_file
         raise ValueError("Unable to find the CAMP model")
 
+
     MODEL_NAMES = [
         "model.yaml", "model.yml",
         "camp.yml", "camp.yaml",
         "input.yml", "input.yml"
     ]
 
+    
+    def create_template_file(self, component_name, path, content):
+        resource = join_paths(self._path, self.TEMPLATE_FOLDER, component_name, path) 
+        folder = dirname(resource)
+        if not isdir(folder):
+            makedirs(folder)
+        with open(resource, "w") as stream:
+            stream.write(content)
+
+    TEMPLATE_FOLDER = "template"
+
+
+    @property
+    def component_templates(self):
+        templates = []
+        for any_file in listdir(self.TEMPLATE_FOLDER):
+            if isdir(any_file):
+                templates.append(any_file)
+        return templates
+            
 
 
 class OutputDirectory(Directory):
 
     
-    def __init__(self, path, codec):
+    def __init__(self, path, codec=None):
         super(OutputDirectory, self).__init__(path)
-        self._codec = codec
+        self._codec = codec or YAML()
 
 
     def save_as_yaml(self, index, configuration):
@@ -124,9 +146,29 @@ class OutputDirectory(Directory):
 
     CONFIGURATION_FOLDER = r"config_[0-9]+$"
 
+
+    def images_generated_for(self, index):
+        images = []
+        folder = join_paths(self._path, "config_%d" % index, "images")
+        for any_file in listdir(folder):
+            if isdir(any_file):
+                images.append(any_file)
+        return images
+        
     
     def create_file(self, path, content):
         folder = dirname(path)
         self._create(folder)
         with open(path, "w") as stream:
             stream.write(content)
+
+
+    def has_file(self, path_to_file):
+        resource = join_paths(self._path, path_to_file)
+        return exists(resource)
+
+
+    def content_of(self, path_to_file):
+        resource = join_paths(self._path, path_to_file)
+        with open(resource, "r") as stream:
+            return stream.read()
