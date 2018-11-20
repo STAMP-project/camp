@@ -17,10 +17,8 @@ from camp.generate import Z3Problem
 from camp.realize import Builder
 from camp.run import Runner
 
-from os import makedirs, listdir
+from os import listdir
 from os.path import exists, isdir, join as join_paths, basename
-
-from re import search
 
 from shutil import copytree, rmtree
 
@@ -56,29 +54,29 @@ class Sample(object):
     def output_directory(self):
         return self._output.path
 
-    
+
     @property
     def generated_configurations(self):
-        path, model, warnings = self._input.model
+        _, model, warnings = self._input.model
 
         if warnings:
             error = ("There are warnings!\n"
                      "\n".join(each for each in warnings))
             raise AssertionError(error)
-        
+
         return [GeneratedConfiguration(path, configuration) \
                 for path, configuration in self._output.existing_configurations(model)]
 
-    
+
     @property
     def model(self):
         return self._input.model
 
-    
+
     def create_configuration(self, index, content):
         file_name = self._output._yaml_configuration_file(index)
         self._output.create_file(file_name, content)
-        
+
 
 
 
@@ -92,9 +90,9 @@ class GeneratedConfiguration(object):
 
     def includes_file(self, path_to_file):
         return exists(join_paths(self._path, path_to_file))
-        
-        
-            
+
+
+
 
 class CampTests(TestCase):
 
@@ -112,7 +110,7 @@ class CampTests(TestCase):
     def realize(self):
         self.camp("realize", "-d", self.sample.directory)
 
-        
+
     @staticmethod
     def camp(*arguments):
         runner = Runner(

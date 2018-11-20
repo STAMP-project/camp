@@ -10,8 +10,6 @@
 
 
 
-
-
 from camp import About
 from camp.codecs.yaml import YAML
 from camp.core import Camp
@@ -37,13 +35,15 @@ class Runner(object):
         self._goodbye()
 
 
-    def _welcome(self):
+    @staticmethod
+    def _welcome():
         print "%s v%s (%s)" % (About.PROGRAM, About.VERSION, About.LICENSE)
         print About.COPYRIGHT
-        print 
+        print
 
 
-    def _goodbye(self):
+    @staticmethod
+    def _goodbye():
         print
         print "That's all folks!"
 
