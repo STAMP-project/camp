@@ -16,7 +16,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* 
 
 WORKDIR /root
-RUN wget https://github.com/Z3Prover/z3/releases/download/z3-4.7.1/z3-4.7.1-x64-debian-8.10.zip && \
+RUN wget -q https://github.com/Z3Prover/z3/releases/download/z3-4.7.1/z3-4.7.1-x64-debian-8.10.zip && \
     unzip z3-4.7.1-x64-debian-8.10.zip && \
     mv z3-4.7.1-x64-debian-8.10 unzipped && \
     mkdir -p /usr/lib/python2.7/z3/lib && \

@@ -16,6 +16,7 @@ python:
 env:
   global:
     - NAME="camp"
+    - CODECOV_TOKEN="6dfaf6b6-29f5-4816-8ace-908bbbb7e01e"
 
 dist: xenial
 sudo: required
@@ -42,14 +43,15 @@ install:
   - ls -laR /opt/python/2.7.15/lib/python2.7/z3
   - rm -rf unzipped
   - z3 --version
-  - python -c 'import z3; print(z3.get_version_string())'
-
-  # Install CAMP and its dependencies
+  - python -c "import z3; print(z3.get_version_string())"
+  # Install CAMP and its dependencies 
+  - pip install codecov coverage
   - pip install -r requirements.txt
   - pip install .
 
 script:
-  - green -qf -vv tests
+  - green -qrf -vv tests
+  - codecov
 
 after_success:
   - |
