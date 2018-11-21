@@ -57,7 +57,7 @@ class BuiltModelAreComplete(TestCase):
                 "      provides_services: [ Wonderful ]\n"
                 "      variables:\n"
                 "        memory:\n"
-                "          type: Integer\n" 
+                "          type: Integer\n"
                 "          values: [1GB, 2GB]\n"
                 "        threads:\n"
                 "          type: Integer\n"
@@ -206,7 +206,7 @@ class BuiltModelAreComplete(TestCase):
                             targets=["file1", "path/to/file2"],
                             pattern="xmem=1GB",
                             replacements=["xmem=1", "xmem=2", "xmem=4"])])
-        
+
     def _assert_components(self, model, names):
         self.assertItemsEqual(names,
                               [each.name for each in model.components])
@@ -266,125 +266,107 @@ class IgnoredEntriesAreReported(TestCase):
         self._codec = YAML()
 
 
+    def assert_extra_in(self, text, expected):
+        self._codec.load_model_from(StringIO(text))
+
+        self.assertEqual(1, len(self._codec.warnings))
+        self.assertEqual(expected,
+                         self._codec.warnings[0].path)
+
+
     def test_when_an_extra_entry_is_in_the_root(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "extra: this entry should be reported!\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
+        self.assert_extra_in("components:\n"
+                             "   server:\n"
+                             "      provides_services: [ Wonderful ]\n"
+                             "extra: this entry should be reported!\n"
+                             "goals:\n"
+                             "   running:\n"
+                             "      - Wonderful\n",
+                             expected="extra")
 
-        model = self._codec.load_model_from(StringIO(text))
 
-        self.assert_extra_is("extra")
-
-        
     def test_when_an_extra_entry_is_in_a_component(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      extra: this entry should be reported!\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
+        self.assert_extra_in("components:\n"
+                             "   server:\n"
+                             "      provides_services: [ Wonderful ]\n"
+                             "      extra: this entry should be reported!\n"
+                             "goals:\n"
+                             "   running:\n"
+                             "      - Wonderful\n",
+                             expected="components/server/extra")
 
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_extra_is("components/server/extra")
-        
 
     def test_when_an_extra_entry_is_in_the_variables(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      variables:\n"
-                "         memory:\n"
-                "            extra: this entry should be reported!\n"
-                "            values: [ 1GB, 2GB]\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
+        self.assert_extra_in("components:\n"
+                             "   server:\n"
+                             "      provides_services: [ Wonderful ]\n"
+                             "      variables:\n"
+                             "         memory:\n"
+                             "            extra: this entry should be reported!\n"
+                             "            values: [ 1GB, 2GB]\n"
+                             "goals:\n"
+                             "   running:\n"
+                             "      - Wonderful\n",
+                             expected="components/server/variables/memory/extra")
 
-        model = self._codec.load_model_from(StringIO(text))
 
-        self.assert_extra_is("components/server/variables/memory/extra")
-
-    
     def test_when_an_extra_entry_is_in_a_substitution(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      variables:\n"
-                "         memory:\n"
-                "            values: [ 1GB, 2GB]\n"
-                "            realization: \n"
-                "              - targets: [ file1 ]\n"
-                "                pattern: mem=1GB\n"
-                "                extra: this entry should be reported\n"
-                "                replacements: [mem=1GB, mem=2GB]\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
+        self.assert_extra_in("components:\n"
+                             "   server:\n"
+                             "      provides_services: [ Wonderful ]\n"
+                             "      variables:\n"
+                             "         memory:\n"
+                             "            values: [ 1GB, 2GB]\n"
+                             "            realization: \n"
+                             "              - targets: [ file1 ]\n"
+                             "                pattern: mem=1GB\n"
+                             "                extra: this entry should be reported\n"
+                             "                replacements: [mem=1GB, mem=2GB]\n"
+                             "goals:\n"
+                             "   running:\n"
+                             "      - Wonderful\n",
+                             expected="components/server/variables/memory/realization/#1/extra")
 
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_extra_is("components/server/variables/memory/realization/#1/extra")
-
-        
 
     def test_when_an_extra_entry_is_in_the_implementation(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      implementation:\n"
-                "         extra: this entry should be reported!\n"
-                "         docker:\n"
-                "            file: DockerFile\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
+        self.assert_extra_in("components:\n"
+                             "   server:\n"
+                             "      provides_services: [ Wonderful ]\n"
+                             "      implementation:\n"
+                             "         extra: this entry should be reported!\n"
+                             "         docker:\n"
+                             "            file: DockerFile\n"
+                             "goals:\n"
+                             "   running:\n"
+                             "      - Wonderful\n",
+                             expected="components/server/implementation/extra")
 
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_extra_is("components/server/implementation/extra")
-        
 
     def test_when_an_extra_entry_is_in_the_docker(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      implementation:\n"
-                "         docker:\n"
-                "            extra: this entry should be reported!\n"
-                "            file: DockerFile\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_extra_is("components/server/implementation/docker/extra")
+        self.assert_extra_in("components:\n"
+                             "   server:\n"
+                             "      provides_services: [ Wonderful ]\n"
+                             "      implementation:\n"
+                             "         docker:\n"
+                             "            extra: this entry should be reported!\n"
+                             "            file: DockerFile\n"
+                             "goals:\n"
+                             "   running:\n"
+                             "      - Wonderful\n",
+                             expected="components/server/implementation/docker/extra")
 
 
     def test_when_an_extra_entry_is_in_the_goals(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "goals:\n"
-                "   extra: this entry should be reported!\n"
-                "   running:\n"
-                "      - Wonderful\n")
+        self.assert_extra_in("components:\n"
+                             "   server:\n"
+                             "      provides_services: [ Wonderful ]\n"
+                             "goals:\n"
+                             "   extra: this entry should be reported!\n"
+                             "   running:\n"
+                             "      - Wonderful\n",
+                             expected="goals/extra")
 
-        model = self._codec.load_model_from(StringIO(text))
 
-        self.assert_extra_is("goals/extra")
-
-    
-    def assert_extra_is(self, expected_path):
-        self.assertEqual(1, len(self._codec.warnings))
-        self.assertEqual(expected_path,
-                         self._codec.warnings[0].path)
 
 
 
@@ -576,110 +558,91 @@ class TypeMismatchesAreNotReportedWhenStringIsExpected(TestCase):
     def setUp(self):
         self._codec = YAML()
 
-
-    def test_with_a_boolean_among_running_items(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Awesome ]\n"
-                "goals:\n"
-                "  running: [ Awesome, True ]\n")
-
+    def assert_no_warning_in(self, text):
         model = self._codec.load_model_from(StringIO(text))
 
         self.assertEqual(0, len(self._codec.warnings))
+
+
+    def test_with_a_boolean_among_running_items(self):
+        self.assert_no_warning_in(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Awesome ]\n"
+            "goals:\n"
+            "  running: [ Awesome, True ]\n")
 
 
     def test_with_a_number_among_provided_services(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Awesome, 1234.5 ]\n"
-                "goals:\n"
-                "  running: [ Awesome ]\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(0, len(self._codec.warnings))
+        self.assert_no_warning_in(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Awesome, 1234.5 ]\n"
+            "goals:\n"
+            "  running: [ Awesome ]\n")
 
 
     def test_with_a_number_among_required_services(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      requires_services: [ Awesome, 1234.5 ]\n"
-                "goals:\n"
-                "  running: [ Awesome ]\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(0, len(self._codec.warnings))
+        self.assert_no_warning_in(
+            "components:\n"
+            "   server:\n"
+            "      requires_services: [ Awesome, 1234.5 ]\n"
+            "goals:\n"
+            "  running: [ Awesome ]\n")
 
 
     def test_with_a_number_among_provided_features(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_features: [ Awesome, 1234.5 ]\n"
-                "goals:\n"
-                "  running: [ Awesome ]\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(0, len(self._codec.warnings))
+        self.assert_no_warning_in(
+            "components:\n"
+            "   server:\n"
+            "      provides_features: [ Awesome, 1234.5 ]\n"
+            "goals:\n"
+            "  running: [ Awesome ]\n")
 
 
-    def test_with_a_number_among_required_services(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      requires_features: [ Awesome, 1234.5 ]\n"
-                "goals:\n"
-                "  running: [ Awesome ]\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(0, len(self._codec.warnings))
+    def test_with_a_number_among_required_features(self):
+        self.assert_no_warning_in(
+            "components:\n"
+            "   server:\n"
+            "      requires_features: [ Awesome, 1234.5 ]\n"
+            "goals:\n"
+            "  running: [ Awesome ]\n")
 
 
     def test_with_a_number_among_variable_values(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      requires_services: [ Awesome ]\n"
-                "      variables:\n"
-                "         memory:\n"
-                "           values: [ High, 1234]\n"
-                "goals:\n"
-                "  running: [ Awesome ]\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(0, len(self._codec.warnings))
+        self.assert_no_warning_in(
+            "components:\n"
+            "   server:\n"
+            "      requires_services: [ Awesome ]\n"
+            "      variables:\n"
+            "         memory:\n"
+            "           values: [ High, 1234]\n"
+            "goals:\n"
+            "  running: [ Awesome ]\n")
 
 
     def test_with_a_number_among_docker_file(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      requires_services: [ Awesome ]\n"
-                "      implementation:\n"
-                "         docker:\n"
-                "           file: 1234.5\n"
-                "goals:\n"
-                "  running: [ Awesome ]\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(0, len(self._codec.warnings))
+        self.assert_no_warning_in(
+            "components:\n"
+            "   server:\n"
+            "      requires_services: [ Awesome ]\n"
+            "      implementation:\n"
+            "         docker:\n"
+            "           file: 1234.5\n"
+            "goals:\n"
+            "  running: [ Awesome ]\n")
 
 
     def test_with_a_number_among_docker_image(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      requires_services: [ Awesome ]\n"
-                "      implementation:\n"
-                "         docker:\n"
-                "           image: 1234.5\n"
-                "goals:\n"
-                "  running: [ Awesome ]\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(0, len(self._codec.warnings))
+        self.assert_no_warning_in(
+            "components:\n"
+            "   server:\n"
+            "      requires_services: [ Awesome ]\n"
+            "      implementation:\n"
+            "         docker:\n"
+            "           image: 1234.5\n"
+            "goals:\n"
+            "  running: [ Awesome ]\n")
 
 
 
@@ -728,7 +691,7 @@ class MissingMandatoryEntriesAreReported(TestCase):
 
         self.assert_missing("components/server/variables/memory/realization/#1",
                             ["pattern"])
-        
+
 
     def test_when_omitting_substitution_replacements(self):
         text = ("components:\n"
@@ -764,7 +727,7 @@ class MissingMandatoryEntriesAreReported(TestCase):
 
         self.assert_missing("components/server/implementation/docker",
                             ["file", "image"])
-        
+
 
 
     def assert_missing(self, path, candidates):
@@ -773,4 +736,3 @@ class MissingMandatoryEntriesAreReported(TestCase):
                          self._codec.warnings[0].path)
         self.assertItemsEqual(candidates,
                               self._codec.warnings[0].candidates)
-        

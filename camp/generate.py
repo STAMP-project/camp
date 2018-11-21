@@ -16,7 +16,7 @@ from camp.util import redirect_stderr_to
 from ozepy import load_all_classes, DefineObject, ObjectVar, \
     get_all_meta_facts, get_all_config_facts, cast_all_objects, \
     generate_config_constraints, generate_meta_constraints, start_over, \
-    get_all_objects, ObjectConst
+    ObjectConst
 
 from pkgutil import get_data
 from pprint import pprint
@@ -142,7 +142,7 @@ class Z3Problem(object):
 
         result = Configuration(self._model, instances)
 
-        for key, item in z3_solution.items():
+        for _, item in z3_solution.items():
             if "definition" in item:
                 instance = result.resolve(item["name"])
                 if "use_feature" in item and item["use_feature"]:

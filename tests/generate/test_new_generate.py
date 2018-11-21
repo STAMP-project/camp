@@ -15,8 +15,6 @@ from camp.generate import Z3Problem
 
 from StringIO import StringIO
 
-from sys import stdout
-
 from unittest import TestCase
 
 
@@ -27,8 +25,34 @@ class VariablesAreAssigned(TestCase):
         self._yaml = YAML()
 
 
+    def assert_variables_values(self, text, configuration_count, expected_values):
+        model = self._yaml.load_model_from(StringIO(text))
+
+        self.assertFalse(self._yaml.warnings, "\n".join(str(each) for each in self._yaml.warnings))
+
+        solver = Z3Problem.from_model(model)
+        configurations = list(solver.all_solutions())
+
+        self.assertEqual(configuration_count, len(configurations))
+
+        actual_values = { key: [] for key in expected_values }
+        for each_configuration in configurations:
+            for each_instance in each_configuration.instances:
+                for variable, value in each_instance.configuration:
+                    if variable.name not in actual_values:
+                        actual_values[variable.name] = []
+                    actual_values[variable.name].append(value)
+
+        self.assertEqual(len(expected_values),
+                         len(actual_values))
+
+        for each_variable in expected_values:
+            self.assertEqual(set(expected_values[each_variable]),
+                             set(actual_values[each_variable]))
+
+
     def test_given_integer_variables(self):
-        model = self._yaml.load_model_from(StringIO(
+        self.assert_variables_values(
             "components:\n"
             "   server:\n"
             "      provides_services: [ MyService ]\n"
@@ -42,25 +66,14 @@ class VariablesAreAssigned(TestCase):
             "    - CInstance.forall(ci, ci.configuration.exists(val1, And([val1.variable == variable('server', 'max_thread'), ci.configuration.exists(val2, And([val2.variable == variable('server', 'memory'), val1.value * 2 == val2.value]))])))\n"
             "goals:\n"
             "   running: \n"
-            "     - MyService \n"))
-        
-        self.assertFalse(self._yaml.warnings, "\n".join(str(each) for each in self._yaml.warnings))
-        
-        solver = Z3Problem.from_model(model)
-        configurations = list(solver.all_solutions())
-
-        self.assertEqual(1, len(configurations))
-
-        self.assertTrue(
-            all(each.instances[0].definition is model.resolve("server") \
-                for each in configurations))
-
-        self.assertEqual(4, configurations[0].instances[0]["memory"])
-        self.assertEqual(2, configurations[0].instances[0]["max_thread"])
+            "     - MyService \n",
+            configuration_count=1,
+            expected_values={"memory": [4],
+                             "max_thread": [2]})
 
 
     def test_given_enumerated_variables(self):
-        model = self._yaml.load_model_from(StringIO(
+        self.assert_variables_values(
             "components:\n"
             "   server:\n"
             "      provides_services: [ MyService ]\n"
@@ -70,27 +83,13 @@ class VariablesAreAssigned(TestCase):
             "           values: [ 1GB, 2GB ]\n"
             "goals:\n"
             "   running:\n"
-            "      - MyService\n"))
-
-        
-        self.assertFalse(self._yaml.warnings, "\n".join(str(each) for each in self._yaml.warnings))
-
-        solver = Z3Problem.from_model(model)
-        configurations = list(solver.all_solutions())
-
-        self.assertEqual(2, len(configurations))
-        self.assertTrue(
-            all(each.instance_count == 1 for each in configurations))
-        self.assertTrue(
-            all(each.instances[0].definition is model.resolve("server") \
-                for each in configurations))
-        self.assertTrue(
-            all(any(value in [x[1] for x in conf.instances[0].configuration] for conf in configurations)
-                for value in ["1GB", "2GB"]))
+            "      - MyService\n",
+            configuration_count=2,
+            expected_values={"memory": ["1GB", "2GB"]})
 
 
     def test_given_enumerated_integer_variables(self):
-        model = self._yaml.load_model_from(StringIO(
+        self.assert_variables_values(
             "components:\n"
             "   server:\n"
             "      provides_services: [ MyService ]\n"
@@ -100,29 +99,13 @@ class VariablesAreAssigned(TestCase):
             "           values: [ 5, 10 ]\n"
             "goals:\n"
             "   running:\n"
-            "      - MyService\n"))
-
-        
-        self.assertFalse(self._yaml.warnings, "\n".join(str(each) for each in self._yaml.warnings))
-
-        solver = Z3Problem.from_model(model)
-        configurations = list(solver.all_solutions())
-        
-        self.assertEqual(2, len(configurations))
-
-        self.assertTrue(
-            all(each.instances[0].definition is model.resolve("server") \
-                for each in configurations))
-
-        memory_sizes = [each_configuration.instances[0]["memory"] \
-                    for each_configuration in configurations]
-        self.assertEqual(set(memory_sizes), set([5, 10]))
-
-        
+            "      - MyService\n",
+            configuration_count=2,
+            expected_values={"memory": [5, 10]})
 
 
     def test_given_covered_integer_variables(self):
-        model = self._yaml.load_model_from(StringIO(
+        self.assert_variables_values(
             "components:\n"
             "   server:\n"
             "      provides_services: [ MyService ]\n"
@@ -134,20 +117,6 @@ class VariablesAreAssigned(TestCase):
             "             coverage: 50\n"
             "goals:\n"
             "   running:\n"
-            "      - MyService\n"))
-
-        
-        self.assertFalse(self._yaml.warnings, "\n".join(str(each) for each in self._yaml.warnings))
-
-        solver = Z3Problem.from_model(model)
-        configurations = list(solver.all_solutions())
-        
-        self.assertEqual(3, len(configurations))
-
-        self.assertTrue(
-            all(each.instances[0].definition is model.resolve("server") \
-                for each in configurations))
-
-        memory_sizes = [each_configuration.instances[0]["memory"] \
-                    for each_configuration in configurations]
-        self.assertEqual(set(memory_sizes), set([100, 150, 200]))
+            "      - MyService\n",
+            configuration_count=3,
+            expected_values={ "memory": [100, 150, 200]})
