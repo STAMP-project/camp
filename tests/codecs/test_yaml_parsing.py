@@ -26,237 +26,288 @@ class BuiltModelAreComplete(TestCase):
         self._codec = YAML()
 
 
+
     def test_given_a_one_component_stack(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(0, len(self._codec.warnings))
-
-        model = self._codec.load_model_from(StringIO(text))
-        self._assert_components(model, ["server"])
-        self._assert_services(model, ["Wonderful"])
-        self._assert_features(model, [])
-
-        server = model.resolve("server")
-        self._assert_component_services(server, ["Wonderful"], [])
-        self._assert_component_features(server, [], [])
-        self._assert_variables(server, [])
-
-        self._assert_goals(model.goals, ["Wonderful"], [])
+        self.assert_complete("components:\n"
+                             "   server:\n"
+                             "      provides_services: [ Wonderful ]\n"
+                             "goals:\n"
+                             "   running:\n"
+                             "      - Wonderful\n",
+                             expectations={
+                                 "services": ["Wonderful"],
+                                 "features": [],
+                                 "components" : {
+                                     "server": {
+                                         "provided_services": ["Wonderful"],
+                                         "required_services": [],
+                                         "provided_features": [],
+                                         "required_features": [],
+                                         "implementation": None,
+                                         "variables": {}
+                                     }
+                                 },
+                                 "goals": {
+                                     "services": ["Wonderful"],
+                                     "features": []}
+                             })
 
 
     def test_given_a_one_component_stack_with_two_variables(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      variables:\n"
-                "        memory:\n"
-                "          type: Integer\n"
-                "          values: [1GB, 2GB]\n"
-                "        threads:\n"
-                "          type: Integer\n"
-                "          values: [64, 128, 256]\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(0, len(self._codec.warnings))
-
-        model = self._codec.load_model_from(StringIO(text))
-        self._assert_components(model, ["server"])
-        self._assert_services(model, ["Wonderful"])
-        self._assert_features(model, [])
-
-        server = model.resolve("server")
-        self._assert_component_services(server, ["Wonderful"], [])
-        self._assert_component_features(server, [], [])
-        self._assert_variables(server, [ ("memory", ["1GB", "2GB"]),
-                                         ("threads", [64, 128, 256])])
-
-        self._assert_goals(model.goals, ["Wonderful"], [])
-
+        self.assert_complete(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      variables:\n"
+            "        memory:\n"
+            "          type: Integer\n"
+            "          values: [1GB, 2GB]\n"
+            "        threads:\n"
+            "          type: Integer\n"
+            "          values: [64, 128, 256]\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expectations={
+            "services": ["Wonderful"],
+                "features": [],
+                "components" : {
+                    "server": {
+                        "provided_services": ["Wonderful"],
+                        "required_services": [],
+                        "provided_features": [],
+                        "required_features": [],
+                        "implementation": None,
+                        "variables": {
+                            "threads": {
+                                "values": [64, 128, 256],
+                                "realization": []
+                            },
+                            "memory": {
+                                "values": ["1GB", "2GB"],
+                                "realization": []
+                            }
+                        }
+                    }
+                },
+                "goals": {
+                    "services": ["Wonderful"],
+                    "features": []
+                }
+            })
+            
+            
 
     def test_given_a_two_component_stack(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      requires_features: [ Python27 ]\n"
-                "   python:\n"
-                "      provides_features: [ Python27 ]\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        Model = self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(0, len(self._codec.warnings))
-
-        model = self._codec.load_model_from(StringIO(text))
-        self._assert_components(model, ["server", "python"])
-        self._assert_services(model, ["Wonderful"])
-        self._assert_features(model, ["Python27"])
-
-        server = model.resolve("server")
-        self._assert_component_services(server, ["Wonderful"], [])
-        self._assert_component_features(server, [], ["Python27"])
-        self._assert_variables(server, [])
-
-        python = model.resolve("python")
-        self._assert_component_services(python, [], [])
-        self._assert_component_features(python, ["Python27"], [])
-        self._assert_variables(python, [])
-
-        self._assert_goals(model.goals, ["Wonderful"], [])
+        self.assert_complete(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      requires_features: [ Python27 ]\n"
+            "   python:\n"
+            "      provides_features: [ Python27 ]\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expectations={
+                "services": ["Wonderful"],
+                "features": ["Python27"],
+                "components" : {
+                    "server": {
+                        "provided_services": ["Wonderful"],
+                        "required_services": [],
+                        "provided_features": [],
+                        "required_features": ["Python27"],
+                        "implementation": None,
+                        "variables": {}
+                    },
+                    "python": {
+                        "provided_services": [],
+                        "required_services": [],
+                        "provided_features": ["Python27"],
+                        "required_features": [],
+                        "implementation": None,
+                        "variables": {}
+                        
+                    }
+                },
+                "goals": {
+                    "services": ["Wonderful"],
+                    "features": []
+                }
+            })
 
 
     def test_given_a_component_with_docker_file(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      implementation:\n"
-                "         docker:\n"
-                "            file: server/Dockerfile\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(0, len(self._codec.warnings),
-                        ([str(w) for w in self._codec.warnings])
-        )
-
-        model = self._codec.load_model_from(StringIO(text))
-        self._assert_components(model, ["server"])
-        self._assert_services(model, ["Wonderful"])
-        self._assert_features(model, [])
-
-        server = model.resolve("server")
-        self._assert_implementation(server, DockerFile("server/Dockerfile"))
-        self._assert_component_services(server, ["Wonderful"], [])
-        self._assert_component_features(server, [], [])
-        self._assert_variables(server, [])
-
-        self._assert_goals(model.goals, ["Wonderful"], [])
-
+        self.assert_complete(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      implementation:\n"
+            "         docker:\n"
+            "            file: server/Dockerfile\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expectations={
+                "services": ["Wonderful"],
+                "features": [],
+                "components" : {
+                    "server": {
+                        "provided_services": ["Wonderful"],
+                        "required_services": [],
+                        "provided_features": [],
+                        "required_features": [],
+                        "implementation": DockerFile("server/Dockerfile"),
+                        "variables": {}
+                    }
+                },
+                "goals": {
+                    "services": ["Wonderful"],
+                    "features": []
+                }
+            })
+            
 
     def test_given_a_component_with_a_docker_image(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      implementation:\n"
-                "         docker:\n"
-                "            image: fchauvel/camp:dev\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(0, len(self._codec.warnings),
-                        ([str(w) for w in self._codec.warnings])
-        )
-
-        model = self._codec.load_model_from(StringIO(text))
-        self._assert_components(model, ["server"])
-        self._assert_services(model, ["Wonderful"])
-        self._assert_features(model, [])
-
-        server = model.resolve("server")
-        self._assert_implementation(server, DockerImage("fchauvel/camp:dev"))
-        self._assert_component_services(server, ["Wonderful"], [])
-        self._assert_component_features(server, [], [])
-        self._assert_variables(server, [])
-
-        self._assert_goals(model.goals, ["Wonderful"], [])
+        self.assert_complete(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      implementation:\n"
+            "         docker:\n"
+            "            image: fchauvel/camp:dev\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expectations={
+                "services": ["Wonderful"],
+                "features": [],
+                "components" : {
+                    "server": {
+                        "provided_services": ["Wonderful"],
+                        "required_services": [],
+                        "provided_features": [],
+                        "required_features": [],
+                        "implementation": DockerImage("fchauvel/camp:dev"),
+                        "variables": {}
+                    }
+                },
+                "goals": {
+                    "services": ["Wonderful"],
+                    "features": []
+                }
+            })
 
 
     def test_given_a_component_with_a_realized_variable(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      variables:\n"
-                "        memory:\n"
-                "          type: Text\n"
-                "          values: [1GB, 2GB, 4GB]\n"
-                "          realization:\n"
-                "             - targets: [ file1, path/to/file2 ]\n"
-                "               pattern: xmem=1GB\n"
-                "               replacements: [xmem=1, xmem=2, xmem=4]\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
+        self.assert_complete(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      variables:\n"
+            "        memory:\n"
+            "          type: Text\n"
+            "          values: [1GB, 2GB, 4GB]\n"
+            "          realization:\n"
+            "             - targets: [ file1, path/to/file2 ]\n"
+            "               pattern: xmem=1GB\n"
+            "               replacements: [xmem=1, xmem=2, xmem=4]\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expectations={
+                "services": ["Wonderful"],
+                "features": [],
+                "components" : {
+                    "server": {
+                        "provided_services": ["Wonderful"],
+                        "required_services": [],
+                        "provided_features": [],
+                        "required_features": [],
+                        "implementation": None,
+                        "variables": {
+                            "memory": {
+                                "values": ["1GB", "2GB", "4GB"],
+                                "realization": [
+                                    Substitution(
+                                        targets=["file1", "path/to/file2"],
+                                        pattern="xmem=1GB",
+                                        replacements=["xmem=1", "xmem=2", "xmem=4"])
+                                ]
+                            }
+                        }
+                    }
+                },
+                "goals": {
+                    "services": ["Wonderful"],
+                    "features": []
+                }
+            })
 
+
+        
+    def assert_complete(self, text, expectations):
         model = self._codec.load_model_from(StringIO(text))
 
-        self.assertEqual(0, len(self._codec.warnings),
-                        ([str(w) for w in self._codec.warnings]))
+        self.assertEqual(0, len(self._codec.warnings))
 
-        server = model.resolve("server")
-        self.assertEqual(server.variables[0].realization,
-                        [ Substitution(
-                            targets=["file1", "path/to/file2"],
-                            pattern="xmem=1GB",
-                            replacements=["xmem=1", "xmem=2", "xmem=4"])])
+        self.assert_goals(model.goals, expectations["goals"])
 
-    def _assert_components(self, model, names):
-        self.assertItemsEqual(names,
-                              [each.name for each in model.components])
-
-
-    def _assert_services(self, model, names):
-        self.assertItemsEqual(names,
+        self.assertItemsEqual(expectations["services"],
                               [each.name for each in model.services])
 
-
-    def _assert_features(self, model, names):
-        self.assertItemsEqual(names,
+        self.assertItemsEqual(expectations["features"],
                               [each.name for each in model.features])
+                
+        self.assertEqual(
+            set([each.name for each in model.components]),
+            set(expectations["components"].keys()))
+        
+        for each_component in model.components:
+            expectation = expectations["components"][each_component.name]
+            self.assert_component(each_component, expectation)
 
 
-    def _assert_component_services(self, component, provided, required):
-        self.assertItemsEqual(provided,
-                              [each.name for each in component.provided_services])
-        self.assertItemsEqual(required,
-                              [each.name for each in component.required_services])
+    def assert_goals(self, goals, expectations):
+        self.assertItemsEqual(expectations["services"],
+                              [each.name for each in goals.services])
+        self.assertItemsEqual(expectations["features"],
+                              [each.name for each in goals.features])
 
-    def _assert_component_features(self, component, provided, required):
-        self.assertItemsEqual(provided,
-                              [each.name for each in component.provided_features])
-        self.assertItemsEqual(required,
-                              [each.name for each in component.required_features])
-
-
-    def _assert_implementation(self, component, expected_implementation):
-        self.assertEqual(expected_implementation,
+        
+    def assert_component(self, component, expectation):
+        self.assertItemsEqual(
+            expectation["provided_services"],
+            [each.name for each in component.provided_services])
+        self.assertItemsEqual(
+            expectation["required_services"],
+            [each.name for each in component.required_services])
+        self.assertItemsEqual(
+            expectation["provided_features"],
+            [each.name for each in component.provided_features])
+        self.assertItemsEqual(
+            expectation["required_features"],
+            [each.name for each in component.required_features])
+        self.assertEqual(expectation["implementation"],
                          component.implementation)
+        self.assert_variables(component, expectation["variables"])
 
-    def _assert_variables(self, component, variables):
+
+    def assert_variables(self, component, variables):
         self.assertEqual(len(variables), len(component.variables))
-        for name, values in variables:
+        for name, variable in variables.items():
             match = next((variable for variable in component.variables\
                           if variable.name == name),
                          None)
             if match:
-                self.assertItemsEqual(match.domain, values)
+                self.assertItemsEqual(match.domain, variable["values"])
+                self.assertItemsEqual(match.realization, variable["realization"])
 
             else:
                 self.fail("Component '%s' lacks variable '%s'." % (component.name, name))
 
 
-    def _assert_goals(self, goal, services, features):
-        self.assertItemsEqual(services,
-                              [each.name for each in goal.services])
-        self.assertItemsEqual(features,
-                              [each.name for each in goal.features])
 
 
 
