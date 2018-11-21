@@ -16,24 +16,47 @@ python:
 env:
   global:
     - NAME="camp"
-  
+
+dist: xenial
+sudo: required
+
 services:
   - docker
-  
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y libstdc++6
+  - sudo apt-get install -y libgomp1
+
 install:
-  - docker build -t $DOCKER_USERNAME/$NAME:dev .
+  # Install the Z3 solver
+  - python -c 'import sys; print(sys.path)'
+  - wget -q https://github.com/Z3Prover/z3/releases/download/z3-4.7.1/z3-4.7.1-x64-debian-8.10.zip
+  - unzip z3-4.7.1-x64-debian-8.10.zip
+  - mv z3-4.7.1-x64-debian-8.10 unzipped
+  - sudo mkdir -p /opt/python/2.7.15/lib/python2.7/z3/lib
+  - sudo cp unzipped/bin/z3 /opt/python/2.7.15/lib/python2.7/z3/lib/
+  - sudo cp unzipped/bin/lib* /opt/python/2.7.15/lib/python2.7/z3/lib/
+  - sudo cp -rf unzipped/bin/python/z3 /opt/python/2.7.15/lib/python2.7/
+  - sudo ln -s /opt/python/2.7.15/lib/python2.7/z3/lib/z3 /usr/bin/z3
+  - ls -laR /opt/python/2.7.15/lib/python2.7/z3
+  - rm -rf unzipped
+  - z3 --version
+  - python -c 'import z3; print(z3.get_version_string())'
+
+  # Install CAMP and its dependencies
+  - pip install -r requirements.txt
+  - pip install .
 
 script:
-  - docker run -it $DOCKER_USERNAME/$NAME:dev python setup.py test -s tests.entities test -s tests.codecs
-  - docker run -it $DOCKER_USERNAME/$NAME:dev python setup.py test -s tests.generate
-  - docker run -it $DOCKER_USERNAME/$NAME:dev python setup.py test -s tests.realize
-  - python setup.py test -s tests.execute
+  - green -qf -vv tests
 
 after_success:
   - |
+    docker build -t $DOCKER_USERNAME/$NAME:dev .;
     docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD;
-    docker push $DOCKER_USERNAME/$NAME:dev
-    echo $TRAVIS_TAG
+    docker push $DOCKER_USERNAME/$NAME:dev;
+    echo $TRAVIS_TAG;
     if [[ "$TRAVIS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
       docker tag $DOCKER_USERNAME/$NAME:dev $DOCKER_USERNAME/$NAME:$TRAVIS_TAG ;
       docker tag $DOCKER_USERNAME/$NAME:dev $DOCKER_USERNAME/$NAME:latest ;
