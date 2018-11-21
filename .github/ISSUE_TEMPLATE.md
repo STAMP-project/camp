@@ -1,16 +1,16 @@
 #### Characteristics
 
-- **Issue Type**: \[bug, feature, test report]
+-   **Issue Type**: \[bug, feature, test report]
 
-- **Reproducibility**: \[always, sometimes, random]
+-   **Reproducibility**: \[always, sometimes, random]
 
-- **Severity**: \[feature, minor, major, crash, block]
+-   **Severity**: \[feature, minor, major, crash, block]
 
-- **Tool/Service/Component**: \[name, version]
+-   **Tool/Service/Component**: \[name, version]
 
-- **Execution Environment**: \[platform, OS, etc]
+-   **Execution Environment**: \[platform, OS, etc]
 
-- **Reporter**: \[name, mail]
+-   **Reporter**: \[name, mail]
 
 #### Description
 
