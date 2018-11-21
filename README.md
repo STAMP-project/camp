@@ -21,9 +21,9 @@ To set CAMP on your project. There are two prerequisites:
 
 * New configuration of the project can be achieved by:
 
-	* By substituting the FROM statement of a Dockerimage file
+  * By substituting the FROM statement of a Dockerimage file
 
-	* By substituting an image of a docker-compose file
+  * By substituting an image of a docker-compose file
 
 Further, we need to identify variation points of your configuration,
 e.g., java versions. We fill out feature.yml with this information. We

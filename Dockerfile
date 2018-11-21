@@ -3,7 +3,7 @@ FROM debian:8.11-slim
 LABEL maintainer "franck.chauvel@sintef.no"
 
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y \
+    apt-get install -y --no-install-recommends  \
     	libgomp1 \
 	python2.7-dev \
 	python-pip \
@@ -11,7 +11,7 @@ RUN apt-get update && \
 	unzip \
 	git \
         && \
-    apt-get install --reinstall python-pkg-resources && \
+    apt-get install -y --no-install-recommends --reinstall python-pkg-resources && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* 
 
