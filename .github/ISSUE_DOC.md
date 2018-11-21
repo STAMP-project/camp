@@ -1,34 +1,34 @@
 #### Characteristics
 
-- **Issue Type**: \[bug, feature, test report] Type of reported
+ -  **Issue Type**: \[bug, feature, test report] Type of reported
 	issue. It could be:
 
-  - Bug: issue perceived by the reporter as a potential bug, which
-	has to be confirmed by assignee;
+     -  Bug: issue perceived by the reporter as a potential bug, which
+		has to be confirmed by assignee;
 
-  - Feature: issue describing a new requested functionality or a
-	non-functional property to be supported.
+	 -  Feature: issue describing a new requested functionality or a
+		non-functional property to be supported.
 
-  - Test report
+	 -  Test report
 
 	Above issue type can be further refined, in the case of bugs, by
 	adopting a number of predefined tags (taken from a proposed STAMP
 	tag cloud), including REGRESSION, CONFIGURATION, PERFORMANCE
 
-- **Reproducibility**: \[always, sometimes, random]
+ -  **Reproducibility**: \[always, sometimes, random]
 
-- **Severity**: \[feature, minor, major, crash, block]
+ -  **Severity**: \[feature, minor, major, crash, block]
 
-- **Tool/Service/Component**: \[name, version] e.g., "PIT 1.2.0,
-   Descartes 0.2-SNAPSHOT, PITMP 1.0.1""
+ -  **Tool/Service/Component**: \[name, version] e.g., "PIT 1.2.0,
+	Descartes 0.2-SNAPSHOT, PITMP 1.0.1""
 
-- **Execution Environment**: \[platform, OS, etc] Description of the
+ -  **Execution Environment**: \[platform, OS, etc] Description of the
 	execution environment, e.g "Linux OpenSuse Tumbleweed" or "Linux
 	Ubuntu 16.04.1" including information about the version of the
 	executed STAMP tools/services and their local dependencies (in
 	case of standalone execution)
 
-- **Reporter**: \[name, mail] Reference information of the reporter,
+ -  **Reporter**: \[name, mail] Reference information of the reporter,
 	so the assignee can contact back for further issue refinement, if
 	needed.
 
@@ -43,9 +43,9 @@ the role of the user and the business benefit that the new
 functionality provides.  For bugs, this section should describe as
 well:
 
-- the observed execution behavior and obtained results;
+ -  the observed execution behavior and obtained results;
 
-- the expected execution behavior and results.
+ -  the expected execution behavior and results.
 
 #### Steps to reproduce
 A detailed description, step-by-step of the procedure followed by the
@@ -62,8 +62,8 @@ A list of relationships to other issues. In case of features, these
 relationships can be used to structure them, grouping related
 features. Possible relationships:
 
-- Child of / Parent of
+ -  Child of / Parent of
 
-- Related to
+ -  Related to
 
-- Depends on
+ -  Depends on
