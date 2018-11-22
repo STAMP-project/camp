@@ -17,7 +17,7 @@ from camp.generate import Z3Problem
 from camp.realize import Builder
 from camp.run import Runner
 
-from os import listdir
+from os import listdir, makedirs
 from os.path import exists, isdir, join as join_paths, basename
 
 from shutil import copytree, rmtree
@@ -39,10 +39,18 @@ class Sample(object):
     @staticmethod
     def _copy(source, workspace):
         destination = join_paths(workspace, basename(source))
-        if isdir(destination):
-            rmtree(destination)
-        copytree(source, destination)
+        if source and exists(source):
+            if isdir(destination):
+                rmtree(destination)
+                copytree(source, destination)
+            else:
+                raise RuntimeError("Source '%s' is not a folder!" % source)
+        else:
+            if isdir(destination):
+                rmtree(destination)
+            makedirs(destination)
         return destination
+
 
 
     @property

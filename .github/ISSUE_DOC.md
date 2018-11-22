@@ -43,9 +43,8 @@ the role of the user and the business benefit that the new
 functionality provides.	 For bugs, this section should describe as
 well:
 
--	the observed execution behavior and obtained results;
-
--	the expected execution behavior and results.
+-   the observed execution behavior and obtained results;
+-   the expected execution behavior and results.
 
 #### Steps to reproduce
 A detailed description, step-by-step of the procedure followed by the
@@ -63,7 +62,5 @@ relationships can be used to structure them, grouping related
 features. Possible relationships:
 
 -   Child of / Parent of
-
 -   Related to
-
 -   Depends on
