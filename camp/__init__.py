@@ -12,13 +12,11 @@
 class About:
 
     PROGRAM = "CAMP"
-    
+
     VERSION = "0.2.2"
-    
+
     LICENSE = "MIT"
 
     COPYRIGHT = "Copyright (C) 2017, 2018 SINTEF Digital"
 
     DESCRIPTION = "Amplify your configuration tests!"
-    
-    

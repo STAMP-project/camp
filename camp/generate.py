@@ -61,6 +61,7 @@ class Z3Problem(object):
         for each_constraint in context.value_constraints:
             solver.add(context.evaluate(each_constraint))
 
+        print solver.sexpr()
         return Z3Problem(model, context, solver)
 
 
@@ -102,8 +103,6 @@ class Z3Problem(object):
         self._solver.add(self._context.coverage_constraint())
         self._solver.maximize(self._context.coverage_gain())
         return self._extract_from(z3_solution)
-
-
 
 
     def _solve(self):
@@ -474,7 +473,8 @@ INTEGRITY_CONSTRAINTS = [
     """
     CInstance.filter(ci1,
           And([ci1.definition.provide_services.count() > 0,
-               CInstance.forall(ci2, ci2.partners.forall(partner, partner.endpoint != ci1))])).count() == 1
+               CInstance.forall(ci2, ci2.partners.forall(partner,
+                    partner.endpoint != ci1))])).count() == 1
     """
 
     # No pending instances
