@@ -45,7 +45,7 @@ class Command(object):
             action="store_true",
             dest="coverage",
             help="Generate only enough configurations to cover every single variations")
-        
+
         realize = subparsers.add_parser(
             "realize",
             help="Realize the variables in the test configurations")
@@ -142,7 +142,7 @@ class Realize(Command):
     DEFAULT_WORKING_DIRECTORY = "/temp/"
 
     DEFAULT_OUTPUT_DIRECTORY = "/temp/out"
-    
+
 
     @property
     def working_directory(self):

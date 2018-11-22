@@ -9,19 +9,19 @@
 #
 
 
+
 from camp.codecs.yaml import YAML
 from camp.core import Camp
 from camp.generate import Z3Problem
 from camp.realize import Builder
 from camp.run import Runner
 
-
 from os import listdir, makedirs
-from os.path import join, isdir, exists
+from os.path import join, isdir
 
 from re import match
 
-from shutil import rmtree, copytree
+from shutil import rmtree
 
 from unittest import TestCase
 
@@ -42,9 +42,9 @@ class FilesAreGenerated(TestCase):
             "goals:\n"
             "  running:\n"
             "    - Awesome\n")
-        
+
         self.invoke_camp_generate()
-        
+
         self.assert_configuration_count_is(1)
 
 
@@ -61,7 +61,7 @@ class FilesAreGenerated(TestCase):
             "  running:\n"
             "    - Awesome\n"
             "        \n")
-        
+
         self.invoke_camp_generate()
 
         self.assert_configuration_count_is(3)
@@ -81,9 +81,9 @@ class FilesAreGenerated(TestCase):
             "goals:\n"
             "  running:\n"
             "    - Awesome\n")
-        
+
         self.invoke_camp_generate()
-        
+
         self.assert_configuration_count_is(2)
 
 
@@ -104,12 +104,12 @@ class FilesAreGenerated(TestCase):
             "goals:\n"
             "  running:\n"
             "    - Awesome\n")
-        
+
         self.invoke_camp_generate()
-        
+
         self.assert_configuration_count_is(2)
-                      
-        
+
+
     def prepare_sample(self, sample):
         self._working_directory = self.WORKING_DIRECTORY
         if isdir(self._working_directory):
@@ -117,7 +117,6 @@ class FilesAreGenerated(TestCase):
         makedirs(self._working_directory)
         with open(join(self._working_directory, "camp.yaml"), "w") as stream:
             stream.write(sample)
-
 
     WORKING_DIRECTORY = "tmp/generate"
 
@@ -131,10 +130,8 @@ class FilesAreGenerated(TestCase):
 
     def assert_configuration_count_is(self, expected):
         generated = []
-        destination = join(self.WORKING_DIRECTORY, "out")        
+        destination = join(self.WORKING_DIRECTORY, "out")
         for each_file in listdir(destination):
             if match(r"config_\d+", each_file):
                 generated.append(each_file)
         self.assertEqual(expected, len(generated), str(generated))
-                     
-
