@@ -19,10 +19,32 @@ from os.path import exists, isdir, join as join_paths, dirname
 from re import search
 
 
+class MissingModel(Exception):
+
+
+    def __init__(self, directory):
+        self._directory = directory
+
+
+    @property
+    def problem(self):
+        return self.PROBLEM % self._directory
+
+    PROBLEM = "Cannot find any model in '%s'."
+
+
+    @property
+    def hint(self):
+        candidates = ", ".join(InputDirectory.MODEL_NAMES)
+        return self.HINT % candidates
+
+    HINT = "CAMP looks for one of the following files: %s."
+
+
 
 class Directory(object):
 
-    
+
     def __init__(self, path):
         self._path = path
 
@@ -31,7 +53,7 @@ class Directory(object):
     def path(self):
         return self._path
 
-    
+
 
 
 class InputDirectory(Directory):
@@ -56,7 +78,7 @@ class InputDirectory(Directory):
             for any_valid_name in self.MODEL_NAMES:
                 if any_file == any_valid_name:
                     return any_file
-        raise ValueError("Unable to find the CAMP model")
+        raise MissingModel(self._path)
 
 
     MODEL_NAMES = [
@@ -65,9 +87,9 @@ class InputDirectory(Directory):
         "input.yml", "input.yml"
     ]
 
-    
+
     def create_template_file(self, component_name, path, content):
-        resource = join_paths(self._path, self.TEMPLATE_FOLDER, component_name, path) 
+        resource = join_paths(self._path, self.TEMPLATE_FOLDER, component_name, path)
         folder = dirname(resource)
         if not isdir(folder):
             makedirs(folder)
@@ -84,12 +106,12 @@ class InputDirectory(Directory):
             if isdir(any_file):
                 templates.append(any_file)
         return templates
-            
+
 
 
 class OutputDirectory(Directory):
 
-    
+
     def __init__(self, path, codec=None):
         super(OutputDirectory, self).__init__(path)
         self._codec = codec or YAML()
@@ -154,8 +176,8 @@ class OutputDirectory(Directory):
             if isdir(any_file):
                 images.append(any_file)
         return images
-        
-    
+
+
     def create_file(self, path, content):
         folder = dirname(path)
         self._create(folder)

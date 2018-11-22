@@ -10,7 +10,7 @@
 
 
 
-from camp.directories import InputDirectory, OutputDirectory
+from camp.directories import InputDirectory, OutputDirectory, MissingModel
 from camp.entities.validation import Checker
 from camp.execute.parsers import ConfigINIParser
 from camp.execute.command.commands import ConductExperimentRunner
@@ -30,10 +30,17 @@ class Camp(object):
 
     def generate(self, arguments):
         self._prepare_directories(arguments)
-        model = self._load_model()
-        configurations = self._generate_configurations(arguments, model)
-        for index, each_configuration in enumerate(configurations, 1):
-            self._save(index, each_configuration)
+        try:
+            model = self._load_model()
+            configurations = self._generate_configurations(arguments, model)
+            for index, each_configuration in enumerate(configurations, 1):
+                self._save(index, each_configuration)
+
+        except MissingModel as error:
+            print "Error:"
+            print "  -", error.problem
+            print "   ", error.hint
+
 
 
     def _prepare_directories(self, arguments):
@@ -48,8 +55,8 @@ class Camp(object):
         print "Model loaded from '%s'." % file_name
         for each_warning in warnings:
             print " - WARNING: ", str(each_warning)
+
         checker = Checker(workspace=self._input.path)
-        
         model.accept(checker)
         if checker.errors:
             for each_error in checker.errors:
@@ -73,7 +80,8 @@ class Camp(object):
         self._summarize(configuration)
 
 
-    def _summarize(self, configuration):
+    @staticmethod
+    def _summarize(configuration):
         components = set()
         for each in configuration.instances:
             name = each.definition.name
@@ -101,8 +109,9 @@ class Camp(object):
         return self._output.existing_configurations(model)
 
 
+    @staticmethod
     def execute(self, arguments):
         parser = ConfigINIParser()
         config = parser.parse(arguments.configuration_file)
         experiment = ConductExperimentRunner(config)
-        result = experiment.run()
+        experiment.run()
