@@ -4,16 +4,17 @@ Below is the list of CAMP versions, along with a quick summary of the
 changes that were made.
 
 
-*   Under development
-
-	*   Fix reporting of missing CAMP model, as per [Issue
-		#25](https://github.com/STAMP-project/camp/issues/25)
-
-	*   Activating Codecov to monitor test code coverage
-
-	*   Removing code duplication in tests
-
 *   CAMP v0.2
+
+	*   CAMP v0.2.3
+
+		*   Fix reporting of missing CAMP model, as per [Issue
+			#25](https://github.com/STAMP-project/camp/issues/25)
+
+		*   Activating Codecov to monitor test code coverage
+
+		*   Removing code duplication in tests
+
 
 	*  CAMP v0.2.2 (Nov. 20, 2018)
 
