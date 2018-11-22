@@ -42,9 +42,8 @@ class Sample(object):
         if source and exists(source):
             if isdir(destination):
                 rmtree(destination)
-                copytree(source, destination)
-            else:
-                raise RuntimeError("Source '%s' is not a folder!" % source)
+            copytree(source, destination)
+
         else:
             if isdir(destination):
                 rmtree(destination)
