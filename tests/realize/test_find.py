@@ -11,10 +11,10 @@
 
 
 from camp.codecs.yaml import YAML
+from camp.commands import Command
 from camp.core import Camp
 from camp.generate import Z3Problem
 from camp.realize import Builder
-from camp.run import Runner
 
 from os import makedirs
 from os.path import isfile, exists, isdir, join as join_paths
@@ -127,12 +127,10 @@ class AllYAMLConfigurationsAreBuilt(TestCase):
 
 
     def realize(self):
-        runner = Runner(Camp(YAML(),
-                             Z3Problem,
-                             Builder()))
-        runner.start(["realize", "-d", self.INPUT_DIRECTORY,
+        camp = Camp(YAML(), Z3Problem, Builder())
+        command = Command.extract_from(["realize", "-d", self.INPUT_DIRECTORY,
                       "-o", self.OUTPUT_DIRECTORY])
-
+        command.send_to(camp)
 
 
     def assert_generated(self, *files):

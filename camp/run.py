@@ -10,7 +10,6 @@
 
 
 
-from camp import About
 from camp.codecs.yaml import YAML
 from camp.core import Camp
 from camp.commands import Command
@@ -21,39 +20,7 @@ from sys import argv
 
 
 
-class Runner(object):
-
-
-    def __init__(self, camp):
-        self._camp = camp
-
-
-    def start(self, command_line):
-        command = Command.extract_from(command_line)
-        self._welcome()
-        command.send_to(self._camp)
-        self._goodbye()
-
-
-    @staticmethod
-    def _welcome():
-        print "%s v%s (%s)" % (About.PROGRAM, About.VERSION, About.LICENSE)
-        print About.COPYRIGHT
-        print
-
-
-    @staticmethod
-    def _goodbye():
-        print
-        print "That's all folks!"
-
-
-
 def main():
-    runner = Runner(Camp(
-        YAML(),
-        Z3Problem,
-        Builder()
-    ))
-
-    runner.start(argv[1:])
+    camp = Camp(YAML(), Z3Problem, Builder())
+    command = Command.extract_from(argv[1:])
+    command.send_to(camp)

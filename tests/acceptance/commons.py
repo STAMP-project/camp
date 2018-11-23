@@ -11,11 +11,11 @@
 
 
 from camp.codecs.yaml import YAML
+from camp.commands import Command
 from camp.core import Camp
 from camp.directories import InputDirectory, OutputDirectory
 from camp.generate import Z3Problem
 from camp.realize import Builder
-from camp.run import Runner
 
 from os import makedirs
 from os.path import exists, isdir, join as join_paths, basename
@@ -128,17 +128,16 @@ class CampTests(TestCase):
 
     @staticmethod
     def camp(*arguments):
-        runner = Runner(
-            Camp(YAML(),
-                 Z3Problem,
-                 Builder()))
-        runner.start(arguments)
+            camp = Camp(YAML(), Z3Problem, Builder())
+            command = Command.extract_from(arguments)
+            command.send_to(camp)
 
 
     def _assert_generated(self, configuration, *files):
         for each in files:
             self.assertTrue(configuration.includes_file(each),
                             "Missing file '%s'" % each)
+
 
     def create_configurations(self, *configurations):
         for index, configuration in enumerate(configurations, 1):
