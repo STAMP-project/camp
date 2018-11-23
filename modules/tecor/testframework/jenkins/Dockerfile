@@ -16,7 +16,7 @@
 #
 
 FROM jenkins:2.32.1
-MAINTAINER Anatoly Vasilevskiy <Anatoly.Vasilevskiy@sintef.no>
+LABEL maintainer Anatoly Vasilevskiy <Anatoly.Vasilevskiy@sintef.no>
 
 #installing jenkins plugins
 #COPY plugins.txt /usr/share/jenkins/plugins.txt
