@@ -10,9 +10,9 @@
 
 
 
-from camp.directories import InputDirectory, OutputDirectory, MissingModel, \
-    NoConfigurationFound
+from camp.directories import InputDirectory, OutputDirectory
 from camp.entities.validation import Checker
+from camp.errors import MissingModel, NoConfigurationFound
 from camp.execute.parsers import ConfigINIParser
 from camp.execute.command.commands import ConductExperimentRunner
 

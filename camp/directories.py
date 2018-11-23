@@ -12,33 +12,12 @@
 
 from camp.codecs.graphviz import Graphviz
 from camp.codecs.yaml import YAML
+from camp.errors import MissingModel, NoConfigurationFound
 
 from os import makedirs, listdir
 from os.path import exists, isdir, join as join_paths, dirname
 
 from re import search, sub
-
-
-class MissingModel(Exception):
-
-
-    def __init__(self, directory):
-        self._directory = directory
-
-
-    @property
-    def problem(self):
-        return self.PROBLEM % self._directory
-
-    PROBLEM = "Cannot find any model in '%s'."
-
-
-    @property
-    def hint(self):
-        candidates = ", ".join(InputDirectory.MODEL_NAMES)
-        return self.HINT % candidates
-
-    HINT = "CAMP looks for one of the following files: %s."
 
 
 
@@ -52,7 +31,6 @@ class Directory(object):
     @property
     def path(self):
         return self._path
-
 
 
 
@@ -78,7 +56,7 @@ class InputDirectory(Directory):
             for any_valid_name in self.MODEL_NAMES:
                 if any_file == any_valid_name:
                     return any_file
-        raise MissingModel(self._path)
+        raise MissingModel(self._path, self.MODEL_NAMES)
 
 
     MODEL_NAMES = [
@@ -112,27 +90,6 @@ class InputDirectory(Directory):
             if isdir(any_file):
                 templates.append(any_file)
         return templates
-
-
-
-class NoConfigurationFound(Exception):
-
-
-    def __init__(self, path):
-        self._path = path
-
-    @property
-    def problem(self):
-        return self.PROBLEM % self._path
-
-    PROBLEM = "Could not found any configuration in '%s'."
-
-    @property
-    def hint(self):
-        folder = sub(r"out[\\\/]?$","", self._path)
-        return self.HINT % folder
-
-    HINT = "Have you run 'camp generate -d %s' first?"
 
 
 
@@ -185,7 +142,8 @@ class OutputDirectory(Directory):
 
     def existing_configurations(self, model):
         if not isdir(self._path):
-            raise NoConfigurationFound(self._path)
+            folder = sub(r"out[\\\/]?$","", self._path)
+            raise NoConfigurationFound(folder)
         for each_file in listdir(self._path):
             path = join_paths(self._path, each_file)
             if search(self.CONFIGURATION_FOLDER, path) \
