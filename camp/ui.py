@@ -63,13 +63,30 @@ class UI(object):
                 self._print(" - {warning}", warning=str(each))
 
 
-    def error(self, error):
-        if hasattr(error, "problem"):
-            self._print("\nError:")
-            self._print("  - {problem}", problem=error.problem)
-            self._print("    {hint}", hint=error.hint)
-        else:
-            self._print(str(error))
+    def missing_model(self, error):
+        self._print("\nError:")
+        self._print(" - Unable to find a CAMP model in '{folder}'.",
+                    folder=error.searched_folder)
+        file_names = ", ".join(error.searched_files)
+        self._print("   CAMP looks for one of the following: {file_names}.",
+                    file_names=file_names)
+
+
+    def no_configuration_found(self, error):
+        self._print("\nError:")
+        self._print(" - Unable to find any generated configuration  in '{folder}'.",
+                    folder=error.searched_folder)
+        self._print("   Have you run 'camp generate -d {folder}?",
+                    folder=error.searched_folder)
+
+
+    def unexpected_error(self, error):
+        self._print("Unexpected error:")
+        self._print(" - " + str(error))
+        self._print("   Please report this at '{issue}'.",
+                    issue=self.ISSUE_PAGE)
+
+    ISSUE_PAGE = "https://github.com/STAMP-project/camp/issues"
 
 
     def _summarize(self, configuration):

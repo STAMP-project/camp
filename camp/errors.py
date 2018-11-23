@@ -18,17 +18,8 @@ class NoConfigurationFound(Exception):
 
 
     @property
-    def problem(self):
-        return self.PROBLEM % self._path
-
-    PROBLEM = "Could not found any configuration in '%s'."
-
-
-    @property
-    def hint(self):
-        return self.HINT % self._path
-
-    HINT = "Have you run 'camp generate -d %s' first?"
+    def searched_folder(self):
+        return self._path
 
 
 
@@ -37,19 +28,13 @@ class MissingModel(Exception):
 
     def __init__(self, directory, candidates):
         self._candidates = candidates
-        self._directory = directory
+        self._folder = directory
 
 
     @property
-    def problem(self):
-        return self.PROBLEM % self._directory
-
-    PROBLEM = "Cannot find any model in '%s'."
-
+    def searched_folder(self):
+        return self._folder
 
     @property
-    def hint(self):
-        candidates = ", ".join(self._candidates)
-        return self.HINT % candidates
-
-    HINT = "CAMP looks for one of the following files: %s."
+    def searched_files(self):
+        return self._candidates
