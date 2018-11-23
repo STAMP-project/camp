@@ -61,7 +61,7 @@ class Z3Problem(object):
         for each_constraint in context.value_constraints:
             solver.add(context.evaluate(each_constraint))
 
-        print solver.sexpr()
+        #print solver.sexpr()
         return Z3Problem(model, context, solver)
 
 

@@ -15,7 +15,9 @@ from camp.entities.validation import Checker
 from camp.errors import MissingModel, NoConfigurationFound
 from camp.execute.parsers import ConfigINIParser
 from camp.execute.command.commands import ConductExperimentRunner
+from camp.ui import UI
 
+from sys import exc_info
 
 
 class Camp(object):
@@ -27,9 +29,11 @@ class Camp(object):
         self._builder = realize
         self._input = None
         self._output = None
+        self._ui = UI()
 
 
     def generate(self, arguments):
+        self._ui.welcome()
         self._prepare_directories(arguments)
         try:
             model = self._load_model()
@@ -38,10 +42,13 @@ class Camp(object):
                 self._save(index, each_configuration)
 
         except MissingModel as error:
-            print "Error:"
-            print "  -", error.problem
-            print "   ", error.hint
+            self._ui.error(error)
 
+        except Exception as error:
+            raise
+
+        finally:
+            self._ui.goodbye()
 
 
     def _prepare_directories(self, arguments):
@@ -52,22 +59,18 @@ class Camp(object):
 
 
     def _load_model(self):
-        file_name, model, warnings = self._input.model
-        print "Model loaded from '%s'." % file_name
-        for each_warning in warnings:
-            print " - WARNING: ", str(each_warning)
+        path, model, warnings = self._input.model
+        self._ui.model_loaded(path, model)
+        self._ui.warns(warnings)
 
         checker = Checker(workspace=self._input.path)
         model.accept(checker)
-        if checker.errors:
-            for each_error in checker.errors:
-                print str(each_error)
+        self._ui.warns(checker.errors)
 
         return model
 
 
     def _generate_configurations(self, arguments, model):
-        print "Searching for configurations ..."
         problem = self._problem.from_model(model)
         if arguments.only_coverage:
             return  problem.coverage()
@@ -77,47 +80,50 @@ class Camp(object):
     def _save(self, index, configuration):
         self._output.save_as_graphviz(index, configuration)
         yaml_file = self._output.save_as_yaml(index, configuration)
-        print("\n - Config. %d in '%s'." % (index, yaml_file))
-        self._summarize(configuration)
-
-
-    @staticmethod
-    def _summarize(configuration):
-        components = set()
-        for each in configuration.instances:
-            name = each.definition.name
-            if each.configuration:
-                name  += " (" +", ".join(str(v) for _,v in each.configuration) + ")"
-            components.add(name)
-        text = "   Includes " + ', '.join(components)
-        if len(text) > 75:
-            text = text[:75] + " ... "
-        print text
+        self._ui.new_configuration(index, configuration, yaml_file)
 
 
     def realize(self, arguments):
+        self._ui.welcome()
         self._prepare_directories(arguments)
-        model = self._load_model()
         try:
+            model = self._load_model()
             for path, each_configuration in self._load_configurations(model):
-                print " - Building '%s' ..." % path
                 self._builder.build(each_configuration,
                                     arguments.working_directory,
                                     path)
+                self._ui.configuration_realized(path)
+
+        except MissingModel as error:
+            self._ui.error(error)
+
         except NoConfigurationFound as error:
-            print "Error:"
-            print "  -", error.problem
-            print "   ", error.hint
+            self._ui.error(error)
+
+        except:
+            self._ui.error(exc_info()[0])
+
+        finally:
+            self._ui.goodbye()
 
 
     def _load_configurations(self, model):
-        print "Searching configurations in '%s' ..." % self._output._path
-        return self._output.existing_configurations(model)
+        configurations = self._output.existing_configurations(model)
+        self._ui.configurations_loaded(self._output.path)
+        return configurations
 
 
     @staticmethod
     def execute(self, arguments):
-        parser = ConfigINIParser()
-        config = parser.parse(arguments.configuration_file)
-        experiment = ConductExperimentRunner(config)
-        experiment.run()
+        self._ui.welcome()
+        try:
+            parser = ConfigINIParser()
+            config = parser.parse(arguments.configuration_file)
+            experiment = ConductExperimentRunner(config)
+            experiment.run()
+
+        except:
+            self._ui.error(sys.exc_info()[0])
+
+        finally:
+            self._ui.goodbye()
