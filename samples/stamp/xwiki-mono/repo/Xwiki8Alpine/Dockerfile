@@ -16,7 +16,7 @@
 #
 
 FROM maven:3.5.2-jdk-7-alpine
-MAINTAINER Anatoly Vasilevskiy <Anatoly.Vasilevskiy@sintef.no>
+LABEL maintainer Anatoly Vasilevskiy <Anatoly.Vasilevskiy@sintef.no>
 
 RUN mkdir workingdir \
 	&& apk -qq update \

@@ -1,6 +1,6 @@
 FROM python:2.7
 
-MAINTAINER  Fernando Mendez Requena <fernando.mendez@atos.net>
+LABEL maintainer  Fernando Mendez Requena <fernando.mendez@atos.net>
 
 RUN apt-get update && \
     apt-get -qq install -y \

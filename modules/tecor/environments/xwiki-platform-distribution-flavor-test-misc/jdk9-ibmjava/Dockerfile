@@ -16,7 +16,7 @@
 #
 
 FROM maven:3.5.2-ibmjava-9
-MAINTAINER Anatoly Vasilevskiy <Anatoly.Vasilevskiy@sintef.no>
+LABEL maintainer Anatoly Vasilevskiy <Anatoly.Vasilevskiy@sintef.no>
 
 RUN mkdir workingdir \
 	&& apt-get -qq update \

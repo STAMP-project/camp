@@ -26,7 +26,7 @@ FROM tomcat:8-jre8
 #    _/ /'`\ \_     \  /\  /    | |  | |`\ \  | |
 #   |____||____|     \/  \/    [___][__|  \_][___]
 
-MAINTAINER Vincent Massol <vincent@massol.net>
+LABEL maintainer Vincent Massol <vincent@massol.net>
 
 # Note: when using docker-compose, the ENV values below are overridden from the .env file.
 

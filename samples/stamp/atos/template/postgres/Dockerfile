@@ -1,6 +1,6 @@
 FROM ubuntu
 
-MAINTAINER  Fernando Mendez Requena <fernando.mendez@atos.net>
+LABEL maintainer  Fernando Mendez Requena <fernando.mendez@atos.net>
 
 #Updated line to solve while testing CAMP
 RUN apt-get update && apt-get install -my wget gnupg
