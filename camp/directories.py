@@ -16,7 +16,7 @@ from camp.codecs.yaml import YAML
 from os import makedirs, listdir
 from os.path import exists, isdir, join as join_paths, dirname
 
-from re import search
+from re import search, sub
 
 
 class MissingModel(Exception):
@@ -88,6 +88,12 @@ class InputDirectory(Directory):
     ]
 
 
+    def create_model(self, content):
+        model = join_paths(self._path, self.MODEL_NAMES[2])
+        with open(model, "w") as resource:
+            resource.write(content)
+
+
     def create_template_file(self, component_name, path, content):
         resource = join_paths(self._path, self.TEMPLATE_FOLDER, component_name, path)
         folder = dirname(resource)
@@ -106,6 +112,27 @@ class InputDirectory(Directory):
             if isdir(any_file):
                 templates.append(any_file)
         return templates
+
+
+
+class NoConfigurationFound(Exception):
+
+
+    def __init__(self, path):
+        self._path = path
+
+    @property
+    def problem(self):
+        return self.PROBLEM % self._path
+
+    PROBLEM = "Could not found any configuration in '%s'."
+
+    @property
+    def hint(self):
+        folder = sub(r"out[\\\/]?$","", self._path)
+        return self.HINT % folder
+
+    HINT = "Have you run 'camp generate -d %s' first?"
 
 
 
@@ -157,6 +184,8 @@ class OutputDirectory(Directory):
 
 
     def existing_configurations(self, model):
+        if not isdir(self._path):
+            raise NoConfigurationFound(self._path)
         for each_file in listdir(self._path):
             path = join_paths(self._path, each_file)
             if search(self.CONFIGURATION_FOLDER, path) \
