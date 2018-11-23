@@ -10,7 +10,8 @@
 
 
 
-from camp.directories import InputDirectory, OutputDirectory, MissingModel
+from camp.directories import InputDirectory, OutputDirectory, MissingModel, \
+    NoConfigurationFound
 from camp.entities.validation import Checker
 from camp.execute.parsers import ConfigINIParser
 from camp.execute.command.commands import ConductExperimentRunner
@@ -60,7 +61,7 @@ class Camp(object):
         model.accept(checker)
         if checker.errors:
             for each_error in checker.errors:
-                print "ERROR: ", str(each_error)
+                print str(each_error)
 
         return model
 
@@ -97,11 +98,16 @@ class Camp(object):
     def realize(self, arguments):
         self._prepare_directories(arguments)
         model = self._load_model()
-        for path, each_configuration in self._load_configurations(model):
-            print " - Building '%s' ..." % path
-            self._builder.build(each_configuration,
-                                arguments.working_directory,
-                                path)
+        try:
+            for path, each_configuration in self._load_configurations(model):
+                print " - Building '%s' ..." % path
+                self._builder.build(each_configuration,
+                                    arguments.working_directory,
+                                    path)
+        except NoConfigurationFound as error:
+            print "Error:"
+            print "  -", error.problem
+            print "   ", error.hint
 
 
     def _load_configurations(self, model):

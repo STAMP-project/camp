@@ -85,6 +85,14 @@ class Sample(object):
         self._output.create_file(file_name, content)
 
 
+    def create_model(self, content):
+        self._input.create_model(content)
+
+
+    def create_template(self, component, relative_path, content):
+        self._input.create_template_file(component, relative_path, content)
+
+
 
 
 class GeneratedConfiguration(object):
