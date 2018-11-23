@@ -21,8 +21,8 @@ class Graphviz(Codec):
         self._indentation_level = 0
         self._indentation_width = indentation
         self._stream = None
-        
-    
+
+
 
     def save_configuration(self, configuration, stream):
         self._stream = stream
@@ -32,7 +32,7 @@ class Graphviz(Codec):
 
         for index, each_stack in enumerate(configuration.stacks, 1):
             self._declare_cluster(each_stack, index)
-            
+
         for any_instance in configuration.instances:
             if any_instance.service_providers:
                 for each_provider in any_instance.service_providers:
@@ -50,14 +50,14 @@ class Graphviz(Codec):
         self._stream.write(text)
         self._stream.write("\n")
 
-        
+
     def _indent(self):
         self._indentation_level += 1
 
-        
+
     def _declare_nodes_options(self):
         self._write("node [shape=\"record\","
-                    "style=\"filled\"," 
+                    "style=\"filled\","
                     "fillcolor=\"white\"];")
 
 
@@ -65,7 +65,7 @@ class Graphviz(Codec):
         self._write("subgraph cluster_%d {" % index)
         self._indent()
         self._declare_container_options(index)
-        
+
         for each_instance in stack:
             self._declare_node(each_instance)
 
@@ -75,7 +75,7 @@ class Graphviz(Codec):
 
         self._dedent()
         self._write("}")
-        
+
 
     def _declare_container_options(self, index):
         self._write("label=\"container %d\";" % index)
@@ -102,14 +102,14 @@ class Graphviz(Codec):
         self._write("%s -> %s;" % (self._escape(source.name),
                                    self._escape(target.name)))
 
-                
+
     def _dedent(self):
         if self._indentation_level == 0:
             raise AssertionError("Invalid dedent operation!")
         self._indentation_level -= 1
-        
 
-    
+
+
     @staticmethod
     def _escape(text):
         return text.replace("-", "_")
