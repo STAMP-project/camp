@@ -82,7 +82,7 @@ class EmptyVariableDomain(Error):
     HINT = "Variable must have at least one possible value."
 
 
-    
+
 class DockerFileNotFound(Error):
 
     def __init__(self, component, docker_file, workspace):
@@ -93,7 +93,7 @@ class DockerFileNotFound(Error):
     PROBLEM = "The Dockerfile '%s' of component '%s' cannot be found."
     HINT = "Is this the relative path from your workspace '%s'?"
 
-    
+
 
 class Checker(object):
 
@@ -194,7 +194,7 @@ class Checker(object):
                                                     any_service))
 
 
-    def visit_variable(self, variable, model, component):    
+    def visit_variable(self, variable, model, component):
         if len(variable.domain) == 0 and variable.value_type != "Integer":
             self._report(EmptyVariableDomain(component, variable))
 
@@ -205,11 +205,11 @@ class Checker(object):
             self._report(DockerFileNotFound(component,
                                             path,
                                             self._workspace))
-            
+
 
     def visit_dockerimage(self, dockerimage, model, component):
         pass
-    
+
 
     def _report(self, new_error):
         self._errors.append(new_error)

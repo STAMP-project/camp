@@ -238,16 +238,16 @@ class Variable(NamedElement):
             return next(d for d in range(coverage, 0, -1) if width % d == 0)
 
         width = maximum - minimum
-    
+
         divisor = largest_smaller_divisor()
         return [minimum + i * divisor \
                 for i in range(width / divisor + 1)]
 
-    
+
     def __init__(self, name, value_type, values, realization=None):
         super(Variable, self).__init__(name)
         self._value_type = value_type
-        self._values = [each for each in values] 
+        self._values = [each for each in values]
         self._realization = [each for each in realization] \
                             if realization else []
 
