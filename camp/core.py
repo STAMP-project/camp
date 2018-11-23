@@ -42,10 +42,10 @@ class Camp(object):
                 self._save(index, each_configuration)
 
         except MissingModel as error:
-            self._ui.error(error)
+            self._ui.missing_model(error)
 
         except Exception as error:
-            raise
+            self._ui.unexpected_error(error)
 
         finally:
             self._ui.goodbye()
@@ -95,13 +95,13 @@ class Camp(object):
                 self._ui.configuration_realized(path)
 
         except MissingModel as error:
-            self._ui.error(error)
+            self._ui.missing_model(error)
 
         except NoConfigurationFound as error:
-            self._ui.error(error)
+            self._ui.no_configuration_found(error)
 
-        except:
-            self._ui.error(exc_info()[0])
+        except Exception as error:
+            self._ui.unexpected_error(error)
 
         finally:
             self._ui.goodbye()
