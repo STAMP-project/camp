@@ -62,6 +62,13 @@ class UI(object):
             for each in warnings:
                 self._print(" - {warning}", warning=str(each))
 
+    def invalid_yaml_model(self, error):
+        self._print("\nError:")
+        self._print(" - There are errors in the CAMP YAML model.")
+        self._print("   Please fix the following issue before to proceed:")
+        for index, each_warning in enumerate(error.warnings, 1):
+            self._print(" {index}. {warning}", index=index, warning=str(each))
+
 
     def missing_model(self, error):
         self._print("\nError:")

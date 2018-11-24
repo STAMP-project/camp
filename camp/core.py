@@ -10,6 +10,7 @@
 
 
 
+from camp.codecs.yaml import InvalidYAMLModel
 from camp.directories import InputDirectory, OutputDirectory
 from camp.entities.validation import Checker
 from camp.errors import MissingModel, NoConfigurationFound
@@ -18,6 +19,7 @@ from camp.execute.command.commands import ConductExperimentRunner
 from camp.ui import UI
 
 from sys import exc_info
+
 
 
 class Camp(object):
@@ -41,6 +43,9 @@ class Camp(object):
             for index, each_configuration in enumerate(configurations, 1):
                 self._save(index, each_configuration)
 
+        except InvalidYAMLModel as error:
+            self._ui.invalid_yaml_model(error)
+
         except MissingModel as error:
             self._ui.missing_model(error)
 
@@ -61,7 +66,6 @@ class Camp(object):
     def _load_model(self):
         path, model, warnings = self._input.model
         self._ui.model_loaded(path, model)
-        self._ui.warns(warnings)
 
         checker = Checker(workspace=self._input.path)
         model.accept(checker)
@@ -93,6 +97,9 @@ class Camp(object):
                                     arguments.working_directory,
                                     path)
                 self._ui.configuration_realized(path)
+
+        except InvalidYAMLModel as error:
+            self._ui.invalid_yaml_model(error)
 
         except MissingModel as error:
             self._ui.missing_model(error)
