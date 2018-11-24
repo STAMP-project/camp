@@ -16,7 +16,20 @@ from camp.codecs.commons import Codec
 from camp.entities.model import Model, Component, Service, Goals, Variable, \
     Feature, DockerFile, DockerImage, Substitution, Instance, Configuration
 
-from yaml import load as load_yaml, dump as yaml_dump
+from yaml import safe_load as load_yaml, dump as yaml_dump
+
+
+
+class InvalidYAMLModel(Exception):
+
+
+    def __init__(self, warnings):
+        self._warnings = warnings
+
+
+    @property
+    def warnings(self):
+        return self._warnings
 
 
 
@@ -118,6 +131,9 @@ class YAML(Codec):
 
             else:
                 self._ignore(key)
+
+        if self._warnings:
+            raise InvalidYAMLModel(self._warnings)
 
         return Model(components, goals, constraints)
 

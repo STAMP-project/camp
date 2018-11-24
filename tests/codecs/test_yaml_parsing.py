@@ -10,7 +10,7 @@
 
 
 
-from camp.codecs.yaml import YAML
+from camp.codecs.yaml import YAML, InvalidYAMLModel
 from camp.entities.model import DockerFile, DockerImage, Substitution
 
 from StringIO import StringIO
@@ -80,7 +80,7 @@ class BuiltModelAreComplete(TestCase):
                         "implementation": None,
                         "variables": {
                             "threads": {
-                                "values": [64, 128, 256],
+                                 "values": [64, 128, 256],
                                 "realization": []
                             },
                             "memory": {
@@ -95,8 +95,8 @@ class BuiltModelAreComplete(TestCase):
                     "features": []
                 }
             })
-            
-            
+
+
 
     def test_given_a_two_component_stack(self):
         self.assert_complete(
@@ -128,7 +128,7 @@ class BuiltModelAreComplete(TestCase):
                         "required_features": [],
                         "implementation": None,
                         "variables": {}
-                        
+
                     }
                 },
                 "goals": {
@@ -167,7 +167,7 @@ class BuiltModelAreComplete(TestCase):
                     "features": []
                 }
             })
-            
+
 
     def test_given_a_component_with_a_docker_image(self):
         self.assert_complete(
@@ -246,7 +246,7 @@ class BuiltModelAreComplete(TestCase):
             })
 
 
-        
+
     def assert_complete(self, text, expectations):
         model = self._codec.load_model_from(StringIO(text))
 
@@ -259,11 +259,11 @@ class BuiltModelAreComplete(TestCase):
 
         self.assertItemsEqual(expectations["features"],
                               [each.name for each in model.features])
-                
+
         self.assertEqual(
             set([each.name for each in model.components]),
             set(expectations["components"].keys()))
-        
+
         for each_component in model.components:
             expectation = expectations["components"][each_component.name]
             self.assert_component(each_component, expectation)
@@ -275,7 +275,7 @@ class BuiltModelAreComplete(TestCase):
         self.assertItemsEqual(expectations["features"],
                               [each.name for each in goals.features])
 
-        
+
     def assert_component(self, component, expectation):
         self.assertItemsEqual(
             expectation["provided_services"],
@@ -318,11 +318,13 @@ class IgnoredEntriesAreReported(TestCase):
 
 
     def assert_extra_in(self, text, expected):
-        self._codec.load_model_from(StringIO(text))
-
-        self.assertEqual(1, len(self._codec.warnings))
-        self.assertEqual(expected,
-                         self._codec.warnings[0].path)
+        try :
+            self._codec.load_model_from(StringIO(text))
+            fail("Should have raised an exception!")
+        except InvalidYAMLModel as error:
+            self.assertEqual(1, len(error.warnings))
+            self.assertEqual(expected,
+                             error.warnings[0].path)
 
 
     def test_when_an_extra_entry_is_in_the_root(self):
@@ -429,125 +431,120 @@ class TypeMismatchAreReported(TestCase):
 
 
     def test_with_a_string_as_component(self):
-        text = ("components: blablabla\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_warning("dict", "str", "components")
+        self.assert_warning(
+            "components: blablabla\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expected="dict",
+            found="str", path="components")
 
 
     def test_with_a_string_as_provided_services(self):
-        text = ("components: \n"
-                "  server:\n"
-                "     provides_services: blablabla\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_warning("list", "str",
-                            "components/server/provides_services")
+        self.assert_warning(
+            "components: \n"
+            "  server:\n"
+            "     provides_services: blablabla\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expected="list",
+            found="str",
+            path="components/server/provides_services")
 
 
     def test_with_a_string_as_required_services(self):
-        text = ("components: \n"
-                "  server:\n"
-                "     requires_services: blablabla\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_warning("list", "str",
-                            "components/server/requires_services")
+        self.assert_warning(
+            "components: \n"
+            "  server:\n"
+            "     requires_services: blablabla\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expected="list",
+            found="str",
+            path="components/server/requires_services")
 
 
     def test_with_a_string_as_provided_features(self):
-        text = ("components: \n"
-                "  server:\n"
-                "     provides_features: blablabla\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_warning("list", "str",
-                            "components/server/provides_features")
+        self.assert_warning(
+            "components: \n"
+            "  server:\n"
+            "     provides_features: blablabla\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expected="list", found="str",
+            path="components/server/provides_features")
 
 
     def test_with_a_string_as_required_features(self):
-        text = ("components: \n"
+        self.assert_warning(
+            "components: \n"
                 "  server:\n"
                 "     requires_features: blablabla\n"
                 "goals:\n"
                 "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_warning("list", "str",
-                            "components/server/requires_features")
+                "      - Wonderful\n",
+            expected="list",
+            found="str",
+            path="components/server/requires_features")
 
 
     def test_with_a_string_as_variables(self):
-        text = ("components: \n"
+        self.assert_warning(
+            "components: \n"
                 "  server:\n"
                 "     requires_features: [ Awesome ]\n"
                 "     variables: blablabla\n"
                 "goals:\n"
                 "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_warning("dict", "str", "components/server/variables")
+                "      - Wonderful\n",
+            expected="dict",
+            found="str",
+            path="components/server/variables")
 
 
     def test_with_a_string_as_implementation(self):
-        text = ("components: \n"
-                "  server:\n"
-                "     requires_features: [ Awesome ]\n"
-                "     implementation: blablabla\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_warning("dict", "str", "components/server/implementation")
+        self.assert_warning(
+            "components: \n"
+            "  server:\n"
+            "     requires_features: [ Awesome ]\n"
+            "     implementation: blablabla\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expected="dict",
+            found="str",
+            path="components/server/implementation")
 
 
     def test_with_a_string_as_goals(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Awesome ]\n"
-                "goals: blablabla\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_warning("dict", "str", "goals")
+        self.assert_warning(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Awesome ]\n"
+            "goals: blablabla\n",
+            expected="dict",
+            found="str",
+            path="goals")
 
 
     def test_with_a_string_as_running(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Awesome ]\n"
-                "goals:\n"
-                "  running: blablabla\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_warning("list", "str", "goals/running")
+        self.assert_warning(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Awesome ]\n"
+            "goals:\n"
+            "  running: blablabla\n",
+            expected="list",
+            found="str",
+            path="goals/running")
 
 
     def test_with_a_string_as_substitution_replacements(self):
-        text = ("components:\n"
+        self.assert_warning(
+            "components:\n"
                 "   server:\n"
                 "      provides_services: [ Awesome ]\n"
                 "      variables:\n"
@@ -558,48 +555,47 @@ class TypeMismatchAreReported(TestCase):
                 "               pattern: xmem=1GB\n"
                 "               replacements: This should not be a string!\n"
                 "goals:\n"
-                "  running: [ Awesome ]\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_warning("list",
-                            "str",
-                            "components/server/variables/memory/realization/#1/replacements",
-                            2)
+                "  running: [ Awesome ]\n",
+            expected="list",
+            found="str",
+            path="components/server/variables/memory/realization/#1/replacements",
+            warning_count=2)
 
 
     def test_with_a_string_as_substitution_targets(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Awesome ]\n"
-                "      variables:\n"
-                "        memory:\n"
-                "          values: [1GB, 2GB ]\n"
-                "          realization:\n"
-                "             - targets: This should not be a string!\n"
-                "               pattern: xmem=1GB\n"
-                "               replacements: [xmem=1GB, xmem=2GB]\n"
-                "goals:\n"
-                "  running: [ Awesome ]\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_warning("list",
-                            "str",
-                            "components/server/variables/memory/realization/#1/targets",
-                            2)
+        self.assert_warning(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Awesome ]\n"
+            "      variables:\n"
+            "        memory:\n"
+            "          values: [1GB, 2GB ]\n"
+            "          realization:\n"
+            "             - targets: This should not be a string!\n"
+            "               pattern: xmem=1GB\n"
+            "               replacements: [xmem=1GB, xmem=2GB]\n"
+            "goals:\n"
+            "  running: [ Awesome ]\n",
+            expected="list",
+            found="str",
+            path="components/server/variables/memory/realization/#1/targets",
+            warning_count=2)
 
 
+    def assert_warning(self, text,  expected, found, path, warning_count=1):
+        try:
+            model = self._codec.load_model_from(StringIO(text))
+            self.fail("InvalidYAMLModel should have been thrown!")
 
-    def assert_warning(self, expected, found, path, warning_count=1):
-        self.assertEqual(warning_count, len(self._codec.warnings),
-                         [str(w) for w in self._codec.warnings])
-        self.assertEqual(path,
-                         self._codec.warnings[0].path)
-        self.assertEqual(found,
-                         self._codec.warnings[0].found)
-        self.assertEqual(expected,
-                         self._codec.warnings[0].expected)
+        except InvalidYAMLModel as error:
+            self.assertEqual(warning_count, len(error.warnings),
+                             [str(w) for w in error.warnings])
+            self.assertEqual(path,
+                             error.warnings[0].path)
+            self.assertEqual(found,
+                             error.warnings[0].found)
+            self.assertEqual(expected,
+                             error.warnings[0].expected)
 
 
 
@@ -705,85 +701,81 @@ class MissingMandatoryEntriesAreReported(TestCase):
 
 
     def test_when_omitting_substitution_targets(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      variables:\n"
-                "        memory:\n"
-                "          values: [1GB, 2GB, 4GB]\n"
-                "          realization:\n"
-                "             - pattern: xmem=1GB\n"
-                "               replacements: [xmem=1, xmem=2, xmem=4]\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_missing("components/server/variables/memory/realization/#1",
-                            ["targets"])
+        self.assert_missing(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      variables:\n"
+            "        memory:\n"
+            "          values: [1GB, 2GB, 4GB]\n"
+            "          realization:\n"
+            "             - pattern: xmem=1GB\n"
+            "               replacements: [xmem=1, xmem=2, xmem=4]\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            path="components/server/variables/memory/realization/#1",
+            candidates=["targets"])
 
 
     def test_when_omitting_substitution_pattern(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      variables:\n"
-                "        memory:\n"
-                "          values: [1GB, 2GB, 4GB]\n"
-                "          realization:\n"
-                "             - targets: [ Dockerfile ]\n"
-                "               replacements: [xmem=1, xmem=2, xmem=4]\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_missing("components/server/variables/memory/realization/#1",
-                            ["pattern"])
+        self.assert_missing(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      variables:\n"
+            "        memory:\n"
+            "          values: [1GB, 2GB, 4GB]\n"
+            "          realization:\n"
+            "             - targets: [ Dockerfile ]\n"
+            "               replacements: [xmem=1, xmem=2, xmem=4]\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            path="components/server/variables/memory/realization/#1",
+            candidates=["pattern"])
 
 
     def test_when_omitting_substitution_replacements(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      variables:\n"
-                "        memory:\n"
-                "          values: [1GB, 2GB, 4GB]\n"
-                "          realization:\n"
-                "             - targets: [ Dockerfile ]\n"
-                "               pattern: xmem=1GB\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_missing("components/server/variables/memory/realization/#1",
-                            ["replacements"])
+        self.assert_missing(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      variables:\n"
+            "        memory:\n"
+            "          values: [1GB, 2GB, 4GB]\n"
+            "          realization:\n"
+            "             - targets: [ Dockerfile ]\n"
+            "               pattern: xmem=1GB\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            path="components/server/variables/memory/realization/#1",
+            candidates=["replacements"])
 
 
     def test_when_omitting_the_docker_file(self):
-        text = ("components:\n"
-                "   server:\n"
-                "      provides_services: [ Wonderful ]\n"
-                "      implementation:\n"
-                "         docker: {}\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n")
-
-        model = self._codec.load_model_from(StringIO(text))
-
-        self.assert_missing("components/server/implementation/docker",
-                            ["file", "image"])
+        self.assert_missing(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      implementation:\n"
+            "         docker: {}\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            path="components/server/implementation/docker",
+            candidates=["file", "image"])
 
 
+    def assert_missing(self, text, path, candidates):
+        try:
+            model = self._codec.load_model_from(StringIO(text))
+            self.fail("InvalidYAMLModel should have been thrown!")
 
-    def assert_missing(self, path, candidates):
-        self.assertEqual(1, len(self._codec.warnings))
-        self.assertEqual(path,
-                         self._codec.warnings[0].path)
-        self.assertItemsEqual(candidates,
-                              self._codec.warnings[0].candidates)
+        except InvalidYAMLModel as error:
+            self.assertEqual(1, len(error.warnings))
+            self.assertEqual(path,
+                             error.warnings[0].path)
+            self.assertItemsEqual(candidates,
+                                  error.warnings[0].candidates)

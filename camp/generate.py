@@ -19,7 +19,6 @@ from ozepy import load_all_classes, DefineObject, ObjectVar, \
     ObjectConst
 
 from pkgutil import get_data
-from pprint import pprint
 
 from yaml import load as load_yaml
 
@@ -65,7 +64,6 @@ class Z3Problem(object):
         return Z3Problem(model, context, solver)
 
 
-
     def __init__(self, model, context, solver):
         self._model = model
         self._context = context
@@ -92,7 +90,7 @@ class Z3Problem(object):
 
     def _cover(self):
         z3_solution = cast_all_objects(self._solver.model())
-        #pprint(z3_solution)
+        #import pprint; pprint.pprint(z3_solution)
 
         self._context.mark_as_covered(z3_solution)
 

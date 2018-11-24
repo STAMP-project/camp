@@ -10,8 +10,6 @@
 
 
 
-from camp.generate import Z3Problem
-
 from mock import patch
 
 from tests.acceptance.commons import Sample, CampTests
