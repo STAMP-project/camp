@@ -64,7 +64,7 @@ class TestModelIsInvalid(TestCase):
 
         self._verify_errors(EmptyVariableDomain)
 
-        
+
     def test_when_a_docker_file_does_not_exists(self):
         self._components = [Component(name="c1",
                                       provided_services=[Service("S1")],
@@ -84,6 +84,11 @@ class TestModelIsInvalid(TestCase):
     def _validate_model(self):
         model =  Model(components=self._components,
                        goals=self._goals)
-        checker = Checker()
-        model.accept(checker)
-        self._errors = checker.errors
+
+        try:
+            checker = Checker()
+            model.accept(checker)
+            self._errors = []
+
+        except InvalidModel as error:
+            self._errors = error.errors
