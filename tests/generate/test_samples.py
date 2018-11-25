@@ -36,9 +36,6 @@ class FilesAreGenerated(TestCase):
             "components:\n"
             "  server:\n"
             "    provides_services: [ Awesome ]\n"
-            "    implementation:\n"
-            "      docker:\n"
-            "        file: server/Dockerfile\n"
             "goals:\n"
             "  running:\n"
             "    - Awesome\n")
@@ -46,7 +43,6 @@ class FilesAreGenerated(TestCase):
         self.invoke_camp_generate()
 
         self.assert_configuration_count_is(1)
-
 
 
     def test_variables(self):

@@ -10,7 +10,19 @@
 
 
 
-from os.path import isfile, isdir, join as join_paths
+from os.path import isfile, join as join_paths
+
+
+
+class InvalidModel(Exception):
+
+    def __init__(self, errors):
+        self._errors = errors
+
+
+    @property
+    def errors(self):
+        return self._errors
 
 
 
@@ -103,6 +115,7 @@ class Checker(object):
 
 
     def visit_model(self, model):
+        self._errors = []
         self._at_least_one_service_or_feature(model)
         self._at_least_one_goal(model)
 
@@ -114,6 +127,9 @@ class Checker(object):
 
         for each_component in model.components:
             each_component.accept(self, model)
+
+        if self._errors:
+            raise InvalidModel(self._errors)
 
 
     def _at_least_one_service_or_feature(self, model):
