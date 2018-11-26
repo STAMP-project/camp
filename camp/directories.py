@@ -12,12 +12,42 @@
 
 from camp.codecs.graphviz import Graphviz
 from camp.codecs.yaml import YAML
-from camp.errors import MissingModel, NoConfigurationFound
 
 from os import makedirs, listdir
 from os.path import exists, isdir, join as join_paths, dirname
 
 from re import search, sub
+
+
+
+class NoConfigurationFound(Exception):
+
+
+    def __init__(self, path):
+        self._path = path
+
+
+    @property
+    def searched_folder(self):
+        return self._path
+
+
+
+class MissingModel(Exception):
+
+
+    def __init__(self, directory, candidates):
+        self._candidates = candidates
+        self._folder = directory
+
+
+    @property
+    def searched_folder(self):
+        return self._folder
+
+    @property
+    def searched_files(self):
+        return self._candidates
 
 
 
