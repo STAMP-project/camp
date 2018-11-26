@@ -15,6 +15,7 @@ from tests.acceptance.commons import CampTests, Sample
 from unittest import skip
 
 
+
 class FilesAreGenerated(CampTests):
 
 
@@ -38,7 +39,7 @@ class FilesAreGenerated(CampTests):
 
     def test_after_we_realize_coverage(self):
         self.create_configurations(self.CONFIG_1)
-                                               
+
         self.realize()
 
         self.assertEqual(1, len(self.sample.generated_configurations))
@@ -53,7 +54,7 @@ class FilesAreGenerated(CampTests):
                                "images/xwiki8postgres_0/tomcat/setenv.sh",
                                "images/xwiki8postgres_0/xwiki/docker-entrypoint.sh",
                                "images/xwiki8postgres_0/xwiki/hibernate.cfg.xml")
-    
+
 
     CONFIG_1 = ("instances:\n"
                 "  openjdk8_0:\n"

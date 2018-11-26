@@ -11,9 +11,9 @@
 
 
 from camp.codecs.yaml import InvalidYAMLModel
-from camp.directories import InputDirectory, OutputDirectory
+from camp.directories import InputDirectory, OutputDirectory, \
+    MissingModel, NoConfigurationFound
 from camp.entities.validation import Checker, InvalidModel
-from camp.errors import MissingModel, NoConfigurationFound
 from camp.execute.parsers import ConfigINIParser
 from camp.execute.command.commands import ConductExperimentRunner
 from camp.ui import UI

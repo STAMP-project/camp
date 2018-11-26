@@ -9,6 +9,7 @@
 #
 
 
+
 from camp.util import redirect_stderr_to
 
 from os import remove
@@ -29,27 +30,20 @@ class RedirectionWorks(TestCase):
         self._destination = "bidon.txt"
         self._message = "It works!\n"
 
-        
+
     def tearDown(self):
         if isfile(self._destination):
             remove(self._destination)
 
-            
+
     def test_with_a_redirection_to_a_file(self):
 
         @redirect_stderr_to(self._destination)
         def dummy_function():
             stderr.write(self._message)
-    
+
         dummy_function()
-        
+
         with open(self._destination, "r") as destination:
             content = destination.read()
             self.assertEqual(self._message, content)
-            
-        
-
-
-
-    
-
