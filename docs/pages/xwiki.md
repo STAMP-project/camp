@@ -20,11 +20,11 @@ with the [CityGo case-study](citygo.html), there is no numerical
 variable involved.
 
 The inputs files are located in the GitHub repository under
-`samples/xwiki`. You may fetch them as follows:
+`samples/stamp/xwiki`. You may fetch them as follows:
 
 ```console
 $ git clone https://github.com/STAMP-project/camp 
-$ cd camp/samples/xwiki
+$ cd camp/samples/stamp/xwiki
 ```
 
 We assume hereafter that you already have CAMP up and running. If not,
