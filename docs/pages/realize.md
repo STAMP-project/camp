@@ -93,7 +93,7 @@ defined in the CAMP model, each containing a `Dockerfile`.
 
 The first thing we must add in our `model.yml` is the implementation of
 each component. For instance, if we have implemented the `tests`
-component with a Dockerfile, we nust specify this as follows:
+component with a Dockerfile, we must specify this as follows:
 
 ```yaml
 components:
