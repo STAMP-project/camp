@@ -18,7 +18,7 @@ following command:
 
 ```bash
 $ docker run -it -v $(pwd):/camp/workspace fchauvel/camp:v1.0.0 camp generate -d workspace
-``` 
+```
 
 This command will fetch the CAMP Docker image named
 `fchauvel/camp:v1.0.0` from [Docker
@@ -55,7 +55,7 @@ that fits your platform in a directory of your choice, I use
 ```bash
 $ cd /root
 $ wget https://github.com/Z3Prover/z3/releases/download/z3-4.7.1/z3-4.7.1-x64-debian-8.10.zip
-$ unzip z3-4.7.1-x64-debian-8.10.zip && mv z3-4.7.1-x64-debian-8.10 unzipped 
+$ unzip z3-4.7.1-x64-debian-8.10.zip && mv z3-4.7.1-x64-debian-8.10 unzipped
 ```
 
 Now, create the directory that will contain the Z3 binaries. I install
@@ -65,9 +65,9 @@ bindings.
 
 ```bash
 $ mkdir -p /usr/lib/python2.7/z3/lib
-$ cp unzipped/bin/z3 /usr/lib/python2.7/z3/lib/ 
+$ cp unzipped/bin/z3 /usr/lib/python2.7/z3/lib/
 $ cp unzipped/bin/lib* /usr/lib/python2.7/z3/lib/
-$ cp -rf unzipped/bin/python/z3 /usr/lib/python2.7/ 
+$ cp -rf unzipped/bin/python/z3 /usr/lib/python2.7/
 $ ln -s /usr/lib/python2.7/z3/lib/z3 /usr/bin/z3
 $ rm -rf unzipped
 
@@ -97,7 +97,7 @@ $ python -c 'import z3; print(z3.get_version_string())'
 > environment, as follows:
 >
 > ```console
-> $ virtualenv -p /usr/bin/python2.7 --system-site-package .venv2.7 
+> $ virtualenv -p /usr/bin/python2.7 --system-site-package .venv2.7
 > $ source .venv2.7/bin/activate
 > (.venv2.7) $ python -c 'import z3; print(z3.get_version_string())'
 > 4.7.1
@@ -148,18 +148,18 @@ bindings as follows:
 $ python -c "from z3 import *"
 Could not find libz3.so; consider adding the directory containing it to
   - your system's PATH environment variable,
-  - the Z3_LIBRARY_PATH environment variable, or 
+  - the Z3_LIBRARY_PATH environment variable, or
   - to the custom Z3_LIBRARY_DIRS Python-builtin before importing the z3 module, e.g. via
-    import __builtin__
-    __builtin__.Z3_LIB_DIRS = [ '/path/to/libz3.so' ] 
+	import __builtin__
+	__builtin__.Z3_LIB_DIRS = [ '/path/to/libz3.so' ]
 Traceback (most recent call last):
   File "<string>", line 1, in <module>
   File "/usr/lib/python2.7/z3/__init__.py", line 1, in <module>
-    from .z3 import *
+	from .z3 import *
   File "/usr/lib/python2.7/z3/z3.py", line 44, in <module>
-    from . import z3core
+	from . import z3core
   File "/usr/lib/python2.7/z3/z3core.py", line 64, in <module>
-    raise Z3Exception("libz3.%s not found." % _ext)
+	raise Z3Exception("libz3.%s not found." % _ext)
 z3.z3types.Z3Exception: libz3.so not found.
 ```
 

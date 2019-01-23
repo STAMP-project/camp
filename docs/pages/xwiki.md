@@ -23,7 +23,7 @@ The inputs files are located in the GitHub repository under
 `samples/stamp/xwiki`. You may fetch them as follows:
 
 ```console
-$ git clone https://github.com/STAMP-project/camp 
+$ git clone https://github.com/STAMP-project/camp
 $ cd camp/samples/stamp/xwiki
 ```
 
@@ -37,11 +37,11 @@ please refer to the [installation instructions](setup.html).
 The sample directory contains two main entities:
 
  1. the `camp.yml` file that defines what can vary in the X-Wiki
-    orchestration.
-	
+	orchestration.
+
  2. the `template` directory, which contains a template implementation
-    of the orchestrations using Docker (and docker-compose).
-	
+	of the orchestrations using Docker (and docker-compose).
+
 ### The CAMP Model
 
 The CAMP model (i.e., the `camp.yml` file) defines what can be varied
@@ -53,8 +53,8 @@ Here, our objective is to get the XWiki **service** up and running.
 ```yaml
 goals:
   running:
-    - XWiki
-	
+	- XWiki
+
 [...]
 ```
 
@@ -67,26 +67,26 @@ components:
   [...]
 
   xwiki9mysql:
-    provides_services: [XWiki]
-    requires_services: [MySQL]
-    requires_features : [Tomcat]
-    implementation:
-      docker:
-        file: xwiki9mysql/Dockerfile
-		
+	provides_services: [XWiki]
+	requires_services: [MySQL]
+	requires_features : [Tomcat]
+	implementation:
+	  docker:
+		file: xwiki9mysql/Dockerfile
+
   [...]
 
   mysql5:
-    provides_services: [MySQL]
-    implementation:
-      docker:
-        image: mysql:5
-		
+	provides_services: [MySQL]
+	implementation:
+	  docker:
+		image: mysql:5
+
   mysql8:
-    provides_services: [MySQL]
-    implementation:
-      docker:
-        image: mysql:8
+	provides_services: [MySQL]
+	implementation:
+	  docker:
+		image: mysql:8
 ```
 
 We proceed similarly for varying the underlying component that forms a
@@ -99,16 +99,16 @@ components:
  [...]
 
   openjdk8:
-    provides_features: [JRE]
-    implementation:
-      docker:
-        image: openjdk:8
+	provides_features: [JRE]
+	implementation:
+	  docker:
+		image: openjdk:8
 
   openjdk9:
-    provides_features: [JRE]
-    implementation:
-      docker:
-        image: openjdk:9
+	provides_features: [JRE]
+	implementation:
+	  docker:
+		image: openjdk:9
 ```
 
 ### The Template
@@ -117,12 +117,12 @@ In order to build configuration that we can run, CAMP needs a template
 implementation of the orchestrations. This template must include:
 
  1. A docker-compose file, which illustrates the bindings and the
-    configuration of each service.
-	
+	configuration of each service.
+
  2. Dockerfile (and any other configurations) files for the services
-    whose image must be built from scratch.
-	
-In the X-Wiki case, the template directory specify for implementation
+	whose image must be built from scratch.
+
+In the X-Wiki case, the template directory specifies an implementation
 of every components whose image is not to be downloaded directly from
 the Docker hub.
 
@@ -263,26 +263,26 @@ out/config_1
 ├── configuration.yml
 ├── docker-compose.yml
 └── images
-    ├── build_images.sh
-    ├── tomcat8_0
-    │   └── Dockerfile
-    └── xwiki8postgres_0
-        ├── docker-compose.yml
-        ├── Dockerfile
-        ├── Dockerfile~
-        ├── tomcat
-        │   └── setenv.sh
-        └── xwiki
-            ├── docker-entrypoint.sh
-            └── hibernate.cfg.xml
-``` 
+	├── build_images.sh
+	├── tomcat8_0
+	│   └── Dockerfile
+	└── xwiki8postgres_0
+		├── docker-compose.yml
+		├── Dockerfile
+		├── Dockerfile~
+		├── tomcat
+		│   └── setenv.sh
+		└── xwiki
+			├── docker-entrypoint.sh
+			└── hibernate.cfg.xml
+```
 
 To run these configurations, we must first build the related docker
 images. CAMP generates a shell script (`out/images/build_images.sh`)
 to facilitate just that. We simply run:
 
 ```
-$ cd out/config_1/images 
+$ cd out/config_1/images
 $ source ./build_images.sh
 ```
 
@@ -291,5 +291,5 @@ docker-compose as follows:
 
 ```
 $ cd out/config_1
-$ docker-compose -f docker-compose.yml up 
+$ docker-compose -f docker-compose.yml up
 ```
