@@ -14,12 +14,14 @@
       url: /pages/execute
 
 - name: Case Studies
-  url: 
+  url:
   children:
     - name: XWiki
       url: /pages/xwiki
     - name: CityGo
       url: /pages/citygo
+    - name: OW2/Lutece
+      url: /pages/ow2_lutece
 
 - name: Other
   url:

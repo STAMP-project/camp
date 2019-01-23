@@ -15,11 +15,6 @@ changes that were made.
 		*   Fix reporting of missing CAMP model, as per [Issue
 			25](https://github.com/STAMP-project/camp/issues/25)
 
-		*   Activating Codecov to monitor test code coverage
-
-		*   Removing code duplication in tests
-
-
 	*  CAMP v0.2.2 (Nov. 20, 2018)
 
 		*   Update the documentation of the CityGo case to explain why
