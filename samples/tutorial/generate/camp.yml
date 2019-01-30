@@ -1,0 +1,33 @@
+goals:
+  running:
+    - Registry
+
+components:
+  registry:
+    provides_services: [ Registry ]
+    requires_services: [ DB ]
+    requires_features: [ Ruby ]
+
+  ruby:
+    provides_features: [ Ruby ]
+    variables:
+      version:
+        type: Text
+        values: [ v2.4, v2.5 ]
+      max_alloc:
+        type: Integer
+        values: [ 8, 16, 32, 64 ]
+
+  mysql:
+    provides_services: [ DB ]
+    variables:
+      version:
+        type: Text
+        values: [ v5.6, v5.7]
+
+  mariadb:
+    provides_services: [ DB ]
+    variables:
+      version:
+        type: Text
+        values: [ v5.6, v10.2 ]

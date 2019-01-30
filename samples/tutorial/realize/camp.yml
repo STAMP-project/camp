@@ -1,0 +1,66 @@
+goals:
+  running:
+    - Registry
+
+components:
+
+  registry:
+    provides_services: [ Registry ]
+    requires_services: [ DB ]
+    requires_features: [ Ruby ]
+    implementation:
+      docker:
+        file: registry/Dockerfile
+
+  ruby:
+    provides_features: [ Ruby ]
+    variables:
+      version:
+        type: Text
+        values: [ v2.4, v2.5 ]
+        realization:
+          - targets: [ ruby/Dockerfile ]
+            pattern: "FROM ruby:2.5.1-alpine3.7"
+            replacements: [ "FROM ruby:2.4.1-alpine3.7", "FROM ruby:2.4.5-alpine3.7" ]
+      max_alloc:
+        type: Integer
+        values: [ 8, 16, 32, 64 ]
+        realization:
+          - targets: [ ruby/config.rb ]
+            pattern: ":malloc_limit=>16777216"
+            replacements:
+             - ":malloc_limit=>8388608"
+             - ":malloc_limit=>16777216"
+             - ":malloc_limit=>33554432"
+             - ":malloc_limit=>67108864"
+    implementation:
+      docker:
+        file: ruby/Dockerfile
+
+  mysql:
+    provides_services: [ DB ]
+    variables:
+      version:
+        type: Text
+        values: [ v5.6, v5.7]
+        realization:
+          - targets: [ docker-compose.yml ]
+            pattern: "image:mysql:5.7"
+            replacements: [ "image:mysql:5.6", "image:mysql:5.7" ]
+    implementation:
+      docker:
+        image: mysql:5.6
+
+  mariadb:
+    provides_services: [ DB ]
+    variables:
+      version:
+        type: Text
+        values: [ v5.6, v10.2 ]
+        realization:
+          - targets: [ docker-compose.yml ]
+            pattern: "image:mysql:5.7"
+            replacements: [ "image:mariadb:5.6", "image:mariadb:10.2" ]
+    implementation:
+      docker:
+        image: mariadb:5.6
