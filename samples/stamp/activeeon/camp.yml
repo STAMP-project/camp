@@ -31,6 +31,9 @@ components:
           - targets: [ database/Dockerfile ]
             pattern: "FROM database"
             replacements: [ "FROM mysql", "FROM postgres" ]
+          - targets: [ database/Dockerfile ]
+            pattern: "COPY init_database.sh"
+            replacements: [ "COPY init_mysql.sh /root/init_database.sh", "COPY init_postgres.sh /root/init_database.sh" ]
     implementation:
       docker:
         file: database/Dockerfile
