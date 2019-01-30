@@ -35,7 +35,17 @@ docker system prune
 ## To Do
 
 * Proactive docker container capable of building system tests;
+
+- The last build proactive artifact [here](http://jenkins.activeeon.com/view/NightlyRelease/job/nightly-release/lastSuccessfulBuild/artifact/build/distributions/)
+
+- The system tests project is [here](https://bitbucket.org/activeeon/scheduling-system-tests/src/master/)
+
+- Example of running proactive system tests [here](http://jenkins.activeeon.com/job/scheduling-system-tests/)
+
 * Add database intial setup;
+
+- Mysql database configuration [here](https://docs.google.com/document/d/1z9qNB64Sch3n-F5dwgFCmbKzKXSqfjfjYD9PLmSsgsM/edit#heading=h.1qei06ddonzh)
+
 * Change database configuration for proactive image;
 * Run with the 2 selected databases;
 * Collect performance measures : memory, cpu, security;
