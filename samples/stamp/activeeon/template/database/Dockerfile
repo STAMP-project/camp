@@ -1,6 +1,6 @@
 FROM database
 
-# copy the script 
-#COPY init_database.sh 
+COPY init_database.sh
 
-
+RUN chmod 775 /root/init_database.sh
+RUN /root/init_database.sh
