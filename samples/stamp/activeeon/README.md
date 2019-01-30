@@ -37,10 +37,15 @@ docker system prune
 
 ## Getting proactive from jenkins
 
-http://jenkins.activeeon.com/user/pedrovelho/configure
+Visit your jenkins site to get the the api-token first.
+
+http://<yourserver>/user/<username>/configure
+
 curl --silent --show-error http://<username>:<api-token>@<jenkins-server>/job/<job-name>/doDelete
 
-curl --silent --show-error http://pedrovelho:116adf8f62a97576eb9af480029e955e27@jenkins.activeeon.com/view/NightlyRelease/job/nightly-release/lastSuccessfulBuild/artifact/build/distributions/activeeon_enterprise-pca_server-linux-x64-8.5.0-SNAPSHOT.zip
+## Getting system tests
+
+
 
 ## To Do
 
