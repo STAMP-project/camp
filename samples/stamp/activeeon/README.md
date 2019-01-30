@@ -24,3 +24,9 @@ Now you can proceed to use camp. For instance for this example change current di
 ```bash
 docker run -t -v $PWD:/campworkingdir camp camp generate -d /campworkingdir
 ```
+
+You can clean exited container and unlinked images using:
+
+```bash
+docker system prune
+```
