@@ -1,5 +1,8 @@
 # Proactive CAMP sample
 
+In the context of the project STAMP, ActiveEon is a use case to explore several
+configuration notably for using different databases. This readme explain show
+how to run camp for proactive worflows & schedulling.
 
 ## Building camp last version
 
