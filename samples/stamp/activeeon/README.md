@@ -30,3 +30,12 @@ You can clean exited container and unlinked images using:
 ```bash
 docker system prune
 ```
+
+
+## To Do
+
+* Proactive docker container capable of building system tests;
+* Add database intial setup;
+* Change database configuration for proactive image;
+* Run with the 2 selected databases;
+* Collect performance measures : memory, cpu, security;
