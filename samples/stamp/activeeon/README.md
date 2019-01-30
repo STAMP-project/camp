@@ -39,9 +39,11 @@ docker system prune
 
 Visit your jenkins site to get the the api-token first.
 
+```bash
 http://<yourserver>/user/<username>/configure
 
 curl --silent --show-error http://<username>:<api-token>@<jenkins-server>/job/<job-name>/doDelete
+```
 
 ## Getting system tests
 
