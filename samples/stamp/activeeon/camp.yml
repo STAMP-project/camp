@@ -33,7 +33,12 @@ components:
             replacements: [ "FROM mysql", "FROM postgres" ]
           - targets: [ database/Dockerfile ]
             pattern: "COPY init_database.sh"
-            replacements: [ "COPY init_mysql.sh /root/init_database.sh", "COPY init_postgres.sh /root/init_database.sh" ]
+            # TO FIX POSTGRES IS EMPTY
+            replacements: [ "COPY init_mysql.sql docker-entrypoint-initdb.d/init_database.sql", "" ]
+          - targets: [ database/Dockerfile ]
+            pattern: "RUN chmod 755 init_database.sh"
+            # TO FIX POSTGRES IS EMPTY
+            replacements: [ "RUN chmod 755 /docker-entrypoint-initdb.d/init_database.sql", "" ]
     implementation:
       docker:
         file: database/Dockerfile
