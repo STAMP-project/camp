@@ -53,7 +53,21 @@ curl --silent --show-error http://<username>:<api-token>@<jenkins-server>/job/<j
 
 ## Getting system tests
 
+* See with Fabien, is it a single test or all?
 
+* How to run the tests within camp? see with Franck Chauvel
+
+
+## Todo
+
+* Entrypoint.sh that find and call proactive server `/root/proactive/bin/proactive-server`
+
+* After `docker-compose up` on `config_0`, we must have 2 containers running:
+  - 1 mysql-camp
+  - 2 proactive server
+
+
+* Change the configuration of proactive-server to use the mysql databases see References
 
 ## References
 
