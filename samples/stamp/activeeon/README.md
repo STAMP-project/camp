@@ -19,14 +19,17 @@ To run camp within the created image use.
 docker run -it camp bash
 ```
 
-Work whithin the docker container has some drawbacks. The changes on the current drive are not seem or either presistent. Alternatively, you can also use a mounting point so camp container access an outside folder.
+Work whithin the docker container has some drawbacks. The changes on the current
+drive are not seem or either presistent. Alternatively, you can also use a
+mounting point so camp container access an outside folder.
 
 
 ```bash
 docker run -t -v $PWD:/campworkingdir camp camp -h
 ```
 
-Now you can proceed to use camp. For instance for this example change current directory to be `samples/stamp/activeeon` and then run:
+Now you can proceed to use camp. For instance for this example change current
+directory to be `samples/stamp/activeeon` and then run:
 
 ```bash
 docker run -t -v $PWD:/campworkingdir camp camp generate -d /campworkingdir
@@ -52,9 +55,9 @@ curl --silent --show-error http://<username>:<api-token>@<jenkins-server>/job/<j
 
 
 
-## To Do
+## References
 
-* Proactive docker container capable of building system tests;
+* Proactive docker container to target system tests;
 
   - The last build proactive artifact [here](http://jenkins.activeeon.com/view/NightlyRelease/job/nightly-release/lastSuccessfulBuild/artifact/build/distributions/)
 
@@ -65,6 +68,12 @@ curl --silent --show-error http://<username>:<api-token>@<jenkins-server>/job/<j
 * Add database intial setup;
 
   - Mysql database configuration [here](https://docs.google.com/document/d/1z9qNB64Sch3n-F5dwgFCmbKzKXSqfjfjYD9PLmSsgsM/edit#heading=h.1qei06ddonzh)
+
+  - Mysql connector [here](https://dev.mysql.com/downloads/connector/j/)
+
+  - Postgres database configuration [here](https://docs.google.com/document/d/1z9qNB64Sch3n-F5dwgFCmbKzKXSqfjfjYD9PLmSsgsM/edit#heading=h.1qei06ddonzh)
+
+  - Postgres connector [here](https://jdbc.postgresql.org/download.html)
 
 * Change database configuration for proactive image;
 
