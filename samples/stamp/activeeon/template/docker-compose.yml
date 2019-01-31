@@ -13,5 +13,7 @@ services:
     build: ./database
     expose:
       - 3306
+      - 5432
     environment:
       - MYSQL_ROOT_PASSWORD=pouet123
+      - POSTGRES_PASSWORD=pouet123
