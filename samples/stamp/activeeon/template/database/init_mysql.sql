@@ -1,11 +1,10 @@
-#!/bin/bash
-PASSWORD="pouet123"
-echo "
-# Creating empty databases
+
+-- Creating empty databases
 drop database if exists rm; create database rm;
 drop database if exists scheduler; create database scheduler;
 drop database if exists catalog; create database catalog;
-# Create users
+
+-- Create users
 CREATE USER IF NOT EXISTS 'rm'@'localhost' IDENTIFIED BY 'rm';
 CREATE USER IF NOT EXISTS 'rm'@'%' IDENTIFIED BY 'rm';
 CREATE USER IF NOT EXISTS 'scheduler'@'localhost' IDENTIFIED BY 'scheduler';
@@ -16,7 +15,8 @@ CREATE USER IF NOT EXISTS 'scheduler-api'@'localhost' IDENTIFIED BY 'scheduler-a
 CREATE USER IF NOT EXISTS 'scheduler-api'@'%' IDENTIFIED BY 'scheduler-api';
 CREATE USER IF NOT EXISTS 'job-planner'@'localhost' IDENTIFIED BY 'job-planner';
 CREATE USER IF NOT EXISTS 'job-planner'@'%' IDENTIFIED BY 'job-planner';
-# Grant access
+
+-- Grant access
 GRANT ALL PRIVILEGES ON rm.* TO 'rm'@'localhost';
 GRANT ALL PRIVILEGES ON rm.* TO 'rm'@'%';
 GRANT ALL PRIVILEGES ON scheduler.* TO 'scheduler'@'localhost';
@@ -27,4 +27,4 @@ GRANT ALL PRIVILEGES ON scheduler.* TO 'scheduler-api'@'localhost';
 GRANT ALL PRIVILEGES ON scheduler.* TO 'scheduler-api'@'%';
 GRANT ALL PRIVILEGES ON scheduler.* TO 'job-planner'@'localhost';
 GRANT ALL PRIVILEGES ON scheduler.* TO 'job-planner'@'%';
-FLUSH PRIVILEGES;" | mysql -uroot -p$PASSWORD
+FLUSH PRIVILEGES;
