@@ -26,6 +26,12 @@ RUN chmod -R 755 /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.2.0
 
 WORKDIR /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.2.0/
 
+COPY change-proactive-db-config-mysql.sh /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.2.0/
+
+RUN chmod +x change-proactive-db-config-mysql.sh
+
+RUN ./change-proactive-db-config-mysql.sh
+
 EXPOSE 8080
 
 CMD [ /root/activeeon_proactive_server_entrypoint.sh ]
