@@ -1,1 +1,1 @@
-curl --silent --show-error http://mboussaa:1133eeceb060eac6e09452ff48e42a86e9@jenkins.activeeon.com/view/Release/job/release/73/artifact/build/distributions/activeeon_enterprise-pca_server-linux-x64-8.0.0.zip > /root/proactive.zip
+curl --silent --show-error http://mboussaa:1133eeceb060eac6e09452ff48e42a86e9@jenkins.activeeon.com/view/Release/job/release/76/artifact/build/distributions/activeeon_enterprise-pca_server-linux-x64-8.2.0.zip > /root/proactive.zip
