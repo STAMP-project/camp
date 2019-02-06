@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu
 
 RUN apt update && apt install -y \
     apt-transport-https \
@@ -30,7 +30,7 @@ COPY change-proactive-db-config-mysql.sh /root/proactive/activeeon_enterprise-pc
 
 RUN chmod +x change-proactive-db-config-mysql.sh
 
-RUN ./change-proactive-db-config-mysql.sh
+#RUN ./change-proactive-db-config-mysql.sh
 
 EXPOSE 8080
 
