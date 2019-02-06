@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # add jdbc mysql connector 
-RUN  curl -LO https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.15.zip
-RUN  unzip mysql-connector-java-8.0.15.zip -d connectorj
-RUN  cp connectorj/mysql-connector-java-8.0.15/mysql-connector-java-8.0.15.jar addons/
-RUN ls addons/
+curl -LO https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.15.zip
+unzip mysql-connector-java-8.0.15.zip -d connectorj
+cp connectorj/mysql-connector-java-8.0.15/mysql-connector-java-8.0.15.jar addons/
+ls addons/
 
 # HashMap for scheduler config
 # ~/config/scheduler/database.properties
