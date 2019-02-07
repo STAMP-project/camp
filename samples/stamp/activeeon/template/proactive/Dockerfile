@@ -34,7 +34,7 @@ RUN ./change-proactive-db-config-mysql.sh
 
 EXPOSE 8080
 
-CMD [ /root/activeeon_proactive_server_entrypoint.sh ]
+#CMD [ /root/activeeon_proactive_server_entrypoint.sh ]
 
 #ENTRYPOINT ["/root/proactive/activeeon_enterprise-pca_server-linux-x64-8.2.0/bin/proactive-server", "-ln", "0", "-Dproactive.useIPaddress=true"]
 

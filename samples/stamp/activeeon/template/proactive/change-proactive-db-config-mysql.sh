@@ -10,7 +10,7 @@ ls addons/
 # ~/config/scheduler/database.properties
 declare -A scheduler
 scheduler["hibernate.connection.driver_class"]="com.mysql.cj.jdbc.Driver"
-scheduler["hibernate.connection.url"]="jdbc:postgresql://localhost:5432/scheduler?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
+scheduler["hibernate.connection.url"]="jdbc:mysql://localhost:3306/scheduler?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
 scheduler["hibernate.dialect"]="org.hibernate.dialect.MySQL5InnoDBDialect"
 scheduler["hibernate.connection.username"]="scheduler"
 scheduler["hibernate.connection.password"]="scheduler"
@@ -63,37 +63,43 @@ pcw["spring.jpa.database-platform"]="org.hibernate.dialect.MySQL5InnoDBDialect"
 # Change config of dist/war/catalog/WEB-INF/classes/application.properties
 for key in ${!scheduler[@]}
 do
-grep -q '^'$key'' config/scheduler/database.properties && sed -i 's|^'$key'.*|'$key'='${scheduler[$key]}'|' config/scheduler/database.properties || echo "$key"="${scheduler[$key]}" >> config/scheduler/database.properties
+grep -q '^'$key'' config/scheduler/database.properties && sed -i 's|^'$key'.*|'$key'='${scheduler[$key]}'|' config/scheduler/database.properties || echo "
+$key"="${scheduler[$key]}" >> config/scheduler/database.properties
 done
 
 # Change config of dist/war/catalog/WEB-INF/classes/application.properties
 for key in ${!rm[@]}
 do
-grep -q '^'$key'' config/rm/database.properties && sed -i 's|^'$key'.*|'$key'='${rm[$key]}'|' config/rm/database.properties || echo "$key"="${rm[$key]}" >> config/rm/database.properties
+grep -q '^'$key'' config/rm/database.properties && sed -i 's|^'$key'.*|'$key'='${rm[$key]}'|' config/rm/database.properties || echo "
+$key"="${rm[$key]}" >> config/rm/database.properties
 done
 
 # Change config of dist/war/catalog/WEB-INF/classes/application.properties
 for key in ${!catalog[@]}
 do
-grep -q '^'$key'' dist/war/catalog/WEB-INF/classes/application.properties && sed -i 's|^'$key'.*|'$key'='${catalog[$key]}'|' dist/war/catalog/WEB-INF/classes/application.properties || echo "$key"="${catalog[$key]}" >> dist/war/catalog/WEB-INF/classes/application.properties
+grep -q '^'$key'' dist/war/catalog/WEB-INF/classes/application.properties && sed -i 's|^'$key'.*|'$key'='${catalog[$key]}'|' dist/war/catalog/WEB-INF/classes/application.properties || echo "
+$key"="${catalog[$key]}" >> dist/war/catalog/WEB-INF/classes/application.properties
 done
 
 # Change config of dist/war/scheduling-api/WEB-INF/classes/application.properties
 for key in ${!scheduling[@]}
 do
-grep -q '^'$key'' dist/war/scheduling-api/WEB-INF/classes/application.properties && sed -i 's|^'$key'.*|'$key'='${scheduling[$key]}'|' dist/war/scheduling-api/WEB-INF/classes/application.properties || echo "$key"="${scheduling[$key]}" >> dist/war/scheduling-api/WEB-INF/classes/application.properties
+grep -q '^'$key'' dist/war/scheduling-api/WEB-INF/classes/application.properties && sed -i 's|^'$key'.*|'$key'='${scheduling[$key]}'|' dist/war/scheduling-api/WEB-INF/classes/application.properties || echo "
+$key"="${scheduling[$key]}" >> dist/war/scheduling-api/WEB-INF/classes/application.properties
 done
 
 # Change config of dist/war/job-planner/WEB-INF/classes/application.properties
 for key in ${!jp[@]}
 do
-grep -q '^'$key'' dist/war/job-planner/WEB-INF/classes/application.properties && sed -i 's|^'$key'.*|'$key'='${jp[$key]}'|' dist/war/job-planner/WEB-INF/classes/application.properties || echo "$key"="${jp[$key]}" >> dist/war/job-planner/WEB-INF/classes/application.properties
+grep -q '^'$key'' dist/war/job-planner/WEB-INF/classes/application.properties && sed -i 's|^'$key'.*|'$key'='${jp[$key]}'|' dist/war/job-planner/WEB-INF/classes/application.properties || echo "
+$key"="${jp[$key]}" >> dist/war/job-planner/WEB-INF/classes/application.properties
 done
 
 # Change config of dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties
 for key in ${!pcw[@]}
 do
-grep -q '^'$key'' dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties && sed -i 's|^'$key'.*|'$key'='${pcw[$key]}'|' dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties || echo "$key"="${pcw[$key]}" >> dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties
+grep -q '^'$key'' dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties && sed -i 's|^'$key'.*|'$key'='${pcw[$key]}'|' dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties || echo "
+$key"="$(sed 's/\\//g' <<< "${pcw[$key]}")" >> dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties
 done
 
 #add jdbc mysql connector 
