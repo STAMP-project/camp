@@ -85,6 +85,7 @@ done
 # Change config of dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties
 for key in ${!pcw[@]}
 do
-grep -q '^'$key'' dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties && sed -i 's|^'$key'.*|'$key'='${pcw[$key]}'|' dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties || echo "$key"="${pcw[$key]}" >> dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties
+grep -q '^'$key'' dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties && sed -i 's|^'$key'.*|'$key'='${pcw[$key]}'|' dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties || echo "
+$key"="${pcw[$key]}" >> dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties
 done
 
