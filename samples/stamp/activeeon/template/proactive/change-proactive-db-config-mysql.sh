@@ -78,7 +78,7 @@ done
 for key in ${!catalog[@]}
 do
 grep -q '^'$key'' dist/war/catalog/WEB-INF/classes/application.properties && sed -i 's|^'$key'.*|'$key'='${catalog[$key]}'|' dist/war/catalog/WEB-INF/classes/application.properties || echo "
-$key"="${catalog[$key]}" >> dist/war/catalog/WEB-INF/classes/application.properties
+$key"="$(sed 's/\\//g' <<< "${catalog[$key]}")" >> dist/war/catalog/WEB-INF/classes/application.properties
 done
 
 # Change config of dist/war/scheduling-api/WEB-INF/classes/application.properties
