@@ -1,19 +1,17 @@
-version: '3'
-
+version: '2'
 services:
-
   proactive:
     build: ./proactive
     ports:
       - "8080:8080"
     depends_on:
       - database
+    restart: always
 
   database:
     build: ./database
-    expose:
-      - 3306
-      - 5432
+    ports:
+      - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=pouet123
-      - POSTGRES_PASSWORD=pouet123
+    restart: always
