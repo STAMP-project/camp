@@ -1,4 +1,6 @@
+# version 3 causes some issues. We use 2 instead
 version: '2'
+
 services:
   proactive:
     build: ./proactive
