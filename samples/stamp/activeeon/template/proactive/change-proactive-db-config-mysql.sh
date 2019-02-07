@@ -1,5 +1,9 @@
 #!/bin/bash
+# get HOST_ADDRESS for my SQL Config
+# HOST_ADDRESS="$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')"
 
+HOST_ADDRESS="10.214.254.241"
+echo "myhost"$HOST_ADDRESS
 # add jdbc mysql connector 
 curl -LO https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.15.zip
 unzip mysql-connector-java-8.0.15.zip -d connectorj
@@ -10,7 +14,7 @@ ls addons/
 # ~/config/scheduler/database.properties
 declare -A scheduler
 scheduler["hibernate.connection.driver_class"]="com.mysql.cj.jdbc.Driver"
-scheduler["hibernate.connection.url"]="jdbc:mysql://10.214.254.241:3306/scheduler?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
+scheduler["hibernate.connection.url"]="jdbc:mysql://"$HOST_ADDRESS":3306/scheduler?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
 scheduler["hibernate.dialect"]="org.hibernate.dialect.MySQL5InnoDBDialect"
 scheduler["hibernate.connection.username"]="scheduler"
 scheduler["hibernate.connection.password"]="scheduler"
@@ -19,7 +23,7 @@ scheduler["hibernate.connection.password"]="scheduler"
 # ~/config/rm/database.properties
 declare -A rm
 rm["hibernate.connection.driver_class"]="com.mysql.cj.jdbc.Driver"
-rm["hibernate.connection.url"]="jdbc:mysql://10.214.254.241:3306/rm?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
+rm["hibernate.connection.url"]="jdbc:mysql://"$HOST_ADDRESS":3306/rm?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
 rm["hibernate.dialect"]="org.hibernate.dialect.MySQL5InnoDBDialect"
 rm["hibernate.connection.username"]="rm"
 rm["hibernate.connection.password"]="rm"
@@ -27,7 +31,7 @@ rm["hibernate.connection.password"]="rm"
 # HashMap for catalog config
 # ~/dist/war/catalog/WEB-INF/classes/application.properties
 declare -A catalog
-catalog["spring.datasource.url"]="jdbc:mysql://10.214.254.241:3306/catalog?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
+catalog["spring.datasource.url"]="jdbc:mysql://"$HOST_ADDRESS":3306/catalog?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
 catalog["spring.datasource.username"]="catalog"
 catalog["spring.datasource.password"]="catalog"
 catalog["spring.datasource.driverClassName"]="com.mysql.cj.jdbc.Driver"
@@ -36,7 +40,7 @@ catalog["spring.jpa.database-platform"]="org.hibernate.dialect.MySQL5InnoDBDiale
 # HashMap for scheduling config
 # ~/dist/war/scheduling-api/WEB-INF/classes/application.properties
 declare -A scheduling
-scheduling["spring.datasource.url"]="jdbc:mysql://10.214.254.241:3306/scheduler?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
+scheduling["spring.datasource.url"]="jdbc:mysql://"$HOST_ADDRESS":3306/scheduler?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
 scheduling["spring.datasource.username"]="scheduler"
 scheduling["spring.datasource.password"]="scheduler"
 scheduling["spring.datasource.driver-class-name"]="com.mysql.cj.jdbc.Driver"
@@ -45,7 +49,7 @@ scheduling["spring.jpa.database-platform"]="org.hibernate.dialect.MySQL5InnoDBDi
 # HashMap for job planner config
 # ~/dist/war/job-planner/WEB-INF/classes/application.properties
 declare -A jp
-jp["spring.datasource.url"]="jdbc:mysql://10.214.254.241:3306/scheduler?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
+jp["spring.datasource.url"]="jdbc:mysql://"$HOST_ADDRESS":3306/scheduler?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
 jp["spring.datasource.username"]="scheduler"
 jp["spring.datasource.password"]="scheduler"
 jp["spring.datasource.driver-class-name"]="com.mysql.cj.jdbc.Driver"
@@ -54,7 +58,7 @@ jp["spring.jpa.database-platform"]="org.hibernate.dialect.MySQL5InnoDBDialect"
 # HashMap for pcw config
 # ~/dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties
 declare -A pcw
-pcw["spring.datasource.url"]="jdbc:mysql://10.214.254.241:3306/scheduler?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
+pcw["spring.datasource.url"]="jdbc:mysql://"$HOST_ADDRESS":3306/scheduler?verifyServerCertificate=false\&useSSL=false\&useLegacyDatetimeCode=false\&serverTimezone=UTC"
 pcw["spring.datasource.username"]="scheduler"
 pcw["spring.datasource.password"]="scheduler"
 pcw["spring.datasource.driver-class-name"]="com.mysql.cj.jdbc.Driver"
