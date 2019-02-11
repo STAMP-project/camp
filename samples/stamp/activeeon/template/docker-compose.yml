@@ -1,19 +1,46 @@
-version: '3'
+# version 3 causes some issues. We use 2 instead
+version: '2.1'
 
 services:
 
+# ***************************  MYSQL  ********************
   proactive:
-    build: ./proactive
+    build: ./proactiveMS
     ports:
       - "8080:8080"
-    depends_on:
+    restart: always
+    links:
       - database
+    depends_on:
+      database:
+        condition: service_healthy
 
   database:
-    build: ./database
-    expose:
-      - 3306
-      - 5432
+    build: ./databaseMS
+    ports:
+      - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=pouet123
-      - POSTGRES_PASSWORD=pouet123
+    restart: always
+    healthcheck:
+      test: "/etc/init.d/mysql status"
+      timeout: 100s
+      retries: 100
+
+# ***************************  POSTGRES  ********************
+
+#  proactive:
+#    build: ./proactivePG
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - database
+#    restart: always
+
+#  database:
+#    build: ./databasePG
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      - POSTGRES_PASSWORD=pouet123
+#    restart: always
