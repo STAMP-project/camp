@@ -10,35 +10,122 @@
 
 goals:
   running:
-    - Proactive
+    - ProactivePG
+    # - ProactiveMS
 
 components:
-
   proactive:
-    provides_services: [Proactive]
-    requires_services: [Database]
+    provides_services: [ProactiveMS]
+    requires_services: [DatabaseMS]
+    variables:
+      version:
+        type: version
+        values: [ PA-mysql]
+        realization:
+          - targets: [ proactive/Dockerfile ]
+            pattern: "RUN ./change-proactive-db-config.sh"
+            replacements: [ "RUN ./change-proactive-db-config-mysql.sh" ]
     implementation:
       docker:
         file: proactive/Dockerfile
 
   database:
-    provides_services: [Database]
+    provides_services: [DatabaseMS]
     variables:
       version:
         type: version
-        values: [ mysql, postgres ]
+        values: [ BD-mysql]
         realization:
           - targets: [ database/Dockerfile ]
             pattern: "FROM database"
-            replacements: [ "FROM mysql", "FROM postgres" ]
+            replacements: [ "FROM mysql:5.7"]
           - targets: [ database/Dockerfile ]
-            pattern: "COPY init_database.sh"
-            # TO FIX POSTGRES IS EMPTY
-            replacements: [ "COPY init_mysql.sql docker-entrypoint-initdb.d/init_database.sql", "" ]
+            pattern: "COPY init_database.sql"
+            replacements: [ "COPY init_mysql.sql docker-entrypoint-initdb.d/init_database.sql" ]
           - targets: [ database/Dockerfile ]
-            pattern: "RUN chmod 755 init_database.sh"
-            # TO FIX POSTGRES IS EMPTY
-            replacements: [ "RUN chmod 755 /docker-entrypoint-initdb.d/init_database.sql", "" ]
+            pattern: "EXPOSE PORT"
+            replacements: [ "EXPOSE 3306" ]
     implementation:
       docker:
         file: database/Dockerfile
+
+  proactive:
+    provides_services: [ProactivePG]
+    requires_services: [DatabasePG]
+    variables:
+      version:
+        type: version
+        values: [ PA-postgres]
+        realization:
+          - targets: [ proactive/Dockerfile ]
+            pattern: "RUN ./change-proactive-db-config.sh"
+            replacements: [ "RUN ./change-proactive-db-config-postgres.sh" ]
+    implementation:
+      docker:
+        file: proactive/Dockerfile
+
+  database:
+    provides_services: [DatabasePG]
+    variables:
+      version:
+        type: version
+        values: [ BD-postgres]
+        realization:
+          - targets: [ database/Dockerfile ]
+            pattern: "FROM database"
+            replacements: [ "FROM postgres:9.6.3"]
+          - targets: [ database/Dockerfile ]
+            pattern: "COPY init_database.sql"
+            replacements: [ "COPY init_postgres.sql docker-entrypoint-initdb.d/init_database.sql" ]
+          - targets: [ database/Dockerfile ]
+            pattern: "EXPOSE PORT"
+            replacements: [ "EXPOSE 5432" ]
+          - targets: [ docker-compose.yml ]
+            pattern: "3306:3306"
+            replacements: [ "5432:5432" ]  
+          - targets: [ docker-compose.yml ]
+            pattern: "MYSQL_ROOT_PASSWORD"
+            replacements: [ "POSTGRES_PASSWORD" ]        
+    
+    implementation:
+      docker:
+        file: database/Dockerfile
+
+
+
+
+
+  # proactive:
+  #   provides_services: [Proactive]
+  #   requires_services: [Database]
+  #   variables:
+  #     version:
+  #       type: version
+  #       values: [ PA-mysql, PA-postgres ]
+  #       realization:
+  #         - targets: [ proactive/Dockerfile ]
+  #           pattern: "RUN ./change-proactive-db-config.sh"
+  #           replacements: [ "RUN ./change-proactive-db-config-mysql.sh", "RUN ./change-proactive-db-config-postgres.sh" ]
+  #   implementation:
+  #     docker:
+  #       file: proactive/Dockerfile
+
+  # database:
+  #   provides_services: [Database]
+  #   variables:
+  #     version:
+  #       type: version
+  #       values: [ DB-mysql, DB-postgres ]
+  #       realization:
+  #         - targets: [ database/Dockerfile ]
+  #           pattern: "FROM database"
+  #           replacements: [ "FROM mysql:5.7", "FROM postgres:9.6.3" ]
+  #         - targets: [ database/Dockerfile ]
+  #           pattern: "COPY init_database.sql"
+  #           replacements: [ "COPY init_postgres.sql docker-entrypoint-initdb.d/init_database.sql", "COPY init_mysql.sql docker-entrypoint-initdb.d/init_database.sql" ]
+  #         - targets: [ database/Dockerfile ]
+  #           pattern: "EXPOSE PORT"
+  #           replacements: [ "EXPOSE 3306", "EXPOSE 5432" ]
+  #   implementation:
+  #     docker:
+  #       file: database/Dockerfile

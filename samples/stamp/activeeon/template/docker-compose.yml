@@ -5,27 +5,27 @@ services:
 
 # ***************************  MYSQL  ********************
   proactive:
-    build: ./proactiveMS
+    build: ./proactive
     ports:
       - "8080:8080"
     restart: always
     links:
       - database
     depends_on:
-      database:
-        condition: service_healthy
+      - database
+#        condition: service_healthy
 
   database:
-    build: ./databaseMS
+    build: ./database
     ports:
       - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=pouet123
     restart: always
-    healthcheck:
-      test: "/etc/init.d/mysql status"
-      timeout: 100s
-      retries: 100
+    # healthcheck:
+    #   test: /etc/init.d/mysql status
+    #   timeout: 100s
+    #   retries: 100
 
 # ***************************  POSTGRES  ********************
 
