@@ -2,7 +2,8 @@
 # get HOST_ADDRESS for my SQL Config
 # HOST_ADDRESS="$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')"
 
-HOST_ADDRESS="10.214.254.241"
+HOST_ADDRESS="<YOUR_ADDRESS>"
+# use this command to get your IP address: ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'
 echo "myhost"$HOST_ADDRESS
 # add jdbc mysql connector 
 curl -LO https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.15.zip
