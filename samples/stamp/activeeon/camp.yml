@@ -14,8 +14,17 @@ components:
         values: [ PA-postgres ]
         realization:
           - targets: [ proactivePG/Dockerfile ]
+            pattern: "RUN chmod 755 change-proactive-db-config.sh"
+            replacements: [ "RUN chmod 755 change-proactive-db-config-postgres.sh" ]
+          - targets: [ proactivePG/Dockerfile ]
             pattern: "RUN ./change-proactive-db-config.sh"
             replacements: [ "RUN ./change-proactive-db-config-postgres.sh" ]
+          - targets: [ proactivePG/Dockerfile ]
+            pattern: "COPY change-proactive-db-config.sh /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.4.0/"
+            replacements: [ "COPY change-proactive-db-config-postgres.sh /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.4.0/" ]
+          - targets: [ docker-compose.yml ]
+            pattern: "build: ./proactiveMS"
+            replacements: [ "build: ./images/proactivepg_0" ]     
     implementation:
       docker:
         file: proactivePG/Dockerfile
@@ -41,7 +50,10 @@ components:
             replacements: [ "5432:5432" ]  
           - targets: [ docker-compose.yml ]
             pattern: "MYSQL_ROOT_PASSWORD"
-            replacements: [ "POSTGRES_PASSWORD" ]       
+            replacements: [ "POSTGRES_PASSWORD" ]   
+          - targets: [ docker-compose.yml ]
+            pattern: "build: ./databaseMS"
+            replacements: [ "build: ./images/databasepg_0" ]      
     implementation:
       docker:
         file: databasePG/Dockerfile
@@ -55,8 +67,14 @@ components:
         values: [ PA-mysql ]
         realization:
           - targets: [ proactiveMS/Dockerfile ]
+            pattern: "RUN chmod 755 change-proactive-db-config.sh"
+            replacements: [ "RUN chmod 755 change-proactive-db-config-mysql.sh" ]
+          - targets: [ proactiveMS/Dockerfile ]
             pattern: "RUN ./change-proactive-db-config.sh"
             replacements: [ "RUN ./change-proactive-db-config-mysql.sh" ]
+          - targets: [ proactiveMS/Dockerfile ]
+            pattern: "COPY change-proactive-db-config.sh /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.4.0/"
+            replacements: [ "COPY change-proactive-db-config-mysql.sh /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.4.0/" ]
     implementation:
       docker:
         file: proactiveMS/Dockerfile
