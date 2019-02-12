@@ -28,10 +28,9 @@ WORKDIR /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.4.0/
 # Remove -Xms4g parameter option to make PA working inside docker
 RUN sed -i 's/"-Xms4g"//g' bin/proactive-server
 
-COPY change-proactive-db-config-mysql.sh /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.4.0/
+COPY change-proactive-db-config.sh /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.4.0/
 
-RUN chmod +x change-proactive-db-config-mysql.sh
-RUN chmod +x change-proactive-db-config-postgres.sh
+RUN chmod 755 change-proactive-db-config.sh
 
 RUN ./change-proactive-db-config.sh
 
