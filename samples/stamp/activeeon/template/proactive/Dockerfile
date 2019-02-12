@@ -1,5 +1,6 @@
 FROM ubuntu
 
+# Install dependencies
 RUN apt update && apt install -y \
     apt-transport-https \
     apt-utils \
@@ -7,8 +8,6 @@ RUN apt update && apt install -y \
     unzip \
     openjdk-8-jdk-headless \
     openjdk-8-jre-headless
-
-# Install dependencies
 RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/sources.list
 RUN apt-get -y update
 RUN apt-get install -y curl
@@ -26,19 +25,16 @@ RUN chmod -R 755 /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.4.0
 
 WORKDIR /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.4.0/
 
+# Remove -Xms4g parameter option to make PA working inside docker
 RUN sed -i 's/"-Xms4g"//g' bin/proactive-server
 
 COPY change-proactive-db-config-mysql.sh /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.4.0/
 
 RUN chmod +x change-proactive-db-config-mysql.sh
+RUN chmod +x change-proactive-db-config-postgres.sh
 
-RUN ./change-proactive-db-config-mysql.sh
+RUN ./change-proactive-db-config.sh
 
 EXPOSE 8080
 
 CMD ["/root/activeeon_proactive_server_entrypoint.sh"]
-
-#ENTRYPOINT ["/root/proactive/activeeon_enterprise-pca_server-linux-x64-8.4.0/bin/proactive-server", "-ln", "0", "-Dproactive.useIPaddress=true"]
-
-# Install system tests
-# RUN apt-get install gradle jdk etc...
