@@ -34,8 +34,6 @@ RUN chmod +x change-proactive-db-config-mysql.sh
 RUN chmod +x change-proactive-db-config-postgres.sh
 #RUN chmod +x change-proactive-db-config.sh
 
-#RUN ./change-proactive-db-config-mysql.sh
-#RUN ./change-proactive-db-config-postgres.sh
 RUN ./change-proactive-db-config.sh
 
 EXPOSE 8080
@@ -44,5 +42,3 @@ CMD ["/root/activeeon_proactive_server_entrypoint.sh"]
 
 #ENTRYPOINT ["/root/proactive/activeeon_enterprise-pca_server-linux-x64-8.4.0/bin/proactive-server", "-ln", "0", "-Dproactive.useIPaddress=true"]
 
-# Install system tests
-# RUN apt-get install gradle jdk etc...
