@@ -1,35 +1,9 @@
-#
-# CAMP
-#
-# Copyright (C) 2017, 2018 SINTEF Digital
-# All rights reserved.
-#
-# This software may be modified and distributed under the terms
-# of the MIT license.  See the LICENSE file for details.
-#
 
 goals:
   running:
     - ProactivePG
-    #- ProactiveMS
 
 components:
-  # proactive:
-  #   provides_services: [ProactiveMS]
-  #   requires_services: [DatabaseMS]
-  #   variables:
-  #     version:
-  #       type: version
-  #       values: [ PA-mysql]
-  #       realization:
-  #         - targets: [ proactive/Dockerfile ]
-  #           pattern: "RUN ./change-proactive-db-config.sh"
-  #           replacements: [ "RUN ./change-proactive-db-config-mysql.sh" ]
-  #   implementation:
-  #     docker:
-  #       file: proactive/Dockerfile
- 
-
   proactive:
     provides_services: [ProactivePG]
     requires_services: [DatabasePG]
@@ -44,28 +18,6 @@ components:
     implementation:
       docker:
         file: proactive/Dockerfile
-
-
-  # database:
-  #   provides_services: [DatabaseMS]
-  #   variables:
-  #     version:
-  #       type: version
-  #       values: [ BD-mysql]
-  #       realization:
-  #         - targets: [ database/Dockerfile ]
-  #           pattern: "FROM database"
-  #           replacements: [ "FROM mysql:5.7"]
-  #         - targets: [ database/Dockerfile ]
-  #           pattern: "COPY init_database.sql"
-  #           replacements: [ "COPY init_mysql.sql docker-entrypoint-initdb.d/init_database.sql" ]
-  #         - targets: [ database/Dockerfile ]
-  #           pattern: "EXPOSE PORT"
-  #           replacements: [ "EXPOSE 3306" ]
-  #   implementation:
-  #     docker:
-  #       file: database/Dockerfile
-
 
   database:
     provides_services: [DatabasePG]
