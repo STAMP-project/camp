@@ -13,7 +13,6 @@ services:
       - database
     depends_on:
       - database
-#        condition: service_healthy
 
   database:
     build: ./database
@@ -22,10 +21,6 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=pouet123
     restart: always
-    # healthcheck:
-    #   test: /etc/init.d/mysql status
-    #   timeout: 100s
-    #   retries: 100
 
 # ***************************  POSTGRES  ********************
 
