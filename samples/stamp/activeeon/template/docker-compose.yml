@@ -1,9 +1,8 @@
-# version 3 causes some issues. We use 2 instead
+
 version: '2.1'
 
 services:
 
-# ***************************  MYSQL  ********************
   proactive:
     build: ./proactive
     ports:
@@ -21,21 +20,3 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=pouet123
     restart: always
-
-# ***************************  POSTGRES  ********************
-
-#  proactive:
-#    build: ./proactivePG
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - database
-#    restart: always
-
-#  database:
-#    build: ./databasePG
-#    ports:
-#      - "5432:5432"
-#    environment:
-#      - POSTGRES_PASSWORD=pouet123
-#    restart: always
