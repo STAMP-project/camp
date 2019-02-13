@@ -2,9 +2,11 @@
 # get HOST_ADDRESS for my postgres Config
 # HOST_ADDRESS="$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')"
 HOST_ADDRESS="<YOUR_ADDRESS>"
+# use this command to get your IP address: ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'
 
 # add jdbc postgres connector 
 curl -LO https://jdbc.postgresql.org/download/postgresql-42.2.5.jar
+
 cp postgresql-42.2.5.jar addons/
 
 # HashMap for scheduler config
@@ -104,3 +106,7 @@ grep -q '^'$key'' dist/war/proactive-cloud-watch/WEB-INF/classes/application.pro
 $key"="$(sed 's/\\//g' <<< "${pcw[$key]}")" >> dist/war/proactive-cloud-watch/WEB-INF/classes/application.properties
 done
 
+#add jdbc mysql connector 
+#curl -LO https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.15.zip
+#unzip mysql-connector-java-8.0.15.zip -d connectorj
+#cp connectorj/mysql-connector-java-8.0.15/mysql-connector-java-8.0.15.jar addons/
