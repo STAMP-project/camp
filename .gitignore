@@ -112,3 +112,5 @@ _site/
 *~
 .\#*
 
+# Mac OSX
+.DS_Store
