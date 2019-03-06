@@ -173,6 +173,10 @@ class Execute(Command):
         self._configuration_file = configuration_file \
                                    or self.DEFAULT_CONFIGURATION_FILE
 
+    @property
+    def working_directory(self):
+        return "."
+
 
     @property
     def configuration_file(self):

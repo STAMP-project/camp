@@ -14,8 +14,7 @@ from camp.codecs.yaml import InvalidYAMLModel
 from camp.directories import InputDirectory, OutputDirectory, \
     MissingModel, NoConfigurationFound
 from camp.entities.validation import Checker, InvalidModel
-from camp.execute.parsers import ConfigINIParser
-from camp.execute.command.commands import ConductExperimentRunner
+from camp.execute import Executor
 from camp.ui import UI
 
 from sys import exc_info
@@ -29,6 +28,7 @@ class Camp(object):
         self._codec = codec
         self._problem = solver
         self._builder = realize
+        self._execute = Executor()
         self._input = None
         self._output = None
         self._ui = UI()
@@ -122,17 +122,29 @@ class Camp(object):
         return configurations
 
 
-    @staticmethod
     def execute(self, arguments):
         self._ui.welcome()
+        self._prepare_directories(arguments)
         try:
-            parser = ConfigINIParser()
-            config = parser.parse(arguments.configuration_file)
-            experiment = ConductExperimentRunner(config)
-            experiment.run()
+            model = self._load_model()
+            configurations = self._load_configurations(model)
+            results = self._execute(configurations)
+            self._ui.summarize_execution(results)
 
-        except:
-            self._ui.error(sys.exc_info()[0])
+        except InvalidYAMLModel as error:
+            self._ui.invalid_yaml_model(error)
+
+        except InvalidModel as error:
+            self._ui.invalid_model(error)
+
+        except MissingModel as error:
+            self._ui.missing_model(error)
+
+        except NoConfigurationFound as error:
+            self._ui.no_configuration_found(error)
+
+        except Exception as error:
+            self._ui.unexpected_error(error)
 
         finally:
             self._ui.goodbye()
