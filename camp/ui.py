@@ -117,9 +117,9 @@ class UI(object):
 
     def summarize_execution(self, results):
         self._print("\nTest SUMMARY:")
-        self._print(self._LINE)
+        self._print("")
         self._print(self._TEST_SUMMARY,
-                    config="Config.",
+                    config="Configuration",
                     run="RUN",
                     passed="PASS",
                     fail="FAIL",
@@ -149,8 +149,8 @@ class UI(object):
                     error=total_error)
 
 
-    _TEST_SUMMARY = "{config:>20} |{run:>7}{passed:>7}{fail:>7}{error:>7}"
-    _LINE = "-" * 20 + "-+" + "-" * (4 * 7)
+    _TEST_SUMMARY = "{config:<20} {run:>7}{passed:>7}{fail:>7}{error:>7}"
+    _LINE = "-" * 20 + "-" + "-" * (4 * 7 + 1)
 
     def _print(self, pattern, **values):
         if values:

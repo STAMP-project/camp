@@ -14,7 +14,7 @@ from camp.codecs.yaml import InvalidYAMLModel
 from camp.directories import InputDirectory, OutputDirectory, \
     MissingModel, NoConfigurationFound
 from camp.entities.validation import Checker, InvalidModel
-from camp.execute import Executor
+from camp.execute import Simulator
 from camp.ui import UI
 
 from sys import exc_info
@@ -28,7 +28,7 @@ class Camp(object):
         self._codec = codec
         self._problem = solver
         self._builder = realize
-        self._execute = Executor()
+        self._execute = Simulator()
         self._input = None
         self._output = None
         self._ui = UI()
