@@ -20,18 +20,18 @@ components:
     #requires_features : [Tomcat]
     implementation:
       docker:
-        file: lutece/Dockerfile
+	file: lutece/Dockerfile
 
   mysql:
     provides_services: [MySQL]
     variables:
       version:
-        type: version
-        values: [ 5_6, 5_7 ]
-        realization:
-          - targets: [ mysql/Dockerfile ]
-            pattern: "FROM mysql:5"
-            replacements: [ "FROM mysql:5.6", "FROM mysql:5.7" ]
+	type: version
+	values: [ 5_6, 5_7 ]
+	realization:
+	  - targets: [ mysql/Dockerfile ]
+	    pattern: "FROM mysql:5"
+	    replacements: [ "FROM mysql:5.6", "FROM mysql:5.7" ]
     implementation:
       docker:
-        file: mysql/Dockerfile
+	file: mysql/Dockerfile
