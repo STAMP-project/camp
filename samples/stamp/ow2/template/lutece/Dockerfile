@@ -16,7 +16,7 @@ RUN mvn lutece:site-assembly
 
 ADD db.properties /app/target/${site}/WEB-INF/conf/db.properties
 
-ADD mv /app/target/${site}/ /var/lib/tomcat8/webapps/site-forms-demo
+RUN mv /app/target/${site}/ /var/lib/tomcat8/webapps/site-forms-demo
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["sh", "/entrypoint.sh"]

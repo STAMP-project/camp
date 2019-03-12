@@ -22,8 +22,10 @@
 CREATE USER 'admin'@'%' IDENTIFIED BY 'motdepasse';
 GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%';
 
+DROP DATABASE IF EXISTS lutece;
 CREATE DATABASE lutece;
 
+USE lutece;
 
 DROP TABLE IF EXISTS `childpages_portlet`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
