@@ -2,6 +2,13 @@ version: '3'
 
 services:
 
+  tests:
+    build: ./tests
+    volumes:
+      - "./tests:/tests"
+    depends_on:
+      - lutece
+
   lutece:
     build: ./lutece
     ports:
@@ -14,4 +21,4 @@ services:
     expose:
       - 3306
     environment:
-      - MYSQL_ROOT_PASSWORD=stamp-ow2
+      - MYSQL_ROOT_PASSWORD=motdepasse
