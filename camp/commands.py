@@ -64,10 +64,11 @@ class Command(object):
             "execute",
             help="Execute the test configurations generated")
         execute.add_argument(
-            "-c",
-            "--config",
-            dest="configuration_file",
-            help="The INI file that describes which configurations to execute")
+            "-s",
+            "--simulated",
+            action="store_true",
+            dest="is_simulated",
+            help="Display but do NOT execute the shell commands that CAMP would normally trigger")
 
         values = parser.parse_args(command_line)
         return Command.from_namespace(values)
@@ -84,7 +85,7 @@ class Command(object):
                            namespace.output_directory)
 
         elif namespace.command == "execute":
-            return Execute(namespace.configuration_file)
+            return Execute(namespace.is_simulated)
 
         else:
             message = "The command '%s' is not yet implemented." % namespace.command
@@ -165,13 +166,12 @@ class Execute(Command):
     """
 
 
-    DEFAULT_CONFIGURATION_FILE = "config.ini"
+    DEFAULT_IS_SIMULATED = False
 
 
-    def __init__(self, configuration_file):
+    def __init__(self, is_simulated=None):
         super(Execute, self).__init__()
-        self._configuration_file = configuration_file \
-                                   or self.DEFAULT_CONFIGURATION_FILE
+        self._is_simulated = is_simulated or self.DEFAULT_IS_SIMULATED
 
     @property
     def working_directory(self):
@@ -179,8 +179,8 @@ class Execute(Command):
 
 
     @property
-    def configuration_file(self):
-        return self._configuration_file
+    def is_simulated(self):
+        return self._is_simulated
 
 
     def send_to(self, camp):
