@@ -28,7 +28,6 @@ class Camp(object):
         self._codec = codec
         self._problem = solver
         self._builder = realize
-        self._execute = Simulator()
         self._input = None
         self._output = None
         self._ui = UI()
@@ -128,7 +127,8 @@ class Camp(object):
         try:
             model = self._load_model()
             configurations = self._load_configurations(model)
-            results = self._execute(configurations)
+            execute = Simulator() if arguments.is_simulated else Executor()
+            results = execute(configurations)
             self._ui.summarize_execution(results)
 
         except InvalidYAMLModel as error:

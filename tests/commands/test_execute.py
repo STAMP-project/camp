@@ -18,31 +18,32 @@ from camp.commands import Command, Execute
 
 class LongOptionsAreAccepted(TestCase):
 
-    def test_given_a_configuration_file(self):
-        command_line = ["execute", "--config", "config.yml"]
+    def test_with_the_simulation_option(self):
+        command_line = ["execute", "--simulate"]
 
         command = Command.extract_from(command_line)
 
         self.assertIsInstance(command, Execute)
-        self.assertEqual("config.yml",
-                         command.configuration_file)
+        self.assertEqual(True,
+                         command.is_simulated)
 
 
-        
+
 class ShortOptionsAreAccepted(TestCase):
 
-    def test_given_a_configuration_file(self):
-        command_line = ["execute", "-c", "config.yml"]
+    def test_with_the_simulation_option(self):
+        command_line = ["execute", "-s"]
 
         command = Command.extract_from(command_line)
 
         self.assertIsInstance(command, Execute)
-        self.assertEqual("config.yml",
-                         command.configuration_file)
+        self.assertEqual(True,
+                         command.is_simulated)
 
 
 
 class DefaultValuesAreCorrect(TestCase):
+
 
     def test_when_no_argument_is_given(self):
         command_line = ["execute"]
@@ -50,5 +51,5 @@ class DefaultValuesAreCorrect(TestCase):
         command = Command.extract_from(command_line)
 
         self.assertIsInstance(command, Execute)
-        self.assertEqual(Execute.DEFAULT_CONFIGURATION_FILE,
-                         command.configuration_file)
+        self.assertEqual(Execute.DEFAULT_IS_SIMULATED,
+                         command.is_simulated)
