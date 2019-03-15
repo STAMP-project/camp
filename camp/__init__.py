@@ -17,6 +17,6 @@ class About:
 
     LICENSE = "MIT"
 
-    COPYRIGHT = "Copyright (C) 2017, 2018 SINTEF Digital"
+    COPYRIGHT = "Copyright (C) 2017 -- 2019 SINTEF Digital"
 
     DESCRIPTION = "Amplify your configuration tests!"

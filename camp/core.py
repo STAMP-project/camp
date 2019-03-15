@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -14,7 +14,7 @@ from camp.codecs.yaml import InvalidYAMLModel
 from camp.directories import InputDirectory, OutputDirectory, \
     MissingModel, NoConfigurationFound
 from camp.entities.validation import Checker, InvalidModel
-from camp.execute import Simulator
+from camp.execute import Executor, SimulatedShell, Shell
 from camp.ui import UI
 
 from sys import exc_info
@@ -52,7 +52,9 @@ class Camp(object):
             self._ui.missing_model(error)
 
         except Exception as error:
-            self._ui.unexpected_error(error)
+            self._ui.unexpected_error(error,
+                                      exc_info()[2].tb_frame.f_code.co_filename,
+                                      exc_info()[2].tb_lineno)
 
         finally:
             self._ui.goodbye()
@@ -109,7 +111,9 @@ class Camp(object):
             self._ui.no_configuration_found(error)
 
         except Exception as error:
-            self._ui.unexpected_error(error)
+            self._ui.unexpected_error(error,
+                                      exc_info()[2].tb_frame.f_code.co_filename,
+                                      exc_info()[2].tb_lineno)
 
         finally:
             self._ui.goodbye()
@@ -127,9 +131,12 @@ class Camp(object):
         try:
             model = self._load_model()
             configurations = self._load_configurations(model)
-            execute = Simulator() if arguments.is_simulated else Executor()
-            results = execute(configurations)
-            self._ui.summarize_execution(results)
+            with open("camp_execute.log", "w") as log_file:
+                shell = SimulatedShell(log_file, ".") if arguments.is_simulated \
+                        else Shell(log_file, ".")
+                execute = Executor(shell)
+                results = execute(configurations)
+                self._ui.summarize_execution(results)
 
         except InvalidYAMLModel as error:
             self._ui.invalid_yaml_model(error)
@@ -144,7 +151,9 @@ class Camp(object):
             self._ui.no_configuration_found(error)
 
         except Exception as error:
-            self._ui.unexpected_error(error)
+            self._ui.unexpected_error(error,
+                                      exc_info()[2].tb_frame.f_code.co_filename,
+                                      exc_info()[2].tb_lineno)
 
         finally:
             self._ui.goodbye()

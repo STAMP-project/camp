@@ -93,9 +93,10 @@ class UI(object):
                     folder=error.searched_folder)
 
 
-    def unexpected_error(self, error):
+    def unexpected_error(self, error, file_name, line_number):
         self._print("Unexpected error:")
-        self._print(" - " + str(error))
+        self._print(" - {0}".format(str(error)))
+        self._print("   Check {0}, line {1}".format(file_name, line_number))
         self._print("   Please report this at '{issue}'.",
                     issue=self.ISSUE_PAGE)
 
