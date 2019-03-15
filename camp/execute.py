@@ -14,46 +14,89 @@ from subprocess import Popen, PIPE
 
 
 
-class ShellCommand(object):
+class Shell(object):
 
-
-    def __init__(self, command, logfile, working_directory=None):
-        self._command = command
-        self._logfile = logfile
+    def __init__(self, log, working_directory):
+        self._log = log
+        self._original_working_directory = working_directory
         self._working_directory = working_directory
 
 
-    def run(self):
+    def execute(self, command, working_directory=None):
+        self._working_directory = working_directory or self._working_directory
+        self._output_on_console(command)
+        self._output_in_logs(command)
+        self._run_shell(command)
+        self._restore_working_directory()
+
+
+    def _output_in_logs(self, command):
+        text = self.LOG_OUTPUT.format(self._working_directory, command)
+        self._log.write(text)
+
+    LOG_OUTPUT = "\ncamp@bash:{0}$ {1}\n"
+
+
+    def _output_on_console(self, command):
+        text = self.CONSOLE_OUTPUT.format(command, self._working_directory)
+        print text
+
+    CONSOLE_OUTPUT = "      $ {0} (from '{1}')"
+
+
+    def _run_shell(self, command):
         try:
-            process = Popen(self._command.split(),
+            process = Popen(command.split(),
                             cwd=self._working_directory,
                             stdout=PIPE, stderr=PIPE)
             stdout, stderr = process.communicate()
-            self._logfile.write(stdout)
-            self._logfile.write(stderr)
+            self._log.write(stdout)
+            self._log.write(stderr)
             if process.returncode != 0:
-                raise ShellCommandFailed(self._command)
+                raise ShellCommandFailed(command)
 
         except OSError as error:
-            raise ShellCommandFailed(self._command)
+            raise ShellCommandFailed(command, str(error))
+
+
+    def _restore_working_directory(self):
+        self._working_directory = self._original_working_directory
+
+
+    def open(self, path, mode):
+        return open(path, mode)
 
 
 
-class SimulatedShellCommand(ShellCommand):
-
-    def __init__(self, command, logfile, directory):
-        super(SimulatedShellCommand, self).__init__(command, logfile, directory)
+class SimulatedShell(Shell):
 
 
-    def run(self):
-        print "      $ {0} (from '{1}')".format(self._command, self._working_directory)
+    def __init__(self, log, working_directory):
+        super(SimulatedShell, self).__init__(log, working_directory)
+
+
+    def _run_shell(self, command):
+        self._log.write(self.COMMAND_SIMULATED)
+
+
+    COMMAND_SIMULATED = (">>> This command was only simulated "
+                         "and was not sent to the shell.\n")
+
+
+    def open(self, path, mode):
+        return open("/dev/null")
 
 
 
 class ShellCommandFailed(Exception):
 
-    def __init__(self, command):
+    def __init__(self, command, output=None):
         self._command = command
+        self._output = output
+
+
+    def __str__(self):
+        return self._output
 
 
 
@@ -90,7 +133,11 @@ class TestResults:
 
 
 
-class Executor:
+class Executor(object):
+
+
+    def __init__(self, shell):
+        self._shell = shell
 
 
     def __call__(self, configurations, command="whatever"):
@@ -113,40 +160,22 @@ class Executor:
 
     def _build_images(self, path):
         print "   1. Building images ..."
-        log_file_path = join_paths(path, "log_build_images.txt")
-        with open(log_file_path, "w+") as log_file:
-            command = self._execute(self._BUILD_IMAGES,
-                                    log_file,
-                                    join_paths(path, "images"))
-            command.run()
+        working_directory = join_paths(path, "images")
+        self._shell.execute(self._BUILD_IMAGES, working_directory)
 
     _BUILD_IMAGES = "bash build_images.sh"
 
 
-    def _execute(self, command, log_file, directory):
-        return ShellCommand(command, log_file, directory)
-
-
     def _start_services(self, path):
         print "   2. Starting Services ..."
-        log_file_path = join_paths(path, "log_start_services.txt")
-        with open(log_file_path, "w+") as log_file:
-            command = self._execute(self._START_SERVICES,
-                                    log_file,
-                                    path)
-            command.run()
+        self._shell.execute(self._START_SERVICES, path)
 
     _START_SERVICES = "docker-compose up -d"
 
 
     def _run_tests(self, path, command):
         print "   3. Running tests ..."
-        log_file_path = join_paths(path, "log_run_tests.txt")
-        with open(log_file_path, "w+") as log_file:
-            command = self._execute(self._RUN_TESTS + command,
-                                    log_file,
-                                    path)
-            command.run()
+        self._shell.execute(self._RUN_TESTS + command, path)
 
     _RUN_TESTS = "docker-compose exec -it tests "
 
@@ -156,11 +185,20 @@ class Executor:
 
 
 
-class Simulator(Executor):
+
+class MavenExecutor(Executor):
 
 
-    def _execute(self, command, log_file, directory):
-        return SimulatedShellCommand(command, log_file, directory)
+    def __init__(self, shell):
+        super(MavenExecutor, self).__init__(shell)
+
+
+    def _run_tests(self, path, command):
+        print "   3. Running tests ..."
+        self._shell.execute(self._RUN_TESTS + command, path)
+
+    _RUN_TESTS = "docker-compose exec -it tests mvn test "
+
 
     def _collect_results(self, path):
-        return TestResults(path, 0, 0, 0)
+        return TestResults(path, 3, 3, 4)
