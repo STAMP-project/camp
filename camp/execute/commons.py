@@ -112,7 +112,6 @@ class TestResults:
     def configuration_name(self):
         return self._name
 
-
     @property
     def failed_test_count(self):
         return self._failed
@@ -131,6 +130,98 @@ class TestResults:
             self.failed_test_count + \
             self.error_test_count
 
+
+class Verdict:
+    PASS = 1
+    FAIL = 2
+    ERROR = 3
+
+
+class Test(object):
+
+    def __init__(self, verdict):
+        self._verdict = verdict
+
+    @property
+    def children(self):
+        return []
+
+
+    @property
+    def run_test_count(self):
+        return 1
+
+
+    @property
+    def passed_test_count(self):
+        return 1 if self._verdict == Verdict.PASS \
+            else 0
+
+
+    @property
+    def failed_test_count(self):
+        return 1 if self._verdict == Verdict.FAIL \
+            else 0
+
+
+    @property
+    def erroneous_test_count(self):
+        return 1 if self._verdict == Verdict.ERROR \
+            else 0
+
+
+class SuccessfulTest(Test):
+
+    def __init__(self):
+        super(SuccessfulTest, self).__init__(Verdict.PASS)
+
+
+
+class FailedTest(Test):
+
+    def __init__(self, failure):
+        super(FailedTest, self).__init__(Verdict.FAIL)
+        self._failure = failure
+
+
+    @property
+    def failure(self):
+        return self._failure
+
+
+class ErroneousTest(Test):
+
+    def __init__(self, error):
+        super(ErroneousTest, self).__init__(Verdict.ERROR)
+        self._error = error
+
+
+    @property
+    def error(self):
+        return self._error
+
+
+class TestSuite(Test):
+
+    def __init__(self, *tests):
+        super(TestSuite, self).__init__(None)
+        self._tests = tests
+
+    @Test.run_test_count.getter
+    def run_test_count(self):
+        return sum(each.run_test_count for each in self._tests)
+
+    @Test.passed_test_count.getter
+    def passed_test_count(self):
+        return sum(each.passed_test_count for each in self._tests)
+
+    @Test.failed_test_count.getter
+    def failed_test_count(self):
+        return sum(each.failed_test_count for each in self._tests)
+
+    @Test.erroneous_test_count.getter
+    def erroneous_test_count(self):
+        return sum(each.erroneous_test_count for each in self._tests)
 
 
 class Executor(object):
@@ -178,26 +269,6 @@ class Executor(object):
         self._shell.execute(self._RUN_TESTS + command, path)
 
     _RUN_TESTS = "docker-compose exec -it tests "
-
-
-    def _collect_results(self, path):
-        return TestResults(path, 3, 3, 4)
-
-
-
-
-class MavenExecutor(Executor):
-
-
-    def __init__(self, shell):
-        super(MavenExecutor, self).__init__(shell)
-
-
-    def _run_tests(self, path, command):
-        print "   3. Running tests ..."
-        self._shell.execute(self._RUN_TESTS + command, path)
-
-    _RUN_TESTS = "docker-compose exec -it tests mvn test "
 
 
     def _collect_results(self, path):

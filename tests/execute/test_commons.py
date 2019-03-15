@@ -13,7 +13,111 @@ from StringIO import StringIO
 
 from unittest import TestCase
 
-from camp.execute import MavenExecutor, ShellCommandFailed, Shell, SimulatedShell
+from camp.execute.commons import ShellCommandFailed, Shell, SimulatedShell, FailedTest, \
+    ErroneousTest, SuccessfulTest, TestSuite
+
+
+
+class ASuccessfulTestShould(TestCase):
+
+    def setUp(self):
+        self._testcase = SuccessfulTest()
+
+    def test_have_no_child(self):
+        self.assertEquals([], self._testcase.children)
+
+    def test_have_run_test_count_equals_to_one(self):
+        self.assertEquals(1, self._testcase.run_test_count)
+
+    def test_have_failed_test_count_equals_to_zero(self):
+        self.assertEquals(0, self._testcase.failed_test_count)
+
+    def test_have_erroneous_test_count_equals_to_zero(self):
+        self.assertEquals(0, self._testcase.erroneous_test_count)
+
+    def test_have_passed_test_count_equals_to_one(self):
+        self.assertEquals(1, self._testcase.passed_test_count)
+
+
+
+class AFailedTestShould(TestCase):
+
+    def setUp(self):
+        self._testcase = FailedTest("There was an error")
+
+    def test_have_no_child(self):
+        self.assertEquals([], self._testcase.children)
+
+    def test_have_run_test_count_equals_to_one(self):
+        self.assertEquals(1, self._testcase.run_test_count)
+
+    def test_have_passed_test_count_equals_to_zero(self):
+        self.assertEquals(0, self._testcase.passed_test_count)
+
+    def test_have_failed_test_count_equals_to_one(self):
+        self.assertEquals(1, self._testcase.failed_test_count)
+
+    def test_have_erroneous_test_count_equals_to_zero(self):
+        self.assertEquals(0, self._testcase.erroneous_test_count)
+
+    def test_expose_its_failure(self):
+        self.assertEquals("There was an error",
+                          self._testcase.failure)
+
+
+class AnErroneousTestShould(TestCase):
+
+    def setUp(self):
+        self._testcase = ErroneousTest("There was an error")
+
+    def test_have_no_child(self):
+        self.assertEquals([], self._testcase.children)
+
+    def test_have_run_test_count_equals_to_one(self):
+        self.assertEquals(1, self._testcase.run_test_count)
+
+    def test_have_passed_test_count_equals_to_zero(self):
+        self.assertEquals(0, self._testcase.passed_test_count)
+
+    def test_have_failed_test_count_equals_to_zero(self):
+        self.assertEquals(0, self._testcase.failed_test_count)
+
+    def test_have_erroneous_test_count_equals_to_one(self):
+        self.assertEquals(1, self._testcase.erroneous_test_count)
+
+    def test_expose_its_error(self):
+        self.assertEquals("There was an error",
+                          self._testcase.error)
+
+
+class ATestSuiteShould(TestCase):
+
+    def setUp(self):
+        self._suite = TestSuite(
+            SuccessfulTest(),
+            SuccessfulTest(),
+            FailedTest("failure"),
+            ErroneousTest("error"),
+            TestSuite(
+                SuccessfulTest(),
+                SuccessfulTest(),
+                FailedTest("failure")
+        ))
+
+    def test_account_for_all_tests_run(self):
+        self.assertEquals(7, self._suite.run_test_count)
+
+
+    def test_account_for_all_tests_passed(self):
+        self.assertEquals(4, self._suite.passed_test_count)
+
+
+    def test_account_for_all_tests_failed(self):
+        self.assertEquals(2, self._suite.failed_test_count)
+
+
+    def test_account_for_all_erroneous_tests(self):
+        self.assertEquals(1, self._suite.erroneous_test_count)
 
 
 
@@ -120,22 +224,3 @@ class TheSimulatedShellShould(TestCase):
     def test_provides_nothing_as_file_content(self):
         with self._shell.open("a_file_that_does_not_exists", "r") as content:
             self.assertEquals("", content.read())
-
-
-
-class TheMavenExecutorShould(TestCase):
-
-
-    def setUp(self):
-        self._log = StringIO()
-        self._shell = SimulatedShell(self._log, "./")
-        self._execute = MavenExecutor(self._shell)
-
-    def test_build_deploy_run_and_collect_test_results(self):
-        configurations = [("out/config_1", None),
-                          ("out/config_2", None)]
-        self._execute(configurations, "whatever")
-
-        self.assertIn("bash build_images.sh", self._log.getvalue())
-        self.assertIn("docker-compose up -d", self._log.getvalue())
-        self.assertIn("docker-compose exec -it tests mvn test", self._log.getvalue())
