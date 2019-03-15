@@ -27,7 +27,7 @@ develop their own CMS systems. In this case study, Lutece use
 
 The sample directory contains two main entities:
 
- 1. the `camp.yml` file that defines what can vary in the X-Wiki
+ 1. the `camp.yml` file that defines what can vary in the OW2/Lutece
 	orchestration.
 
  2. the `template` directory, which contains a template implementation
