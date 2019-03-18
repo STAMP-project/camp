@@ -139,8 +139,14 @@ class Verdict:
 
 class Test(object):
 
-    def __init__(self, verdict):
+    def __init__(self, identifier, verdict):
+        self._identifier = identifier
         self._verdict = verdict
+
+    @property
+    def identifier(self):
+        return self._identifier
+
 
     @property
     def children(self):
@@ -172,15 +178,15 @@ class Test(object):
 
 class SuccessfulTest(Test):
 
-    def __init__(self):
-        super(SuccessfulTest, self).__init__(Verdict.PASS)
+    def __init__(self, identifier):
+        super(SuccessfulTest, self).__init__(identifier, Verdict.PASS)
 
 
 
 class FailedTest(Test):
 
-    def __init__(self, failure):
-        super(FailedTest, self).__init__(Verdict.FAIL)
+    def __init__(self, identifier, failure):
+        super(FailedTest, self).__init__(identifier, Verdict.FAIL)
         self._failure = failure
 
 
@@ -189,10 +195,11 @@ class FailedTest(Test):
         return self._failure
 
 
+
 class ErroneousTest(Test):
 
-    def __init__(self, error):
-        super(ErroneousTest, self).__init__(Verdict.ERROR)
+    def __init__(self, identifier, error):
+        super(ErroneousTest, self).__init__(identifier, Verdict.ERROR)
         self._error = error
 
 
@@ -201,10 +208,11 @@ class ErroneousTest(Test):
         return self._error
 
 
+
 class TestSuite(Test):
 
-    def __init__(self, *tests):
-        super(TestSuite, self).__init__(None)
+    def __init__(self, identifier, *tests):
+        super(TestSuite, self).__init__(identifier, None)
         self._tests = tests
 
     @Test.run_test_count.getter
@@ -222,6 +230,7 @@ class TestSuite(Test):
     @Test.erroneous_test_count.getter
     def erroneous_test_count(self):
         return sum(each.erroneous_test_count for each in self._tests)
+
 
 
 class Executor(object):

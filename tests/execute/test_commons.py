@@ -18,16 +18,27 @@ from camp.execute.commons import ShellCommandFailed, Shell, SimulatedShell, Fail
 
 
 
-class ASuccessfulTestShould(TestCase):
+class ATestShould(object):
 
     def setUp(self):
-        self._testcase = SuccessfulTest()
+        self._identifier = "Foo Test"
 
     def test_have_no_child(self):
         self.assertEquals([], self._testcase.children)
 
     def test_have_run_test_count_equals_to_one(self):
         self.assertEquals(1, self._testcase.run_test_count)
+
+    def test_expose_their_identifier(self):
+        self.assertEquals(self._identifier, self._testcase.identifier)
+
+
+
+class ASuccessfulTestShould(TestCase, ATestShould):
+
+    def setUp(self):
+        ATestShould.setUp(self)
+        self._testcase = SuccessfulTest(self._identifier)
 
     def test_have_failed_test_count_equals_to_zero(self):
         self.assertEquals(0, self._testcase.failed_test_count)
@@ -40,16 +51,12 @@ class ASuccessfulTestShould(TestCase):
 
 
 
-class AFailedTestShould(TestCase):
+class AFailedTestShould(TestCase, ATestShould):
 
     def setUp(self):
-        self._testcase = FailedTest("There was an error")
-
-    def test_have_no_child(self):
-        self.assertEquals([], self._testcase.children)
-
-    def test_have_run_test_count_equals_to_one(self):
-        self.assertEquals(1, self._testcase.run_test_count)
+        ATestShould.setUp(self)
+        self._testcase = FailedTest(self._identifier,
+                                    "There was an error")
 
     def test_have_passed_test_count_equals_to_zero(self):
         self.assertEquals(0, self._testcase.passed_test_count)
@@ -65,16 +72,13 @@ class AFailedTestShould(TestCase):
                           self._testcase.failure)
 
 
-class AnErroneousTestShould(TestCase):
+
+class AnErroneousTestShould(TestCase, ATestShould):
 
     def setUp(self):
-        self._testcase = ErroneousTest("There was an error")
-
-    def test_have_no_child(self):
-        self.assertEquals([], self._testcase.children)
-
-    def test_have_run_test_count_equals_to_one(self):
-        self.assertEquals(1, self._testcase.run_test_count)
+        ATestShould.setUp(self)
+        self._testcase = ErroneousTest(self._identifier,
+                                       "There was an error")
 
     def test_have_passed_test_count_equals_to_zero(self):
         self.assertEquals(0, self._testcase.passed_test_count)
@@ -93,15 +97,15 @@ class AnErroneousTestShould(TestCase):
 class ATestSuiteShould(TestCase):
 
     def setUp(self):
-        self._suite = TestSuite(
-            SuccessfulTest(),
-            SuccessfulTest(),
-            FailedTest("failure"),
-            ErroneousTest("error"),
-            TestSuite(
-                SuccessfulTest(),
-                SuccessfulTest(),
-                FailedTest("failure")
+        self._suite = TestSuite("My test suite",
+            SuccessfulTest("Test 1"),
+            SuccessfulTest("Test 2"),
+            FailedTest("Test 3", "failure"),
+            ErroneousTest("Test 4", "error"),
+            TestSuite("My inner test suite",
+                SuccessfulTest("Test 5"),
+                SuccessfulTest("Test 6"),
+                FailedTest("Test 7", "failure")
         ))
 
     def test_account_for_all_tests_run(self):
