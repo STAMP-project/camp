@@ -56,7 +56,8 @@ class Shell(object):
             self._log.write(stdout)
             self._log.write(stderr)
             if process.returncode != 0:
-                raise ShellCommandFailed(command)
+                raise ShellCommandFailed(command,
+                                         process.returncode)
 
         except OSError as error:
             raise ShellCommandFailed(command, str(error))
@@ -109,13 +110,23 @@ class SimulatedShell(Shell):
 
 class ShellCommandFailed(Exception):
 
-    def __init__(self, command, output=None):
+    def __init__(self, command, exit_code, output=None):
         self._command = command
+        self._exit_code = exit_code
         self._output = output
 
+    @property
+    def command(self):
+        return self._command
+
+    @property
+    def exit_code(self):
+        return self._exit_code
 
     def __str__(self):
-        return self._output
+        return "{0} (with code {1}\nOutput:\n{2}".format(self._command,
+                                                self._exit_code,
+                                                self._output)
 
 
 
@@ -268,16 +279,12 @@ class Executor(object):
         test_results = []
         for each_path, _ in configurations:
             print " - Executing ", each_path
-            try:
-                self._build_images(each_path)
-                self._start_services(each_path)
-                self._run_tests(each_path, command)
-                results = self._collect_results(each_path)
-
-            except ShellCommandFailed as error:
-                results = TestReport(path)
-
+            self._build_images(each_path)
+            self._start_services(each_path)
+            self._run_tests(each_path, command)
+            results = self._collect_results(each_path)
             test_results.append(results)
+            self._stop_services(each_path)
 
         return test_results
 
@@ -306,3 +313,10 @@ class Executor(object):
 
     def _collect_results(self, path):
         return TestReport(path)
+
+
+    def _stop_services(self, path):
+        print "   5. Stopping Services ..."
+        self._shell.execute(self._STOP_SERVICES, path)
+
+    _STOP_SERVICES = "docker-compose down"

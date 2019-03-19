@@ -14,7 +14,7 @@ LABEL maintainer "franck.chauvel@sintef.no"
 
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends  \
-	maven \
+	maven=3.3.9-4 \
 	&& \
     apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
