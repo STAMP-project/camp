@@ -14,8 +14,11 @@ from camp.codecs.yaml import InvalidYAMLModel
 from camp.directories import InputDirectory, OutputDirectory, \
     MissingModel, NoConfigurationFound
 from camp.entities.validation import Checker, InvalidModel
-from camp.execute.commons import Executor, SimulatedShell, Shell
+from camp.execute.commons import SimulatedShell, Shell, ShellCommandFailed
+from camp.execute.select import select_executor, TechnologyNotSupported
 from camp.ui import UI
+
+from traceback import extract_tb
 
 from sys import exc_info
 
@@ -52,9 +55,8 @@ class Camp(object):
             self._ui.missing_model(error)
 
         except Exception as error:
-            self._ui.unexpected_error(error,
-                                      exc_info()[2].tb_frame.f_code.co_filename,
-                                      exc_info()[2].tb_lineno)
+            stack_trace = extract_tb(exc_info()[2])
+            self._ui.unexpected_error(error, stack_trace)
 
         finally:
             self._ui.goodbye()
@@ -111,9 +113,8 @@ class Camp(object):
             self._ui.no_configuration_found(error)
 
         except Exception as error:
-            self._ui.unexpected_error(error,
-                                      exc_info()[2].tb_frame.f_code.co_filename,
-                                      exc_info()[2].tb_lineno)
+            stack_trace = extract_tb(exc_info()[2])
+            self._ui.unexpected_error(error, stack_trace)
 
         finally:
             self._ui.goodbye()
@@ -134,7 +135,7 @@ class Camp(object):
             with open("camp_execute.log", "w") as log_file:
                 shell = SimulatedShell(log_file, ".") if arguments.is_simulated \
                         else Shell(log_file, ".")
-                execute = Executor(shell)
+                execute = select_executor("maven", shell)
                 results = execute(configurations)
                 self._ui.summarize_execution(results)
 
@@ -150,10 +151,15 @@ class Camp(object):
         except NoConfigurationFound as error:
             self._ui.no_configuration_found(error)
 
+        except ShellCommandFailed as error:
+            self._ui.shell_command_failed(error)
+
+        except TechnologyNotSupported as error:
+            self._ui.technology_not_supported(error)
+
         except Exception as error:
-            self._ui.unexpected_error(error,
-                                      exc_info()[2].tb_frame.f_code.co_filename,
-                                      exc_info()[2].tb_lineno)
+            stack_trace = extract_tb(exc_info()[2])
+            self._ui.unexpected_error(error, stack_trace)
 
         finally:
             self._ui.goodbye()

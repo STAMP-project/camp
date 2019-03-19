@@ -11,12 +11,13 @@
 
 goals:
   running:
-    - Greetings
+    - IntegrationTests
+
 
 components:
 
-
   tests:
+    provides_services: [ IntegrationTests ]
     requires_services: [ Greetings ]
     implementation:
       docker:

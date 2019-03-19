@@ -9,10 +9,10 @@
 #
 
 
-from camp.execute.commons import Executor, SuccessfulTest, FailedTest, ErroneousTest, \
-    TestSuite, TestReport
+from camp.execute.commons import Executor, SuccessfulTest, FailedTest, \
+    ErroneousTest, TestSuite, TestReport
 
-from os.path import join as join_paths
+from os.path import abspath, join as join_paths
 
 from xml.etree.ElementTree import fromstring
 
@@ -29,27 +29,29 @@ class MavenExecutor(Executor):
 
     def _run_tests(self, path, command):
         print "   3. Running tests ..."
-        self._shell.execute(self._RUN_TESTS + command, path)
-
-    _RUN_TESTS = "docker-compose exec -it tests mvn test "
+        absolute_path = abspath(path)
+        self._shell.execute(self._RUN_TESTS.format(absolute_path), path)
+    _RUN_TESTS = "docker-compose run -v {}/images/tests_0/:/tests test mvn test"
 
 
     def _collect_results(self, path):
+        print "   4. Collecting tests ..."
         all_tests = []
 
         directory = join_paths(path,
-                               "images", "test_0", "target", "surefire-reports")
+                               "images", "tests_0", "target", "surefire-reports")
         test_reports = self._shell.find_all_files(".xml", directory)
 
         for each_report in test_reports:
             try:
+                print "      Reading", each_report
                 with open(each_report, "r") as report:
                     file_content = report.read()
-                    test_suite = self._xml_reader.extract_from_text(file_content)
+                    test_suite = self._xml_reader._extract_from_text(file_content)
                     all_tests.append(test_suite)
 
             except JUnitXMLElementNotSupported as error:
-                print "Error: ", str(error)
+                print "      - Error: ", str(error)
 
         return TestReport(path, TestSuite("all tests", *all_tests))
 

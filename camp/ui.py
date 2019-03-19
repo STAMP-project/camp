@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -93,10 +93,25 @@ class UI(object):
                     folder=error.searched_folder)
 
 
-    def unexpected_error(self, error, file_name, line_number):
+    def shell_command_failed(self, error):
+        self._print("\nTest execution aborted!")
+        self._print(" - Error: A shell command failed (code: {code})", code=error.exit_code)
+        self._print("   $ {command}", command=error.command)
+        self._print("   Check out logs in 'camp_execute.log'.")
+
+
+    def technology_not_supported(self, error):
+        self._print("\nTest execution aborted!")
+        self._print(" - Error: Testing with '{techno}' is not supported.",
+                    techno=error.technology)
+        self._print("   Is there a newer version of CAMP available?")
+
+
+    def unexpected_error(self, error, stack_trace):
         self._print("Unexpected error:")
         self._print(" - {0}".format(str(error)))
-        self._print("   Check {0}, line {1}".format(file_name, line_number))
+        self._print("   In file: {0}".format(stack_trace[-1][0]))
+        self._print("      {}: {}".format(stack_trace[-1][1], stack_trace[-1][3]))
         self._print("   Please report this at '{issue}'.",
                     issue=self.ISSUE_PAGE)
 
