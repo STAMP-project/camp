@@ -54,7 +54,6 @@ class TheJUnitXMLReaderShould(TestCase):
             test = self._reader._extract_from_text(xml)
 
 
-
     def test_extract_a_successful_test_from_XML(self):
         xml = "<testcase name=\"foo\"></testcase>"
 
@@ -76,7 +75,7 @@ class TheJUnitXMLReaderShould(TestCase):
         self.assertEquals("Something happened!", test.failure)
 
 
-    def test_extract_en_erroneous_test(self):
+    def test_extract_an_erroneous_test(self):
         xml = ("<testcase name=\"foo\">"
                "  <error message=\"An error occurred!\"/>"
                "</testcase>")

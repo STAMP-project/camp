@@ -10,7 +10,9 @@
 
 
 from camp.execute.commons import Executor, SuccessfulTest, FailedTest, ErroneousTest, \
-    TestSuite, TestResults
+    TestSuite, TestReport
+
+from os.path import join as join_paths
 
 from xml.etree.ElementTree import fromstring
 
@@ -20,8 +22,9 @@ from xml.etree.ElementTree import fromstring
 class MavenExecutor(Executor):
 
 
-    def __init__(self, shell):
+    def __init__(self, shell, xml_reader=None):
         super(MavenExecutor, self).__init__(shell)
+        self._xml_reader = xml_reader or JUnitXMLReader()
 
 
     def _run_tests(self, path, command):
@@ -32,14 +35,32 @@ class MavenExecutor(Executor):
 
 
     def _collect_results(self, path):
-        return TestResults(path, 3, 3, 4)
+        all_tests = []
+
+        directory = join_paths(path,
+                               "images", "test_0", "target", "surefire-reports")
+        test_reports = self._shell.find_all_files(".xml", directory)
+
+        for each_report in test_reports:
+            try:
+                with open(each_report, "r") as report:
+                    file_content = report.read()
+                    test_suite = self._xml_reader.extract_from_text(file_content)
+                    all_tests.append(test_suite)
+
+            except JUnitXMLElementNotSupported as error:
+                print "Error: ", str(error)
+
+        return TestReport(path, TestSuite("all tests", *all_tests))
 
 
 
 
 
 class JUnitXMLReader:
-    """Name of the XML elements and attributes in the JUnitXML"""
+    """
+    Extracts camp.execute.TestSuite objects from JUnit XML
+    """
 
     ERROR = "error"
     FAILURE = "failure"
@@ -90,3 +111,10 @@ class JUnitXMLElementNotSupported(Exception):
 
     def __init__(self, element):
         self._element = element
+
+
+    def __str__(self):
+        return self.RENDER.format(self._element)
+
+
+    RENDER = "XML element '{}' is not yet supported!"
