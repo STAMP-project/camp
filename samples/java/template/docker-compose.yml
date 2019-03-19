@@ -5,8 +5,6 @@ services:
   test:
     build: ./tests
     command: echo Ready!
-    volumes:
-      - ./tests:/tests
 
   greetings:
     build: ./greetings

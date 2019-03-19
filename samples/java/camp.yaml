@@ -25,6 +25,16 @@ components:
 
   greetings:
     provides_services: [ Greetings ]
+    variables:
+      tomcat:
+        values: [ v7, v8, v9 ]
+        realization:
+         - targets: [ greetings/Dockerfile ]
+           pattern: "tomcat:8-jre8"
+           replacements:
+             - tomcat:7-jre8
+             - tomcat:8-jre8
+             - tomcat:9-jre8
     implementation:
       docker:
         file: greetings/Dockerfile
