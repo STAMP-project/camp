@@ -51,10 +51,8 @@ class Shell(object):
         try:
             process = Popen(command.split(),
                             cwd=self._working_directory,
-                            stdout=PIPE, stderr=PIPE)
-            stdout, stderr = process.communicate()
-            self._log.write(stdout)
-            self._log.write(stderr)
+                            stdout=self._log, stderr=self._log)
+            process.wait()
             if process.returncode != 0:
                 raise ShellCommandFailed(command,
                                          process.returncode)
