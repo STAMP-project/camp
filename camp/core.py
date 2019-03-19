@@ -14,7 +14,7 @@ from camp.codecs.yaml import InvalidYAMLModel
 from camp.directories import InputDirectory, OutputDirectory, \
     MissingModel, NoConfigurationFound
 from camp.entities.validation import Checker, InvalidModel
-from camp.execute import Executor, SimulatedShell, Shell
+from camp.execute.commons import Executor, SimulatedShell, Shell
 from camp.ui import UI
 
 from sys import exc_info

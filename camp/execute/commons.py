@@ -8,7 +8,10 @@
 # of the MIT license.  See the LICENSE file for details.
 #
 
-from os.path import join as join_paths
+
+
+from os import listdir
+from os.path import isdir, join as join_paths
 
 from subprocess import Popen, PIPE
 
@@ -67,6 +70,18 @@ class Shell(object):
         return open(path, mode)
 
 
+    def find_all_files(self, extension, directory):
+        found_files = []
+        for any_file in listdir(directory):
+            path = join_paths(directory, any_file)
+            if isdir(path):
+                found_files.extend(self.find_all_files(extension, path))
+            else:
+                if any_file.endswith(extension):
+                    found_files.append(path)
+        return found_files
+
+
 
 class SimulatedShell(Shell):
 
@@ -87,6 +102,10 @@ class SimulatedShell(Shell):
         return open("/dev/null")
 
 
+    def find_all_files(self, extension, directory):
+        return []
+
+
 
 class ShellCommandFailed(Exception):
 
@@ -100,13 +119,12 @@ class ShellCommandFailed(Exception):
 
 
 
-class TestResults:
+class TestReport:
 
-    def __init__(self, name, passed, failed, error):
+    def __init__(self, name, test=None):
         self._name = name
-        self._passed = passed
-        self._failed = failed
-        self._error = error
+        self._test = test
+
 
     @property
     def configuration_name(self):
@@ -114,21 +132,27 @@ class TestResults:
 
     @property
     def failed_test_count(self):
-        return self._failed
+        if not self._test:
+            return 0
+        return self._test.failed_test_count
 
     @property
     def passed_test_count(self):
-        return self._passed
+        if not self._test:
+            return 0
+        return self._test.passed_test_count
 
     @property
     def error_test_count(self):
-        return self._error
+        if not self._test:
+            return 0
+        return self._test.erroneous_test_count
 
     @property
     def run_test_count(self):
-        return self.passed_test_count + \
-            self.failed_test_count + \
-            self.error_test_count
+        if not self._test:
+            return 0
+        return self._test.run_test_count
 
 
 class Verdict:
@@ -251,7 +275,7 @@ class Executor(object):
                 results = self._collect_results(each_path)
 
             except ShellCommandFailed as error:
-                results = TestResults(path, -1, -1, -1)
+                results = TestReport(path)
 
             test_results.append(results)
 
@@ -281,4 +305,4 @@ class Executor(object):
 
 
     def _collect_results(self, path):
-        return TestResults(path, 3, 3, 4)
+        return TestReport(path)

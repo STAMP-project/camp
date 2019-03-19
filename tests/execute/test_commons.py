@@ -9,12 +9,20 @@
 #
 
 
+
+from camp.execute.commons import ShellCommandFailed, Shell, SimulatedShell, FailedTest, \
+    ErroneousTest, SuccessfulTest, TestSuite, TestReport
+
+from os import makedirs
+from os.path import exists, isdir, join as join_paths, basename
+
+from tempfile import gettempdir
+
+from shutil import copytree, rmtree
+
 from StringIO import StringIO
 
 from unittest import TestCase
-
-from camp.execute.commons import ShellCommandFailed, Shell, SimulatedShell, FailedTest, \
-    ErroneousTest, SuccessfulTest, TestSuite
 
 
 
@@ -125,6 +133,43 @@ class ATestSuiteShould(TestCase):
 
 
 
+class ATestReportShould(TestCase):
+
+
+    def setUp(self):
+        self._tests = TestSuite("Fake Test Suite",
+                                SuccessfulTest("Test 1"),
+                                SuccessfulTest("Test 2"),
+                                SuccessfulTest("Test 3"),
+                                FailedTest("Test 4", "Assertion failed!"),
+                                ErroneousTest("Test 5", "Unknown Error"))
+        self._report = TestReport("./config", self._tests)
+
+
+    def test_expose_the_number_of_passed_tests(self):
+        self.assertEquals(self._tests.passed_test_count,
+                          self._report.passed_test_count)
+
+
+    def test_expose_the_number_of_failed_tests(self):
+        self.assertEquals(self._tests.failed_test_count,
+                          self._report.failed_test_count)
+
+
+    def test_expose_the_number_of_erroneous_tests(self):
+        self.assertEquals(self._tests.erroneous_test_count,
+                          self._report.error_test_count)
+
+    def test_expose_the_number_of_run_tests(self):
+        self.assertEquals(self._tests.run_test_count,
+                          self._report.run_test_count)
+
+    def test_expose_the_path_to_related_configuration(self):
+        self.assertEquals("./config",
+                          self._report.configuration_name)
+
+
+
 class TheShellShould(TestCase):
 
     def setUp(self):
@@ -207,6 +252,31 @@ class TheShellShould(TestCase):
             self._shell.execute("unknown_exec with dummy parameters")
 
 
+    def test_recursively_find_all_files_with_a_given_extension(self):
+        # delete and recreate a temporary directory with some fake XML files
+        temp_directory = gettempdir()
+        directory = join_paths(temp_directory, "camp", "execute", "shell")
+        if isdir(directory):
+            rmtree(directory)
+        makedirs(directory)
+        self._create_file(directory, "report_1.xml", "<useless-content />")
+        subdirectory = join_paths(directory, "more")
+        makedirs(subdirectory)
+        self._create_file(subdirectory, "report_2.xml", "<useless-content />")
+        self._create_file(subdirectory, "report_3.xml", "<useless-content />")
+
+        reports = self._shell.find_all_files(".xml", directory)
+
+        self.assertEquals(3, len(reports))
+
+
+    @staticmethod
+    def _create_file(directory, file_name, content):
+        path = join_paths(directory, file_name)
+        with open(path, "w+") as new_file:
+            new_file.write(content)
+
+
 
 class TheSimulatedShellShould(TestCase):
 
@@ -228,3 +298,8 @@ class TheSimulatedShellShould(TestCase):
     def test_provides_nothing_as_file_content(self):
         with self._shell.open("a_file_that_does_not_exists", "r") as content:
             self.assertEquals("", content.read())
+
+
+    def test_find_no_files(self):
+        reports = self._shell.find_all_files(".xml", "/tmp/")
+        self.assertEquals([], reports)
