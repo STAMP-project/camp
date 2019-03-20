@@ -135,8 +135,8 @@ class Camp(object):
             with open("camp_execute.log", "w") as log_file:
                 shell = SimulatedShell(log_file, ".") if arguments.is_simulated \
                         else Shell(log_file, ".")
-                execute = select_executor("maven", shell)
-                results = execute(configurations)
+                execute = select_executor(arguments.testing_tool, shell)
+                results = execute(configurations, arguments.component)
                 self._ui.summarize_execution(results)
 
         except InvalidYAMLModel as error:

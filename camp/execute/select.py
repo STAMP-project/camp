@@ -13,10 +13,10 @@
 from camp.execute.maven import MavenExecutor
 
 
+
 SUPPORTED_TECHNOLOGIES =[
     ("maven", MavenExecutor)
 ]
-
 
 
 
@@ -38,3 +38,8 @@ class TechnologyNotSupported(Exception):
     @property
     def technology(self):
         return self._technology
+
+
+    @property
+    def options(self):
+        return [ each_name for each_name, _ in SUPPORTED_TECHNOLOGIES ]

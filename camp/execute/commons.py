@@ -51,8 +51,10 @@ class Shell(object):
         try:
             process = Popen(command.split(),
                             cwd=self._working_directory,
-                            stdout=self._log, stderr=self._log)
-            process.wait()
+                            stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
+            self._log.write(stdout)
+            self._log.write(stderr)
             if process.returncode != 0:
                 raise ShellCommandFailed(command,
                                          process.returncode)
@@ -273,13 +275,13 @@ class Executor(object):
         self._shell = shell
 
 
-    def __call__(self, configurations, command="whatever"):
+    def __call__(self, configurations, component):
         test_results = []
         for each_path, _ in configurations:
             print " - Executing ", each_path
             self._build_images(each_path)
             self._start_services(each_path)
-            self._run_tests(each_path, command)
+            self._run_tests(each_path, component)
             results = self._collect_results(each_path)
             test_results.append(results)
             self._stop_services(each_path)

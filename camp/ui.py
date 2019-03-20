@@ -104,6 +104,7 @@ class UI(object):
         self._print("\nTest execution aborted!")
         self._print(" - Error: Testing with '{techno}' is not supported.",
                     techno=error.technology)
+        self._print("   Options are: {options}", options=error.options)
         self._print("   Is there a newer version of CAMP available?")
 
 
