@@ -68,7 +68,17 @@ class Command(object):
             "--simulated",
             action="store_true",
             dest="is_simulated",
-            help="Display but do NOT execute the shell commands that CAMP would normally trigger")
+            help="Display but do NOT execute the commands that CAMP triggers")
+        execute.add_argument(
+            "-t",
+            "--test-with",
+            dest="testing_tool",
+            help="Select the technology used to run the test")
+        execute.add_argument(
+            "-c",
+            "--component",
+            dest="component",
+            help="Select the component that hosts the tests")
 
         values = parser.parse_args(command_line)
         return Command.from_namespace(values)
@@ -85,7 +95,9 @@ class Command(object):
                            namespace.output_directory)
 
         elif namespace.command == "execute":
-            return Execute(namespace.is_simulated)
+            return Execute(namespace.testing_tool,
+                           namespace.component,
+                           namespace.is_simulated)
 
         else:
             message = "The command '%s' is not yet implemented." % namespace.command
@@ -165,17 +177,31 @@ class Execute(Command):
     Encapsulate calls to 'camp execute ...'
     """
 
-
+    DEFAULT_TESTING_TOOL = "maven"
+    DEFAULT_COMPONENT = "test"
     DEFAULT_IS_SIMULATED = False
 
 
-    def __init__(self, is_simulated=None):
+    def __init__(self, testing_tool=None, component=None, is_simulated=None):
         super(Execute, self).__init__()
+        self._component = component or self.DEFAULT_COMPONENT
+        self._testing_tool = testing_tool or self.DEFAULT_TESTING_TOOL
         self._is_simulated = is_simulated or self.DEFAULT_IS_SIMULATED
+
 
     @property
     def working_directory(self):
         return "."
+
+
+    @property
+    def component(self):
+        return self._component
+
+
+    @property
+    def testing_tool(self):
+        return self._testing_tool
 
 
     @property

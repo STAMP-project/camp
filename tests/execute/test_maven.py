@@ -15,6 +15,9 @@ from camp.execute.commons import SimulatedShell, FailedTest, SuccessfulTest, \
 from camp.execute.maven import MavenExecutor, JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
+from os import getcwd
+from os.path import join as join_paths
+
 from StringIO import StringIO
 
 from unittest import TestCase
@@ -33,11 +36,16 @@ class TheMavenExecutorShould(TestCase):
     def test_build_deploy_run_and_collect_test_results(self):
         configurations = [("out/config_1", None),
                           ("out/config_2", None)]
-        self._execute(configurations, "whatever")
+        self._execute(configurations, "foo")
 
         self.assertIn("bash build_images.sh", self._log.getvalue())
         self.assertIn("docker-compose up -d", self._log.getvalue())
-        self.assertIn("docker-compose exec -it tests mvn test", self._log.getvalue())
+
+        for each_path, _ in configurations:
+            expected_run_command = MavenExecutor.RUN_TESTS.format(
+                path=join_paths(getcwd(), each_path),
+                component="foo")
+            self.assertIn(expected_run_command, self._log.getvalue())
 
 
 

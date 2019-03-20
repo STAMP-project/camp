@@ -27,11 +27,18 @@ class MavenExecutor(Executor):
         self._xml_reader = xml_reader or JUnitXMLReader()
 
 
-    def _run_tests(self, path, command):
+    def _run_tests(self, path, component):
         print "   3. Running tests ..."
         absolute_path = abspath(path)
-        self._shell.execute(self._RUN_TESTS.format(absolute_path), path)
-    _RUN_TESTS = "docker-compose run -v {}/images/tests_0/:/tests test mvn test"
+        command = self.RUN_TESTS.format(
+            path=absolute_path,
+            component=component)
+        self._shell.execute(command, path)
+
+    RUN_TESTS = ("docker-compose run "
+                 "-v {path}/images/{component}_0/:/{component} "
+                 "{component} "
+                 "mvn test")
 
 
     def _collect_results(self, path):
