@@ -9,8 +9,10 @@
 #
 
 
-from camp.execute.commons import Executor, SuccessfulTest, FailedTest, \
+
+from camp.entities.report import SuccessfulTest, FailedTest, \
     ErroneousTest, TestSuite, TestReport
+from camp.execute.commons import Executor
 
 from os.path import abspath, join as join_paths
 
