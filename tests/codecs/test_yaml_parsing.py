@@ -12,6 +12,8 @@
 
 from camp.codecs.yaml import YAML, InvalidYAMLModel
 from camp.entities.model import DockerFile, DockerImage, Substitution
+from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest, \
+    TestSuite, TestReport
 
 from StringIO import StringIO
 
@@ -422,7 +424,6 @@ class IgnoredEntriesAreReported(TestCase):
 
 
 
-
 class TypeMismatchAreReported(TestCase):
 
 
@@ -779,3 +780,83 @@ class MissingMandatoryEntriesAreReported(TestCase):
                              error.warnings[0].path)
             self.assertItemsEqual(candidates,
                                   error.warnings[0].candidates)
+
+
+
+class TestReportsAreSerialized(TestCase):
+
+
+    def setUp(self):
+        self._output = StringIO()
+        self._codec = YAML()
+
+
+    def test_when_it_includes_a_successful_test(self):
+        reports = [TestReport("out/config_1", SuccessfulTest("Test 1"))]
+
+        self._codec.save_test_reports(reports, self._output)
+
+        self.assertIn("out/config_1", self._output.getvalue())
+        self.assertIn("identifier: Test 1", self._output.getvalue())
+        self.assertIn("verdict: 1", self._output.getvalue())
+
+
+    def test_when_it_includes_a_failed_test(self):
+        reports = [TestReport("out/config_1",
+                              FailedTest("Test 1", "What a failure!"))]
+
+        self._codec.save_test_reports(reports, self._output)
+
+        self.assertIn("out/config_1", self._output.getvalue())
+        self.assertIn("identifier: Test 1", self._output.getvalue())
+        self.assertIn("verdict: 2", self._output.getvalue())
+        self.assertIn("failure: What a failure!", self._output.getvalue())
+
+
+    def test_when_it_includes_an_erroneous_test(self):
+        reports = [TestReport("out/config_1",
+                              ErroneousTest("Test 1", "What an error!"))]
+
+        self._codec.save_test_reports(reports, self._output)
+
+        self.assertIn("out/config_1", self._output.getvalue())
+        self.assertIn("identifier: Test 1", self._output.getvalue())
+        self.assertIn("verdict: 3", self._output.getvalue())
+        self.assertIn("error: What an error!", self._output.getvalue())
+
+
+    def test_when_it_includes_a_test_suite(self):
+        reports = [
+            TestReport("out/config_1",
+                       TestSuite("Test Suite 1",
+                                 SuccessfulTest("Test 1"),
+                                 ErroneousTest("Test 2", "What an error!")
+                       ))
+        ]
+
+        self._codec.save_test_reports(reports, self._output)
+
+        self.assertIn("out/config_1", self._output.getvalue())
+        self.assertIn("Test Suite 1", self._output.getvalue())
+        self.assertIn("identifier: Test 1", self._output.getvalue())
+        self.assertIn("verdict: 1", self._output.getvalue())
+        self.assertIn("identifier: Test 2", self._output.getvalue())
+        self.assertIn("verdict: 3", self._output.getvalue())
+        self.assertIn("error: What an error!", self._output.getvalue())
+
+
+    def test_when_it_includes_several_reports(self):
+        reports = [
+            TestReport("out/config_1", SuccessfulTest("Test 1")),
+            TestReport("out/config_2", ErroneousTest("Test 1",
+                                                     "What an error!"))
+        ]
+
+        self._codec.save_test_reports(reports, self._output)
+        self.assertIn("out/config_1", self._output.getvalue())
+        self.assertIn("identifier: Test 1", self._output.getvalue())
+        self.assertIn("verdict: 1", self._output.getvalue())
+        self.assertIn("out/config_2", self._output.getvalue())
+        self.assertIn("identifier: Test 1", self._output.getvalue())
+        self.assertIn("verdict: 3", self._output.getvalue())
+        self.assertIn("error: What an error!", self._output.getvalue())

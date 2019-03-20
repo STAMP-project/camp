@@ -11,7 +11,11 @@
 
 
 from camp.entities.report import FailedTest, ErroneousTest, \
-    SuccessfulTest, TestSuite, TestReport
+    SuccessfulTest, TestSuite, TestReport, Verdict
+
+from deepdiff import DeepDiff
+
+from pprint import pprint
 
 from unittest import TestCase
 
@@ -48,14 +52,23 @@ class ASuccessfulTestShould(TestCase, ATestShould):
     def test_have_passed_test_count_equals_to_one(self):
         self.assertEquals(1, self._testcase.passed_test_count)
 
+    def test_export_itself_as_a_dictionary(self):
+        expected = {
+            "identifier": self._testcase.identifier,
+            "verdict": Verdict.PASS
+        }
+        self.assertEquals(expected,
+                          self._testcase.as_dictionary)
+
 
 
 class AFailedTestShould(TestCase, ATestShould):
 
     def setUp(self):
         ATestShould.setUp(self)
+        self._failure = "There was a failure!"
         self._testcase = FailedTest(self._identifier,
-                                    "There was an error")
+                                    self._failure)
 
     def test_have_passed_test_count_equals_to_zero(self):
         self.assertEquals(0, self._testcase.passed_test_count)
@@ -67,8 +80,17 @@ class AFailedTestShould(TestCase, ATestShould):
         self.assertEquals(0, self._testcase.erroneous_test_count)
 
     def test_expose_its_failure(self):
-        self.assertEquals("There was an error",
+        self.assertEquals(self._failure,
                           self._testcase.failure)
+
+    def test_export_itself_as_a_dictionary(self):
+        expected = {
+            "identifier": self._testcase.identifier,
+            "verdict": Verdict.FAIL,
+            "failure": self._failure
+        }
+        self.assertEquals(expected,
+                          self._testcase.as_dictionary)
 
 
 
@@ -76,8 +98,9 @@ class AnErroneousTestShould(TestCase, ATestShould):
 
     def setUp(self):
         ATestShould.setUp(self)
+        self._error = "There was an error!"
         self._testcase = ErroneousTest(self._identifier,
-                                       "There was an error")
+                                       self._error)
 
     def test_have_passed_test_count_equals_to_zero(self):
         self.assertEquals(0, self._testcase.passed_test_count)
@@ -89,8 +112,18 @@ class AnErroneousTestShould(TestCase, ATestShould):
         self.assertEquals(1, self._testcase.erroneous_test_count)
 
     def test_expose_its_error(self):
-        self.assertEquals("There was an error",
+        self.assertEquals(self._error,
                           self._testcase.error)
+
+
+    def test_export_itself_as_a_dictionary(self):
+        expected = {
+            "identifier": self._testcase.identifier,
+            "verdict": Verdict.ERROR,
+            "error": self._error
+        }
+        self.assertEquals(expected,
+                          self._testcase.as_dictionary)
 
 
 class ATestSuiteShould(TestCase):
@@ -123,6 +156,54 @@ class ATestSuiteShould(TestCase):
         self.assertEquals(1, self._suite.erroneous_test_count)
 
 
+    def test_export_itself_as_a_dictionary(self):
+        expected = {
+            "identifier": "My test suite",
+            "tests": [
+                {
+                    "identifier": "Test 1" ,
+                    "verdict": Verdict.PASS
+                },
+                {
+                    "identifier": "Test 2" ,
+                    "verdict": Verdict.PASS
+                },
+                {
+                    "identifier": "Test 3" ,
+                    "verdict": Verdict.FAIL,
+                    "failure": "failure"
+                },
+                {
+                    "identifier": "Test 4" ,
+                    "verdict": Verdict.ERROR,
+                    "error": "error"
+                },
+                {
+                    "identifier": "My inner test suite",
+                    "tests": [
+                        {
+                            "identifier": "Test 5" ,
+                            "verdict": Verdict.PASS
+                        },
+                        {
+                            "identifier": "Test 6" ,
+                            "verdict": Verdict.PASS
+                        },
+                        {
+                            "identifier": "Test 7" ,
+                            "verdict": Verdict.FAIL,
+                            "failure": "failure"
+                        }
+                    ]
+                }
+            ]
+        }
+        actual = self._suite.as_dictionary
+        differences = DeepDiff(expected, actual, ignore_order=True)
+        self.assertEquals(len(differences), 0,
+                          str(actual))
+
+
 
 class ATestReportShould(TestCase):
 
@@ -151,10 +232,48 @@ class ATestReportShould(TestCase):
         self.assertEquals(self._tests.erroneous_test_count,
                           self._report.error_test_count)
 
+
     def test_expose_the_number_of_run_tests(self):
         self.assertEquals(self._tests.run_test_count,
                           self._report.run_test_count)
 
+
     def test_expose_the_path_to_related_configuration(self):
         self.assertEquals("./config",
                           self._report.configuration_name)
+
+
+    def test_export_itself_as_a_dictionary(self):
+        expected = {
+            "path": "./config",
+            "tests": {
+                "identifier": "Fake Test Suite",
+                "tests": [
+                    {
+                        "identifier": "Test 1",
+                        "verdict": Verdict.PASS
+                    },
+                    {
+                        "identifier": "Test 2",
+                        "verdict": Verdict.PASS
+                    },
+                    {
+                        "identifier": "Test 3",
+                        "verdict": Verdict.PASS
+                    },
+                    {
+                        "identifier": "Test 4",
+                        "verdict": Verdict.FAIL,
+                        "failure": "Assertion failed!"
+                    },
+                    {
+                        "identifier": "Test 5",
+                        "verdict": Verdict.ERROR,
+                        "error": "Unknown Error"
+                    }
+                ]
+            }
+        }
+        actual = self._report.as_dictionary
+        differences = DeepDiff(expected, actual, ignore_order=True)
+        self.assertEquals(len(differences), 0, pprint(differences))

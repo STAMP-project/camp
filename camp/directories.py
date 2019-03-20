@@ -157,6 +157,11 @@ class OutputDirectory(Directory):
             makedirs(directory)
 
 
+    def save_reports(self, reports):
+        with open("out/test_report.yaml", "w") as yaml_file:
+            self._codec.save_test_reports(reports, yaml_file)
+
+
     def save_as_graphviz(self, index, configuration):
         graphviz_file = self._graphviz_configuration_file(index)
         with open(graphviz_file, "w") as stream:
