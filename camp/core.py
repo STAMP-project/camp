@@ -136,8 +136,10 @@ class Camp(object):
                 shell = SimulatedShell(log_file, ".") if arguments.is_simulated \
                         else Shell(log_file, ".")
                 execute = select_executor(arguments.testing_tool, shell)
-                results = execute(configurations, arguments.component)
-                self._ui.summarize_execution(results)
+                reports = execute(configurations, arguments.component)
+                self._output.save_reports(reports)
+                self._ui.summarize_execution(reports)
+
 
         except InvalidYAMLModel as error:
             self._ui.invalid_yaml_model(error)

@@ -40,6 +40,12 @@ class YAML(Codec):
         self._warnings = []
 
 
+    def save_test_reports(self, reports, stream):
+        yaml_dump({"reports": [each.as_dictionary for each in reports]},
+                  stream,
+                  default_flow_style=False)
+
+
     def save_configuration(self, configuration, stream):
         dictionary = self._as_dictionary(configuration)
         yaml_dump(dictionary, stream, default_flow_style=False)

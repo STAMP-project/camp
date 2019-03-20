@@ -21,11 +21,13 @@ class TestReport:
     def configuration_name(self):
         return self._name
 
+
     @property
     def failed_test_count(self):
         if not self._test:
             return 0
         return self._test.failed_test_count
+
 
     @property
     def passed_test_count(self):
@@ -33,17 +35,25 @@ class TestReport:
             return 0
         return self._test.passed_test_count
 
+
     @property
     def error_test_count(self):
         if not self._test:
             return 0
         return self._test.erroneous_test_count
 
+
     @property
     def run_test_count(self):
         if not self._test:
             return 0
         return self._test.run_test_count
+
+
+    @property
+    def as_dictionary(self):
+        return { "path": self._name,
+                 "tests": self._test.as_dictionary }
 
 
 
@@ -94,6 +104,13 @@ class Test(object):
             else 0
 
 
+    @property
+    def as_dictionary(self):
+        return { "identifier": self._identifier,
+                 "verdict": self._verdict }
+
+
+
 class SuccessfulTest(Test):
 
     def __init__(self, identifier):
@@ -113,6 +130,13 @@ class FailedTest(Test):
         return self._failure
 
 
+    @Test.as_dictionary.getter
+    def as_dictionary(self):
+        return { "identifier": self._identifier,
+                 "verdict": self._verdict,
+                 "failure": self._failure }
+
+
 
 class ErroneousTest(Test):
 
@@ -126,6 +150,13 @@ class ErroneousTest(Test):
         return self._error
 
 
+    @Test.as_dictionary.getter
+    def as_dictionary(self):
+        return { "identifier": self._identifier,
+                 "verdict": self._verdict,
+                 "error": self._error }
+
+
 
 class TestSuite(Test):
 
@@ -133,18 +164,28 @@ class TestSuite(Test):
         super(TestSuite, self).__init__(identifier, None)
         self._tests = tests
 
+
     @Test.run_test_count.getter
     def run_test_count(self):
         return sum(each.run_test_count for each in self._tests)
+
 
     @Test.passed_test_count.getter
     def passed_test_count(self):
         return sum(each.passed_test_count for each in self._tests)
 
+
     @Test.failed_test_count.getter
     def failed_test_count(self):
         return sum(each.failed_test_count for each in self._tests)
 
+
     @Test.erroneous_test_count.getter
     def erroneous_test_count(self):
         return sum(each.erroneous_test_count for each in self._tests)
+
+
+    @Test.as_dictionary.getter
+    def as_dictionary(self):
+        return { "identifier": self._identifier,
+                 "tests": [ each.as_dictionary for each in self._tests] }
