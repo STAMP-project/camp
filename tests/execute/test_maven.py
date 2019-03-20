@@ -10,8 +10,9 @@
 
 
 
-from camp.execute.commons import SimulatedShell, FailedTest, SuccessfulTest, \
+from camp.entities.report import FailedTest, SuccessfulTest, \
     TestSuite, ErroneousTest
+from camp.execute.commons import SimulatedShell
 from camp.execute.maven import MavenExecutor, JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
