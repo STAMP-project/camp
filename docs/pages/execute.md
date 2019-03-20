@@ -17,6 +17,18 @@ the orchestration using docker-compose, runs the tests, and collect
 the test reports.
 
 Here is the usage and options:
+```console
+$ camp execute --help
+usage: CAMP execute [-h] [-s] [-t TESTING_TOOL] [-c COMPONENT]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s, --simulated       Display but do NOT execute the commands that CAMP triggers
+  -t TESTING_TOOL, --test-with TESTING_TOOL
+                        Select the technology used to run the test
+  -c COMPONENT, --component COMPONENT
+                        Select the component that hosts the tests
+```
 
 ---
 **Note:** `CAMP execute` *requires* that docker be up and running.
