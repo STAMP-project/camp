@@ -22,6 +22,9 @@ from os.path import exists, isdir, join as join_paths, basename
 
 from shutil import copytree, rmtree
 
+from tempfile import gettempdir
+
+
 from unittest import TestCase
 
 
@@ -29,7 +32,8 @@ from unittest import TestCase
 class Sample(object):
 
 
-    def __init__(self, path, workspace):
+    def __init__(self, path, workspace=None):
+        workspace = workspace or join_paths(gettempdir(), "acceptance")
         self._source = join_paths("samples", path)
         self._input = InputDirectory(self._copy(self._source, workspace), YAML())
         self._output = OutputDirectory(join_paths(self._input.path, "out"), YAML())
@@ -73,6 +77,10 @@ class Sample(object):
 
         return [GeneratedConfiguration(path, configuration) \
                 for path, configuration in self._output.existing_configurations(model)]
+
+
+    def fetch_test_report(self):
+        return self._output.load_reports()
 
 
     @property
@@ -126,11 +134,18 @@ class CampTests(TestCase):
         self.camp("realize", "-d", self.sample.directory)
 
 
+    def execute(self, component, testing_tool):
+        self.camp("execute",
+                  "-d", self.sample.directory,
+                  "-c", component,
+                  "-t", testing_tool)
+
+
     @staticmethod
     def camp(*arguments):
-            camp = Camp(YAML(), Z3Problem, Builder())
-            command = Command.extract_from(arguments)
-            command.send_to(camp)
+        camp = Camp(YAML(), Z3Problem, Builder())
+        command = Command.extract_from(arguments)
+        command.send_to(camp)
 
 
     def _assert_generated(self, configuration, *files):

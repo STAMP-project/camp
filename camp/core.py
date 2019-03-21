@@ -140,7 +140,6 @@ class Camp(object):
                 self._output.save_reports(reports)
                 self._ui.summarize_execution(reports)
 
-
         except InvalidYAMLModel as error:
             self._ui.invalid_yaml_model(error)
 

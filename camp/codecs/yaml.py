@@ -40,6 +40,10 @@ class YAML(Codec):
         self._warnings = []
 
 
+    def load_test_reports(self, stream):
+        return load_yaml(stream)
+
+
     def save_test_reports(self, reports, stream):
         yaml_dump({"reports": [each.as_dictionary for each in reports]},
                   stream,

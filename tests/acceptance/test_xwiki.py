@@ -31,6 +31,7 @@ class FilesAreGenerated(CampTests):
         self.generate_all()
         self.assertEqual(64, len(self.sample.generated_configurations))
 
+
     @skip("Take too long")
     def test_after_we_generate_coverage(self):
         self.generate_coverage()
