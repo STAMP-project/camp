@@ -19,7 +19,7 @@ from camp.commands import Command, Generate
 class DefaultValuesAreCorrect(TestCase):
 
 
-    def test_given_no_working_directory(self):
+    def test_given_no_parameters(self):
         command_line = "generate --all"
 
         command = Command.extract_from(command_line.split())

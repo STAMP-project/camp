@@ -53,7 +53,7 @@ class Command(object):
             "-d",
             "--directory",
             dest="working_directory",
-            help="the directory that describes that contains the input files")
+            help="the directory that contains the input files")
         realize.add_argument(
             "-o",
             "--output",
@@ -63,6 +63,11 @@ class Command(object):
         execute = subparsers.add_parser(
             "execute",
             help="Execute the test configurations generated")
+        execute.add_argument(
+            "-d",
+            "--directory",
+            dest="working_directory",
+            help="the directory that contains the input files")
         execute.add_argument(
             "-s",
             "--simulated",
@@ -95,7 +100,8 @@ class Command(object):
                            namespace.output_directory)
 
         elif namespace.command == "execute":
-            return Execute(namespace.testing_tool,
+            return Execute(namespace.working_directory,
+                           namespace.testing_tool,
                            namespace.component,
                            namespace.is_simulated)
 
@@ -134,6 +140,7 @@ class Generate(Command):
     @property
     def only_coverage(self):
         return self._coverage
+
 
     def send_to(self, camp):
         camp.generate(self)
@@ -177,13 +184,19 @@ class Execute(Command):
     Encapsulate calls to 'camp execute ...'
     """
 
+    DEFAULT_WORKING_DIRECTORY = "temp/xwiki"
     DEFAULT_TESTING_TOOL = "maven"
     DEFAULT_COMPONENT = "test"
     DEFAULT_IS_SIMULATED = False
 
 
-    def __init__(self, testing_tool=None, component=None, is_simulated=None):
+    def __init__(self,
+                 working_directory=None,
+                 testing_tool=None,
+                 component=None,
+                 is_simulated=None):
         super(Execute, self).__init__()
+        self._working_directory = working_directory or self.DEFAULT_WORKING_DIRECTORY
         self._component = component or self.DEFAULT_COMPONENT
         self._testing_tool = testing_tool or self.DEFAULT_TESTING_TOOL
         self._is_simulated = is_simulated or self.DEFAULT_IS_SIMULATED
@@ -191,7 +204,7 @@ class Execute(Command):
 
     @property
     def working_directory(self):
-        return "."
+        return self._working_directory
 
 
     @property

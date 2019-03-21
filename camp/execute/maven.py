@@ -14,10 +14,10 @@ from camp.entities.report import SuccessfulTest, FailedTest, \
     ErroneousTest, TestSuite, TestReport
 from camp.execute.commons import Executor
 
+from os import getuid
 from os.path import abspath, join as join_paths
 
 from xml.etree.ElementTree import fromstring
-
 
 
 
@@ -33,11 +33,13 @@ class MavenExecutor(Executor):
         print "   3. Running tests ..."
         absolute_path = abspath(path)
         command = self.RUN_TESTS.format(
+            uid=getuid(),
             path=absolute_path,
             component=component)
         self._shell.execute(command, path)
 
     RUN_TESTS = ("docker-compose run "
+                 "--user={uid} "
                  "-v {path}/images/{component}_0/:/{component} "
                  "{component} "
                  "mvn test")
