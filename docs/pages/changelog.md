@@ -6,6 +6,10 @@ changes that were made.
 *   Development
 
     *   Fix [Issue
+        32]((https://github.com/STAMP-project/camp/issues/28) and move
+        dependencies from `requirements.txt` to `setup.py`.
+
+    *   Fix [Issue
         28](https://github.com/STAMP-project/camp/issues/28) about
         libgomp that fails the Docker build process.
 
