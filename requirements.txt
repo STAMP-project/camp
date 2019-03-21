@@ -9,7 +9,7 @@
 #
 
 # Production Requirements
-PyYAML == 3.12
+PyYAML == 5.1
 plumbum == 1.6.7
 jsonpath-rw == 1.4.0
 argparse == 1.2.1
