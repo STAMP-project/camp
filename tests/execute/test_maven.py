@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017 - 2019 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -16,7 +16,7 @@ from camp.execute.commons import SimulatedShell
 from camp.execute.maven import MavenExecutor, JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
-from os import getcwd
+from os import getcwd, getuid
 from os.path import join as join_paths
 
 from StringIO import StringIO
@@ -44,6 +44,7 @@ class TheMavenExecutorShould(TestCase):
 
         for each_path, _ in configurations:
             expected_run_command = MavenExecutor.RUN_TESTS.format(
+                uid=getuid(),
                 path=join_paths(getcwd(), each_path),
                 component="foo")
             self.assertIn(expected_run_command, self._log.getvalue())

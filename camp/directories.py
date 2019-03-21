@@ -161,6 +161,7 @@ class OutputDirectory(Directory):
         with open(self.test_report, "w") as yaml_file:
             self._codec.save_test_reports(reports, yaml_file)
 
+
     @property
     def test_report(self):
         return join_paths(self._path, self.TEST_REPORT)

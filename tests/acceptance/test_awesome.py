@@ -18,10 +18,7 @@ class FilesAreGenerated(CampTests):
 
 
     def setUp(self):
-        self.sample = Sample("awesome", self.WORKSPACE)
-
-
-    WORKSPACE = "tmp/acceptance"
+        self.sample = Sample("awesome")
 
 
     def test_generate_all(self):

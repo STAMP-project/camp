@@ -20,10 +20,7 @@ class FilesAreGenerated(CampTests):
 
 
     def setUp(self):
-        self.sample = Sample("stamp/xwiki", self.WORKSPACE)
-
-
-    WORKSPACE = "tmp/acceptance"
+        self.sample = Sample("stamp/xwiki")
 
 
     @skip("Take too long, about 45 min.")
