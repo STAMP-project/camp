@@ -31,5 +31,4 @@ RUN env && python -c 'import z3; print(z3.get_version_string())'
 
 WORKDIR /camp
 COPY . /camp
-RUN pip install -r requirements.txt && \
-    pip install .
+RUN pip install .
