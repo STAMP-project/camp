@@ -4,101 +4,230 @@ layout: default
 
 # CAMP Execute
 
-The command `camp execute ...` let you execute the test configurations
-that CAMP generates.
+The command `camp execute` runs your integration tests on all the
+generated configurations (see camp generate and camp realize).
 
-Assuming you have described what you would like to run in an INI file
-named `my-project/config.ini`, you can run it as follows:
 
 ```bash
-$> camp execute -c my-project/config.ini
-``` 
-
-# A Simple Example
-
-We details here how to run a single docker-compose file. All the files
-are available in the [stamp
-repository] (http://github.com/stamp-project/camp/samples/execute/simple)
-
-
-## Sample Configuration
-
-Here the file `simple/config.ini` describes how to run a
-configuration.
-
-
-```ini
-[pre_post]
-setup = examples/simple/scripts/setup_composetest.sh
-setup_params = param1
-teardown = examples/simple/scripts/teardown_composetest.sh
-teardown_params = param1
-
-[docker_compose]
-compose_files = examples/simple/composetest/docker-compose.yml
-
-[experiment]
-script = examples/simple/scripts/exp_composetest.sh
-params = param1 param2
+$ camp execute ...
 ```
 
-The configuration file consists of three sections,
-i.e. `[pre_post]`, `[docker_compose]`, `[experiment]`.
+CAMP will go in each configurations, build the needed images, deploy
+the orchestration using docker-compose, runs the tests, and collect
+the test reports.
 
- * The `[pre_post]` section contains paths to setup and tear down
-   scripts along with the parameters for these scripts. The parameters
-   is a string separated by whitespaces. The string is parsed and fed
-   into a command line as arguments for a corresponding script, e.g. a
-   `setup_params` string is fed into a `setup` script.
+Here is the usage and options:
+```console
+$ camp execute --help
+usage: CAMP execute [-h] [-d WORKING_DIRECTORY] [-s] [-t TESTING_TOOL] [-c COMPONENT]
 
- * The `[experiment]` section references a script to perform an
-   experiment on a running system which is spawn off with help of
-   docker-compose. The experiment can be thought of as a test to check
-   properties of the running system. This section also has the
-   `params` field with parameters to feed into the experiment
-   script. The `params` field contains a string with parameters
-   separated by whitespaces.
-
- * The `[docker_compose]` has the `compose_files` field with a list
-   of docker-compose files separated by semicolons. CAMP-exe executes
-   setup, tear down and experiment script for each docker-compose
-   file.
-
-## Sample Output
-
-In this example, CAMP deploys a simple web application, makes a
-request to the application and kills the application. The output
-should look as follows:
-
-```
-Executing: ./setup_composetest.sh param1 at examples/simple/scripts
-setup! param1
-Executing: docker-compose up -d at examples/simple/composetest
-Creating network "composetest_default" with the default driver
-Creating composetest_redis_1 ... done
-Creating composetest_web_1   ... done
-Executing: ./exp_composetest.sh param1 param2 at examples/simple/scripts
-Waiting for 5 sec to set up deployment
-Hello World! I have been called. param1:param1 param2:param2
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100    33  100    33    0     0   3051      0 --:--:-- --:--:-- --:--:--  3300
-Executing: docker-compose down at examples/simple/composetest
-Stopping composetest_web_1   ... done
-Stopping composetest_redis_1 ... done
-Removing composetest_web_1   ... done
-Removing composetest_redis_1 ... done
-Removing network composetest_default
-Executing: ./teardown_composetest.sh param1 at examples/simple/scripts
-teardown! param1
-Completed!
-
+optional arguments:
+  -h, --help            show this help message and exit
+  -d WORKING_DIRECTORY, --directory WORKING_DIRECTORY
+                        the directory that contains the input files
+  -s, --simulated       Display but do NOT execute the commands that CAMP triggers
+  -t TESTING_TOOL, --test-with TESTING_TOOL
+                        Select the technology used to run the test
+  -c COMPONENT, --component COMPONENT
+                        Select the component that hosts the tests
 ```
 
-A single execution of CAMP-exe is guided by a configuration file. An
-execution of CAMP-exe can be thought of as a unit test case for the
-deployment described in a docker-compose file. The configuration file
-defines a set of scripts to set up, tear down a test experiment,
-deploy the application, and execute the experiment on the deployed
-application. The content of the configuration file may look as
-follows:
+---
+**Note:** `CAMP execute` *requires* that docker be up and running.
+
+---
+
+
+## Example: Test A Java WebApp
+
+If you are unsure about how to generate new configuration with CAMP,
+please check the camp generate and camp realize commands.
+
+Let us consider a [Java
+WebApp](http://github.com/stamp-project/camp/samples/java) as a
+running example of CAMP execute. We called it "Greetings" as
+it simply returns a greeting message.
+
+Here is an overview of our project structure:
+
+```console
+$ tree
+.
+├── camp.yaml
+└── template
+    ├── docker-compose.yml
+    ├── greetings
+    │   ├── Dockerfile
+    │   ├── pom.xml
+    │   └── src
+    │       └── main
+    │           ├── java/org/samples
+    │           │            └── GreetingService.java
+    │           └── webapp/WEB-INF
+    │                      └── web.xml
+    └── tests
+        ├── Dockerfile
+        ├── pom.xml
+        └── src/test/java/org/samples
+                              └── GreetingServiceTest.java
+```
+
+Greetings is a simple REST service running on top of a Tomcat
+server. It comes with an integration test, placed into a separate
+Maven project. The docker-compose file provides an example of
+deployment including both the integration test and the service.
+
+### The CAMP Model
+
+Let's first look at the [CAMP
+model](http://github.com/stamp-project/camp/samples/java/camp.yaml),
+where we specify how to change the underlying version of the Tomcat
+application server, as in the following excerpt:
+
+```yaml
+  greetings:
+    provides_services: [ Greetings ]
+    variables:
+      tomcat:
+        values: [ v7, v8, v9 ]
+        realization:
+         - targets: [ greetings/Dockerfile ]
+           pattern: "tomcat:8-jre8"
+           replacements:
+             - tomcat:7-jre8
+             - tomcat:8-jre8
+             - tomcat:9-jre8
+    implementation:
+      docker:
+        file: greetings/Dockerfile
+```
+
+---
+**Convention**: We use a naming convention. CAMP will run the component
+named `tests`.
+
+**Warning**: As per version 0.3, CAMP only supports Maven/JUnit
+components. More technologies will added later on.
+
+---
+
+
+### The Deployment Template
+
+CAMP requires a template deployment, which it will modifies according
+to the given CAMP model.
+
+As you can see in our project structure, our [deployment
+template](http://github.com/stamp-project/camp/samples/java/template)
+contains the code source for both the Greeting service and its
+integration test, along with Dockerfile that specify how to build and
+install this pieces of software.
+
+#### The Greeting Service
+
+Our greetings service is simple Jersey REST service. Here the Java
+code of the REST end point, but we also have the necessary
+[`web.xml`](http://github.com/stamp-project/camp/samples/java/template/greetings/src/main/webapp/WEB-INF/web.xml)
+to specify servlets' bindings and the [Maven POM
+file](http://github.com/stamp-project/camp/samples/java/template/greetings/pom.xml)
+to build the project.
+
+```java
+@Path("/hello")
+public class GreetingService {
+
+    @GET
+    @Path("/{name}")
+    public Response getMessage(@PathParam("name") String name) {
+        final String output = String.format("Hello '%s'!", name);
+        return Response.status(200).entity(output).build();
+    }
+
+}
+```
+
+#### A Simple Integration Test
+
+We also wrote a single integration test, in a separate Maven project,
+which simply calls our Greeting service and check whether it gets and
+HTTP OK as a response. Here is the code of the test:
+
+```java
+static final String END_POINT = "http://greetings:8080/greetings/rest/hello/%s";
+
+@Test
+public void testStatusCode() throws Exception {
+    URL resource = new URL(String.format(END_POINT, "franck"));
+    HttpURLConnection connection = (HttpURLConnection) resource.openConnection();
+
+    int responseCode = connection.getResponseCode();
+
+    assertEquals(200, responseCode);
+}
+```
+
+
+### Running CAMP Execute
+
+To run camp execute, you must already have generated and realized the
+configuration. On this Java example, CAMP generates three
+configurations, one per version of Tomcat.
+
+```console
+$ camp generate -d .
+$ camp realize -d .
+$ camp execute -d . -c tests -t maven
+CAMP v0.2.3 (MIT)
+Copyright (C) 2017 -- 2019 SINTEF Digital
+
+Loaded './camp.yaml'.
+Loading configurations from './out' ...
+
+ - Executing  ./out/config_1
+   1. Building images ...
+      $ bash build_images.sh (from './out/config_1/images')
+   2. Starting Services ...
+      $ docker-compose up -d (from './out/config_1')
+   3. Running tests ...
+      $ docker-compose run -v /home/fchauvel/Documents/camp/samples/java/out/config_1/images/tests_0/:/tests test mvn test (from './out/config_1')
+   4. Collecting tests ...
+      Reading ./out/config_1/images/tests_0/target/surefire-reports/TEST-org.samples.GreetingServiceTest.xml
+   5. Stopping Services ...
+      $ docker-compose down (from './out/config_1')
+
+ - Executing  ./out/config_2
+   1. Building images ...
+      $ bash build_images.sh (from './out/config_2/images')
+   2. Starting Services ...
+      $ docker-compose up -d (from './out/config_2')
+   3. Running tests ...
+      $ docker-compose run -v /home/fchauvel/Documents/camp/samples/java/out/config_2/images/tests_0/:/tests test mvn test (from './out/config_2')
+   4. Collecting tests ...
+      Reading ./out/config_2/images/tests_0/target/surefire-reports/TEST-org.samples.GreetingServiceTest.xml
+   5. Stopping Services ...
+      $ docker-compose down (from './out/config_2')
+
+- Executing  ./out/config_3
+   1. Building images ...
+      $ bash build_images.sh (from './out/config_3/images')
+   2. Starting Services ...
+      $ docker-compose up -d (from './out/config_3')
+   3. Running tests ...
+      $ docker-compose run -v /home/fchauvel/Documents/camp/samples/java/out/config_3/images/tests_0/:/tests test mvn test (from './out/config_3')
+   4. Collecting tests ...
+      Reading ./out/config_3/images/tests_0/target/surefire-reports/TEST-org.samples.GreetingServiceTest.xml
+   5. Stopping Services ...
+      $ docker-compose down (from './out/config_3')
+
+Test SUMMARY:
+
+Configuration            RUN   PASS   FAIL  ERROR
+--------------------------------------------------
+./out/config_1             1      1      0      0
+./out/config_2             1      1      0      0
+./out/config_3             1      1      0      0
+--------------------------------------------------
+TOTAL                      3      3      0      0
+
+That's all folks!
+```

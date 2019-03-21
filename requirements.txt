@@ -19,3 +19,4 @@ git+https://github.com/STAMP-project/ozepy.git@v1.0.0
 # TODO: move these somewhere else
 green==2.13.0
 mock>=2.0.0
+deepdiff==3.3.0

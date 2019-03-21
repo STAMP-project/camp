@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -22,6 +22,8 @@ from os.path import exists, isdir, join as join_paths, basename
 
 from shutil import copytree, rmtree
 
+from tempfile import mkdtemp
+
 from unittest import TestCase
 
 
@@ -29,7 +31,9 @@ from unittest import TestCase
 class Sample(object):
 
 
-    def __init__(self, path, workspace):
+    def __init__(self, path):
+        self._temporary_directory = mkdtemp(prefix="camp_")
+        workspace = join_paths(self._temporary_directory, "acceptance")
         self._source = join_paths("samples", path)
         self._input = InputDirectory(self._copy(self._source, workspace), YAML())
         self._output = OutputDirectory(join_paths(self._input.path, "out"), YAML())
@@ -73,6 +77,10 @@ class Sample(object):
 
         return [GeneratedConfiguration(path, configuration) \
                 for path, configuration in self._output.existing_configurations(model)]
+
+
+    def fetch_test_report(self):
+        return self._output.load_reports()
 
 
     @property
@@ -126,11 +134,18 @@ class CampTests(TestCase):
         self.camp("realize", "-d", self.sample.directory)
 
 
+    def execute(self, component, testing_tool):
+        self.camp("execute",
+                  "-d", self.sample.directory,
+                  "-c", component,
+                  "-t", testing_tool)
+
+
     @staticmethod
     def camp(*arguments):
-            camp = Camp(YAML(), Z3Problem, Builder())
-            command = Command.extract_from(arguments)
-            command.send_to(camp)
+        camp = Camp(YAML(), Z3Problem, Builder())
+        command = Command.extract_from(arguments)
+        command.send_to(camp)
 
 
     def _assert_generated(self, configuration, *files):

@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -16,15 +16,12 @@ from tests.acceptance.commons import Sample, CampTests
 
 
 
-WORKSPACE = "tmp/acceptance/errors"
-
-
 
 class MissingCAMPModelIsReported(CampTests):
 
 
     def setUp(self):
-        self.sample = Sample("no_camp_model", WORKSPACE)
+        self.sample = Sample("missing_camp_model")
 
 
     def test_when_we_generate_all(self):
@@ -40,7 +37,7 @@ class MissingConfigurationsAreReported(CampTests):
 
 
     def setUp(self):
-        self.sample = Sample("no_camp_config", WORKSPACE)
+        self.sample = Sample("missing_configurations")
         self.sample.create_model("goals:\n"
                                  "  running: [ Awesome ]\n"
                                  "components:\n"
@@ -61,7 +58,7 @@ class UnexpectedErrorsAreCaught(CampTests):
 
 
     def setUp(self):
-        self.sample = Sample("no_camp_config", WORKSPACE)
+        self.sample = Sample("unexpected_errors")
         self.sample.create_model("goals:\n"
                                  "  running: [ Awesome ]\n"
                                  "components:\n"

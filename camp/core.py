@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -14,9 +14,11 @@ from camp.codecs.yaml import InvalidYAMLModel
 from camp.directories import InputDirectory, OutputDirectory, \
     MissingModel, NoConfigurationFound
 from camp.entities.validation import Checker, InvalidModel
-from camp.execute.parsers import ConfigINIParser
-from camp.execute.command.commands import ConductExperimentRunner
+from camp.execute.commons import SimulatedShell, Shell, ShellCommandFailed
+from camp.execute.select import select_executor, TechnologyNotSupported
 from camp.ui import UI
+
+from traceback import extract_tb
 
 from sys import exc_info
 
@@ -53,7 +55,8 @@ class Camp(object):
             self._ui.missing_model(error)
 
         except Exception as error:
-            self._ui.unexpected_error(error)
+            stack_trace = extract_tb(exc_info()[2])
+            self._ui.unexpected_error(error, stack_trace)
 
         finally:
             self._ui.goodbye()
@@ -110,7 +113,8 @@ class Camp(object):
             self._ui.no_configuration_found(error)
 
         except Exception as error:
-            self._ui.unexpected_error(error)
+            stack_trace = extract_tb(exc_info()[2])
+            self._ui.unexpected_error(error, stack_trace)
 
         finally:
             self._ui.goodbye()
@@ -122,17 +126,41 @@ class Camp(object):
         return configurations
 
 
-    @staticmethod
     def execute(self, arguments):
         self._ui.welcome()
+        self._prepare_directories(arguments)
         try:
-            parser = ConfigINIParser()
-            config = parser.parse(arguments.configuration_file)
-            experiment = ConductExperimentRunner(config)
-            experiment.run()
+            model = self._load_model()
+            configurations = self._load_configurations(model)
+            with open("camp_execute.log", "w") as log_file:
+                shell = SimulatedShell(log_file, ".") if arguments.is_simulated \
+                        else Shell(log_file, ".")
+                execute = select_executor(arguments.testing_tool, shell)
+                reports = execute(configurations, arguments.component)
+                self._output.save_reports(reports)
+                self._ui.summarize_execution(reports)
 
-        except:
-            self._ui.error(sys.exc_info()[0])
+        except InvalidYAMLModel as error:
+            self._ui.invalid_yaml_model(error)
+
+        except InvalidModel as error:
+            self._ui.invalid_model(error)
+
+        except MissingModel as error:
+            self._ui.missing_model(error)
+
+        except NoConfigurationFound as error:
+            self._ui.no_configuration_found(error)
+
+        except ShellCommandFailed as error:
+            self._ui.shell_command_failed(error)
+
+        except TechnologyNotSupported as error:
+            self._ui.technology_not_supported(error)
+
+        except Exception as error:
+            stack_trace = extract_tb(exc_info()[2])
+            self._ui.unexpected_error(error, stack_trace)
 
         finally:
             self._ui.goodbye()

@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -155,6 +155,23 @@ class OutputDirectory(Directory):
     def _create(directory):
         if not isdir(directory):
             makedirs(directory)
+
+
+    def save_reports(self, reports):
+        with open(self.test_report, "w") as yaml_file:
+            self._codec.save_test_reports(reports, yaml_file)
+
+
+    @property
+    def test_report(self):
+        return join_paths(self._path, self.TEST_REPORT)
+
+    TEST_REPORT = "test_report.yaml"
+
+
+    def load_reports(self):
+        with open(self.test_report, "r") as yaml_file:
+            return self._codec.load_test_reports(yaml_file)
 
 
     def save_as_graphviz(self, index, configuration):

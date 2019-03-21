@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -93,9 +93,26 @@ class UI(object):
                     folder=error.searched_folder)
 
 
-    def unexpected_error(self, error):
+    def shell_command_failed(self, error):
+        self._print("\nTest execution aborted!")
+        self._print(" - Error: A shell command failed (code: {code})", code=error.exit_code)
+        self._print("   $ {command}", command=error.command)
+        self._print("   Check out logs in 'camp_execute.log'.")
+
+
+    def technology_not_supported(self, error):
+        self._print("\nTest execution aborted!")
+        self._print(" - Error: Testing with '{techno}' is not supported.",
+                    techno=error.technology)
+        self._print("   Options are: {options}", options=error.options)
+        self._print("   Is there a newer version of CAMP available?")
+
+
+    def unexpected_error(self, error, stack_trace):
         self._print("Unexpected error:")
-        self._print(" - " + str(error))
+        self._print(" - {0}".format(str(error)))
+        self._print("   In file: {0}".format(stack_trace[-1][0]))
+        self._print("      {}: {}".format(stack_trace[-1][1], stack_trace[-1][3]))
         self._print("   Please report this at '{issue}'.",
                     issue=self.ISSUE_PAGE)
 
@@ -114,6 +131,43 @@ class UI(object):
             text = text[:75] + " ... "
         self._print(text)
 
+
+    def summarize_execution(self, results):
+        self._print("\nTest SUMMARY:")
+        self._print("")
+        self._print(self._TEST_SUMMARY,
+                    config="Configuration",
+                    run="RUN",
+                    passed="PASS",
+                    fail="FAIL",
+                    error="ERROR")
+        self._print(self._LINE)
+        total_run = 0
+        total_pass = 0
+        total_fail = 0
+        total_error = 0
+        for each in results:
+            self._print(self._TEST_SUMMARY,
+                        config=each.configuration_name,
+                        run=each.run_test_count,
+                        passed=each.passed_test_count,
+                        fail=each.failed_test_count,
+                        error=each.error_test_count)
+            total_run += each.run_test_count
+            total_pass += each.passed_test_count
+            total_fail += each.failed_test_count
+            total_error += each.error_test_count
+        self._print(self._LINE)
+        self._print(self._TEST_SUMMARY,
+                    config="TOTAL",
+                    run=total_run,
+                    passed=total_pass,
+                    fail=total_fail,
+                    error=total_error)
+
+
+    _TEST_SUMMARY = "{config:<20} {run:>7}{passed:>7}{fail:>7}{error:>7}"
+    _LINE = "-" * 20 + "-" + "-" * (4 * 7 + 1)
 
     def _print(self, pattern, **values):
         if values:

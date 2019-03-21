@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -53,7 +53,7 @@ class Command(object):
             "-d",
             "--directory",
             dest="working_directory",
-            help="the directory that describes that contains the input files")
+            help="the directory that contains the input files")
         realize.add_argument(
             "-o",
             "--output",
@@ -64,10 +64,26 @@ class Command(object):
             "execute",
             help="Execute the test configurations generated")
         execute.add_argument(
+            "-d",
+            "--directory",
+            dest="working_directory",
+            help="the directory that contains the input files")
+        execute.add_argument(
+            "-s",
+            "--simulated",
+            action="store_true",
+            dest="is_simulated",
+            help="Display but do NOT execute the commands that CAMP triggers")
+        execute.add_argument(
+            "-t",
+            "--test-with",
+            dest="testing_tool",
+            help="Select the technology used to run the test")
+        execute.add_argument(
             "-c",
-            "--config",
-            dest="configuration_file",
-            help="The INI file that describes which configurations to execute")
+            "--component",
+            dest="component",
+            help="Select the component that hosts the tests")
 
         values = parser.parse_args(command_line)
         return Command.from_namespace(values)
@@ -84,7 +100,10 @@ class Command(object):
                            namespace.output_directory)
 
         elif namespace.command == "execute":
-            return Execute(namespace.configuration_file)
+            return Execute(namespace.working_directory,
+                           namespace.testing_tool,
+                           namespace.component,
+                           namespace.is_simulated)
 
         else:
             message = "The command '%s' is not yet implemented." % namespace.command
@@ -121,6 +140,7 @@ class Generate(Command):
     @property
     def only_coverage(self):
         return self._coverage
+
 
     def send_to(self, camp):
         camp.generate(self)
@@ -164,19 +184,42 @@ class Execute(Command):
     Encapsulate calls to 'camp execute ...'
     """
 
+    DEFAULT_WORKING_DIRECTORY = "temp/xwiki"
+    DEFAULT_TESTING_TOOL = "maven"
+    DEFAULT_COMPONENT = "test"
+    DEFAULT_IS_SIMULATED = False
 
-    DEFAULT_CONFIGURATION_FILE = "config.ini"
 
-
-    def __init__(self, configuration_file):
+    def __init__(self,
+                 working_directory=None,
+                 testing_tool=None,
+                 component=None,
+                 is_simulated=None):
         super(Execute, self).__init__()
-        self._configuration_file = configuration_file \
-                                   or self.DEFAULT_CONFIGURATION_FILE
+        self._working_directory = working_directory or self.DEFAULT_WORKING_DIRECTORY
+        self._component = component or self.DEFAULT_COMPONENT
+        self._testing_tool = testing_tool or self.DEFAULT_TESTING_TOOL
+        self._is_simulated = is_simulated or self.DEFAULT_IS_SIMULATED
 
 
     @property
-    def configuration_file(self):
-        return self._configuration_file
+    def working_directory(self):
+        return self._working_directory
+
+
+    @property
+    def component(self):
+        return self._component
+
+
+    @property
+    def testing_tool(self):
+        return self._testing_tool
+
+
+    @property
+    def is_simulated(self):
+        return self._is_simulated
 
 
     def send_to(self, camp):

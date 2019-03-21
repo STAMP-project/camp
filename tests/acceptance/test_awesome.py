@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -18,10 +18,7 @@ class FilesAreGenerated(CampTests):
 
 
     def setUp(self):
-        self.sample = Sample("awesome", self.WORKSPACE)
-
-
-    WORKSPACE = "tmp/acceptance"
+        self.sample = Sample("awesome")
 
 
     def test_generate_all(self):
