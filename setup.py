@@ -39,5 +39,10 @@ setup(name="camp",
           "jsonpath-rw == 1.4.0",
           "argparse == 1.2.1",
           "ozepy @ git+https://github.com/STAMP-project/ozepy.git@v1.0.0#egg=ozepy"
+      ],
+      tests_require=[
+          "green==2.13.0",
+          "mock==2.0.0",
+          "deepdiff==3.3.0"
       ]
 )

@@ -110,7 +110,7 @@ As for most of Python applications, the simplest way to install it is
 using PIP as follows:
 
 ```bash
-$ pip install https://github.com/stamp-project/camp.git@master#egg=pip
+$ pip install -U https://github.com/STAMP-project/camp.git@master#egg=camp
 ```
 
 You can check the installation be running:
