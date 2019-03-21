@@ -4,7 +4,7 @@ LABEL maintainer "franck.chauvel@sintef.no"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends  \
-	libgomp1=4.9.2-10+deb8u1 \
+	libgomp1=4.9.2-10+deb8u2 \
 	python2.7-dev=2.7.9-2+deb8u2 \
 	python-pip=1.5.6-5 \
 	wget=1.16-1+deb8u5 \
