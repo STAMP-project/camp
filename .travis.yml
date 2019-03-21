@@ -46,7 +46,7 @@ install:
   - python -c "import z3; print(z3.get_version_string())"
   # Install CAMP and its dependencies 
   - pip install codecov coverage
-  - pip install .
+  - pip install .[test]
 
 script:
   - green -qrf -vv tests

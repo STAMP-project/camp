@@ -14,6 +14,11 @@ from setuptools import setup, find_packages
 from camp import About
 
 
+test_dependencies = [
+    "green==2.13.0",
+    "mock==2.0.0",
+    "deepdiff==3.3.0"
+]
 
 setup(name="camp",
       version=About.VERSION,
@@ -40,9 +45,8 @@ setup(name="camp",
           "argparse == 1.2.1",
           "ozepy @ git+https://github.com/STAMP-project/ozepy.git@v1.0.0#egg=ozepy"
       ],
-      tests_require=[
-          "green==2.13.0",
-          "mock==2.0.0",
-          "deepdiff==3.3.0"
-      ]
+      tests_require = test_dependencies,
+      extras_require = {
+          "test": test_dependencies
+      }
 )
