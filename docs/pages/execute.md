@@ -9,7 +9,7 @@ generated configurations (see camp generate and camp realize).
 
 
 ```bash
-$ camp execute
+$ camp execute ...
 ```
 
 CAMP will go in each configurations, build the needed images, deploy
@@ -19,10 +19,12 @@ the test reports.
 Here is the usage and options:
 ```console
 $ camp execute --help
-usage: CAMP execute [-h] [-s] [-t TESTING_TOOL] [-c COMPONENT]
+usage: CAMP execute [-h] [-d WORKING_DIRECTORY] [-s] [-t TESTING_TOOL] [-c COMPONENT]
 
 optional arguments:
   -h, --help            show this help message and exit
+  -d WORKING_DIRECTORY, --directory WORKING_DIRECTORY
+                        the directory that contains the input files
   -s, --simulated       Display but do NOT execute the commands that CAMP triggers
   -t TESTING_TOOL, --test-with TESTING_TOOL
                         Select the technology used to run the test
@@ -174,7 +176,7 @@ configurations, one per version of Tomcat.
 ```console
 $ camp generate -d .
 $ camp realize -d .
-$ camp execute
+$ camp execute -d . -c tests -t maven
 CAMP v0.2.3 (MIT)
 Copyright (C) 2017 -- 2019 SINTEF Digital
 
