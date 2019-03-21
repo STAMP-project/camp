@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -19,7 +19,7 @@ from camp.commands import Command, Generate
 class DefaultValuesAreCorrect(TestCase):
 
 
-    def test_given_no_working_directory(self):
+    def test_given_no_parameters(self):
         command_line = "generate --all"
 
         command = Command.extract_from(command_line.split())

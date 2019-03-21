@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -38,6 +38,16 @@ class YAML(Codec):
 
     def __init__(self):
         self._warnings = []
+
+
+    def load_test_reports(self, stream):
+        return load_yaml(stream)
+
+
+    def save_test_reports(self, reports, stream):
+        yaml_dump({"reports": [each.as_dictionary for each in reports]},
+                  stream,
+                  default_flow_style=False)
 
 
     def save_configuration(self, configuration, stream):

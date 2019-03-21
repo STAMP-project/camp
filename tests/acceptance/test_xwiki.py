@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -20,16 +20,14 @@ class FilesAreGenerated(CampTests):
 
 
     def setUp(self):
-        self.sample = Sample("stamp/xwiki", self.WORKSPACE)
-
-
-    WORKSPACE = "tmp/acceptance"
+        self.sample = Sample("stamp/xwiki")
 
 
     @skip("Take too long, about 45 min.")
     def test_after_we_generate_all(self):
         self.generate_all()
         self.assertEqual(64, len(self.sample.generated_configurations))
+
 
     @skip("Take too long")
     def test_after_we_generate_coverage(self):

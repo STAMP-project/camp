@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017, 2018 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -18,10 +18,7 @@ class FilesAreGenerated(CampTests):
 
 
     def setUp(self):
-        self.sample = Sample("stamp/atos", self.WORKSPACE)
-
-
-    WORKSPACE = "tmp/acceptance"
+        self.sample = Sample("stamp/atos")
 
 
     def test_generate_coverage(self):
@@ -32,7 +29,7 @@ class FilesAreGenerated(CampTests):
 
     def test_after_we_realize_coverage(self):
         self.create_configurations(self.CONFIG_1, self.CONFIG_2)
-                                               
+
         self.realize()
 
         self.assertEqual(2, len(self.sample.generated_configurations))
