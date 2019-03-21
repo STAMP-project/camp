@@ -8,9 +8,25 @@ CAMP is an open source tool and we welcome any kind of contributions,
 from fixing typos in the documentation to fixing bugs in the code. We
 explain here:
 
+ * What the [todo list](#todo)
  * The overall [layout of the source code](#layout);
  * How to [contribute to the documentation](#documentation);
  * How to [build and modify the code](#building)
+
+
+<a name="todo"/>
+## TODO List
+
+*   Refactorings
+
+    *   Extract all the print from CAMP execute into the UI component,
+        so that less verbose UI could be developed.
+
+    *   Remove duplication between commands and the working
+        directories
+
+    *   Rewrite the YAML codec so that it parses test reports and
+        returns the proper CAMP object instead of a dictionary.
 
 
 <a name="layout" />

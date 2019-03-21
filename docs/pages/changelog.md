@@ -5,8 +5,20 @@ changes that were made.
 
 *   Development
 
-	*   Fix reporting of missing configurations (similar to [Issue
-		 25](https://github.com/STAMP-project/camp/issues/25)).
+*   CAMP v0.3
+
+    *   CAMP v0.3.0 (Mar. 21, 2019)
+
+        *   New version of the `camp execute` command that deploys
+            generated configuration, runs tests, and collect and
+            aggregates test reports.
+
+        *   Fix [Security Issue
+            CVE-2017-18342](https://nvd.nist.gov/vuln/detail/CVE-2017-18342)
+            on PyYAML before version 4.1
+
+	    *   Fix reporting of missing configurations (similar to [Issue
+		    25](https://github.com/STAMP-project/camp/issues/25)).
 
 *   CAMP v0.2
 
