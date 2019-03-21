@@ -14,6 +14,7 @@ from setuptools import setup, find_packages
 from camp import About
 
 
+
 setup(name="camp",
       version=About.VERSION,
       description=About.DESCRIPTION,
@@ -31,5 +32,12 @@ setup(name="camp",
           'console_scripts': [
               'camp = camp.run:main'
           ]
-      }
+      },
+      install_requires = [
+          "PyYAML == 5.1",
+          "plumbum == 1.6.7",
+          "jsonpath-rw == 1.4.0",
+          "argparse == 1.2.1",
+          "ozepy @ git+https://github.com/STAMP-project/ozepy.git@v1.0.0#egg=ozepy"
+      ]
 )
