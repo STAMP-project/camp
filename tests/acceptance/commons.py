@@ -22,8 +22,7 @@ from os.path import exists, isdir, join as join_paths, basename
 
 from shutil import copytree, rmtree
 
-from tempfile import gettempdir
-
+from tempfile import mkdtemp
 
 from unittest import TestCase
 
@@ -32,8 +31,9 @@ from unittest import TestCase
 class Sample(object):
 
 
-    def __init__(self, path, workspace=None):
-        workspace = workspace or join_paths(gettempdir(), "acceptance")
+    def __init__(self, path):
+        self._temporary_directory = mkdtemp(prefix="camp_")
+        workspace = join_paths(self._temporary_directory, "acceptance")
         self._source = join_paths("samples", path)
         self._input = InputDirectory(self._copy(self._source, workspace), YAML())
         self._output = OutputDirectory(join_paths(self._input.path, "out"), YAML())
