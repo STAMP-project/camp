@@ -5,6 +5,10 @@ changes that were made.
 
 *   Development
 
+    *   Fix [Issue
+        28](https://github.com/STAMP-project/camp/issues/28) about
+        libgomp that fails the Docker build process.
+
 *   CAMP v0.3
 
     *   CAMP v0.3.0 (Mar. 21, 2019)
