@@ -31,4 +31,8 @@ RUN env && python -c 'import z3; print(z3.get_version_string())'
 
 WORKDIR /camp
 COPY . /camp
+
+RUN easy_install -U pip
+RUN pip install -U setuptools
+RUN pip --version
 RUN pip install .
