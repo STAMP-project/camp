@@ -52,7 +52,7 @@ parse_arguments () {
                 Z3_PLATFORM="$3"
                 shift 2
                 ;;
-            -o|--only-dependencies)
+            -o|--only-z3)
                 ONLY_DEPENDENCIES=true
                 shift 1
                 ;;
