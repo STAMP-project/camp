@@ -223,7 +223,7 @@ install_Z3() {
         \cp ${Z3_DIRECTORY}/bin/z3 ${PYTHON_LIB_PATH}/z3/lib/
         \cp ${Z3_DIRECTORY}/bin/lib* $PYTHON_LIB_PATH/z3/lib/
         \cp -rf ${Z3_DIRECTORY}/bin/python/z3 ${PYTHON_LIB_PATH}
-        \ln -s ${PYTHON_LIB_PATH}/z3/lib/z3 /usr/bin/z3
+        sudo \ln -s ${PYTHON_LIB_PATH}/z3/lib/z3 /usr/bin/z3
         \rm -rf ${Z3_DIRECTORY}
         \rm -rf ${Z3_ARCHIVE}
 
