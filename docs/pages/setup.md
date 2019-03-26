@@ -9,19 +9,84 @@ uses the [Z3 theorem prover](https://github.com/Z3Prover/z3) behind
 the scenes. These are therefore the two mandatory dependencies that
 must installed on your machine.
 
+You can install CAMP in three main ways:
 
+1.  [Using our install script](#from-internet) (recommended) ;
+2.  [Using Docker](#using-docker) (might be slow for the `camp execute` command) ;
+3.  [Manually](#manually).
+
+If these do not work, check out the [troubleshooting
+section](#troubleshooting) on possible issues and resolution.
+
+
+<a name="from-internet"/>
+## Using the Install Script
+
+The simplest way is our install script, which you can fetch and
+execute as follows:
+
+```bash
+$ \curl -L https://github.com/STAMP-project/camp/raw/master/install.sh \
+  | sudo bash -s -- --python-library /usr/lib/python2.7
+```
+
+This script installs both the Z3 solver and CAMP. It accepts the
+following arguuments:
+
+```console
+Usage: sh install.sh [options...]
+Options:
+  -c, --camp-version STRING    Select a specific version of CAMP from Github.
+                               Can be a branch name (e.g., 'master'), a tag, or
+                               a commit hash. Default is 'master'.
+  -l, --z3-platform STRING     Install Z3 for a specific version of linux. 
+                               Default is 'x64-debian-8.10'.
+  -o, --only-z3                Does not install CAMP, but only the Z3 solver.
+                               Default is 'false'.
+  -p, --python-library DIR     Set the installation directory for the Z3 Python
+                               bindings. Default is '/usr/lib/python2.7'.
+  -z, --z3-version STRING      Set the version of the Z3 solver to install. 
+                               Default is 4.7.1.
+```
+
+Here, we specified where the Z3 Python bindings must be installed.
+
+Note the `--camp-version`, which let you install a specific version of
+CAMP. Here, we installed the development version, directly from the
+`master` branch.
+
+Once it completed, you can check that CAMP is running as follows:
+
+```console
+$ camp --help
+usage: CAMP [-h] {generate,realize,execute} ...
+
+Amplify your configuration tests!
+
+positional arguments:
+  {generate,realize,execute}
+    generate            Generate new test configurations
+    realize             Realize the variables in the test configurations
+    execute             Execute the test configurations generated
+
+optional arguments:
+  -h, --help            show this help message and exit
+```
+
+
+<a name="using-docker" />
 ## Installing using Docker
 
-The simplest solution is to use [docker](https://www.docker.com/) to
+Another solution is to use [docker](https://www.docker.com/) to
 run CAMP and all its dependencies in one container, using the
 following command:
 
 ```bash
-$ docker run -it -v $(pwd):/camp/workspace fchauvel/camp:v1.0.0 camp generate -d workspace
+$ docker run -it -v $(pwd):/camp/workspace fchauvel/camp:latest camp generate -d workspace
 ```
 
 This command will fetch the CAMP Docker image named
-`fchauvel/camp:v1.0.0` from [Docker
+`fchauvel/camp:latest` from [Docker
 Hub](https://hub.docker.com/r/fchauvel/camp/) and run it with your
 working directory ($pwd) mounted in the container at `/workspace`.
 
@@ -34,6 +99,7 @@ We follow the following convention for tags on our Docker images:
 
 
 
+<a name="manually" />
 ## Installing from Scratch
 
 ### Installing Python 2.7
@@ -128,13 +194,13 @@ $ camp version
 > ```console
 > $ git clone https://github.com/stamp-project/camp.git
 > $ cd camp
-> $ pip install -r requirements.txt
 > $ pip install -e .
 > $ camp version
 > 1.0.0
 > ```
 
 
+<a name="troubleshooting" />
 ## Troubleshooting
 
 ### If the Z3 Python bindings cannot find `libz3.so`
