@@ -11,14 +11,14 @@ Options:
   -c, --camp-version STRING    Select a specific version of CAMP from Github.
                                Can be a branch name (e.g., 'master'), a tag, or
                                a commit hash. Default is 'master'.
-  -l, --z3-platform            Install Z3 for a specific version of linux. 
+  -l, --z3-platform STRING     Install Z3 for a specific version of linux. 
                                Default is 'x64-debian-8.10'.
   -o, --only-z3                Does not install CAMP, but only the Z3 solver.
                                Default is 'false'.
   -p, --python-library DIR     Set the installation directory for the Z3 Python
                                bindings. Default is '/usr/lib/python2.7'.
   -z, --z3-version STRING      Set the version of the Z3 solver to install. 
-                               Default is 4.7.1.
+                               Default is '4.7.1'.
 EOF
 );
 
