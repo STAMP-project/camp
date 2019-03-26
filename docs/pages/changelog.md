@@ -6,7 +6,17 @@ changes that were made.
 *   Development
 
     *   Fix [Issue
-        32]((https://github.com/STAMP-project/camp/issues/28) and move
+        27](https://github.com/STAMP-project/camp/issues/27) with
+        revision of the installation documentation that pointed to
+        CAMP v1.0.0, which does not exists yet.
+
+    *   Fix [Issue
+        33](https://github.com/STAMP-project/camp/issues/33) with an
+        alternative installation procedure, which does not requires
+        docker.
+
+    *   Fix [Issue
+        32](https://github.com/STAMP-project/camp/issues/32) and move
         dependencies from `requirements.txt` to `setup.py`.
 
     *   Fix [Issue

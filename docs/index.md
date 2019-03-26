@@ -12,17 +12,18 @@ and output configurations are specified as Dockerfiles or
 docker-compose files.
 
 ## Quick start
-The fastest way to start with CAMP is to use our [pre-built Docker
-image](https://hub.docker.com/r/fchauvel/camp/), using the following
-command:
+The fastest way to [install CAMP](pages/setup.md) is to use our
+[Installation script
+](https://github.com/STAMP-project/camp/blob/master/install.sh) as follows:
 
 ```bash
-$> docker run -it -v $(pwd):/camp/workspace fchauvel/camp:latest camp generate -d workspace
+$ \curl -L https://github.com/STAMP-project/camp/raw/master/install.sh \
+  | sudo bash
 ```
 
-Alternatively, you can fetch [the source
-code](https://github.com/STAMP-project/camp) and install it according
-to [the instructions](pages/setup.html).
+You can then fetch [the source
+code](https://github.com/STAMP-project/camp) and try out the examples
+from the `samples` directory.
 
 Here are the three main CAMP commands:
 
