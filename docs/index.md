@@ -32,7 +32,7 @@ Here are the three main CAMP commands:
  * `camp execute ...` to run some of these new test configurations
 
 
-### CAMP Inputs 
+### CAMP Inputs
 
 CAMP requires two inputs:
 
@@ -40,12 +40,12 @@ CAMP requires two inputs:
    that can vary in the orchestrations. These may be service
    providers, feature providers, version or other numerical
    configurations.
-   
+
  2. A **template** orchestration that illustrates how the components
     listed in the CAMP model are bound and configured together. So
     far, CAMP only supports the Docker technologies and the
     orchestration must be a docker-compose file.
- 
+
 From there, CAMP will generate, realize and execute alternative
 configurations, each with alternative variations.
 

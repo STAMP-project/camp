@@ -11,13 +11,15 @@ changes that were made.
         CAMP v1.0.0, which does not exists yet.
 
     *   Fix [Issue
-        33](https://github.com/STAMP-project/camp/issues/33) with an
-        alternative installation procedure, which does not requires
-        docker.
+        33](https://github.com/STAMP-project/camp/issues/33) by taking
+        into account the presence of `settings.xml` to avoid Maven to create
+        local repository in a directory that does not exist.
 
     *   Fix [Issue
         32](https://github.com/STAMP-project/camp/issues/32) and move
-        dependencies from `requirements.txt` to `setup.py`.
+        dependencies from `requirements.txt` to `setup.py`. Add an
+        alternative installation procedure, which does not requires
+        docker.
 
     *   Fix [Issue
         28](https://github.com/STAMP-project/camp/issues/28) about

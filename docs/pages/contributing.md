@@ -17,6 +17,10 @@ explain here:
 <a name="todo"/>
 ## TODO List
 
+*   Features
+
+    * A "version" command that displays the version.
+
 *   Refactorings
 
     *   Extract all the print from CAMP execute into the UI component,
@@ -27,6 +31,17 @@ explain here:
 
     *   Rewrite the YAML codec so that it parses test reports and
         returns the proper CAMP object instead of a dictionary.
+
+    *   Port to Python3
+
+*   Configuration
+
+    *   Extract the installation commands of Z3 in a separate shell
+        script that can be downloaded both by the Docker when building
+        the CAMP image and by Travis.
+
+    *   Find a way to have documentation available per version, when a
+        new version is released.
 
 
 <a name="layout" />
