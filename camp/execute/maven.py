@@ -1,7 +1,7 @@
 #
 # CAMP
 #
-# Copyright (C) 2017 - 2019 SINTEF Digital
+# Copyright (C) 2017 -- 2019 SINTEF Digital
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
@@ -15,7 +15,7 @@ from camp.entities.report import SuccessfulTest, FailedTest, \
 from camp.execute.commons import Executor
 
 from os import getuid
-from os.path import abspath, join as join_paths
+from os.path import abspath, exists, join as join_paths
 
 from xml.etree.ElementTree import fromstring
 
@@ -32,17 +32,30 @@ class MavenExecutor(Executor):
     def _run_tests(self, path, component):
         print "   3. Running tests ..."
         absolute_path = abspath(path)
+
+        settings = ""
+        if self._has_XML_settings(path, component):
+            settings = "-gs settings.xml"
+
         command = self.RUN_TESTS.format(
             uid=getuid(),
             path=absolute_path,
-            component=component)
+            component=component,
+            settings=settings)
         self._shell.execute(command, path)
 
     RUN_TESTS = ("docker-compose run "
                  "--user={uid} "
                  "-v {path}/images/{component}_0/:/{component} "
                  "{component} "
-                 "mvn test")
+                 "mvn test -B {settings}")
+
+
+    def _has_XML_settings(self, path, component):
+        directory = join_paths(path,
+                               "images", component+"_0")
+        results = self._shell.find_all_files("settings.xml", directory)
+        return len(results) > 0
 
 
     def _collect_results(self, path):

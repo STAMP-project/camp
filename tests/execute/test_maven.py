@@ -16,6 +16,8 @@ from camp.execute.commons import SimulatedShell
 from camp.execute.maven import MavenExecutor, JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
+from mock import MagicMock
+
 from os import getcwd, getuid
 from os.path import join as join_paths
 
@@ -32,22 +34,73 @@ class TheMavenExecutorShould(TestCase):
         self._log = StringIO()
         self._shell = SimulatedShell(self._log, "./")
         self._execute = MavenExecutor(self._shell)
+        self._configurations = [
+            ("out/config_1", None),
+            ("out/config_2", None)
+        ]
+        self._component = "FooBar"
 
 
-    def test_build_deploy_run_and_collect_test_results(self):
-        configurations = [("out/config_1", None),
-                          ("out/config_2", None)]
-        self._execute(configurations, "foo")
+    def test_build_all_images_for_all_configurations(self):
+        self._call_execute()
 
-        self.assertIn("bash build_images.sh", self._log.getvalue())
-        self.assertIn("docker-compose up -d", self._log.getvalue())
+        for each_path, _ in self._configurations:
+            path = join_paths(each_path, "images")
+            expected_command = MavenExecutor._BUILD_IMAGES
+            self._verify(path, expected_command)
 
-        for each_path, _ in configurations:
-            expected_run_command = MavenExecutor.RUN_TESTS.format(
+
+    def test_start_services_for_all_configurations(self):
+        self._call_execute()
+
+        for each_path, _ in self._configurations:
+            expected_command = MavenExecutor._START_SERVICES
+            self._verify(each_path, expected_command)
+
+
+    def test_run_tests_for_all_configurations(self):
+        self._call_execute()
+
+        for each_path, _ in self._configurations:
+            expected_command = MavenExecutor.RUN_TESTS.format(
                 uid=getuid(),
                 path=join_paths(getcwd(), each_path),
-                component="foo")
-            self.assertIn(expected_run_command, self._log.getvalue())
+                component=self._component,
+                settings="")
+            expected = SimulatedShell.LOG_OUTPUT.format(each_path,
+                                                        expected_command)
+            self._verify(each_path, expected_command)
+
+
+    def test_run_tests_accounting_for_settings_xml_when_it_exists(self):
+        self._execute._has_XML_settings = MagicMock(returnvalue=True)
+
+        self._call_execute()
+
+        for each_path, _ in self._configurations:
+            expected_command = MavenExecutor.RUN_TESTS.format(
+                uid=getuid(),
+                path=join_paths(getcwd(), each_path),
+                component=self._component,
+                settings="-gs settings.xml")
+            self._verify(each_path, expected_command)
+
+
+    def test_stop_services_for_all_configurations(self):
+        self._call_execute()
+
+        for each_path, _ in self._configurations:
+            expected_command = MavenExecutor._STOP_SERVICES
+            self._verify(each_path, expected_command)
+
+
+    def _call_execute(self):
+        self._execute(self._configurations, self._component)
+
+
+    def _verify(self, path, command):
+        expected = SimulatedShell.LOG_OUTPUT.format(path,command)
+        self.assertIn(expected, self._log.getvalue())
 
 
 
