@@ -15,7 +15,9 @@ from camp.entities.report import SuccessfulTest, FailedTest, \
 from camp.execute.commons import Executor
 
 from os import getuid
-from os.path import abspath, exists, join as join_paths
+from os.path import abspath, join as join_paths
+
+from re import search
 
 from xml.etree.ElementTree import fromstring
 
@@ -67,7 +69,7 @@ class MavenExecutor(Executor):
         print "   4. Collecting tests ..."
 
         docker_ps = self.GET_CONTAINER_ID.format(
-            configuration=path[6:],
+            configuration=search(r"(config_[0-9]+)\/?$", path).group(1),
             component=component)
         container = self._shell.execute(docker_ps, path)
 
