@@ -44,9 +44,14 @@ class MavenExecutor(Executor):
             settings=settings)
         self._shell.execute(command, path)
 
+    # We CANNOT use Docker volumes (option -v). If CAMP runs within a
+    # container that spawns new containers by sharing the docker
+    # deamon of its host (i.e., by mounting '/var/run/docker.sock'),
+    # Docker interprets the paths given to mount volumes with respect
+    # to the host file system. (See Issue #35)
     RUN_TESTS = ("docker-compose run "
-                 "--user={uid} "
-                 "-v {path}/images/{component}_0/:/{component} "
+                 # "--user={uid} "
+                 # "-v {path}/images/{component}_0/:/{component} "
                  "{component} "
                  "mvn test -B {settings}")
 
@@ -58,12 +63,32 @@ class MavenExecutor(Executor):
         return len(results) > 0
 
 
-    def _collect_results(self, path):
+    def _collect_results(self, path, component):
         print "   4. Collecting tests ..."
+
+        docker_ps = self.GET_CONTAINER_ID.format(
+            configuration=path[6:],
+            component=component)
+        container = self._shell.execute(docker_ps, path)
+
+        docker_cp = self.FETCH_TEST_REPORTS.format(
+            container=container.strip(),
+            component=component)
+        self._shell.execute(docker_cp, path)
+        return self._parse_test_reports(path)
+
+    GET_CONTAINER_ID = ("docker ps --all --quiet "
+                        "--filter name={configuration}_{component}_run_1")
+
+    FETCH_TEST_REPORTS=("docker cp "
+                        "{container}:/{component}/target/surefire-reports "
+                        "./test-reports")
+
+
+    def _parse_test_reports(self, path):
         all_tests = []
 
-        directory = join_paths(path,
-                               "images", "tests_0", "target", "surefire-reports")
+        directory = join_paths(path, "test-reports")
         test_reports = self._shell.find_all_files(".xml", directory)
 
         for each_report in test_reports:
@@ -78,8 +103,6 @@ class MavenExecutor(Executor):
                 print "      - Error: ", str(error)
 
         return TestReport(path, TestSuite("all tests", *all_tests))
-
-
 
 
 

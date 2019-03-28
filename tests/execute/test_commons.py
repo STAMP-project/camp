@@ -43,6 +43,12 @@ class TheShellShould(TestCase):
         self.assertEquals(expected_log, self._log.getvalue())
 
 
+    def test_returns_the_output_of_the_command(self):
+        result = self._shell.execute("expr 1 + 4")
+
+        self.assertEquals(result, "5\n")
+
+
     def test_override_the_initial_file_directory(self):
         self._shell.execute("expr 1 + 4", "./tests")
 
@@ -63,7 +69,6 @@ class TheShellShould(TestCase):
                         "camp@bash:./$ echo Hello!\n"
                         "Hello!\n")
         self.assertEquals(expected_log, self._log.getvalue())
-
 
 
     def test_capture_commands_and_outputs_when_executing_shell_commands(self):

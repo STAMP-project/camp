@@ -35,8 +35,8 @@ class TheMavenExecutorShould(TestCase):
         self._shell = SimulatedShell(self._log, "./")
         self._execute = MavenExecutor(self._shell)
         self._configurations = [
-            ("out/config_1", None),
-            ("out/config_2", None)
+            ("./out/config_1", None),
+            ("./out/config_2", None)
         ]
         self._component = "FooBar"
 
@@ -84,6 +84,21 @@ class TheMavenExecutorShould(TestCase):
                 component=self._component,
                 settings="-gs settings.xml")
             self._verify(each_path, expected_command)
+
+
+    def test_fetch_test_reports(self):
+        self._call_execute()
+
+        for each_path, _ in self._configurations:
+            docker_ps = MavenExecutor.GET_CONTAINER_ID.format(
+                configuration=each_path[6:],
+                component=self._component)
+            self._verify(each_path, docker_ps)
+
+            docker_cp = MavenExecutor.FETCH_TEST_REPORTS.format(
+                container="",
+                component=self._component)
+            self._verify(each_path, docker_cp)
 
 
     def test_stop_services_for_all_configurations(self):
