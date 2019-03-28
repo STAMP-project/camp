@@ -6,6 +6,11 @@ changes that were made.
 *   Development
 
     *   Fix [Issue
+        35](https://github.com/STAMP-project/camp/issues/35) by using
+        `docker cp` to fetch test reports, instead of mounting
+        volumes.
+
+    *   Fix [Issue
         27](https://github.com/STAMP-project/camp/issues/27) with
         revision of the installation documentation that pointed to
         CAMP v1.0.0, which does not exists yet.
