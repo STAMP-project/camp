@@ -29,9 +29,9 @@ class Shell(object):
         self._working_directory = working_directory or self._working_directory
         self._output_on_console(command)
         self._output_in_logs(command)
-        self._run_shell(command)
+        result = self._run_shell(command)
         self._restore_working_directory()
-
+        return result
 
     def _output_in_logs(self, command):
         text = self.LOG_OUTPUT.format(self._working_directory, command)
@@ -58,6 +58,7 @@ class Shell(object):
             if process.returncode != 0:
                 raise ShellCommandFailed(command,
                                          process.returncode)
+            return stdout
 
         except OSError as error:
             raise ShellCommandFailed(command, str(error))
@@ -93,6 +94,7 @@ class SimulatedShell(Shell):
 
     def _run_shell(self, command):
         self._log.write(self.COMMAND_SIMULATED)
+        return ""
 
 
     COMMAND_SIMULATED = (">>> This command was only simulated "
@@ -140,11 +142,11 @@ class Executor(object):
     def __call__(self, configurations, component):
         test_results = []
         for each_path, _ in configurations:
-            print " - Executing ", each_path
+            print "\n - Executing ", each_path
             self._build_images(each_path)
             self._start_services(each_path)
             self._run_tests(each_path, component)
-            results = self._collect_results(each_path)
+            results = self._collect_results(each_path, component)
             test_results.append(results)
             self._stop_services(each_path)
 
