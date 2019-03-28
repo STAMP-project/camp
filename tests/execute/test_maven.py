@@ -21,6 +21,8 @@ from mock import MagicMock
 from os import getcwd, getuid
 from os.path import join as join_paths
 
+from re import search
+
 from StringIO import StringIO
 
 from unittest import TestCase
@@ -36,7 +38,7 @@ class TheMavenExecutorShould(TestCase):
         self._execute = MavenExecutor(self._shell)
         self._configurations = [
             ("./out/config_1", None),
-            ("./out/config_2", None)
+            ("/this/is/an/absolute/out/config_2", None)
         ]
         self._component = "FooBar"
 
@@ -91,7 +93,7 @@ class TheMavenExecutorShould(TestCase):
 
         for each_path, _ in self._configurations:
             docker_ps = MavenExecutor.GET_CONTAINER_ID.format(
-                configuration=each_path[6:],
+                configuration=search(r"(config_[0-9]+)\/?$", each_path).group(1),
                 component=self._component)
             self._verify(each_path, docker_ps)
 
