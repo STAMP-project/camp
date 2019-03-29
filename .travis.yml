@@ -25,18 +25,13 @@ services:
   - docker
 
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install -y libstdc++6
-  - sudo apt-get install -y libgomp1
-
-install:
-  # Install the Z3 solver
-  - python -c 'import sys; print(sys.path)'
-  - bash install.sh --only-z3 --python-library /opt/python/2.7.15/lib/python2.7
-
-  # Install CAMP and its dependencies 
   - pip install codecov coverage
-  - pip install .[test]
+  
+install:
+  # Install CAMP and its dependencies 
+  - python -c 'import sys; print(sys.path)'
+  - sudo bash install.sh --camp-from-sources --camp-with-tests --install-z3 --z3-python-bindings /opt/python/2.7.15/lib/python2.7
+
 
 script:
   - green -qrf -vv tests
