@@ -253,7 +253,7 @@ test_Z3() {
 
 test_Z3_python_bindings() {
     local -r TEST_BINDINGS=\
-          "pythonc-c \"import z3; print(z3.get_version_string())\""
+          "python -c \"import z3; print(z3.get_version_string())\""
     if ${TEST_BINDINGS} >> ${LOG_FILE} 2>&1
     then
         printf "Z3 Python bindings ready. (%s)\n" ${Z3_BINDINGS}
