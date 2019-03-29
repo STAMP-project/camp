@@ -27,7 +27,7 @@ execute as follows:
 
 ```bash
 $ \curl -L https://github.com/STAMP-project/camp/raw/master/install.sh \
-  | sudo bash -s -- --python-library /usr/lib/python2.7
+  | sudo bash -s -- --install-z3 --z3-python-bindings /usr/lib/python2.7
 ```
 
 This script installs both the Z3 solver and CAMP. It accepts the
@@ -36,17 +36,26 @@ following arguuments:
 ```console
 Usage: sh install.sh [options...]
 Options:
-  -c, --camp-version STRING    Select a specific version of CAMP from Github.
-                               Can be a branch name (e.g., 'master'), a tag, or
-                               a commit hash. Default is 'master'.
-  -l, --z3-platform STRING     Install Z3 for a specific version of linux. 
-                               Default is 'x64-debian-8.10'.
-  -o, --only-z3                Does not install CAMP, but only the Z3 solver.
-                               Default is 'false'.
-  -p, --python-library DIR     Set the installation directory for the Z3 Python
-                               bindings. Default is '/usr/lib/python2.7'.
-  -z, --z3-version STRING      Set the version of the Z3 solver to install. 
-                               Default is 4.7.1.
+  -c, --camp-version STRING     Select a specific version of CAMP from Github.
+                                Can be a branch name (e.g., 'master'), a tag, or
+                                a commit hash. Default is 'master'.
+  -d, --install-docker          Install Docker.io (CE version). By default,
+                                Docker will not be installed.
+  -l, --z3-platform STRING      Install Z3 for a specific version of linux.
+                                Default is 'x64-debian-8.10'.
+  -g, --debug                   Debugging mode: display all commands and log
+                                output in a file. Disabled by default.
+  -i, --install-z3              Install Z3 if not already available. By default,
+                                Z3 will notbe installed.
+  -p, --z3-python-bindings DIR  Set the installation directory for the Z3 Python
+                                bindings. Default is '/usr/lib/python2.7'.
+  -s, --camp-from-sources       Install CAMP for sources expected to be in
+                                the working directory. By default, CAMP is
+                                downloaded from Github.
+  -t, --camp-with-tests         Install CAMP with its test dependencies. By 
+                                default, these are not installed.
+  -z, --z3-version STRING       Set the version of the Z3 solver to install.
+                                Default is '4.7.1'.
 ```
 
 Here, we specified where the Z3 Python bindings must be installed.

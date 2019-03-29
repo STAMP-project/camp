@@ -1,0 +1,29 @@
+# Project specific
+modules
+
+# Jekyll
+**/_site
+**/Gemfile.lock
+
+# Github files
+**/.git
+**/.github
+.gitignore
+
+# Python files
+**/.py*
+**/*.pyc
+**/*.egg-info
+.coverage
+
+# Travis-ci
+.travis.yml
+
+# Emacs
+**/*~
+**/\#*
+**/.\#*
+
+# Other
+**/.DS_Store
+**/*.log
