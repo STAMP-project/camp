@@ -229,7 +229,7 @@ ensure_pip_available() {
     else
         local -r current_version=$(version_of "pip")
         comparison=$(compare_version ${current_version} ${PIP_VERSION})
-        if [ "$comparison" == "<" ];
+        if [ "$comparison" == "<" ]
         then
             printf "PIP '%s' not compatible. Upgrading to %s\n" ${current_version} ${PIP_VERSION}
             pip -qq install --upgrade pip==$PIP_VERSION
@@ -240,7 +240,8 @@ ensure_pip_available() {
 
 test_Z3() {
     local -r TEST_Z3="z3 --version"
-    if ${TEST_Z3} >> ${LOG_FILE} 2>&1; then
+    if ${TEST_Z3} >> ${LOG_FILE} 2>&1
+    then
         printf "Z3 %s ready.\n" ${Z3_VERSION}
     else
         printf "Error: Z3 not working!\n";
@@ -251,14 +252,16 @@ test_Z3() {
 
 
 test_Z3_python_bindings() {
-    local -r TEST_PYTHON_BINDINGS="import z3; print(z3.get_version_string())"
-    python -c "${TEST_PYTHON_BINDINGS}" >> ${LOG_FILE} 2>&1
-    if [ $? -eq 0 ]; then
+    local -r TEST_BINDINGS=\
+          "python-c \"import z3; print(z3.get_version_string())\""
+    if ${TEST_BINDINGS} >> ${LOG_FILE} 2>&1
+    then
         printf "Z3 Python bindings ready. (%s)\n" ${Z3_BINDINGS}
     else
         printf "Error: Z3 Bindings not working!\n";
         printf "Is '%s' the path to the Python's libraries?\n" ${Z3_BINDINGS}
         printf "Aborting.\n";
+        cat ${LOG_FILE}
         exit 1;
     fi
 }

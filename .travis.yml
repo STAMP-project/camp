@@ -30,8 +30,7 @@ before_install:
 install:
   # Install CAMP and its dependencies 
   - python -c 'import sys; print(sys.path)'
-  - sudo bash install.sh --camp-from-sources --camp-with-tests --install-z3 --z3-python-bindings /opt/python/2.7.15/lib/python2.7
-
+  - sudo bash install.sh --debug --camp-from-sources --camp-with-tests --install-z3 --z3-python-bindings /opt/python/2.7.15/lib/python2.7
 
 script:
   - green -qrf -vv tests
