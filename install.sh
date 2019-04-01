@@ -254,6 +254,7 @@ test_Z3() {
 
 test_Z3_python_bindings() {
     ensure_python_available
+    python -c 'import sys; print(sys.path)'
     printf ${PATH}
     local -r TEST_BINDINGS="/usr/bin/python -c \"import z3; print(z3.get_version_string())\""
     if eval "${TEST_BINDINGS}" >> ${LOG_FILE} 2>&1
