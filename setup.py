@@ -17,8 +17,8 @@ from camp import About
 test_dependencies = [
     "green==2.13.0",
     "mock==2.0.0",
-    "deepdiff==3.3.0"
-    "coverage=4.5.3"
+    "deepdiff==3.3.0",
+    "coverage==4.5.3"
 ]
 
 setup(name="camp",
@@ -41,7 +41,6 @@ setup(name="camp",
       },
       install_requires = [
           "PyYAML == 5.1",
-          "plumbum == 1.6.7",
           "jsonpath-rw == 1.4.0",
           "argparse == 1.2.1",
           "ozepy @ git+https://github.com/STAMP-project/ozepy.git@v1.0.0#egg=ozepy"

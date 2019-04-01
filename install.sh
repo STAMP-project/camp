@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 set -o errexit
+set -o errtrace
 set -o pipefail
 set -o nounset
 
@@ -49,7 +50,6 @@ INSTALL_DOCKER=false
 abort () {
     printf "Aborting!\n"
     tail --lines 30 ${LOG_FILE}
-    exit 1
 }
 
 
@@ -255,8 +255,6 @@ test_Z3() {
 
 test_Z3_python_bindings() {
     ensure_python_available
-    python -c 'import sys; print(sys.path)'
-    printf ${PATH}
     local -r TEST_BINDINGS="/usr/bin/python -c \"import z3; print(z3.get_version_string())\""
     if eval "${TEST_BINDINGS}" >> ${LOG_FILE} 2>&1
     then
@@ -349,7 +347,7 @@ cleanup () {
     do
         apt-get remove --purge -y --allow-remove-essential $each >> ${LOG_FILE} 2>&1
     done
-    apt-get autoremove -y
+    apt-get autoremove -y >> ${LOG_FILE} 2>&1
     rm -rf /var/lib/apt/lists/*
 
     ln -s /usr/bin/python2.7 /usr/bin/python
