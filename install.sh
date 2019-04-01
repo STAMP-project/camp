@@ -46,6 +46,11 @@ INSTALL_Z3=false
 INSTALL_DOCKER=false
 
 
+abort () {
+    printf "Aborting!\n"
+    tail --lines 30 ${LOG_FILE}
+    exit 1
+}
 
 
 parse_arguments () {
@@ -98,7 +103,7 @@ parse_arguments () {
 
 
 install_packages () {
-    apt-get install -qqq -y --no-install-recommends $* >> ${LOG_FILE} 2>&1
+    apt-get install -y --no-install-recommends $* >> ${LOG_FILE} 2>&1
 }
 
 
@@ -114,7 +119,7 @@ version_of () {
 
 
 ensure_python_available () {
-    if ! type python >/dev/null 2>&1
+    if ! type python >> ${LOG_FILE} 2>&1
     then
         printf "Installing Python 2.7 ...\n"
         install_packages python2.7-minimal python-pip python-pkg-resources
@@ -178,9 +183,6 @@ ensure_docker_available () {
              "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
         apt-get -qq update
         install_packages docker-ce-cli
-#                docker-ce \
-#                docker-ce-cli
-#                containerd.io
 
         #Installing Docker Compose
         curl -fsSL https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
@@ -220,7 +222,7 @@ ensure_pip_available() {
     local -r PIP_VERSION="19.0.3"
     if ! type pip >> ${LOG_FILE} 2>&1;
     then
-        printf "PIP is not available, installing PIP ${PIP_VERSION}.\n";
+        printf "Installing Pip ${PIP_VERSION}.\n";
         local -r PIP_INSTALLER_URL=https://bootstrap.pypa.io/get-pip.py
         \curl -sS -L -k -O ${PIP_INSTALLER_URL};
         python get-pip.py -qq pip==$PIP_VERSION;
@@ -231,7 +233,7 @@ ensure_pip_available() {
         comparison=$(compare_version ${current_version} ${PIP_VERSION})
         if [ "$comparison" == "<" ]
         then
-            printf "PIP '%s' not compatible. Upgrading to %s\n" ${current_version} ${PIP_VERSION}
+            printf "Upgrading Pip from %s to %s\n" ${current_version} ${PIP_VERSION}
             pip -qq install --upgrade pip==$PIP_VERSION
         fi
     fi
@@ -245,24 +247,22 @@ test_Z3() {
         printf "Z3 %s ready.\n" ${Z3_VERSION}
     else
         printf "Error: Z3 not working!\n";
-        printf "Aborting.\n";
-        exit 1;
+        abort
     fi
 }
 
 
 test_Z3_python_bindings() {
-    local -r TEST_BINDINGS=\
-          "python -c \"import z3; print(z3.get_version_string())\""
-    if ${TEST_BINDINGS} >> ${LOG_FILE} 2>&1
+    ensure_python_available
+    printf ${PATH}
+    local -r TEST_BINDINGS="/usr/bin/python -c \"import z3; print(z3.get_version_string())\""
+    if eval "${TEST_BINDINGS}" >> ${LOG_FILE} 2>&1
     then
         printf "Z3 Python bindings ready. (%s)\n" ${Z3_BINDINGS}
     else
         printf "Error: Z3 Bindings not working!\n";
         printf "Is '%s' the path to the Python's libraries?\n" ${Z3_BINDINGS}
-        printf "Aborting.\n";
-        cat ${LOG_FILE}
-        exit 1;
+        abort
     fi
 }
 
@@ -302,8 +302,9 @@ ensure_CAMP_available() {
     ensure_python_available
     ensure_git_available
     ensure_pip_available
-    ensure_docker_available
     ensure_Z3_available
+    ensure_docker_available
+
 
     if [[ "${CAMP_FROM_SOURCES}" == "true" ]]
     then
