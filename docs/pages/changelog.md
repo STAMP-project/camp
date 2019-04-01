@@ -5,6 +5,9 @@ changes that were made.
 
 *   Development
 
+    *   Test CAMP against multiple versions of Z3 (4.8.4, 4.7.1 and
+        4.6) using Travis Matrix Build.
+
 *   CAMP v0.3
 
     *   CAMP v0.3.1 (Apr. 1, 2019)
