@@ -267,16 +267,18 @@ test_Z3_python_bindings() {
 }
 
 
+
 ensure_Z3_available() {
     if [[ "${INSTALL_Z3}" == "true" ]] && ! type z3 >> ${LOG_FILE} 2>&1; then
-        printf "Installing Z3 ... (be patient)\n"
+        printf "Installing Z3 %s for (%s) ...\n" ${Z3_VERSION} ${Z3_PLATFORM}
         ensure_python_available
         ensure_libgomp_available
         ensure_curl_available
         ensure_unzip_available
+        local -r Z3_VERSION_NUMBER=$(echo ${Z3_VERSION} | grep -Eo "([0-9]+\.[0-9]+\.[0-9]+)") 
         local -r Z3_ARCHIVE=z3-${Z3_VERSION}-${Z3_PLATFORM}.zip
         local -r Z3_URL="https://github.com/Z3Prover/z3/releases/download/z3-%s/%s"
-        local -r Z3_ARCHIVE_URL=$(printf $Z3_URL $Z3_VERSION $Z3_ARCHIVE)
+        local -r Z3_ARCHIVE_URL=$(printf $Z3_URL $Z3_VERSION_NUMBER $Z3_ARCHIVE)
         local -r Z3_DIRECTORY=$(basename -s .zip $Z3_ARCHIVE)
 
         if ! [ -f ${Z3_ARCHIVE} ]; then
