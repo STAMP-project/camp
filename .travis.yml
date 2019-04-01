@@ -20,7 +20,9 @@ env:
   matrix:
     - Z3_VERSION="4.8.4.d6df51951f4c" Z3_PLATFORM="x64-debian-8.11" PUBLISH="true"
     - Z3_VERSION="4.7.1" Z3_PLATFORM="x64-debian-8.10" PUBLISH="false"
-    
+    - Z3_VERSION="4.6.0" Z3_PLATFORM="x64-debian-8.10" PUBLISH="false"
+
+
 dist: xenial
 sudo: required
 
