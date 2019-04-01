@@ -53,6 +53,7 @@ abort () {
 }
 
 
+
 parse_arguments () {
     while [ $# -gt 0 ]; do
         case "$1" in
@@ -346,7 +347,7 @@ cleanup () {
         )
     for each in "${BUILD_PACKAGES[@]}"
     do
-        apt-get remove --purge -y --allow-remove-essential $each
+        apt-get remove --purge -y --allow-remove-essential $each >> ${LOG_FILE} 2>&1
     done
     apt-get autoremove -y
     rm -rf /var/lib/apt/lists/*
@@ -361,6 +362,8 @@ cleanup () {
 
 
 # -------------------------- MAIN SCRIPT --------------------------------
+trap abort ERR
+
 parse_arguments $*
 
 if [[ "${DEBUG}" == "true" ]]
