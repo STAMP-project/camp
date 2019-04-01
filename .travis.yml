@@ -32,7 +32,7 @@ install:
 
 script:
   - docker run --name tests -v /var/run/docker.sock:/var/run/docker.sock -t fchauvel/camp:dev green -qrfvv tests.execute
-  - docker cp tests:/camp/.coverage
+  - docker cp tests:/camp/.coverage .coverage
   - codecov
 
 after_success:
