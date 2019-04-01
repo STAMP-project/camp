@@ -17,7 +17,10 @@ env:
   global:
     - NAME="camp"
     - CODECOV_TOKEN="6dfaf6b6-29f5-4816-8ace-908bbbb7e01e"
-
+  matrix:
+    - Z3_VERSION="4.8.4.d6df51951f4c" Z3_PLATFORM="x64-debian-8.11" PUBLISH="true"
+    - Z3_VERSION="4.7.1" Z3_PLATFORM="x64-debian-8.10" PUBLISH="false"
+    
 dist: xenial
 sudo: required
 
@@ -28,20 +31,32 @@ before_install:
   - pip install codecov
   
 install:
-  - docker build --build-arg WITH_TESTS=--camp-with-tests -t $DOCKER_USERNAME/$NAME:dev .
+  - |
+    docker build --build-arg WITH_TESTS=--camp-with-tests \
+                 --build-arg Z3_VERSION=${Z3_VERSION} \
+                 --build-arg Z3_PLATFORM=${Z3_PLATFORM} \
+                 -t $DOCKER_USERNAME/$NAME:dev .
 
 script:
-  - docker run --name tests -v /var/run/docker.sock:/var/run/docker.sock -t fchauvel/camp:dev green -qrfvv tests
+  - |
+    docker run --name tests \
+               -v /var/run/docker.sock:/var/run/docker.sock \
+               -t fchauvel/camp:dev \
+               green -qrfvv tests
   - docker cp tests:/camp/.coverage .coverage
   - codecov
 
 after_success:
   - |  
     docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD;
-    docker push $DOCKER_USERNAME/$NAME:dev;
-    echo $TRAVIS_TAG;
-    if [[ "$TRAVIS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-      docker tag $DOCKER_USERNAME/$NAME:dev $DOCKER_USERNAME/$NAME:$TRAVIS_TAG ;
-      docker tag $DOCKER_USERNAME/$NAME:dev $DOCKER_USERNAME/$NAME:latest ;
-      docker push $DOCKER_USERNAME/$NAME;
+    if [[ "${PUBLISH}" == "true" ]]
+    then
+       docker push $DOCKER_USERNAME/$NAME:dev
+       echo $TRAVIS_TAG
+       if [[ "$TRAVIS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+       then
+          docker tag $DOCKER_USERNAME/$NAME:dev $DOCKER_USERNAME/$NAME:$TRAVIS_TAG 
+          docker tag $DOCKER_USERNAME/$NAME:dev $DOCKER_USERNAME/$NAME:latest 
+          docker push $DOCKER_USERNAME/$NAME
+      fi
     fi
