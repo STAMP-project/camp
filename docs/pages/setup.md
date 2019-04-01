@@ -11,18 +11,55 @@ must installed on your machine.
 
 You can install CAMP in three main ways:
 
-1.  [Using our install script](#from-internet) (recommended) ;
-2.  [Using Docker](#using-docker) (might be slow for the `camp execute` command) ;
+2.  [Using Docker](#using-docker) (recommended) ;
+1.  [Using our install script](#from-internet) ;
 3.  [Manually](#manually).
 
 If these do not work, check out the [troubleshooting
 section](#troubleshooting) on possible issues and resolution.
 
 
+
+<a name="using-docker" />
+## Installing using Docker
+
+The fastest solution is to use [docker](https://www.docker.com/) to
+run CAMP and all its dependencies in one container, using the
+following command:
+
+```console
+fchauvel@debian$ docker run --name camp \
+             -it \
+             -v /var/run/docker.sock:/var/run/docker.sock \
+             -t fchauvel/camp:latest bash
+root@9dd7e1f061ce:/camp# cd samples/java
+root@9dd7e1f061ce:/camp# camp generate -d .
+```
+
+As shown above, the CAMP image already contains the code source and
+the examples in the `samples` directory.
+
+Note that we share the docker deamons of the host with the CAMP
+container (see the `-v /var/run/docker.sock:...` option). CAMP can
+therefore invoke docker and create "siblings" containers.
+
+This command will fetch the CAMP Docker image named
+`fchauvel/camp:latest` from [Docker
+Hub](https://hub.docker.com/r/fchauvel/camp/) and run it with your
+working directory ($pwd) mounted in the container at `/workspace`.
+
+We follow the following convention for tags on our Docker images:
+
+ * `vX.Y.Z` define the version of CAMP that is running
+ * `latest` define the latest released of CAMP (i.e., the higgest
+   version vX.Y.Z)
+ * `dev` define the latest commit that passed the CI checks.
+
+
 <a name="from-internet"/>
 ## Using the Install Script
 
-The simplest way is our install script, which you can fetch and
+Another way is to use our install script, which you can fetch and
 execute as follows:
 
 ```bash
@@ -81,30 +118,6 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
 ```
-
-
-<a name="using-docker" />
-## Installing using Docker
-
-Another solution is to use [docker](https://www.docker.com/) to
-run CAMP and all its dependencies in one container, using the
-following command:
-
-```bash
-$ docker run -it -v $(pwd):/camp/workspace fchauvel/camp:latest camp generate -d workspace
-```
-
-This command will fetch the CAMP Docker image named
-`fchauvel/camp:latest` from [Docker
-Hub](https://hub.docker.com/r/fchauvel/camp/) and run it with your
-working directory ($pwd) mounted in the container at `/workspace`.
-
-We follow the following convention for tags on our Docker images:
-
- * `vX.Y.Z` define the version of CAMP that is running
- * `latest` define the latest released of CAMP (i.e., the higgest
-   version vX.Y.Z)
- * `dev` define the latest commit that passed the CI checks.
 
 
 
