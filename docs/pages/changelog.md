@@ -5,32 +5,35 @@ changes that were made.
 
 *   Development
 
-    *   Fix [Issue
-        35](https://github.com/STAMP-project/camp/issues/35) by using
-        `docker cp` to fetch test reports, instead of mounting
-        volumes.
-
-    *   Fix [Issue
-        27](https://github.com/STAMP-project/camp/issues/27) with
-        revision of the installation documentation that pointed to
-        CAMP v1.0.0, which does not exists yet.
-
-    *   Fix [Issue
-        33](https://github.com/STAMP-project/camp/issues/33) by taking
-        into account the presence of `settings.xml` to avoid Maven to create
-        local repository in a directory that does not exist.
-
-    *   Fix [Issue
-        32](https://github.com/STAMP-project/camp/issues/32) and move
-        dependencies from `requirements.txt` to `setup.py`. Add an
-        alternative installation procedure, which does not requires
-        docker.
-
-    *   Fix [Issue
-        28](https://github.com/STAMP-project/camp/issues/28) about
-        libgomp that fails the Docker build process.
-
 *   CAMP v0.3
+
+    *   CAMP v0.3.1 (Apr. 1, 2019)
+
+        *   Fix [Issue
+            35](https://github.com/STAMP-project/camp/issues/35) by
+            using `docker cp` to fetch test reports, instead of
+            mounting volumes.
+
+        *   Fix [Issue
+            27](https://github.com/STAMP-project/camp/issues/27) with
+            revision of the installation documentation that pointed to
+            CAMP v1.0.0, which does not exists yet.
+
+        *   Fix [Issue
+            33](https://github.com/STAMP-project/camp/issues/33) by
+            taking into account the presence of `settings.xml` to
+            avoid Maven to create local repository in a directory that
+            does not exist.
+
+        *   Fix [Issue
+            32](https://github.com/STAMP-project/camp/issues/32) and
+            move dependencies from `requirements.txt` to
+            `setup.py`. Add an alternative installation procedure,
+            which does not requires docker.
+
+        *   Fix [Issue
+            28](https://github.com/STAMP-project/camp/issues/28) about
+            libgomp that fails the Docker build process.
 
     *   CAMP v0.3.0 (Mar. 21, 2019)
 
