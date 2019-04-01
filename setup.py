@@ -18,6 +18,7 @@ test_dependencies = [
     "green==2.13.0",
     "mock==2.0.0",
     "deepdiff==3.3.0"
+    "coverage=4.5.3"
 ]
 
 setup(name="camp",

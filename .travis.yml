@@ -25,20 +25,18 @@ services:
   - docker
 
 before_install:
-  - pip install codecov coverage
+  - pip install codecov
   
 install:
-  # Install CAMP and its dependencies 
-  - python -c 'import sys; print(sys.path)'
-  - sudo bash install.sh --debug --camp-from-sources --camp-with-tests --install-z3 --z3-python-bindings /usr/lib/python2.7
+  - docker build --build-arg WITH_TESTS=--camp-with-tests -t $DOCKER_USERNAME/$NAME:dev .
 
 script:
-  - green -qrf -vv tests
+  - docker run --name tests -v /var/run/docker.sock:/var/run/docker.sock -t fchauvel/camp:dev green -qrfvv tests.execute
+  - docker cp tests:/camp/.coverage
   - codecov
 
 after_success:
-  - |
-    docker build -t $DOCKER_USERNAME/$NAME:dev .;
+  - |  
     docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD;
     docker push $DOCKER_USERNAME/$NAME:dev;
     echo $TRAVIS_TAG;

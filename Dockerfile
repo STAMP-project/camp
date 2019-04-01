@@ -10,6 +10,9 @@
 
 FROM debian:9-slim
 
+ARG DEBUG
+ARG WITH_TESTS
+
 LABEL maintainer "franck.chauvel@sintef.no"
 
 
@@ -17,5 +20,5 @@ WORKDIR /camp
 COPY . /camp
 
 # Install Z3
-RUN bash install.sh --install-z3 --install-docker --camp-from-sources
+RUN bash install.sh --install-z3 --install-docker --camp-from-sources ${WITH_TESTS} ${DEBUG}
         
