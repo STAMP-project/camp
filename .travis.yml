@@ -31,7 +31,7 @@ install:
   - docker build --build-arg WITH_TESTS=--camp-with-tests -t $DOCKER_USERNAME/$NAME:dev .
 
 script:
-  - docker run --name tests -v /var/run/docker.sock:/var/run/docker.sock -t fchauvel/camp:dev green -qrfvv tests.execute
+  - docker run --name tests -v /var/run/docker.sock:/var/run/docker.sock -t fchauvel/camp:dev green -qrfvv tests
   - docker cp tests:/camp/.coverage .coverage
   - codecov
 
