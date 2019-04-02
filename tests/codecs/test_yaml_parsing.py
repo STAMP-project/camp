@@ -15,7 +15,7 @@ from camp.entities.model import DockerFile, DockerImage, Substitution
 from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest, \
     TestSuite, TestReport
 
-from StringIO import StringIO
+from io import StringIO
 
 from unittest import TestCase
 
@@ -27,6 +27,12 @@ class BuiltModelAreComplete(TestCase):
     def setUp(self):
         self._codec = YAML()
 
+
+    def _assertItemsEqual(self, expected, actual):
+        # For compatibility with Python 2.7, as the method
+        # assertItemsEquals has been renamed in Python 3.3 into
+        # 'assertCountEqual'.
+        return self.assertEqual(sorted(expected), sorted(actual))
 
 
     def test_given_a_one_component_stack(self):
@@ -256,10 +262,10 @@ class BuiltModelAreComplete(TestCase):
 
         self.assert_goals(model.goals, expectations["goals"])
 
-        self.assertItemsEqual(expectations["services"],
+        self._assertItemsEqual(expectations["services"],
                               [each.name for each in model.services])
 
-        self.assertItemsEqual(expectations["features"],
+        self._assertItemsEqual(expectations["features"],
                               [each.name for each in model.features])
 
         self.assertEqual(
@@ -272,23 +278,23 @@ class BuiltModelAreComplete(TestCase):
 
 
     def assert_goals(self, goals, expectations):
-        self.assertItemsEqual(expectations["services"],
+        self._assertItemsEqual(expectations["services"],
                               [each.name for each in goals.services])
-        self.assertItemsEqual(expectations["features"],
+        self._assertItemsEqual(expectations["features"],
                               [each.name for each in goals.features])
 
 
     def assert_component(self, component, expectation):
-        self.assertItemsEqual(
+        self._assertItemsEqual(
             expectation["provided_services"],
             [each.name for each in component.provided_services])
-        self.assertItemsEqual(
+        self._assertItemsEqual(
             expectation["required_services"],
             [each.name for each in component.required_services])
-        self.assertItemsEqual(
+        self._assertItemsEqual(
             expectation["provided_features"],
             [each.name for each in component.provided_features])
-        self.assertItemsEqual(
+        self._assertItemsEqual(
             expectation["required_features"],
             [each.name for each in component.required_features])
         self.assertEqual(expectation["implementation"],
@@ -303,8 +309,8 @@ class BuiltModelAreComplete(TestCase):
                           if variable.name == name),
                          None)
             if match:
-                self.assertItemsEqual(match.domain, variable["values"])
-                self.assertItemsEqual(match.realization, variable["realization"])
+                self._assertItemsEqual(match.domain, variable["values"])
+                self._assertItemsEqual(match.realization, variable["realization"])
 
             else:
                 self.fail("Component '%s' lacks variable '%s'." % (component.name, name))
@@ -701,6 +707,13 @@ class MissingMandatoryEntriesAreReported(TestCase):
         self._codec = YAML()
 
 
+    def _assertItemsEqual(self, expected, actual):
+        # For compatibility with Python 2.7, as the method
+        # assertItemsEquals has been renamed in Python 3.3 into
+        # 'assertCountEqual'.
+        return self.assertEqual(sorted(expected), sorted(actual))
+
+
     def test_when_omitting_substitution_targets(self):
         self.assert_missing(
             "components:\n"
@@ -778,7 +791,7 @@ class MissingMandatoryEntriesAreReported(TestCase):
             self.assertEqual(1, len(error.warnings))
             self.assertEqual(path,
                              error.warnings[0].path)
-            self.assertItemsEqual(candidates,
+            self._assertItemsEqual(candidates,
                                   error.warnings[0].candidates)
 
 

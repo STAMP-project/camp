@@ -132,7 +132,7 @@ class Camp(object):
         try:
             model = self._load_model()
             configurations = self._load_configurations(model)
-            with open("camp_execute.log", "w") as log_file:
+            with open("camp_execute.log", "wb") as log_file:
                 shell = SimulatedShell(log_file, ".") if arguments.is_simulated \
                         else Shell(log_file, ".")
                 execute = select_executor(arguments.testing_tool, shell)

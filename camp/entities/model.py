@@ -241,7 +241,7 @@ class Variable(NamedElement):
 
         divisor = largest_smaller_divisor()
         return [minimum + i * divisor \
-                for i in range(width / divisor + 1)]
+                for i in range(int(width / divisor) + 1)]
 
 
     def __init__(self, name, value_type, values, realization=None):

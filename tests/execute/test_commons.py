@@ -12,6 +12,8 @@
 
 from camp.execute.commons import ShellCommandFailed, Shell, SimulatedShell
 
+from io import BytesIO
+
 from os import makedirs
 from os.path import exists, isdir, join as join_paths, basename
 
@@ -19,10 +21,7 @@ from tempfile import gettempdir
 
 from shutil import copytree, rmtree
 
-from StringIO import StringIO
-
 from unittest import TestCase
-
 
 
 
@@ -30,8 +29,13 @@ class TheShellShould(TestCase):
 
     def setUp(self):
         self._working_directory = "./"
-        self._log = StringIO()
+        self._log = BytesIO()
         self._shell = Shell(self._log, "./")
+
+
+    @property
+    def log(self):
+        return self._log.getvalue().decode()
 
 
     def test_execute_a_given_command(self):
@@ -40,7 +44,7 @@ class TheShellShould(TestCase):
         expected_log = ("\n"
                         "camp@bash:./$ expr 1 + 4\n"
                         "5\n")
-        self.assertEquals(expected_log, self._log.getvalue())
+        self.assertEquals(expected_log, self.log)
 
 
     def test_returns_the_output_of_the_command(self):
@@ -55,7 +59,7 @@ class TheShellShould(TestCase):
         expected_log = ("\n"
                         "camp@bash:./tests$ expr 1 + 4\n"
                         "5\n")
-        self.assertEquals(expected_log, self._log.getvalue())
+        self.assertEquals(expected_log, self.log)
 
 
     def test_remember_the_initial_working_directory_when_it_has_been_overriden(self):
@@ -68,7 +72,7 @@ class TheShellShould(TestCase):
                         "\n"
                         "camp@bash:./$ echo Hello!\n"
                         "Hello!\n")
-        self.assertEquals(expected_log, self._log.getvalue())
+        self.assertEquals(expected_log, self.log)
 
 
     def test_capture_commands_and_outputs_when_executing_shell_commands(self):
@@ -77,7 +81,7 @@ class TheShellShould(TestCase):
         expected_log = ("\n"
                         "camp@bash:./$ echo Hello World!\n"
                         "Hello World!\n")
-        self.assertEquals(expected_log, self._log.getvalue())
+        self.assertEquals(expected_log, self.log)
 
 
     def test_append_outputs_of_multiple_commands_in_the_log(self):
@@ -94,7 +98,7 @@ class TheShellShould(TestCase):
                         "\n"
                         "camp@bash:./$ echo -n That's all folks!\n"
                         "That's all folks!")
-        self.assertEquals(expected_log, self._log.getvalue())
+        self.assertEquals(expected_log, self.log)
 
 
     def test_raise_exception_when_a_command_fails(self):
@@ -105,7 +109,7 @@ class TheShellShould(TestCase):
                         "camp@bash:./$ cat file_that_does_not_exist\n"
                         "cat: file_that_does_not_exist: No such file or directory\n")
         self.assertEquals(expected_log,
-                          self._log.getvalue())
+                          self.log)
 
 
     def test_raise_exception_when_a_command_does_not_exist(self):
@@ -143,8 +147,13 @@ class TheSimulatedShellShould(TestCase):
 
     def setUp(self):
         self._working_directory = "./"
-        self._log = StringIO()
+        self._log = BytesIO()
         self._shell = SimulatedShell(self._log, self._working_directory)
+
+
+    @property
+    def log(self):
+        return self._log.getvalue().decode()
 
 
     def test_not_run_any_command(self):
@@ -153,7 +162,7 @@ class TheSimulatedShellShould(TestCase):
         expected_log = ("\n"
                         "camp@bash:./$ echo Hello World!\n"
                         ">>> This command was only simulated and was not sent to the shell.\n")
-        self.assertEquals(expected_log, self._log.getvalue())
+        self.assertEquals(expected_log, self.log)
 
 
     def test_provides_nothing_as_file_content(self):

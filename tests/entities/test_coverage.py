@@ -19,44 +19,50 @@ from unittest import TestCase
 class FindMaximumCoverageSmallerOrEqualToTheRequestedOne(TestCase):
 
 
+    def _assertItemsEqual(self, expected, actual):
+        # For compatibility with Python 2.7, as the method
+        # assertItemsEquals has been renamed in Python 3.3 into
+        # 'assertCountEqual'.
+        return self.assertEqual(sorted(expected), sorted(actual))
+
+
     def test_given_the_minimum_coverage(self):
         values = Variable.cover(0, 6, 1)
 
-        self.assertItemsEqual([0, 1, 2, 3, 4, 5, 6],
+        self._assertItemsEqual([0, 1, 2, 3, 4, 5, 6],
                               values)
 
 
     def test_given_a_coverage_that_is_a_natural_divisor(self):
         values = Variable.cover(0, 6, 3)
 
-        self.assertItemsEqual([0, 3, 6],
+        self._assertItemsEqual([0, 3, 6],
                               values)
 
 
     def test_given_a_coverage_that_is_not_a_natural_divisor(self):
         values = Variable.cover(0, 6, 4)
 
-        self.assertItemsEqual([0, 3, 6],
+        self._assertItemsEqual([0, 3, 6],
                               values)
 
 
     def test_given_the_maximum_coverage(self):
         values = Variable.cover(0, 6, 6)
 
-        self.assertItemsEqual([0, 6],
+        self._assertItemsEqual([0, 6],
                               values)
 
 
     def test_given_a_coverage_above_the_maximum_coverage(self):
         values = Variable.cover(0, 6, 7)
 
-        self.assertItemsEqual([0, 6],
+        self._assertItemsEqual([0, 6],
                               values)
 
 
     def test_given_a_coverage_above_the_maximum_coverage(self):
         values = Variable.cover(0, 6, 12)
 
-        self.assertItemsEqual([0, 6],
+        self._assertItemsEqual([0, 6],
                               values)
-

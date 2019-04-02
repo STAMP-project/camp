@@ -13,7 +13,7 @@
 from camp.codecs.yaml import YAML
 from camp.generate import Z3Problem
 
-from StringIO import StringIO
+from io import StringIO
 
 from unittest import TestCase
 
