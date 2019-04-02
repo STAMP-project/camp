@@ -49,5 +49,16 @@ setup(name="camp",
       tests_require = test_dependencies,
       extras_require = {
           "test": test_dependencies
-      }
+      },
+      classifiers=[
+          "Development Status :: 4 - Beta",
+          "Environment :: Console",
+          "Intended Audience :: Science/Research",
+          "License :: OSI Approved :: MIT License",
+          "Natural Language :: English",
+          "Operating System :: POSIX :: Linux",
+          "Programming Language :: Python :: 2.7",
+          "Programming Language :: Python :: 3",
+          "Topic :: Software Development :: Testing"
+      ],
 )
