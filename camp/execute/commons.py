@@ -10,6 +10,8 @@
 
 
 
+from __future__ import print_function
+
 from os import listdir
 from os.path import isdir, join as join_paths
 
@@ -35,14 +37,14 @@ class Shell(object):
 
     def _output_in_logs(self, command):
         text = self.LOG_OUTPUT.format(self._working_directory, command)
-        self._log.write(text)
+        self._log.write(text.encode())
 
     LOG_OUTPUT = "\ncamp@bash:{0}$ {1}\n"
 
 
     def _output_on_console(self, command):
         text = self.CONSOLE_OUTPUT.format(command, self._working_directory)
-        print text
+        print(text)
 
     CONSOLE_OUTPUT = "      $ {0} (from '{1}')"
 
@@ -58,7 +60,7 @@ class Shell(object):
             if process.returncode != 0:
                 raise ShellCommandFailed(command,
                                          process.returncode)
-            return stdout
+            return stdout.decode()
 
         except OSError as error:
             raise ShellCommandFailed(command, str(error))
@@ -93,7 +95,7 @@ class SimulatedShell(Shell):
 
 
     def _run_shell(self, command):
-        self._log.write(self.COMMAND_SIMULATED)
+        self._log.write(self.COMMAND_SIMULATED.encode())
         return ""
 
 
@@ -142,7 +144,7 @@ class Executor(object):
     def __call__(self, configurations, component):
         test_results = []
         for each_path, _ in configurations:
-            print "\n - Executing ", each_path
+            print("\n - Executing ", each_path)
             self._build_images(each_path)
             self._start_services(each_path)
             self._run_tests(each_path, component)
@@ -154,7 +156,7 @@ class Executor(object):
 
 
     def _build_images(self, path):
-        print "   1. Building images ..."
+        print("   1. Building images ...")
         working_directory = join_paths(path, "images")
         self._shell.execute(self._BUILD_IMAGES, working_directory)
 
@@ -162,14 +164,14 @@ class Executor(object):
 
 
     def _start_services(self, path):
-        print "   2. Starting Services ..."
+        print("   2. Starting Services ...")
         self._shell.execute(self._START_SERVICES, path)
 
     _START_SERVICES = "docker-compose up -d"
 
 
     def _run_tests(self, path, command):
-        print "   3. Running tests ..."
+        print("   3. Running tests ...")
         self._shell.execute(self._RUN_TESTS + command, path)
 
     _RUN_TESTS = "docker-compose exec -it tests "
@@ -180,7 +182,7 @@ class Executor(object):
 
 
     def _stop_services(self, path):
-        print "   5. Stopping Services ..."
+        print("   5. Stopping Services ...")
         self._shell.execute(self._STOP_SERVICES, path)
 
     _STOP_SERVICES = "docker-compose down"

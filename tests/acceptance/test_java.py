@@ -26,7 +26,7 @@ class JavaGreetingsShould(CampTests):
 
         configurations = self.sample.generated_configurations
 
-        self.assertEquals(3, len(configurations))
+        self.assertEqual(3, len(configurations))
 
 
     def test_run_all_tests_three_times(self):
@@ -36,4 +36,4 @@ class JavaGreetingsShould(CampTests):
 
         report = self.sample.fetch_test_report()
 
-        self.assertEquals(3, len(report["reports"]))
+        self.assertEqual(3, len(report["reports"]))

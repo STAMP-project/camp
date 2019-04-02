@@ -70,6 +70,7 @@ class Z3Problem(object):
         self._solver = solver
 
 
+
     @redirect_stderr_to("z3_errors.log")
     def all_solutions(self):
         self._solver.push()

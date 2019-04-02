@@ -16,14 +16,14 @@ from camp.execute.commons import SimulatedShell
 from camp.execute.maven import MavenExecutor, JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
+from io import BytesIO
+
 from mock import MagicMock
 
 from os import getcwd, getuid
 from os.path import join as join_paths
 
 from re import search
-
-from StringIO import StringIO
 
 from unittest import TestCase
 
@@ -33,7 +33,7 @@ class TheMavenExecutorShould(TestCase):
 
 
     def setUp(self):
-        self._log = StringIO()
+        self._log = BytesIO()
         self._shell = SimulatedShell(self._log, "./")
         self._execute = MavenExecutor(self._shell)
         self._configurations = [
@@ -117,7 +117,7 @@ class TheMavenExecutorShould(TestCase):
 
     def _verify(self, path, command):
         expected = SimulatedShell.LOG_OUTPUT.format(path,command)
-        self.assertIn(expected, self._log.getvalue())
+        self.assertIn(expected, self._log.getvalue().decode())
 
 
 

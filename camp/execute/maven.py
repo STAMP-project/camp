@@ -10,6 +10,8 @@
 
 
 
+from __future__ import print_function
+
 from camp.entities.report import SuccessfulTest, FailedTest, \
     ErroneousTest, TestSuite, TestReport
 from camp.execute.commons import Executor
@@ -32,7 +34,7 @@ class MavenExecutor(Executor):
 
 
     def _run_tests(self, path, component):
-        print "   3. Running tests ..."
+        print("   3. Running tests ...")
         absolute_path = abspath(path)
 
         settings = ""
@@ -66,7 +68,7 @@ class MavenExecutor(Executor):
 
 
     def _collect_results(self, path, component):
-        print "   4. Collecting tests ..."
+        print("   4. Collecting tests ...")
 
         docker_ps = self.GET_CONTAINER_ID.format(
             configuration=search(r"(config_[0-9]+)\/?$", path).group(1),
@@ -95,14 +97,14 @@ class MavenExecutor(Executor):
 
         for each_report in test_reports:
             try:
-                print "      Reading", each_report
+                print("      Reading", each_report)
                 with open(each_report, "r") as report:
                     file_content = report.read()
                     test_suite = self._xml_reader._extract_from_text(file_content)
                     all_tests.append(test_suite)
 
             except JUnitXMLElementNotSupported as error:
-                print "      - Error: ", str(error)
+                print("      - Error: ", str(error))
 
         return TestReport(path, TestSuite("all tests", *all_tests))
 
