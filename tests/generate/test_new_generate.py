@@ -13,7 +13,7 @@
 from camp.codecs.yaml import YAML
 from camp.generate import Z3Problem
 
-from io import StringIO
+from io import BytesIO
 
 from unittest import TestCase
 
@@ -26,7 +26,7 @@ class VariablesAreAssigned(TestCase):
 
 
     def assert_variables_values(self, text, configuration_count, expected_values):
-        model = self._yaml.load_model_from(StringIO(text))
+        model = self._yaml.load_model_from(BytesIO(text))
 
         self.assertFalse(self._yaml.warnings, "\n".join(str(each) for each in self._yaml.warnings))
 
