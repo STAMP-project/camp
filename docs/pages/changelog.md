@@ -5,13 +5,17 @@ changes that were made.
 
 *   Development
 
+    *   Merge with [Pull Request
+        38](https://github.com/STAMP-project/camp/pull/38) that
+        contains the case-study from ActiveEon.
+
     *   Test CAMP against multiple versions of Z3 (4.8.4, 4.7.1 and
         4.6) using Travis Matrix Build.
 
 *   CAMP v0.3
 
     *   CAMP v0.3.1 (Apr. 1, 2019)
-
+    
         *   Fix [Issue
             35](https://github.com/STAMP-project/camp/issues/35) by
             using `docker cp` to fetch test reports, instead of
