@@ -23,6 +23,8 @@ from re import match
 
 from shutil import rmtree
 
+from tempfile import mkdtemp
+
 from unittest import TestCase
 
 
@@ -107,14 +109,10 @@ class FilesAreGenerated(TestCase):
 
 
     def prepare_sample(self, sample):
-        self._working_directory = self.WORKING_DIRECTORY
-        if isdir(self._working_directory):
-            rmtree(self._working_directory)
+        self._working_directory = join(mkdtemp(prefix="camp_"), "generate")
         makedirs(self._working_directory)
         with open(join(self._working_directory, "camp.yaml"), "w") as stream:
             stream.write(sample)
-
-    WORKING_DIRECTORY = "tmp/generate"
 
 
     def invoke_camp_generate(self):
@@ -125,7 +123,7 @@ class FilesAreGenerated(TestCase):
 
     def assert_configuration_count_is(self, expected):
         generated = []
-        destination = join(self.WORKING_DIRECTORY, "out")
+        destination = join(self._working_directory, "out")
         for each_file in listdir(destination):
             if match(r"config_\d+", each_file):
                 generated.append(each_file)

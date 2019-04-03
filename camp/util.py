@@ -30,19 +30,19 @@ def redirect_stderr_to(destination):
         def wrapped(*args, **kwargs):
             with StderrRedirect(destination):
                 return function(*args, **kwargs)
-                     
+
         if isgeneratorfunction(function):
             return wrapped_generator
         return wrapped
-        
+
     return decorate
 
-    
+
 
 
 class StderrRedirect(object):
 
-    
+
     def __init__(self, destination=devnull):
         self._destination = destination
 
@@ -66,5 +66,3 @@ class StderrRedirect(object):
 
         # Redirect stderr so it points back towards its original file
         dup2(self._memento_fd, self._stderr_fd)
-
-        
