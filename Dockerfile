@@ -10,6 +10,7 @@
 
 FROM debian:9-slim
 
+
 ARG DEBUG
 ARG WITH_TESTS
 ARG Z3_VERSION
