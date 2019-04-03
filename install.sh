@@ -56,6 +56,7 @@ EOF
 abort () {
     printf "Aborting!\n"
     tail --lines 30 ${LOG_FILE}
+    exit 1
 }
 
 
@@ -73,6 +74,7 @@ parse_arguments () {
                 ;;
             -h|--python-version)
                 PYTHON_VERSION="$2"
+                Z3_BINDINGS=/usr/lib/python${PYTHON_VERSION}
                 shift 2
                 ;;
             -i|--install-z3)
@@ -250,12 +252,7 @@ ensure_pip_available() {
 
     else
         local PIP="pip"
-        #if [[ "${PYTHON_VERSION}" =~ "^2" ]]
-        #then
-        #   PIP="pip2"
-        #fi
         local -r current_version=$(version_of "pip")
-        printf ">>>%s<<<\n" $current_version
         comparison=$(compare_version ${current_version} ${PIP_VERSION})
         if [ "$comparison" == "<" ]
         then
@@ -355,9 +352,9 @@ ensure_CAMP_available() {
 cleanup () {
     # Removing package 'python-2.7-minimal' breaks the system
     local PYTHON_PACKAGES=""
-    if [[ "${PYTHON_VERSION}" =~ "^2" ]]
+    if [[ "${PYTHON_VERSION}" =~ ^2 ]]
     then
-        PYTHON_PACKAGES=python3 python3.5-minimal python-pkg-resources
+        PYTHON_PACKAGES="python3 python3.5-minimal python-pkg-resources"
     fi
     local -r BUILD_PACKAGES=(\
                              curl \
