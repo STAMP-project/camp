@@ -1,0 +1,22 @@
+
+version: '2.1'
+
+services:
+
+  proactive:
+    build: ./proactiveMS
+    ports:
+      - "8080:8080"
+    restart: always
+    links:
+      - database
+    depends_on:
+      - database
+
+  database:
+    build: ./databaseMS
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=pouet123
+    restart: always

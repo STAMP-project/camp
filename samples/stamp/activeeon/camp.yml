@@ -1,0 +1,100 @@
+
+goals:
+  running:
+    - Proactive
+
+
+components:
+  proactivePG:
+    provides_services: [Proactive]
+    requires_services: [DatabasePG]
+    variables:
+      version:
+        type: version
+        values: [ PA-postgres ]
+        realization:
+          - targets: [ proactivePG/Dockerfile ]
+            pattern: "RUN chmod 755 change-proactive-db-config.sh"
+            replacements: [ "RUN chmod 755 change-proactive-db-config-postgres.sh" ]
+          - targets: [ proactivePG/Dockerfile ]
+            pattern: "RUN ./change-proactive-db-config.sh"
+            replacements: [ "RUN ./change-proactive-db-config-postgres.sh" ]
+          - targets: [ proactivePG/Dockerfile ]
+            pattern: "COPY change-proactive-db-config.sh /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.5.0-SNAPSHOT/"
+            replacements: [ "COPY change-proactive-db-config-postgres.sh /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.5.0-SNAPSHOT/" ]
+          - targets: [ docker-compose.yml ]
+            pattern: "build: ./proactiveMS"
+            replacements: [ "build: ./images/proactivepg_0" ]     
+    implementation:
+      docker:
+        file: proactivePG/Dockerfile
+
+  databasePG:
+    provides_services: [DatabasePG]
+    variables:
+      version:
+        type: version
+        values: [ DB-postgres ]
+        realization:
+          - targets: [ databasePG/Dockerfile ]
+            pattern: "FROM database"
+            replacements: [ "FROM postgres:9.6.3"]
+          - targets: [ databasePG/Dockerfile ]
+            pattern: "COPY init_database.sql"
+            replacements: [ "COPY init_postgres.sql docker-entrypoint-initdb.d/init_database.sql" ]
+          - targets: [ databasePG/Dockerfile ]
+            pattern: "EXPOSE PORT"
+            replacements: [ "EXPOSE 5432" ]
+          - targets: [ docker-compose.yml ]
+            pattern: "3306:3306"
+            replacements: [ "5432:5432" ]  
+          - targets: [ docker-compose.yml ]
+            pattern: "MYSQL_ROOT_PASSWORD"
+            replacements: [ "POSTGRES_PASSWORD" ]   
+          - targets: [ docker-compose.yml ]
+            pattern: "build: ./databaseMS"
+            replacements: [ "build: ./images/databasepg_0" ]      
+    implementation:
+      docker:
+        file: databasePG/Dockerfile
+        
+  proactiveMS:
+    provides_services: [Proactive]
+    requires_services: [DatabaseMS]
+    variables:
+      version:
+        type: version
+        values: [ PA-mysql ]
+        realization:
+          - targets: [ proactiveMS/Dockerfile ]
+            pattern: "RUN chmod 755 change-proactive-db-config.sh"
+            replacements: [ "RUN chmod 755 change-proactive-db-config-mysql.sh" ]
+          - targets: [ proactiveMS/Dockerfile ]
+            pattern: "RUN ./change-proactive-db-config.sh"
+            replacements: [ "RUN ./change-proactive-db-config-mysql.sh" ]
+          - targets: [ proactiveMS/Dockerfile ]
+            pattern: "COPY change-proactive-db-config.sh /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.5.0-SNAPSHOT/"
+            replacements: [ "COPY change-proactive-db-config-mysql.sh /root/proactive/activeeon_enterprise-pca_server-linux-x64-8.5.0-SNAPSHOT/" ]
+    implementation:
+      docker:
+        file: proactiveMS/Dockerfile
+
+  databaseMS:
+    provides_services: [DatabaseMS]
+    variables:
+      version:
+        type: version
+        values: [ DB-mysql ]
+        realization:
+          - targets: [ databaseMS/Dockerfile ]
+            pattern: "FROM database"
+            replacements: [ "FROM mysql:5.7"]
+          - targets: [ databaseMS/Dockerfile ]
+            pattern: "COPY init_database.sql"
+            replacements: [ "COPY init_mysql.sql docker-entrypoint-initdb.d/init_database.sql" ]
+          - targets: [ databaseMS/Dockerfile ]
+            pattern: "EXPOSE PORT"
+            replacements: [ "EXPOSE 3306" ]
+    implementation:
+      docker:
+        file: databaseMS/Dockerfile
