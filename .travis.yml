@@ -46,7 +46,7 @@ script:
     docker run --name tests \
                -v /var/run/docker.sock:/var/run/docker.sock \
                -t ${DOCKER_USERNAME}/${NAME}:dev \
-               green -qrfvv tests
+               green -a -qrfvv tests
   - docker cp tests:/camp/.coverage .coverage
   - codecov
 

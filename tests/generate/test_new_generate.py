@@ -26,7 +26,7 @@ class VariablesAreAssigned(TestCase):
 
 
     def assert_variables_values(self, text, configuration_count, expected_values):
-        model = self._yaml.load_model_from(BytesIO(text))
+        model = self._yaml.load_model_from(BytesIO(text.encode()))
 
         self.assertFalse(self._yaml.warnings, "\n".join(str(each) for each in self._yaml.warnings))
 

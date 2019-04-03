@@ -15,7 +15,7 @@ from camp.entities.model import DockerFile, DockerImage, Substitution
 from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest, \
     TestSuite, TestReport
 
-from io import BytesIO
+from io import BytesIO, StringIO
 
 from unittest import TestCase
 
@@ -256,7 +256,7 @@ class BuiltModelAreComplete(TestCase):
 
 
     def assert_complete(self, text, expectations):
-        model = self._codec.load_model_from(BytesIO(text))
+        model = self._codec.load_model_from(BytesIO(text.encode()))
 
         self.assertEqual(0, len(self._codec.warnings))
 
@@ -327,7 +327,7 @@ class IgnoredEntriesAreReported(TestCase):
 
     def assert_extra_in(self, text, expected):
         try :
-            self._codec.load_model_from(BytesIO(text))
+            self._codec.load_model_from(BytesIO(text.encode()))
             fail("Should have raised an exception!")
         except InvalidYAMLModel as error:
             self.assertEqual(1, len(error.warnings))
@@ -591,7 +591,7 @@ class TypeMismatchAreReported(TestCase):
 
     def assert_warning(self, text,  expected, found, path, warning_count=1):
         try:
-            model = self._codec.load_model_from(BytesIO(text))
+            model = self._codec.load_model_from(BytesIO(text.encode()))
             self.fail("InvalidYAMLModel should have been thrown!")
 
         except InvalidYAMLModel as error:
@@ -613,7 +613,7 @@ class TypeMismatchesAreNotReportedWhenStringIsExpected(TestCase):
         self._codec = YAML()
 
     def assert_no_warning_in(self, text):
-        model = self._codec.load_model_from(BytesIO(text))
+        model = self._codec.load_model_from(BytesIO(text.encode()))
 
         self.assertEqual(0, len(self._codec.warnings))
 
@@ -784,7 +784,7 @@ class MissingMandatoryEntriesAreReported(TestCase):
 
     def assert_missing(self, text, path, candidates):
         try:
-            model = self._codec.load_model_from(BytesIO(text))
+            model = self._codec.load_model_from(BytesIO(text.encode()))
             self.fail("InvalidYAMLModel should have been thrown!")
 
         except InvalidYAMLModel as error:
@@ -800,7 +800,7 @@ class TestReportsAreSerialized(TestCase):
 
 
     def setUp(self):
-        self._output = BytesIO()
+        self._output = StringIO()
         self._codec = YAML()
 
 
