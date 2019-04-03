@@ -377,7 +377,7 @@ cleanup () {
     apt-get autoremove -y >> ${LOG_FILE} 2>&1
     rm -rf /var/lib/apt/lists/*
 
-    #ln -s /usr/bin/python2.7 /usr/bin/python
+    ln -s -f /usr/bin/python2.7 /usr/bin/python
     if [[ "${DEBUG}" == "false" ]]
     then
         rm -rf ${LOG_FILE}
