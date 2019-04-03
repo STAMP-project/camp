@@ -16,6 +16,8 @@
 - name: Case Studies
   url:
   children:
+    - name: Activeeon
+      url: /pages/activeeon
     - name: XWiki
       url: /pages/xwiki
     - name: CityGo
