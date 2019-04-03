@@ -5,46 +5,52 @@ set -o errtrace
 set -o pipefail
 set -o nounset
 
-
-USAGE=$(IFS='' cat <<'EOF'
-Usage: sh install.sh [options...]
-Options:
-  -c, --camp-version STRING     Select a specific version of CAMP from Github.
-                                Can be a branch name (e.g., 'master'), a tag, or
-                                a commit hash. Default is 'master'.
-  -d, --install-docker          Install Docker.io (CE version). By default,
-                                Docker will not be installed.
-  -l, --z3-platform STRING      Install Z3 for a specific version of linux.
-                                Default is 'x64-debian-8.10'.
-  -g, --debug                   Debugging mode: display all commands and log
-                                output in a file. Disabled by default.
-  -i, --install-z3              Install Z3 if not already available. By default,
-                                Z3 will notbe installed.
-  -p, --z3-python-bindings DIR  Set the installation directory for the Z3 Python
-                                bindings. Default is '/usr/lib/python2.7'.
-  -s, --camp-from-sources       Install CAMP for sources expected to be in
-                                the working directory. By default, CAMP is
-                                downloaded from Github.
-  -t, --camp-with-tests         Install CAMP with its test dependencies. By 
-                                default, these are not installed.
-  -z, --z3-version STRING       Set the version of the Z3 solver to install.
-                                Default is '4.7.1'.
-EOF
-);
-
 DEBUG=false
 LOG_FILE=install.log
 
 # Default parameters values
 
+PYTHON_VERSION=3.5
+Z3_VERSION=4.7.1
+Z3_PLATFORM=x64-debian-8.10
+Z3_BINDINGS=/usr/lib/python${PYTHON_VERSION}
+INSTALL_PYTHON=false
+INSTALL_Z3=false
+INSTALL_DOCKER=false
 CAMP_VERSION=master
 CAMP_FROM_SOURCES=false
 CAMP_WITH_TESTS=
-Z3_VERSION=4.7.1
-Z3_PLATFORM=x64-debian-8.10
-Z3_BINDINGS=/usr/lib/python2.7
-INSTALL_Z3=false
-INSTALL_DOCKER=false
+
+
+USAGE=$(IFS='' cat <<'EOF'
+Usage: sh install.sh [options...]
+Options:
+  -d, --install-docker          Install Docker.io (CE version). By default,
+                                Docker will not be installed.
+  -y, --install-python          Install Python. Disabled by default.
+  -h, --python-version STRING   Select a specific version of Python to be 
+                                installed. Set to 3.5 by default.
+  -i, --install-z3              Install Z3 if not already available. By default,
+                                Z3 will notbe installed.
+  -p, --z3-python-bindings DIR  Set the installation directory for the Z3 Python
+                                bindings. Default is '/usr/lib/python3.5'.
+  -z, --z3-version STRING       Set the version of the Z3 solver to install.
+                                Default is '4.7.1'.
+  -l, --z3-platform STRING      Install Z3 for a specific version of linux.
+                                Default is 'x64-debian-8.10'.
+  -c, --camp-version STRING     Select a specific version of CAMP from Github.
+                                Can be a branch name (e.g., 'master'), a tag, or
+                                a commit hash. Default is 'master'.
+  -s, --camp-from-sources       Install CAMP for sources expected to be in
+                                the working directory. By default, CAMP is
+                                downloaded from Github.
+  -t, --camp-with-tests         Install CAMP with its test dependencies. By 
+                                default, these are not installed.
+  -g, --debug                   Debugging mode: display all commands and log
+                                output in a file. Disabled by default.
+EOF
+);
+
 
 
 abort () {
@@ -57,28 +63,36 @@ abort () {
 parse_arguments () {
     while [ $# -gt 0 ]; do
         case "$1" in
-            -c|--camp-version)
-                CAMP_VERSION="$2"
-                shift 2
-                ;;
             -d|--install-docker)
                 INSTALL_DOCKER=true
                 shift 1
                 ;;
-            -l|--z3-platform)
-                Z3_PLATFORM="$2"
-                shift 2
-                ;;
-            -g|--debug)
-                DEBUG=true
+            -y|--install-python)
+                INSTALL_PYTHON=true
                 shift 1
+                ;;
+            -h|--python-version)
+                PYTHON_VERSION="$2"
+                shift 2
                 ;;
             -i|--install-z3)
                 INSTALL_Z3=true
                 shift 1
                 ;;
+            -z|--z3-version)
+                Z3_VERSION=$2
+                shift 2
+                ;;
+            -l|--z3-platform)
+                Z3_PLATFORM="$2"
+                shift 2
+                ;;
             -p|--z3-python-bindings)
                 Z3_BINDINGS="$2"
+                shift 2
+                ;;
+            -c|--camp-version)
+                CAMP_VERSION="$2"
                 shift 2
                 ;;
             -s|--camp-from-sources)
@@ -89,9 +103,9 @@ parse_arguments () {
                 CAMP_WITH_TESTS=[test]
                 shift 1
                 ;;
-            -z|--z3-version)
-                Z3_VERSION=$2
-                shift 2
+            -g|--debug)
+                DEBUG=true
+                shift 1
                 ;;
             *)
                 printf "Error: Unknown option '$1'.\n"
@@ -120,10 +134,14 @@ version_of () {
 
 
 ensure_python_available () {
-    if ! type python >> ${LOG_FILE} 2>&1
+    if [[ "${INSTALL_PYTHON}" == "true" ]] && ! type python >> ${LOG_FILE} 2>&1
     then
-        printf "Installing Python 2.7 ...\n"
-        install_packages python2.7-minimal python-pip python-pkg-resources
+        printf "Installing Python %s ...\n" "${PYTHON_VERSION}"
+        # The package 'pythonX-minimal does not contains the module
+        # 'shutil' which is required by the 'getpip.py' script.
+        install_packages python${PYTHON_VERSION} python-pkg-resources
+        rm -rf  /usr/bin/python
+        ln -s /usr/bin/python${PYTHON_VERSION} /usr/bin/python 
     fi
 }
 
@@ -133,7 +151,7 @@ ensure_curl_available() {
     if ! type curl >> ${LOG_FILE} 2>&1;
     then
         printf "Installing curl ...\n"
-        install_packages curl
+        install_packages ca-certificates curl
     fi
 }
 
@@ -223,6 +241,7 @@ ensure_pip_available() {
     local -r PIP_VERSION="19.0.3"
     if ! type pip >> ${LOG_FILE} 2>&1;
     then
+        ensure_curl_available
         printf "Installing Pip ${PIP_VERSION}.\n";
         local -r PIP_INSTALLER_URL=https://bootstrap.pypa.io/get-pip.py
         \curl -sS -L -k -O ${PIP_INSTALLER_URL};
@@ -230,12 +249,18 @@ ensure_pip_available() {
         rm get-pip.py
 
     else
+        local PIP="pip"
+        #if [[ "${PYTHON_VERSION}" =~ "^2" ]]
+        #then
+        #   PIP="pip2"
+        #fi
         local -r current_version=$(version_of "pip")
+        printf ">>>%s<<<\n" $current_version
         comparison=$(compare_version ${current_version} ${PIP_VERSION})
         if [ "$comparison" == "<" ]
         then
             printf "Upgrading Pip from %s to %s\n" ${current_version} ${PIP_VERSION}
-            pip -qq install --upgrade pip==$PIP_VERSION
+            ${PIP} -qq install --upgrade pip==$PIP_VERSION
         fi
     fi
 }
@@ -310,14 +335,14 @@ ensure_CAMP_available() {
 
     if [[ "${CAMP_FROM_SOURCES}" == "true" ]]
     then
-        pip2 install --upgrade setuptools >> ${LOG_FILE} 2>&1
-        pip2 install .${CAMP_WITH_TESTS} >> ${LOG_FILE} 2>&1
+        pip install --upgrade setuptools >> ${LOG_FILE} 2>&1
+        pip install .${CAMP_WITH_TESTS} >> ${LOG_FILE} 2>&1
 
     else
         local -r GITHUB_URL="https://github.com/STAMP-project/camp.git@%s#egg=camp"
         local -r CAMP_URL=$(printf ${GITHUB_URL} ${CAMP_VERSION})
 
-        pip2 install git+${CAMP_URL} >> ${LOG_FILE} 2>&1
+        pip install git+${CAMP_URL} >> ${LOG_FILE} 2>&1
         if [ $? -eq 0 ]; then
             printf "CAMP (%s) ready.\n" "${CAMP_VERSION}"
         else
@@ -328,7 +353,12 @@ ensure_CAMP_available() {
 
 
 cleanup () {
-    #local -r AUTO_PACKAGES=$(apt-mark showauto)
+    # Removing package 'python-2.7-minimal' breaks the system
+    local PYTHON_PACKAGES=""
+    if [[ "${PYTHON_VERSION}" =~ "^2" ]]
+    then
+        PYTHON_PACKAGES=python3 python3.5-minimal python-pkg-resources
+    fi
     local -r BUILD_PACKAGES=(\
                              curl \
                              unzip \
@@ -340,19 +370,17 @@ cleanup () {
                              ca-certificates \
                              apt-transport-https \
                              software-properties-common \
-                             python3 \
-                             python3.5-minimal \
+                             ${PYTHON_PACKAGES} \
                              python-pip \
-                             python-pkg-resources \
         )
     for each in "${BUILD_PACKAGES[@]}"
     do
-        apt-get remove --purge -y --allow-remove-essential $each >> ${LOG_FILE} 2>&1
+        apt-get purge -y --allow-remove-essential $each >> ${LOG_FILE} 2>&1
     done
     apt-get autoremove -y >> ${LOG_FILE} 2>&1
     rm -rf /var/lib/apt/lists/*
 
-    ln -s /usr/bin/python2.7 /usr/bin/python
+    #ln -s /usr/bin/python2.7 /usr/bin/python
     if [[ "${DEBUG}" == "false" ]]
     then
         rm -rf ${LOG_FILE}
