@@ -44,7 +44,7 @@ setup(name="camp",
           "PyYAML == 5.1",
           "jsonpath-rw == 1.4.0",
           "argparse == 1.2.1",
-          "ozepy @ git+https://github.com/STAMP-project/ozepy.git@v1.0.0#egg=ozepy"
+          "ozepy @ git+https://github.com/STAMP-project/ozepy.git@v1.0.1#egg=ozepy"
       ],
       tests_require = test_dependencies,
       extras_require = {
