@@ -20,8 +20,8 @@ env:
     - CODECOV_TOKEN="6dfaf6b6-29f5-4816-8ace-908bbbb7e01e"
   matrix:
     - Z3_VERSION="4.8.4.d6df51951f4c" Z3_PLATFORM="x64-debian-8.11" PUBLISH="true"
-    - Z3_VERSION="4.7.1" Z3_PLATFORM="x64-debian-8.10" PUBLISH="false"
-    - Z3_VERSION="4.6.0" Z3_PLATFORM="x64-debian-8.10" PUBLISH="false"
+    - Z3_VERSION="4.7.1" Z3_PLATFORM="x64-debian-8.10"
+    - Z3_VERSION="4.6.0" Z3_PLATFORM="x64-debian-8.10"
 
 
 dist: xenial
@@ -52,7 +52,7 @@ script:
 
 after_success:
   - |  
-    if [[ "${PUBLISH}" == "true" && "${TRAVIS_BRANCH}" == "master" ]]
+    if [[ ! -z "${PUBLISH}" && "${TRAVIS_BRANCH}" == "master" && "${TRAVIS_PYTHON_VERSION}" == "3.5" ]]
     then
        docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
        docker push ${DOCKER_USERNAME}/${NAME}:dev
