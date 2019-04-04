@@ -6,9 +6,17 @@ changes that were made.
 *   Development
 
     *   Port to Python 3.5. Runs now on both Python 2.7 and 3.5.
-    
 
 *   CAMP v0.3
+
+    *   CAMP v0.3.2 (Apr. 3, 2019)
+
+        *   Merge with [Pull Request
+            38](https://github.com/STAMP-project/camp/pull/38) that
+            contains the case-study from ActiveEon.
+
+        *   Test CAMP against multiple versions of Z3 (4.8.4, 4.7.1 and
+            4.6) using Travis Matrix Build.
 
     *   CAMP v0.3.1 (Apr. 1, 2019)
 
@@ -100,4 +108,4 @@ changes that were made.
 	*    First complete draft
 
 	*    Common command line interface for all three commands,
-		 generate, realize and execute.
+         generate, realize and execute.
