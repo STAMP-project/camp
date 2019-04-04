@@ -32,8 +32,6 @@ explain here:
     *   Rewrite the YAML codec so that it parses test reports and
         returns the proper CAMP object instead of a dictionary.
 
-    *   Port to Python3
-
 *   Configuration
 
     *   Extract the installation commands of Z3 in a separate shell
