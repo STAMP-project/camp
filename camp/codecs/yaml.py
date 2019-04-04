@@ -10,13 +10,14 @@
 
 
 
+from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from camp.codecs.commons import Codec
 from camp.entities.model import Model, Component, Service, Goals, Variable, \
     Feature, DockerFile, DockerImage, Substitution, Instance, Configuration
 
-from yaml import safe_load as load_yaml, dump as yaml_dump
+from yaml import safe_load as load_yaml, safe_dump as yaml_dump
 
 
 
@@ -45,9 +46,11 @@ class YAML(Codec):
 
 
     def save_test_reports(self, reports, stream):
-        yaml_dump({"reports": [each.as_dictionary for each in reports]},
+        data = {"reports": [each.as_dictionary for each in reports]}
+        yaml_dump(data,
                   stream,
-                  default_flow_style=False)
+                  default_flow_style=False,
+                  allow_unicode=True)
 
 
     def save_configuration(self, configuration, stream):

@@ -10,12 +10,16 @@
 
 
 
+from __future__ import unicode_literals
+
 from camp.codecs.yaml import YAML, InvalidYAMLModel
 from camp.entities.model import DockerFile, DockerImage, Substitution
 from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest, \
     TestSuite, TestReport
 
 from io import BytesIO, StringIO
+
+from sys import version_info
 
 from unittest import TestCase
 
@@ -256,7 +260,7 @@ class BuiltModelAreComplete(TestCase):
 
 
     def assert_complete(self, text, expectations):
-        model = self._codec.load_model_from(BytesIO(text.encode()))
+        model = self._codec.load_model_from(StringIO(text))
 
         self.assertEqual(0, len(self._codec.warnings))
 
@@ -327,7 +331,7 @@ class IgnoredEntriesAreReported(TestCase):
 
     def assert_extra_in(self, text, expected):
         try :
-            self._codec.load_model_from(BytesIO(text.encode()))
+            self._codec.load_model_from(StringIO(text))
             fail("Should have raised an exception!")
         except InvalidYAMLModel as error:
             self.assertEqual(1, len(error.warnings))
@@ -591,7 +595,7 @@ class TypeMismatchAreReported(TestCase):
 
     def assert_warning(self, text,  expected, found, path, warning_count=1):
         try:
-            model = self._codec.load_model_from(BytesIO(text.encode()))
+            model = self._codec.load_model_from(StringIO(text))
             self.fail("InvalidYAMLModel should have been thrown!")
 
         except InvalidYAMLModel as error:
@@ -613,7 +617,7 @@ class TypeMismatchesAreNotReportedWhenStringIsExpected(TestCase):
         self._codec = YAML()
 
     def assert_no_warning_in(self, text):
-        model = self._codec.load_model_from(BytesIO(text.encode()))
+        model = self._codec.load_model_from(StringIO(text))
 
         self.assertEqual(0, len(self._codec.warnings))
 
@@ -784,7 +788,7 @@ class MissingMandatoryEntriesAreReported(TestCase):
 
     def assert_missing(self, text, path, candidates):
         try:
-            model = self._codec.load_model_from(BytesIO(text.encode()))
+            model = self._codec.load_model_from(StringIO(text))
             self.fail("InvalidYAMLModel should have been thrown!")
 
         except InvalidYAMLModel as error:
@@ -801,6 +805,13 @@ class TestReportsAreSerialized(TestCase):
 
     def setUp(self):
         self._output = StringIO()
+
+        # With Python 2.7, PyYAML fails to write unicode strings into
+        # a StringIO object. See Issue #289 in PyYAML. We use a
+        # BytesIO object instead in this case.
+        if version_info < (3, 5):
+            self._output = BytesIO()
+
         self._codec = YAML()
 
 
