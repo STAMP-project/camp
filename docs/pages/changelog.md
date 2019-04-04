@@ -5,8 +5,8 @@ changes that were made.
 
 *   Development
 
-    *   Test CAMP against multiple versions of Z3 (4.8.4, 4.7.1 and
-        4.6) using Travis Matrix Build.
+    *   Port to Python 3.5. Runs now on both Python 2.7 and 3.5.
+    
 
 *   CAMP v0.3
 
