@@ -10,7 +10,9 @@
 
 
 
-from logging import warning
+# Compatibility with Python 2.7
+from __future__ import unicode_literals
+from future.utils import string_types as str
 
 
 

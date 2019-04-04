@@ -10,7 +10,11 @@
 
 
 
-class TestReport:
+from __future__ import unicode_literals
+
+
+
+class TestReport(object):
 
     def __init__(self, name, test=None):
         self._name = name

@@ -41,6 +41,7 @@ setup(name="camp",
           ]
       },
       install_requires = [
+          "future == 0.17.1",
           "PyYAML == 5.1",
           "jsonpath-rw == 1.4.0",
           "argparse == 1.2.1",
