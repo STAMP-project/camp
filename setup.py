@@ -16,7 +16,7 @@ from camp import About
 
 
 test_dependencies = [
-    "green==2.13.0",
+    "green==2.14.2",
     "mock==2.0.0",
     "deepdiff==3.3.0",
     "coverage==4.5.3"
