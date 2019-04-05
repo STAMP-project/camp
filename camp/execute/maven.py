@@ -28,13 +28,12 @@ from xml.etree.ElementTree import fromstring
 class MavenExecutor(Executor):
 
 
-    def __init__(self, shell, xml_reader=None):
-        super(MavenExecutor, self).__init__(shell)
+    def __init__(self, shell, listener=None, xml_reader=None):
+        super(MavenExecutor, self).__init__(shell, listener)
         self._xml_reader = xml_reader or JUnitXMLReader()
 
 
     def _run_tests(self, path, component):
-        print("   3. Running tests ...")
         absolute_path = abspath(path)
 
         settings = ""
@@ -68,8 +67,6 @@ class MavenExecutor(Executor):
 
 
     def _collect_results(self, path, component):
-        print("   4. Collecting tests ...")
-
         docker_ps = self.GET_CONTAINER_ID.format(
             configuration=search(r"(config_[0-9]+)\/?$", path).group(1),
             component=component)
@@ -97,14 +94,14 @@ class MavenExecutor(Executor):
 
         for each_report in test_reports:
             try:
-                print("      Reading", each_report)
+                self._listener.on_reading_report(each_report)
                 with open(each_report, "r") as report:
                     file_content = report.read()
                     test_suite = self._xml_reader._extract_from_text(file_content)
                     all_tests.append(test_suite)
 
             except JUnitXMLElementNotSupported as error:
-                print("      - Error: ", str(error))
+                self._listener.on_invalid_report(error)
 
         return TestReport(path, TestSuite("all tests", *all_tests))
 

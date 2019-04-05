@@ -23,9 +23,6 @@ explain here:
 
 *   Refactorings
 
-    *   Extract all the print from CAMP execute into the UI component,
-        so that less verbose UI could be developed.
-
     *   Remove duplication between commands and the working
         directories
 
@@ -33,10 +30,6 @@ explain here:
         returns the proper CAMP object instead of a dictionary.
 
 *   Configuration
-
-    *   Extract the installation commands of Z3 in a separate shell
-        script that can be downloaded both by the Docker when building
-        the CAMP image and by Travis.
 
     *   Find a way to have documentation available per version, when a
         new version is released.

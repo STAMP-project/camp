@@ -20,11 +20,11 @@ SUPPORTED_TECHNOLOGIES =[
 
 
 
-def select_executor(technology, shell):
+def select_executor(technology, shell, listener=None):
 
     for any_technology, factory in SUPPORTED_TECHNOLOGIES:
         if any_technology == technology:
-            return factory(shell)
+            return factory(shell, listener)
 
     raise TechnologyNotSupported(technology)
 
