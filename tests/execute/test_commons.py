@@ -10,9 +10,12 @@
 
 
 
-from camp.execute.commons import ShellCommandFailed, Shell, SimulatedShell
+from camp.execute.commons import ShellCommandFailed, Shell, SimulatedShell, \
+    Executor, ExecutorListener
 
 from io import BytesIO
+
+from mock import MagicMock, call
 
 from os import makedirs
 from os.path import exists, isdir, join as join_paths, basename
@@ -28,14 +31,23 @@ from unittest import TestCase
 class TheShellShould(TestCase):
 
     def setUp(self):
+        self._listener = MagicMock()
         self._working_directory = "./"
         self._log = BytesIO()
-        self._shell = Shell(self._log, "./")
+        self._shell = Shell(self._log, "./", self._listener)
 
 
     @property
     def log(self):
         return self._log.getvalue().decode()
+
+
+    def test_notify_listener_when_executing_a_command(self):
+        self._shell.execute("expr 1 + 5")
+
+        self._listener.on_shell_command\
+                      .assert_called_once_with("expr 1 + 5",
+                                               self._working_directory)
 
 
     def test_execute_a_given_command(self):
@@ -173,3 +185,32 @@ class TheSimulatedShellShould(TestCase):
     def test_find_no_files(self):
         reports = self._shell.find_all_files(".xml", "/tmp/")
         self.assertEquals([], reports)
+
+
+
+
+class TheExecutorShould(TestCase):
+
+
+    def setUp(self):
+        self._listener = MagicMock(ExecutorListener)
+        self._execute = Executor(SimulatedShell(BytesIO(), "."),
+                                 self._listener)
+
+
+    def test_notify_listener(self):
+        configurations = [("config_1", "useless"),
+                          ("config_2", "useless")]
+
+        self._execute(configurations, "whatever")
+
+        expected_calls = []
+        for each, _ in configurations:
+            expected_calls.append(call.execution_started_for(each))
+            expected_calls.append(call.building_images_for(each))
+            expected_calls.append(call.starting_services_for(each))
+            expected_calls.append(call.running_tests_for(each))
+            expected_calls.append(call.collecting_reports_for(each))
+            expected_calls.append(call.stopping_services_for(each))
+
+        self._listener.assert_has_calls(expected_calls)

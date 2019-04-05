@@ -133,9 +133,9 @@ class Camp(object):
             model = self._load_model()
             configurations = self._load_configurations(model)
             with open("camp_execute.log", "wb") as log_file:
-                shell = SimulatedShell(log_file, ".") if arguments.is_simulated \
-                        else Shell(log_file, ".")
-                execute = select_executor(arguments.testing_tool, shell)
+                shell = SimulatedShell(log_file, ".", self._ui) if arguments.is_simulated \
+                        else Shell(log_file, ".", self._ui)
+                execute = select_executor(arguments.testing_tool, shell, self._ui)
                 reports = execute(configurations, arguments.component)
                 self._output.save_reports(reports)
                 self._ui.summarize_execution(reports)

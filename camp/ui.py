@@ -14,6 +14,8 @@ from __future__ import print_function
 
 from camp import About
 
+from os.path import basename
+
 
 
 class UI(object):
@@ -56,6 +58,46 @@ class UI(object):
 
     def configuration_realized(self, path):
         self._print(" - Built configuration '{path}.", path=path)
+
+
+    def execution_started_for(self, path):
+        self._print("\n - Executing {path}", path=path)
+
+
+    def building_images_for(self, path):
+        self._print("   1. Building images ...")
+
+
+    def starting_services_for(self, path):
+        self._print("   2. Starting Services ...")
+
+
+    def running_tests_for(self, path):
+        self._print("   3. Running tests ...")
+
+
+    def collecting_reports_for(self, path):
+        self._print("   4. Collecting reports ...")
+
+
+    def stopping_services_for(self, path):
+        self._print("   5. Stopping Services ...")
+
+
+    def on_shell_command(self, command, working_directory):
+        self._print(self.SHELL_COMMAND,
+                    command=command,
+                    directory=working_directory)
+
+    SHELL_COMMAND  = "      $ {command} (from '{directory}')"
+
+
+    def on_reading_report(self, report):
+        self._print("      Reading {report}", report=basename(report))
+
+
+    def on_invalid_report(self, error):
+        self._print("      Error: {error}", error=str(error))
 
 
     def invalid_yaml_model(self, error):
@@ -129,9 +171,7 @@ class UI(object):
                 name  += " (" +", ".join(str(v) for _,v in each.configuration) + ")"
             components.add(name)
         text = "   Includes " + ', '.join(components)
-        if len(text) > 75:
-            text = text[:75] + " ... "
-        self._print(text)
+        self._print(self._head(text, length=75))
 
 
     def summarize_execution(self, results):
@@ -150,7 +190,7 @@ class UI(object):
         total_error = 0
         for each in results:
             self._print(self._TEST_SUMMARY,
-                        config=each.configuration_name,
+                        config=self._tail(each.configuration_name),
                         run=each.run_test_count,
                         passed=each.passed_test_count,
                         fail=each.failed_test_count,
@@ -168,11 +208,26 @@ class UI(object):
                     error=total_error)
 
 
-    _TEST_SUMMARY = "{config:<20} {run:>7}{passed:>7}{fail:>7}{error:>7}"
-    _LINE = "-" * 20 + "-" + "-" * (4 * 7 + 1)
+    _TEST_SUMMARY = "{config:<25} {run:>7}{passed:>7}{fail:>7}{error:>7}"
+    _LINE = "-" * 25 + "-" + "-" * (4 * 7 + 1)
+
 
     def _print(self, pattern, **values):
         if values:
             self._output.write(pattern.format(**values) + "\n")
         else:
             self._output.write(pattern+ "\n")
+
+
+    @staticmethod
+    def _head(text, length=20):
+        if len(text) < 20:
+            return text
+        return text[0:length] + "..."
+
+
+    @staticmethod
+    def _tail(text, length=20):
+        if len(text) < 20:
+            return text
+        return "..." + text[-length:]

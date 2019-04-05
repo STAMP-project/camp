@@ -12,6 +12,8 @@
 
 from __future__ import print_function
 
+from camp.entities.report import TestReport
+
 from os import listdir
 from os.path import isdir, join as join_paths
 
@@ -21,19 +23,21 @@ from subprocess import Popen, PIPE
 
 class Shell(object):
 
-    def __init__(self, log, working_directory):
+    def __init__(self, log, working_directory, listener=None):
         self._log = log
         self._original_working_directory = working_directory
         self._working_directory = working_directory
+        self._listener = listener or ShellListener()
 
 
     def execute(self, command, working_directory=None):
         self._working_directory = working_directory or self._working_directory
-        self._output_on_console(command)
+        self._listener.on_shell_command(command, self._working_directory)
         self._output_in_logs(command)
         result = self._run_shell(command)
         self._restore_working_directory()
         return result
+
 
     def _output_in_logs(self, command):
         text = self.LOG_OUTPUT.format(self._working_directory, command)
@@ -42,11 +46,6 @@ class Shell(object):
     LOG_OUTPUT = "\ncamp@bash:{0}$ {1}\n"
 
 
-    def _output_on_console(self, command):
-        text = self.CONSOLE_OUTPUT.format(command, self._working_directory)
-        print(text)
-
-    CONSOLE_OUTPUT = "      $ {0} (from '{1}')"
 
 
     def _run_shell(self, command):
@@ -112,6 +111,17 @@ class SimulatedShell(Shell):
 
 
 
+class ShellListener(object):
+    """
+    Interface for object who wants to reacts to what the Shell is doing.
+    See camp.ui
+    """
+
+    def on_shell_command(self, command, working_directory):
+        pass
+
+
+
 class ShellCommandFailed(Exception):
 
     def __init__(self, command, exit_code, output=None):
@@ -133,30 +143,79 @@ class ShellCommandFailed(Exception):
                                                 self._output)
 
 
+class ExecutorListener(object):
+    """
+    Interface for object listening to an Executor
+    See class camp.ui.UI
+    """
+
+
+    def execution_started_for(self, path):
+        pass
+
+
+    def building_images_for(self, path):
+        pass
+
+
+    def starting_services_for(self, configuration):
+        pass
+
+
+    def running_tests_for(self, configuration):
+        pass
+
+
+    def collecting_reports_for(self, configuration):
+        pass
+
+
+    def on_reading_report(self, report):
+        pass
+
+
+    def on_invalid_report(self, report):
+        pass
+
+
+    def stopping_services_for(self, configuration):
+        pass
+
+
 
 class Executor(object):
 
 
-    def __init__(self, shell):
+    def __init__(self, shell, listener=None):
         self._shell = shell
+        self._listener = listener or ExecutorListener()
 
 
     def __call__(self, configurations, component):
         test_results = []
         for each_path, _ in configurations:
-            print("\n - Executing ", each_path)
+            self._listener.execution_started_for(each_path)
+
+            self._listener.building_images_for(each_path)
             self._build_images(each_path)
+
+            self._listener.starting_services_for(each_path)
             self._start_services(each_path)
+
+            self._listener.running_tests_for(each_path)
             self._run_tests(each_path, component)
+
+            self._listener.collecting_reports_for(each_path)
             results = self._collect_results(each_path, component)
             test_results.append(results)
+
+            self._listener.stopping_services_for(each_path)
             self._stop_services(each_path)
 
         return test_results
 
 
     def _build_images(self, path):
-        print("   1. Building images ...")
         working_directory = join_paths(path, "images")
         self._shell.execute(self._BUILD_IMAGES, working_directory)
 
@@ -164,25 +223,22 @@ class Executor(object):
 
 
     def _start_services(self, path):
-        print("   2. Starting Services ...")
         self._shell.execute(self._START_SERVICES, path)
 
     _START_SERVICES = "docker-compose up -d"
 
 
     def _run_tests(self, path, command):
-        print("   3. Running tests ...")
         self._shell.execute(self._RUN_TESTS + command, path)
 
     _RUN_TESTS = "docker-compose exec -it tests "
 
 
-    def _collect_results(self, path):
+    def _collect_results(self, path, component):
         return TestReport(path)
 
 
     def _stop_services(self, path):
-        print("   5. Stopping Services ...")
         self._shell.execute(self._STOP_SERVICES, path)
 
     _STOP_SERVICES = "docker-compose down"
