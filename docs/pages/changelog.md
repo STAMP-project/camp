@@ -5,14 +5,17 @@ changes that were made.
 
 *   Development
 
-    *   Move to Green v2.14.2. Fix [Issue
-        203](https://github.com/cleancut/green/issues/203) about the
-        'GreenStream' object that had no attribute 'encoding' when
-        capturing tests's output.
-
-    *   Port to Python 3.5. Runs now on both Python 2.7 and 3.5.
 
 *   CAMP v0.3
+
+    *   CAMP v0.3.3 (Apr. 9, 2019)
+
+        *   Move to Green v2.14.2. Fix [Issue
+            203](https://github.com/cleancut/green/issues/203) about the
+            'GreenStream' object that had no attribute 'encoding' when
+            capturing tests's output.
+
+        *   Port to Python 3.5. Runs now on both Python 2.7 and 3.5.
 
     *   CAMP v0.3.2 (Apr. 3, 2019)
 
