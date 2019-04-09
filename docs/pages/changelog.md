@@ -6,6 +6,9 @@ changes that were made.
 *   Development
 
 
+    *   Drop the tecor tool that was in the repository under the
+        `modules`directory.
+
 *   CAMP v0.3
 
     *   CAMP v0.3.3 (Apr. 9, 2019)
