@@ -5,9 +5,12 @@ changes that were made.
 
 *   Development
 
+    *   Move to Green 2.15.0, which generates JUnit reports (see
+        [Issue 104](https://guthub.com/cleancut/green/issue/104)).
 
     *   Drop the tecor tool that was in the repository under the
-        `modules`directory.
+        `modules`directory. This is replace by CAMP execute.
+
 
 *   CAMP v0.3
 
