@@ -5,18 +5,21 @@ changes that were made.
 
 *   Development
 
+    *   Expose the parameter of CAMP execute in the CAMP model.
+
+    *   Add a new Python example following the Java Greetings example.
+
     *   Move to Green 2.15.0, which generates JUnit reports (see
         [Issue 104](https://guthub.com/cleancut/green/issue/104)).
 
     *   Drop the tecor tool that was in the repository under the
-        `modules`directory. This is replace by CAMP execute.
-
+        `modules`directory. This is replaced by CAMP execute.
 
 *   CAMP v0.3
 
     *   CAMP v0.3.3 (Apr. 9, 2019)
 
-        *   Move to Green v2.14.2. Fix [Issue
+        *   Move to Green 2.14.2. Fix [Issue
             203](https://github.com/cleancut/green/issues/203) about the
             'GreenStream' object that had no attribute 'encoding' when
             capturing tests's output.
