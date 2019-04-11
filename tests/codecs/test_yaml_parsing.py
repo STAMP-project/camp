@@ -13,7 +13,8 @@
 from __future__ import unicode_literals
 
 from camp.codecs.yaml import YAML, InvalidYAMLModel
-from camp.entities.model import DockerFile, DockerImage, Substitution
+from camp.entities.model import DockerFile, DockerImage, Substitution, \
+    TestSettings
 from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest, \
     TestSuite, TestReport
 
@@ -258,6 +259,44 @@ class BuiltModelAreComplete(TestCase):
             })
 
 
+    def test_given_a_component_containing_tests(self):
+        self.assert_complete(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      tests:\n"
+            "        command: mvn -B test -gs ./settings.xml\n"
+            "        reports:\n"
+            "          format: JUnit\n"
+            "          location: target/surefire-reports\n"
+            "          pattern: TEST*.xml\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expectations={
+                "services": ["Wonderful"],
+                "features": [],
+                "components" : {
+                    "server": {
+                        "provided_services": ["Wonderful"],
+                        "required_services": [],
+                        "provided_features": [],
+                        "required_features": [],
+                        "implementation": None,
+                        "variables": {},
+                        "tests": TestSettings("mvn -B test -gs ./settings.xml",
+                                              "JUnit",
+                                              "target/surefire-reports",
+                                              "TEST*.xml")
+                    }
+                },
+                "goals": {
+                    "services": ["Wonderful"],
+                    "features": []
+                }
+            })
+
+
 
     def assert_complete(self, text, expectations):
         model = self._codec.load_model_from(StringIO(text))
@@ -304,6 +343,10 @@ class BuiltModelAreComplete(TestCase):
         self.assertEqual(expectation["implementation"],
                          component.implementation)
         self.assert_variables(component, expectation["variables"])
+        if "tests" in expectation:
+            print(vars(component.test_settings))
+            self.assertEqual(expectation["tests"],
+                             component.test_settings)
 
 
     def assert_variables(self, component, variables):
@@ -318,8 +361,6 @@ class BuiltModelAreComplete(TestCase):
 
             else:
                 self.fail("Component '%s' lacks variable '%s'." % (component.name, name))
-
-
 
 
 
@@ -430,6 +471,40 @@ class IgnoredEntriesAreReported(TestCase):
                              "   running:\n"
                              "      - Wonderful\n",
                              expected="goals/extra")
+
+
+    def test_when_an_extra_entry_is_in_the_test_settings(self):
+        self.assert_extra_in("components:\n"
+                             "   server:\n"
+                             "      provides_services: [ Wonderful ]\n"
+                             "      tests:\n"
+                             "        command: mvn -B test -gs ./settings.xml\n"
+                             "        extra: this entry should be reported!\n"
+                             "        reports:\n"
+                             "          format: JUnit\n"
+                             "          location: target/surefire-reports\n"
+                             "          pattern: TEST*.xml\n"
+                             "goals:\n"
+                             "   running:\n"
+                             "      - Wonderful\n",
+                             expected="components/server/tests/extra")
+
+
+    def test_when_an_extra_entry_is_in_the_test_reports(self):
+        self.assert_extra_in("components:\n"
+                             "   server:\n"
+                             "      provides_services: [ Wonderful ]\n"
+                             "      tests:\n"
+                             "        command: mvn -B test -gs ./settings.xml\n"
+                             "        reports:\n"
+                             "          extra: this entry should be reported!\n"
+                             "          format: JUnit\n"
+                             "          location: target/surefire-reports\n"
+                             "          pattern: TEST*.xml\n"
+                             "goals:\n"
+                             "   running:\n"
+                             "      - Wonderful\n",
+                             expected="components/server/tests/reports/extra")
 
 
 
@@ -785,6 +860,77 @@ class MissingMandatoryEntriesAreReported(TestCase):
             path="components/server/implementation/docker",
             candidates=["file", "image"])
 
+
+    def test_when_omitting_the_testing_commands(self):
+        self.assert_missing(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      tests:\n"
+            "        # Missing: command: mvn -B test -gs ./settings.xml\n"
+            "        reports:\n"
+            "          format: JUnit\n"
+            "          location: target/surefire-reports\n"
+            "          pattern: TEST*.xml\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            path="components/server/tests",
+            candidates=["command"])
+
+
+    def test_when_omitting_test_report_format(self):
+        self.assert_missing(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      tests:\n"
+            "        command: mvn -B test -gs ./settings.xml\n"
+            "        reports:\n"
+            "          # Missing: format: JUnit\n"
+            "          location: target/surefire-reports\n"
+            "          pattern: TEST*.xml\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            path="components/server/tests/reports",
+            candidates=["format"])
+
+
+    def test_when_omitting_test_report_location(self):
+        self.assert_missing(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      tests:\n"
+            "        command: mvn -B test -gs ./settings.xml\n"
+            "        reports:\n"
+            "          format: JUnit\n"
+            "          # Missing: location: target/surefire-reports\n"
+            "          pattern: TEST*.xml\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            path="components/server/tests/reports",
+            candidates=["location"])
+
+
+    def test_when_omitting_test_report_pattern(self):
+        self.assert_missing(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      tests:\n"
+            "        command: mvn -B test -gs ./settings.xml\n"
+            "        reports:\n"
+            "          format: JUnit\n"
+            "          location: target/surefire-reports\n"
+            "          # Missing: pattern: TEST*.xml\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            path="components/server/tests/reports",
+            candidates=["pattern"])
 
     def assert_missing(self, text, path, candidates):
         try:

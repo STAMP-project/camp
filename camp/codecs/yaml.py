@@ -15,9 +15,10 @@ from __future__ import absolute_import
 
 from camp.codecs.commons import Codec
 from camp.entities.model import Model, Component, Service, Goals, Variable, \
-    Feature, DockerFile, DockerImage, Substitution, Instance, Configuration
+    Feature, DockerFile, DockerImage, Substitution, Instance, Configuration, \
+    TestSettings
 
-from yaml import safe_load as load_yaml, safe_dump as yaml_dump
+from yaml import safe_load as load_yaml, safe_dump as dump_yaml
 
 
 
@@ -47,7 +48,7 @@ class YAML(Codec):
 
     def save_test_reports(self, reports, stream):
         data = {"reports": [each.as_dictionary for each in reports]}
-        yaml_dump(data,
+        dump_yaml(data,
                   stream,
                   default_flow_style=False,
                   allow_unicode=True)
@@ -55,7 +56,9 @@ class YAML(Codec):
 
     def save_configuration(self, configuration, stream):
         dictionary = self._as_dictionary(configuration)
-        yaml_dump(dictionary, stream, default_flow_style=False)
+        dump_yaml(dictionary,
+                  stream,
+                  default_flow_style=False)
 
 
     @staticmethod
@@ -165,6 +168,7 @@ class YAML(Codec):
         required_features = []
         variables = []
         implementation = None
+        test_settings = None
 
         for key, item in data.items():
 
@@ -208,6 +212,12 @@ class YAML(Codec):
                     continue
                 implementation = self._parse_implementation(name, item)
 
+            elif key == Keys.TEST_SETTINGS:
+                if not isinstance(item, dict):
+                    self._wrong_type(dict, type(item), Keys.COMPONENTS, name, key)
+                    continue
+                test_settings = self._parse_test_settings(name, item)
+
             else:
                 self._ignore(Keys.COMPONENTS, name, key)
 
@@ -218,7 +228,8 @@ class YAML(Codec):
                          provided_features=provided_features,
                          required_features=required_features,
                          variables=variables,
-                         implementation=implementation)
+                         implementation=implementation,
+                         test_settings=test_settings)
 
     @staticmethod
     def _escape(name):
@@ -367,6 +378,68 @@ class YAML(Codec):
         return docker
 
 
+    def _parse_test_settings(self, name, data):
+        path = [Keys.COMPONENTS, name, Keys.TEST_SETTINGS]
+        command = None
+        report = None
+        for key, item in data.items():
+            if key == Keys.COMMAND:
+                if not isinstance(item, str):
+                    self._wrong_type(str, type(item), path + [key])
+                    continue
+                command = item
+            elif key == Keys.REPORTS:
+                if not isinstance(item, dict):
+                    self._wrong_type(dict, type(item), path + [key])
+                    continue
+                report = self._parse_test_reports(name, item)
+            else:
+                self._ignore(*path, key)
+
+        if not command:
+            self._missing([Keys.COMMAND], *path)
+
+        if not report:
+            self._missing([Keys.REPORTS], *path)
+
+        return TestSettings(command, *report)
+
+
+
+    def _parse_test_reports(self, name, data):
+        path = [Keys.COMPONENTS, name, Keys.TEST_SETTINGS, Keys.REPORTS]
+        location = None
+        pattern = None
+        file_format = None
+        for key, item in data.items():
+            if key == Keys.REPORT_LOCATION:
+                if not isinstance(item, str):
+                    self._wrong_types(str, type(item), path + [key])
+                    continue
+                location = item
+            elif key == Keys.REPORT_PATTERN:
+                if not isinstance(item, str):
+                    self._wrong_types(str, type(item), path + [key])
+                    continue
+                pattern = item
+            elif key == Keys.REPORT_FORMAT:
+                if not isinstance(item, str):
+                    self._wrong_types(str, type(item), path + [key])
+                    continue
+                file_format = item
+            else:
+                self._ignore(*(path +[key]))
+
+        if not location:
+            self._missing([Keys.REPORT_LOCATION], *path)
+        if not pattern:
+            self._missing([Keys.REPORT_PATTERN], *path)
+        if not file_format:
+            self._missing([Keys.REPORT_FORMAT], *path)
+
+        return (file_format, location, pattern)
+
+
     def _parse_goals(self, data):
         running_services = []
         for key, item in data.items():
@@ -405,6 +478,7 @@ class Keys:
     The labels that are fixed in the YAML
     """
 
+    COMMAND = "command"
     COMPONENTS = "components"
     CONFIGURATION = "configuration"
     CONSTRAINTS = "constraints"
@@ -424,11 +498,16 @@ class Keys:
     RANGE = "range"
     REALIZATION = "realization"
     REPLACEMENTS = "replacements"
+    REPORTS = "reports"
+    REPORT_FORMAT = "format"
+    REPORT_LOCATION = "location"
+    REPORT_PATTERN = "pattern"
     REQUIRES_FEATURES = "requires_features"
     REQUIRES_SERVICES = "requires_services"
     RUNNING = "running"
     SERVICE_PROVIDERS = "service_providers"
     TARGETS = "targets"
+    TEST_SETTINGS = "tests"
     TYPE = "type"
     VARIABLES = "variables"
     VALUES= "values"
@@ -454,6 +533,10 @@ class IgnoredEntry(YAMLWarning):
 
     def __str__(self):
         return "Entry '%s' ignored!" % self._path
+
+    def __repr__(self):
+        return "IgnoredEntry(%s)" % self._path
+
 
 
 
@@ -491,6 +574,10 @@ class MissingEntry(YAMLWarning):
         return "Incomplete entry '%s'! Possibly missing entries %s" \
             % (self._path,
                ", ".join("'%s'" % each for each in self._candidates))
+
+    def __repr__(self):
+        return "MissingEntry(%s,%s)" % (self._candidates, self._path)
+
 
     @property
     def candidates(self):

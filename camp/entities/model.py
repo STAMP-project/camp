@@ -10,8 +10,8 @@
 
 
 
-# Compatibility with Python 2.7
 from __future__ import unicode_literals
+
 from future.utils import string_types as str
 
 
@@ -84,6 +84,13 @@ class Model(Visitee):
             return item in self.services
         else:
             return None
+
+
+    @property
+    def tests(self):
+        for any_component in self._components.values():
+            if any_component.contains_tests:
+                return any_component
 
 
     @property
@@ -184,7 +191,8 @@ class Component(NamedElement):
                  provided_services=None,
                  required_services=None,
                  variables=None,
-                 implementation=None):
+                 implementation=None,
+                 test_settings=None):
         super(Component, self).__init__(name)
         self._required_features = [each for each in required_features] \
                                   if required_features else []
@@ -197,6 +205,7 @@ class Component(NamedElement):
         self._variables = {each.name: each for each in variables} \
                           if variables else {}
         self._implementation = implementation
+        self._test_settings = test_settings
 
 
     @property
@@ -227,6 +236,16 @@ class Component(NamedElement):
     @property
     def implementation(self):
         return self._implementation
+
+
+    @property
+    def contains_tests(self):
+        return self._test_settings is not None
+
+
+    @property
+    def test_settings(self):
+        return self._test_settings
 
 
 
@@ -396,6 +415,56 @@ class DockerImage(Implementation):
 
     def __repr__(self):
         return "DockerImage('%s')" % self._docker_image
+
+
+
+class TestSettings(object):
+    """
+    Immutable Value Object
+    """
+
+
+    def __init__(self, command, report_format, report_location, report_pattern):
+        self._command = command
+        self._report_format = report_format
+        self._report_location = report_location
+        self._report_pattern = report_pattern
+
+
+    @property
+    def test_command(self):
+        return self._command
+
+
+    @property
+    def report_format(self):
+        return self._report_format
+
+
+    @property
+    def report_location(self):
+        return self._report_location
+
+
+    @property
+    def report_pattern(self):
+        return self._report_pattern
+
+
+    def __eq__(self, other):
+        if type(other) != TestSettings:
+            return False
+        return self._command == other.test_command \
+            and self._report_format == other.report_format \
+            and self._report_location == other.report_location \
+            and self._report_pattern == other.report_pattern
+
+
+    def __hash__(self):
+        return hash((self._command,
+                     self._report_format,
+                     self._report_location,
+                     self._report_pattern))
 
 
 
