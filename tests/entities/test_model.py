@@ -36,7 +36,7 @@ class TheTestSettingsShould(TestCase):
 
     def test_expose_a_command_to_run_the_tests(self):
         self.assertEqual(self._command,
-                         self._settings.run_tests_command)
+                         self._settings.test_command)
 
 
     def test_expose_the_format_of_test_reports(self):

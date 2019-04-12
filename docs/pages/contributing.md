@@ -23,9 +23,6 @@ explain here:
 
 *   Refactorings
 
-    *   Remove duplication between commands and the working
-        directories
-
     *   Rewrite the YAML codec so that it parses test reports and
         returns the proper CAMP object instead of a dictionary.
 

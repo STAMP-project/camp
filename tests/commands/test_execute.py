@@ -39,27 +39,6 @@ class LongOptionsAreAccepted(TestCase):
                          command.is_simulated)
 
 
-    def test_with_a_testing_technology(self):
-        command_line = ["execute", "--test-with", "maven"]
-
-        command = Command.extract_from(command_line)
-
-        self.assertIsInstance(command, Execute)
-        self.assertEqual("maven",
-                         command.testing_tool)
-
-
-    def test_with_a_target_component(self):
-        command_line = ["execute", "--component", "foo"]
-
-        command = Command.extract_from(command_line)
-
-        self.assertIsInstance(command, Execute)
-        self.assertEqual("foo",
-                         command.component)
-
-
-
 class ShortOptionsAreAccepted(TestCase):
 
     def test_given_working_directory(self):
@@ -80,26 +59,6 @@ class ShortOptionsAreAccepted(TestCase):
         self.assertIsInstance(command, Execute)
         self.assertEqual(True,
                          command.is_simulated)
-
-
-    def test_with_a_testing_technology(self):
-        command_line = ["execute", "--t", "maven"]
-
-        command = Command.extract_from(command_line)
-
-        self.assertIsInstance(command, Execute)
-        self.assertEqual("maven",
-                         command.testing_tool)
-
-
-    def test_with_a_target_component(self):
-        command_line = ["execute", "-c", "foo"]
-
-        command = Command.extract_from(command_line)
-
-        self.assertIsInstance(command, Execute)
-        self.assertEqual("foo",
-                         command.component)
 
 
 class DefaultValuesAreCorrect(TestCase):
@@ -130,19 +89,3 @@ class DefaultValuesAreCorrect(TestCase):
         self.assertIsInstance(command, Execute)
         self.assertEqual(Execute.DEFAULT_IS_SIMULATED,
                          command.is_simulated)
-
-
-    def test_with_a_testing_technology(self):
-        command = Command.extract_from(self._command_line)
-
-        self.assertIsInstance(command, Execute)
-        self.assertEqual(Execute.DEFAULT_TESTING_TOOL,
-                         command.testing_tool)
-
-
-    def test_with_a_target_component(self):
-        command = Command.extract_from(self._command_line)
-
-        self.assertIsInstance(command, Execute)
-        self.assertEqual(Execute.DEFAULT_COMPONENT,
-                         command.component)

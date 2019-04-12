@@ -9,16 +9,19 @@
 #
 
 
-
-from camp.execute.commons import ShellCommandFailed, Shell, SimulatedShell, \
-    Executor, ExecutorListener
+from camp.entities.model import Component, TestSettings
+from camp.execute.engine import ShellCommandFailed, Shell, SimulatedShell, \
+    Engine, ExecutorListener, ReportFormatNotSupported
+from camp.execute.reporting.junit import JUnitXMLReader
 
 from io import BytesIO
 
 from mock import MagicMock, call
 
-from os import makedirs
+from os import makedirs, getcwd
 from os.path import exists, isdir, join as join_paths, basename
+
+from re import search
 
 from tempfile import gettempdir
 
@@ -194,18 +197,25 @@ class TheExecutorShould(TestCase):
 
     def setUp(self):
         self._listener = MagicMock(ExecutorListener)
-        self._execute = Executor(SimulatedShell(BytesIO(), "."),
-                                 self._listener)
+        self._tested = Component(
+            name="Foo",
+            test_settings=TestSettings("green tests","junit", "./", ".xml"))
+        self._log = BytesIO()
+        self._engine = Engine(
+            self._tested,
+            SimulatedShell(self._log, "."),
+            self._listener)
+        self._configurations = [
+            ("config_1", "useless"),
+            ("config_2", "useless")
+        ]
 
 
     def test_notify_listener(self):
-        configurations = [("config_1", "useless"),
-                          ("config_2", "useless")]
-
-        self._execute(configurations, "whatever")
+        self._call_execute()
 
         expected_calls = []
-        for each, _ in configurations:
+        for each, _ in self._configurations:
             expected_calls.append(call.execution_started_for(each))
             expected_calls.append(call.building_images_for(each))
             expected_calls.append(call.starting_services_for(each))
@@ -214,3 +224,77 @@ class TheExecutorShould(TestCase):
             expected_calls.append(call.stopping_services_for(each))
 
         self._listener.assert_has_calls(expected_calls)
+
+
+
+    def test_select_the_right_report_reader(self):
+        reader = self._engine._select_reader_for("junit")
+        self.assertIsInstance(reader, JUnitXMLReader)
+
+
+    def test_raise_an_exception_when_technology_is_not_supported(self):
+        with self.assertRaises(ReportFormatNotSupported):
+            self._engine._select_reader_for("unknown_format")
+
+
+    def test_build_all_images_for_all_configurations(self):
+        self._call_execute()
+
+        for each_path, _ in self._configurations:
+            path = join_paths(each_path, "images")
+            expected_command = Engine._BUILD_IMAGES
+            self._verify(path, expected_command)
+
+
+    def test_start_services_for_all_configurations(self):
+        self._call_execute()
+
+        for each_path, _ in self._configurations:
+            expected_command = Engine._START_SERVICES
+            self._verify(each_path, expected_command)
+
+
+    def test_run_tests_for_all_configurations(self):
+        self._call_execute()
+
+        for each_path, _ in self._configurations:
+            expected_command = Engine.RUN_TESTS.format(
+                path=join_paths(getcwd(), each_path),
+                component=self._tested.name,
+                command=self._tested.test_settings.test_command)
+            expected = SimulatedShell.LOG_OUTPUT.format(each_path,
+                                                        expected_command)
+            self._verify(each_path, expected_command)
+
+
+    def test_fetch_test_reports(self):
+        self._call_execute()
+
+        for each_path, _ in self._configurations:
+            docker_ps = Engine.GET_CONTAINER_ID.format(
+                configuration=search(r"(config_[0-9]+)\/?$", each_path).group(1),
+                component=self._tested.name)
+            self._verify(each_path, docker_ps)
+
+            docker_cp = Engine.FETCH_TEST_REPORTS.format(
+                container="",
+                component=self._tested.name,
+                location=self._tested.test_settings.report_location)
+            self._verify(each_path, docker_cp)
+
+
+    def test_stop_services_for_all_configurations(self):
+        self._call_execute()
+
+        for each_path, _ in self._configurations:
+            expected_command = Engine._STOP_SERVICES
+            self._verify(each_path, expected_command)
+
+
+    def _call_execute(self):
+        self._engine.execute(self._configurations)
+
+
+    def _verify(self, path, command):
+        expected = SimulatedShell.LOG_OUTPUT.format(path,command)
+        self.assertIn(expected, self._log.getvalue().decode())

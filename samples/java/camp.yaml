@@ -22,6 +22,12 @@ components:
     implementation:
       docker:
         file: tests/Dockerfile
+    tests:
+      command: mvn -B test
+      reports:
+        format: junit
+        location: target/surefire-reports
+        pattern: .xml
 
   greetings:
     provides_services: [ Greetings ]
