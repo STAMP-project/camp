@@ -62,7 +62,8 @@ class Shell(object):
             if process.returncode != 0:
                 raise ShellCommandFailed(command,
                                          process.returncode,
-                                         stdout)
+                                         stdout,
+                                         stderr)
             return stdout.decode()
 
         except OSError as error:
@@ -128,10 +129,11 @@ class ShellListener(object):
 
 class ShellCommandFailed(Exception):
 
-    def __init__(self, command, exit_code, output=None):
+    def __init__(self, command, exit_code, output=None, error=None):
         self._command = command
         self._exit_code = exit_code
         self._output = output
+        self._error = error
 
     @property
     def command(self):
@@ -144,6 +146,10 @@ class ShellCommandFailed(Exception):
     @property
     def output(self):
         return self._output
+
+    @property
+    def error(self):
+        return self._error
 
     def __str__(self):
         return "{0} (with code {1}\nOutput:\n{2}".format(self._command,

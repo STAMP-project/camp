@@ -143,6 +143,7 @@ class UI(object):
         self._print("   $ {command}", command=error.command)
         self._print("   Check out logs in 'camp_execute.log'.")
         self._print(error.output)
+        self._print(error.error)
 
 
     def report_format_not_supported(self, error):
