@@ -35,7 +35,8 @@ before_install:
   
 install:
   - |
-    docker build --build-arg PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} \
+    docker build --no-cache \
+                 --build-arg PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} \
                  --build-arg WITH_TESTS=--camp-with-tests \
                  --build-arg Z3_VERSION=${Z3_VERSION} \
                  --build-arg Z3_PLATFORM=${Z3_PLATFORM} \
