@@ -404,7 +404,7 @@ class DockerImage(Implementation):
 
 
     def __eq__(self, other):
-        if type(other) != DockerImage:
+        if not isinstance(other, DockerImage):
             return False
         return self._docker_image == other.docker_image
 
@@ -452,8 +452,9 @@ class TestSettings(object):
 
 
     def __eq__(self, other):
-        if type(other) != TestSettings:
+        if not isinstance(other, TestSettings):
             return False
+
         return self._command == other.test_command \
             and self._report_format == other.report_format \
             and self._report_location == other.report_location \

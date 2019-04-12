@@ -61,7 +61,8 @@ class Shell(object):
             self._log.write(stderr)
             if process.returncode != 0:
                 raise ShellCommandFailed(command,
-                                         process.returncode)
+                                         process.returncode,
+                                         stdout)
             return stdout.decode()
 
         except OSError as error:
@@ -139,6 +140,10 @@ class ShellCommandFailed(Exception):
     @property
     def exit_code(self):
         return self._exit_code
+
+    @property
+    def output(self):
+        return self._output
 
     def __str__(self):
         return "{0} (with code {1}\nOutput:\n{2}".format(self._command,
@@ -235,8 +240,6 @@ class Engine(object):
 
 
     def _run_tests(self, path):
-        absolute_path = abspath(path)
-
         command = self.RUN_TESTS.format(
             component=self._component.name,
             command=self._component.test_settings.test_command)
@@ -287,7 +290,7 @@ class Engine(object):
     def _parse_test_reports(self, path):
         all_tests = []
 
-        reader = self._select_reader_for(
+        reader = select_reader_for(
             self._component.test_settings.report_format)
 
         directory = join_paths(path, "test-reports")
@@ -319,12 +322,12 @@ class Engine(object):
 
 
 
-    def _select_reader_for(self, report_format):
-        key = report_format.strip().upper()
-        if key in SUPPORTED_REPORT_FORMAT:
-            return SUPPORTED_REPORT_FORMAT[key]()
-        raise ReportFormatNotSupported(report_format)
 
+def select_reader_for(report_format):
+    key = report_format.strip().upper()
+    if key in SUPPORTED_REPORT_FORMAT:
+        return SUPPORTED_REPORT_FORMAT[key]()
+    raise ReportFormatNotSupported(report_format)
 
 
 SUPPORTED_REPORT_FORMAT = {
