@@ -289,7 +289,7 @@ class YAML(Codec):
                         continue
                     coverage = item
                 else:
-                    self._ignore(*path + [key])
+                    self._ignore(*(path + [key]))
 
             if minimum is None or maximum is None:
                 self._missing([Keys.RANGE], *path)
@@ -394,7 +394,7 @@ class YAML(Codec):
                     continue
                 report = self._parse_test_reports(name, item)
             else:
-                self._ignore(*path, key)
+                self._ignore(*(path + [key]))
 
         if not command:
             self._missing([Keys.COMMAND], *path)
