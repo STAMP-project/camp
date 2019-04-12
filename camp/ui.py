@@ -144,9 +144,9 @@ class UI(object):
         self._print("   Check out logs in 'camp_execute.log'.")
 
 
-    def technology_not_supported(self, error):
+    def report_format_not_supported(self, error):
         self._print("\nTest execution aborted!")
-        self._print(" - Error: Testing with '{techno}' is not supported.",
+        self._print(" - Error: Reading '{techno}' reports is not supported.",
                     techno=error.technology)
         self._print("   Options are: {options}", options=error.options)
         self._print("   Is there a newer version of CAMP available?")

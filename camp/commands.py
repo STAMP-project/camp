@@ -74,16 +74,6 @@ class Command(object):
             action="store_true",
             dest="is_simulated",
             help="Display but do NOT execute the commands that CAMP triggers")
-        execute.add_argument(
-            "-t",
-            "--test-with",
-            dest="testing_tool",
-            help="Select the technology used to run the test")
-        execute.add_argument(
-            "-c",
-            "--component",
-            dest="component",
-            help="Select the component that hosts the tests")
 
         values = parser.parse_args(command_line)
         return Command.from_namespace(values)
@@ -101,13 +91,23 @@ class Command(object):
 
         elif namespace.command == "execute":
             return Execute(namespace.working_directory,
-                           namespace.testing_tool,
-                           namespace.component,
                            namespace.is_simulated)
 
         else:
             message = "The command '%s' is not yet implemented." % namespace.command
             raise NotImplementedError(message)
+
+
+    DEFAULT_WORKING_DIRECTORY = "."
+
+    def __init__(self, working_directory):
+        self._working_directory = working_directory \
+                                  or self.DEFAULT_WORKING_DIRECTORY
+
+
+    @property
+    def working_directory(self):
+        return self._working_directory
 
 
     def send_to(self, camp):
@@ -121,20 +121,13 @@ class Generate(Command):
     Encapsulate calls to 'camp generate ...'
     """
 
-    DEFAULT_WORKING_DIRECTORY = "temp/xwiki"
+
     DEFAULT_COVERAGE = True
 
     def __init__(self, working_directory=None, coverage=None):
-        super(Generate, self).__init__()
-        self._working_directory = working_directory or \
-                                  self.DEFAULT_WORKING_DIRECTORY
+        super(Generate, self).__init__(working_directory)
         self._coverage = coverage \
                          if coverage is not None else self.DEFAULT_COVERAGE
-
-
-    @property
-    def working_directory(self):
-        return self._working_directory
 
 
     @property
@@ -153,21 +146,11 @@ class Realize(Command):
     """
 
     def __init__(self, working_directory, output_directory):
-        super(Realize, self).__init__()
-        self._working_directory = working_directory or \
-                                  self.DEFAULT_WORKING_DIRECTORY
+        super(Realize, self).__init__(working_directory)
         self._output_directory = output_directory or \
                                  self.DEFAULT_OUTPUT_DIRECTORY
 
-    DEFAULT_WORKING_DIRECTORY = "/temp/"
-
-    DEFAULT_OUTPUT_DIRECTORY = "/temp/out"
-
-
-    @property
-    def working_directory(self):
-        return self._working_directory
-
+    DEFAULT_OUTPUT_DIRECTORY = "./out"
 
     @property
     def output_directory(self):
@@ -184,38 +167,14 @@ class Execute(Command):
     Encapsulate calls to 'camp execute ...'
     """
 
-    DEFAULT_WORKING_DIRECTORY = "temp/xwiki"
-    DEFAULT_TESTING_TOOL = "maven"
-    DEFAULT_COMPONENT = "test"
     DEFAULT_IS_SIMULATED = False
 
 
     def __init__(self,
                  working_directory=None,
-                 testing_tool=None,
-                 component=None,
                  is_simulated=None):
-        super(Execute, self).__init__()
-        self._working_directory = working_directory or self.DEFAULT_WORKING_DIRECTORY
-        self._component = component or self.DEFAULT_COMPONENT
-        self._testing_tool = testing_tool or self.DEFAULT_TESTING_TOOL
+        super(Execute, self).__init__(working_directory)
         self._is_simulated = is_simulated or self.DEFAULT_IS_SIMULATED
-
-
-    @property
-    def working_directory(self):
-        return self._working_directory
-
-
-    @property
-    def component(self):
-        return self._component
-
-
-    @property
-    def testing_tool(self):
-        return self._testing_tool
-
 
     @property
     def is_simulated(self):

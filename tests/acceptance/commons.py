@@ -134,12 +134,9 @@ class CampTests(TestCase):
         self.camp("realize", "-d", self.sample.directory)
 
 
-    def execute(self, component, testing_tool):
+    def execute(self):
         self.camp("execute",
-                  "-d", self.sample.directory,
-                  "-c", component,
-                  "-t", testing_tool)
-
+                  "-d", self.sample.directory)
 
     @staticmethod
     def camp(*arguments):

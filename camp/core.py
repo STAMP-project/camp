@@ -14,8 +14,8 @@ from camp.codecs.yaml import InvalidYAMLModel
 from camp.directories import InputDirectory, OutputDirectory, \
     MissingModel, NoConfigurationFound
 from camp.entities.validation import Checker, InvalidModel
-from camp.execute.commons import SimulatedShell, Shell, ShellCommandFailed
-from camp.execute.select import select_executor, TechnologyNotSupported
+from camp.execute.engine import Engine, SimulatedShell, Shell, \
+    ShellCommandFailed, ReportFormatNotSupported
 from camp.ui import UI
 
 from traceback import extract_tb
@@ -131,12 +131,12 @@ class Camp(object):
         self._prepare_directories(arguments)
         try:
             model = self._load_model()
+            testing = model.tests
             configurations = self._load_configurations(model)
             with open("camp_execute.log", "wb") as log_file:
-                shell = SimulatedShell(log_file, ".", self._ui) if arguments.is_simulated \
-                        else Shell(log_file, ".", self._ui)
-                execute = select_executor(arguments.testing_tool, shell, self._ui)
-                reports = execute(configurations, arguments.component)
+                shell = self._select_shell(arguments, log_file)
+                engine = Engine(testing, shell, self._ui)
+                reports = engine.execute(configurations)
                 self._output.save_reports(reports)
                 self._ui.summarize_execution(reports)
 
@@ -155,8 +155,8 @@ class Camp(object):
         except ShellCommandFailed as error:
             self._ui.shell_command_failed(error)
 
-        except TechnologyNotSupported as error:
-            self._ui.technology_not_supported(error)
+        except ReportFormatNotSupported as error:
+            self._ui.report_format_not_supported(error)
 
         except Exception as error:
             stack_trace = extract_tb(exc_info()[2])
@@ -164,3 +164,10 @@ class Camp(object):
 
         finally:
             self._ui.goodbye()
+
+
+    def _select_shell(self, arguments, log_file):
+        shell = Shell(log_file, ".", self._ui)
+        if arguments.is_simulated:
+            shell = SimulatedShell(log_file, ".", self._ui)
+        return shell

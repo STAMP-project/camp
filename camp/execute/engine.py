@@ -10,12 +10,17 @@
 
 
 
+from __future__ import unicode_literals
 from __future__ import print_function
 
-from camp.entities.report import TestReport
+from camp.entities.report import TestReport, TestSuite
+from camp.execute.reporting.junit import JUnitXMLReader, \
+    JUnitXMLElementNotSupported
 
 from os import listdir
-from os.path import isdir, join as join_paths
+from os.path import abspath, isdir, join as join_paths
+
+from re import search
 
 from subprocess import Popen, PIPE
 
@@ -44,8 +49,6 @@ class Shell(object):
         self._log.write(text.encode())
 
     LOG_OUTPUT = "\ncamp@bash:{0}$ {1}\n"
-
-
 
 
     def _run_shell(self, command):
@@ -183,34 +186,37 @@ class ExecutorListener(object):
 
 
 
-class Executor(object):
+class Engine(object):
 
 
-    def __init__(self, shell, listener=None):
+    def __init__(self, component, shell, listener=None):
+        self._component = component
         self._shell = shell
         self._listener = listener or ExecutorListener()
 
 
-    def __call__(self, configurations, component):
+    def execute(self, configurations):
         test_results = []
         for each_path, _ in configurations:
-            self._listener.execution_started_for(each_path)
+            try:
+                self._listener.execution_started_for(each_path)
 
-            self._listener.building_images_for(each_path)
-            self._build_images(each_path)
+                self._listener.building_images_for(each_path)
+                self._build_images(each_path)
 
-            self._listener.starting_services_for(each_path)
-            self._start_services(each_path)
+                self._listener.starting_services_for(each_path)
+                self._start_services(each_path)
 
-            self._listener.running_tests_for(each_path)
-            self._run_tests(each_path, component)
+                self._listener.running_tests_for(each_path)
+                self._run_tests(each_path)
 
-            self._listener.collecting_reports_for(each_path)
-            results = self._collect_results(each_path, component)
-            test_results.append(results)
+                self._listener.collecting_reports_for(each_path)
+                results = self._collect_results(each_path)
+                test_results.append(results)
 
-            self._listener.stopping_services_for(each_path)
-            self._stop_services(each_path)
+            finally:
+                self._listener.stopping_services_for(each_path)
+                self._stop_services(each_path)
 
         return test_results
 
@@ -228,17 +234,115 @@ class Executor(object):
     _START_SERVICES = "docker-compose up -d"
 
 
-    def _run_tests(self, path, command):
-        self._shell.execute(self._RUN_TESTS + command, path)
+    def _run_tests(self, path):
+        absolute_path = abspath(path)
 
-    _RUN_TESTS = "docker-compose exec -it tests "
+        command = self.RUN_TESTS.format(
+            component=self._component.name,
+            command=self._component.test_settings.test_command)
+        self._shell.execute(command, path)
+
+    # We CANNOT use Docker volumes (option -v). If CAMP runs within a
+    # container that spawns new containers by sharing the docker
+    # deamon of its host (i.e., by mounting '/var/run/docker.sock'),
+    # Docker interprets the paths given to mount volumes with respect
+    # to the host file system. (See Issue #35)
+    RUN_TESTS = ("docker-compose run "
+                 # "--user={uid} "
+                 # "-v {path}/images/{component}_0/:/{component} "
+                 "{component} "
+                 "{command}")
 
 
-    def _collect_results(self, path, component):
-        return TestReport(path)
+    def _collect_results(self, path):
+        container = self._fetch_tests_container_id(path)
+
+
+        docker_cp = self.FETCH_TEST_REPORTS.format(
+            container=container.strip(),
+            component=self._component.name,
+            location=self._component.test_settings.report_location)
+
+        self._shell.execute(docker_cp, path)
+
+        return self._parse_test_reports(path)
+
+
+    def _fetch_tests_container_id(self, path):
+        docker_ps = self.GET_CONTAINER_ID.format(
+            configuration=search(r"(config_[0-9]+)\/?$", path).group(1),
+            component=self._component.name)
+        return self._shell.execute(docker_ps, path)
+
+
+    GET_CONTAINER_ID = ("docker ps --all --quiet "
+                        "--filter name={configuration}_{component}_run_1")
+
+
+    FETCH_TEST_REPORTS=("docker cp "
+                        "{container}:/{component}/{location} "
+                        "./test-reports")
+
+
+    def _parse_test_reports(self, path):
+        all_tests = []
+
+        reader = self._select_reader_for(
+            self._component.test_settings.report_format)
+
+        directory = join_paths(path, "test-reports")
+        test_reports = self._shell.find_all_files(
+            self._component.test_settings.report_pattern,
+            directory)
+
+        for each_report in test_reports:
+            try:
+                self._listener.on_reading_report(each_report)
+                with open(each_report, "r") as report:
+                    file_content = report.read()
+                    test_suite = reader._extract_from_text(file_content)
+                    all_tests.append(test_suite)
+
+            # TODO: This is too general an exception. It relates to a
+            # specific reader
+            except JUnitXMLElementNotSupported as error:
+                self._listener.on_invalid_report(error)
+
+        return TestReport(path, TestSuite("all tests", *all_tests))
+
 
 
     def _stop_services(self, path):
         self._shell.execute(self._STOP_SERVICES, path)
 
-    _STOP_SERVICES = "docker-compose down"
+    _STOP_SERVICES = "docker-compose down --volumes --rmi all"
+
+
+
+    def _select_reader_for(self, report_format):
+        key = report_format.strip().upper()
+        if key in SUPPORTED_REPORT_FORMAT:
+            return SUPPORTED_REPORT_FORMAT[key]()
+        raise ReportFormatNotSupported(report_format)
+
+
+
+SUPPORTED_REPORT_FORMAT = {
+    "JUNIT": JUnitXMLReader,
+}
+
+
+
+class ReportFormatNotSupported(Exception):
+
+    def __init__(self, technology):
+        self._technology = technology
+
+    @property
+    def technology(self):
+        return self._technology
+
+
+    @property
+    def options(self):
+        return [ each_name for each_name, _ in SUPPORTED_TECHNOLOGIES ]
