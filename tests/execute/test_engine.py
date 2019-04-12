@@ -11,7 +11,7 @@
 
 from camp.entities.model import Component, TestSettings
 from camp.execute.engine import ShellCommandFailed, Shell, SimulatedShell, \
-    Engine, ExecutorListener, ReportFormatNotSupported
+    Engine, ExecutorListener, ReportFormatNotSupported, select_reader_for
 from camp.execute.reporting.junit import JUnitXMLReader
 
 from io import BytesIO
@@ -19,13 +19,13 @@ from io import BytesIO
 from mock import MagicMock, call
 
 from os import makedirs, getcwd
-from os.path import exists, isdir, join as join_paths, basename
+from os.path import exists, isdir, join as join_paths
 
 from re import search
 
 from tempfile import gettempdir
 
-from shutil import copytree, rmtree
+from shutil import rmtree
 
 from unittest import TestCase
 
@@ -226,17 +226,6 @@ class TheExecutorShould(TestCase):
         self._listener.assert_has_calls(expected_calls)
 
 
-
-    def test_select_the_right_report_reader(self):
-        reader = self._engine._select_reader_for("junit")
-        self.assertIsInstance(reader, JUnitXMLReader)
-
-
-    def test_raise_an_exception_when_technology_is_not_supported(self):
-        with self.assertRaises(ReportFormatNotSupported):
-            self._engine._select_reader_for("unknown_format")
-
-
     def test_build_all_images_for_all_configurations(self):
         self._call_execute()
 
@@ -298,3 +287,16 @@ class TheExecutorShould(TestCase):
     def _verify(self, path, command):
         expected = SimulatedShell.LOG_OUTPUT.format(path,command)
         self.assertIn(expected, self._log.getvalue().decode())
+
+
+
+class TheReportReaderSelectionShould(TestCase):
+
+    def test_return_the_junit_report_reader(self):
+        reader = select_reader_for("junit")
+        self.assertIsInstance(reader, JUnitXMLReader)
+
+
+    def test_raise_an_exception_when_format_is_not_supported(self):
+        with self.assertRaises(ReportFormatNotSupported):
+            select_reader_for("unknown_format")

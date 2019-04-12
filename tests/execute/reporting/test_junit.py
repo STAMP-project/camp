@@ -12,16 +12,10 @@
 
 from camp.entities.report import FailedTest, SuccessfulTest, \
     TestSuite, ErroneousTest
-from camp.execute.engine import SimulatedShell
 from camp.execute.reporting.junit import JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
-from io import BytesIO
-
-from mock import MagicMock
-
-from os import getcwd, getuid
-from os.path import join as join_paths
+from os import getcwd
 
 from re import search
 
