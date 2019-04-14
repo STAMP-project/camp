@@ -17,9 +17,9 @@ from camp.generate import Z3Problem
 from camp.realize import Builder
 
 from os import makedirs
-from os.path import isfile, exists, isdir, join as join_paths
+from os.path import exists, join as join_paths
 
-from shutil import rmtree
+from tests.util import create_temporary_workspace
 
 from unittest import TestCase
 
@@ -34,22 +34,16 @@ class AllYAMLConfigurationsAreBuilt(TestCase):
 
 
     def _prepare_input_directory(self):
-        self._create_or_clean(self.INPUT_DIRECTORY)
+        self._input_directory = create_temporary_workspace(self.WORKSPACE)
+        self._output_directory = join_paths(self._input_directory, "out")
         self._create_model()
         self._create_docker_file()
 
-    INPUT_DIRECTORY = "temp/realize/configs"
-
-
-    @staticmethod
-    def _create_or_clean(directory):
-        if isdir(directory):
-            rmtree(directory)
-        makedirs(directory)
+    WORKSPACE = "realize/configs"
 
 
     def _create_model(self):
-        path = join_paths(self.INPUT_DIRECTORY, "model.yml")
+        path = join_paths(self._input_directory, "model.yml")
         with open(path, "w") as model:
             model.write(
                 "components:\n"
@@ -70,7 +64,7 @@ class AllYAMLConfigurationsAreBuilt(TestCase):
 
 
     def _create_docker_file(self):
-        directory = join_paths(self.INPUT_DIRECTORY, "template", "server")
+        directory = join_paths(self._input_directory, "template", "server")
         makedirs(directory)
         path = join_paths(directory, "Dockerfile")
         with open(path, "w") as docker_file:
@@ -84,7 +78,7 @@ class AllYAMLConfigurationsAreBuilt(TestCase):
 
 
     def _create_configuration_1(self):
-        directory = join_paths(self.OUTPUT_DIRECTORY, "config_1")
+        directory = join_paths(self._output_directory, "config_1")
         makedirs(directory)
         path = join_paths(directory, "configuration.yml")
         with open(path, "w") as configuration_1:
@@ -98,11 +92,9 @@ class AllYAMLConfigurationsAreBuilt(TestCase):
                 "    configuration:\n"
                 "       memory: 1GB\n")
 
-    OUTPUT_DIRECTORY = "temp/realize/configs/out"
-
 
     def _create_configuration_2(self):
-        directory = join_paths(self.OUTPUT_DIRECTORY, "config_2")
+        directory = join_paths(self._output_directory, "config_2")
         makedirs(directory)
         path = join_paths(directory, "configuration.yml")
         with open(path, "w") as configuration_1:
@@ -117,7 +109,6 @@ class AllYAMLConfigurationsAreBuilt(TestCase):
                 "       memory: 2GB\n")
 
 
-
     def test_with_two_configurations(self):
         self.realize()
 
@@ -125,16 +116,15 @@ class AllYAMLConfigurationsAreBuilt(TestCase):
                               "config_2/images/server_0/Dockerfile")
 
 
-
     def realize(self):
         camp = Camp(YAML(), Z3Problem, Builder())
-        command = Command.extract_from(["realize", "-d", self.INPUT_DIRECTORY,
-                      "-o", self.OUTPUT_DIRECTORY])
+        command = Command.extract_from(["realize", "-d", self._input_directory,
+                      "-o", self._output_directory])
         command.send_to(camp)
 
 
     def assert_generated(self, *files):
         for each_file in files:
-            path = join_paths(self.OUTPUT_DIRECTORY, each_file)
+            path = join_paths(self._output_directory, each_file)
             self.assertTrue(exists(path),
                             "Missing file '%s'" % each_file)

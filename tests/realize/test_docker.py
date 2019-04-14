@@ -20,7 +20,7 @@ from os.path import isdir, join as join_paths
 
 from re import search
 
-from shutil import rmtree
+from tests.util import create_temporary_workspace
 
 from unittest import TestCase
 
@@ -30,12 +30,10 @@ class BuilderTest(TestCase):
 
 
     def setUp(self):
-        if isdir(self.WORKING_DIRECTORY):
-            rmtree(self.WORKING_DIRECTORY)
-        makedirs(self.WORKING_DIRECTORY)
+        self._workspace = create_temporary_workspace(self.WORKING_DIRECTORY)
 
-        self._input = InputDirectory(self.WORKING_DIRECTORY)
-        self._output = OutputDirectory(self.WORKING_DIRECTORY + "/out")
+        self._input = InputDirectory(self._workspace)
+        self._output = OutputDirectory(self._workspace + "/out")
 
         self._input.create_template_file("server",
                                          "Dockerfile",
@@ -46,15 +44,15 @@ class BuilderTest(TestCase):
 
         self._builder = Builder()
 
-    WORKING_DIRECTORY = "tmp/realize/docker"
+    WORKING_DIRECTORY = "realize/docker"
 
     DOCKER_FILE = ("FROM openjdk:8-jre\n"
                    "RUN echo this is nice\n")
 
 
     def build(self, configuration):
-        destination = join_paths(self.WORKING_DIRECTORY, "out/config_0")
-        self._builder.build(configuration, self.WORKING_DIRECTORY, destination)
+        destination = join_paths(self._workspace, "out/config_0")
+        self._builder.build(configuration, self._workspace, destination)
 
 
     def assert_directory_structure(self, expected_components):

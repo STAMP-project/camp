@@ -19,6 +19,8 @@ from os.path import isdir, join as join_paths
 
 from shutil import rmtree
 
+from tests.util import create_temporary_workspace
+
 from unittest import TestCase
 
 
@@ -28,21 +30,16 @@ class VariablesAreRealized(TestCase):
 
     def setUp(self):
         self._builder = Builder()
-        self.create_workspace()
+        self._workspace = create_temporary_workspace(self.DIRECTORY)
         self.create_docker_file()
         self.create_config_file()
         self.create_docker_compose_file()
 
-    def create_workspace(self):
-        if isdir(self.WORKSPACE):
-            rmtree(self.WORKSPACE)
-        makedirs(self.WORKSPACE)
-
-    WORKSPACE = "temp/realize/variables"
+    DIRECTORY = "realize/variables"
 
 
     def create_docker_file(self):
-        directory = join_paths(self.WORKSPACE, "template", "server")
+        directory = join_paths(self._workspace, "template", "server")
         makedirs(directory)
         path = join_paths(directory, "Dockerfile")
         with open(path, "w") as docker_file:
@@ -51,13 +48,13 @@ class VariablesAreRealized(TestCase):
 
 
     def create_config_file(self):
-        path = join_paths(self.WORKSPACE, "template", "server", "server.cfg")
+        path = join_paths(self._workspace, "template", "server", "server.cfg")
         with open(path, "w") as docker_file:
             docker_file.write("mem=XXX")
 
 
     def create_docker_compose_file(self):
-        path = join_paths(self.WORKSPACE, "template", "docker-compose.yml")
+        path = join_paths(self._workspace, "template", "docker-compose.yml")
         with open(path, "w") as docker_file:
             docker_file.write("mem=XXX")
 
@@ -135,13 +132,13 @@ class VariablesAreRealized(TestCase):
 
 
     def realize(self, configuration):
-        source = self.WORKSPACE
-        destination = join_paths(self.WORKSPACE, "config_1")
+        source = self._workspace
+        destination = join_paths(self._workspace, "config_1")
         self._builder.build(configuration, source, destination)
 
 
     def assert_file_contains(self, resource, pattern):
-        path = join_paths(self.WORKSPACE, resource)
+        path = join_paths(self._workspace, resource)
         with open(path, "r") as resource_file:
             content = resource_file.read()
             self.assertIn(pattern, content)
