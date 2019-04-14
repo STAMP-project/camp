@@ -19,7 +19,7 @@ from io import BytesIO
 from mock import MagicMock, call
 
 from os import makedirs, getcwd
-from os.path import exists, isdir, join as join_paths
+from os.path import isdir, join as join_paths
 
 from re import search
 
@@ -186,7 +186,8 @@ class TheSimulatedShellShould(TestCase):
 
 
     def test_find_no_files(self):
-        reports = self._shell.find_all_files(".xml", "/tmp/")
+        temp_directory = gettempdir()
+        reports = self._shell.find_all_files(".xml", temp_directory)
         self.assertEquals([], reports)
 
 
@@ -251,8 +252,8 @@ class TheExecutorShould(TestCase):
                 path=join_paths(getcwd(), each_path),
                 component=self._tested.name,
                 command=self._tested.test_settings.test_command)
-            expected = SimulatedShell.LOG_OUTPUT.format(each_path,
-                                                        expected_command)
+            SimulatedShell.LOG_OUTPUT.format(each_path,
+                                             expected_command)
             self._verify(each_path, expected_command)
 
 

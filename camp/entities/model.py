@@ -71,8 +71,7 @@ class Model(Visitee):
             if any_feature.name == identifier:
                 return any_feature
 
-        else:
-            raise KeyError(identifier)
+        raise KeyError(identifier)
 
 
     def __contains__(self, item):
