@@ -9,14 +9,15 @@
 #
 
 
+
 from __future__ import unicode_literals
 from __future__ import print_function
 
 from camp.entities.report import SuccessfulTest, FailedTest, \
-    ErroneousTest, TestSuite, TestReport
+    ErroneousTest, TestSuite
 from camp.execute.reporting.commons import ReportReader
 
-from os.path import abspath, join as join_paths
+from os.path import abspath
 
 from xml.etree.ElementTree import fromstring
 

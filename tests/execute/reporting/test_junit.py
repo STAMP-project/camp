@@ -15,10 +15,6 @@ from camp.entities.report import FailedTest, SuccessfulTest, \
 from camp.execute.reporting.junit import JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
-from os import getcwd
-
-from re import search
-
 from unittest import TestCase
 
 
@@ -33,7 +29,7 @@ class TheJUnitXMLReaderShould(TestCase):
         xml = "<invalid-element name=\"foo\"/>"
 
         with self.assertRaises(JUnitXMLElementNotSupported):
-            test = self._reader._extract_from_text(xml)
+            self._reader._extract_from_text(xml)
 
 
     def test_extract_a_successful_test_from_XML(self):

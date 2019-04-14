@@ -18,7 +18,7 @@ from camp.execute.reporting.junit import JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
 from os import listdir
-from os.path import abspath, isdir, join as join_paths
+from os.path import isdir, join as join_paths
 
 from re import search
 
@@ -74,7 +74,8 @@ class Shell(object):
         self._working_directory = self._original_working_directory
 
 
-    def open(self, path, mode):
+    @staticmethod
+    def open(path, mode):
         return open(path, mode)
 
 

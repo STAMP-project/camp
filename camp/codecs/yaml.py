@@ -320,18 +320,18 @@ class YAML(Codec):
 
             if key == Keys.TARGETS:
                 if not isinstance(data[key], list):
-                    self._wrong_type(list, type(data[key]), *(path + [key]))
+                    self._wrong_type(list, type(item), *(path + [key]))
                     continue
-                targets = [each for each in data[key]]
+                targets = [each for each in item]
 
             elif key == Keys.PATTERN:
                 pattern = data[key]
 
             elif key == Keys.REPLACEMENTS:
                 if not isinstance(data[key], list):
-                    self._wrong_type(list, type(data[key]), *(path + [key]))
+                    self._wrong_type(list, type(item), *(path + [key]))
                     continue
-                replacements = [each for each in data[key]]
+                replacements = [each for each in item]
 
             else:
                 self._ignore(*(path + [key]))

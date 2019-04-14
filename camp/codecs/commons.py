@@ -31,7 +31,7 @@ class Codec(object):
 
 
     def load_test_reports(self, stream):
-        NotImplementedError()
+        raise NotImplementedError()
 
 
     def save_test_reports(self, reports, stream):
