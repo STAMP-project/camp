@@ -95,8 +95,8 @@ class Shell(object):
 class SimulatedShell(Shell):
 
 
-    def __init__(self, log, working_directory):
-        super(SimulatedShell, self).__init__(log, working_directory)
+    def __init__(self, log, working_directory, listener=None):
+        super(SimulatedShell, self).__init__(log, working_directory, listener)
 
 
     def _run_shell(self, command):

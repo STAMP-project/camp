@@ -70,7 +70,7 @@ class Camp(object):
 
 
     def _load_model(self):
-        path, model, warnings = self._input.model
+        path, model, _ = self._input.model
         self._ui.model_loaded(path, model)
         model.accept(Checker(workspace=self._input.path))
         return model

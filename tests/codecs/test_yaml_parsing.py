@@ -932,9 +932,10 @@ class MissingMandatoryEntriesAreReported(TestCase):
             path="components/server/tests/reports",
             candidates=["pattern"])
 
+
     def assert_missing(self, text, path, candidates):
         try:
-            model = self._codec.load_model_from(StringIO(text))
+            self._codec.load_model_from(StringIO(text))
             self.fail("InvalidYAMLModel should have been thrown!")
 
         except InvalidYAMLModel as error:

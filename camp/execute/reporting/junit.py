@@ -17,9 +17,7 @@ from camp.entities.report import SuccessfulTest, FailedTest, \
     ErroneousTest, TestSuite
 from camp.execute.reporting.commons import ReportReader
 
-from os.path import abspath
-
-from xml.etree.ElementTree import fromstring
+from defusedxml.ElementTree import fromstring
 
 
 

@@ -362,7 +362,7 @@ class Context(object):
 
 
     def mark_as_covered(self, z3_solution):
-        for key, item in z3_solution.items():
+        for _, item in z3_solution.items():
             if "definition" in item:
                 definition = self.find(item["definition"])
                 if not definition in self.covered_components:

@@ -15,9 +15,7 @@ from camp.entities.model import Model, Component, Variable, Substitution, \
 from camp.realize import Builder
 
 from os import makedirs
-from os.path import isdir, join as join_paths
-
-from shutil import rmtree
+from os.path import join as join_paths
 
 from tests.util import create_temporary_workspace
 
