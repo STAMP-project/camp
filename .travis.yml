@@ -47,7 +47,7 @@ script:
                -v /var/run/docker.sock:/var/run/docker.sock \
                -t ${DOCKER_USERNAME}/${NAME}:dev \
                /bin/bash -c "green -qrfvv -s 1 tests ; coverage xml"
-  - docker cp tests:/camp/.coverage.xml .coverage.xml
+  - docker cp tests:/camp/coverage.xml coverage.xml
   - python-codacy-coverage -r coverage.xml
 
 after_success:
