@@ -31,7 +31,6 @@ services:
 
 before_install:
   - pip install coverage codacy-coverage
-  #- pip install codacy-coverage
 
 install:
   - |
@@ -49,7 +48,7 @@ script:
                -t ${DOCKER_USERNAME}/${NAME}:dev \
                green -qrfvv -s 1 tests
   - docker cp tests:/camp/.coverage .coverage
-  - coverage xml
+  - coverage xml --ignore-errors
   - python-codacy-coverage -r coverage.xml
 
 after_success:
