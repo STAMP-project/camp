@@ -31,8 +31,9 @@ services:
   - docker
 
 before_install:
-  - pip install codecov
-  
+  #- pip install codecov
+  - pip install codacy-coverage
+
 install:
   - |
     docker build --no-cache \
@@ -49,7 +50,8 @@ script:
                -t ${DOCKER_USERNAME}/${NAME}:dev \
                green -qrfvv -s 1 tests
   - docker cp tests:/camp/.coverage .coverage
-  - codecov
+  - coverage xml
+  - python-codacy-coverage -r coverage.xml
 
 after_success:
   - |  
