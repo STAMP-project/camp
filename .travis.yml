@@ -17,7 +17,6 @@ python:
 env:
   global:
     - NAME="camp"
-    - CODECOV_TOKEN="6dfaf6b6-29f5-4816-8ace-908bbbb7e01e"
   matrix:
     - Z3_VERSION="4.8.4.d6df51951f4c" Z3_PLATFORM="x64-debian-8.11" PUBLISH="true"
     - Z3_VERSION="4.7.1" Z3_PLATFORM="x64-debian-8.10"
@@ -31,8 +30,8 @@ services:
   - docker
 
 before_install:
-  #- pip install codecov
-  - pip install codacy-coverage
+  - pip install coverage codacy-coverage
+  #- pip install codacy-coverage
 
 install:
   - |
