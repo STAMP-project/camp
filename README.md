@@ -1,7 +1,10 @@
 ![GitHub tag](https://img.shields.io/github/tag/STAMP-project/camp.svg)
 [![Build Status](https://travis-ci.org/STAMP-project/camp.svg?branch=master)](https://travis-ci.org/STAMP-project/camp)
-[![Test Coverage](https://img.shields.io/codacy/coverage/55f92b842a36479a8b3c9c629a3a0707.svg)](https://www.codacy.com/app/fchauvel/camp?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=STAMP-project/camp&amp;utm_campaign=Badge_Coverage)
-[![Code Grade](https://img.shields.io/codacy/grade/55f92b842a36479a8b3c9c629a3a0707.svg)](https://www.codacy.com/app/SINTEF-9012/camp?utm_source=github.com&utm_medium=referral&utm_content=STAMP-project/camp&utm_campaign=Badge_Grade)
+[![Test Coverage](https://img.shields.io/OBcodacy/coverage/916007abcf574c8eadbde9ef5b720a5a.svg)](https://www.codacy.com/app/fchauvel/camp?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=STAMP-project/camp&amp;utm_campaign=Badge_Coverage)
+[![Code Grade](https://img.shields.io/codacy/grade/916007abcf574c8eadbde9ef5b720a5a.svg)](https://www.codacy.com/app/SINTEF-9012/camp?utm_source=github.com&utm_medium=referral&utm_content=STAMP-project/camp&utm_campaign=Badge_Grade)
+
+
+916007abcf574c8eadbde9ef5b720a5a
 
 # CAMP &mdash; Amplify your Configuration Tests
 
