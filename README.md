@@ -4,8 +4,6 @@
 [![Code Grade](https://img.shields.io/codacy/grade/916007abcf574c8eadbde9ef5b720a5a.svg)](https://www.codacy.com/app/SINTEF-9012/camp?utm_source=github.com&utm_medium=referral&utm_content=STAMP-project/camp&utm_campaign=Badge_Grade)
 
 
-916007abcf574c8eadbde9ef5b720a5a
-
 # CAMP &mdash; Amplify your Configuration Tests
 
 CAMP (Configuration AMPlification) takes as input a sample testing
