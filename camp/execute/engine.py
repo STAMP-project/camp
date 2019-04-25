@@ -146,11 +146,11 @@ class ShellCommandFailed(Exception):
 
     @property
     def output(self):
-        return self._output
+        return str(self._output, "utf-8")
 
     @property
     def error(self):
-        return self._error
+        return str(self._error, "utf-8")
 
     def __str__(self):
         return "{0} (with code {1}\nOutput:\n{2}".format(self._command,
