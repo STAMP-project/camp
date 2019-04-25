@@ -52,7 +52,7 @@ script:
 
 after_success:
   - |  
-    if [[ ! -z "${PUBLISH}" && "${TRAVIS_BRANCH}" == "master" && "${TRAVIS_PYTHON_VERSION}" == "3.5" ]]
+    if [[ ! -z "${PUBLISH}" && "${TRAVIS_PYTHON_VERSION}" == "3.5" && "${TRAVIS_PULL_REQUEST}" == "false" ]]
     then
        docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
        docker push ${DOCKER_USERNAME}/${NAME}:dev
