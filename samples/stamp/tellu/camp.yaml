@@ -1,0 +1,98 @@
+goals:
+  running:
+    - Actions
+
+
+components:
+  actions:
+    provides_services: [ Actions ]
+    requires_services: [ Filterstore, Cassandra ]
+    implementation:
+      docker:
+        file: actions/actions.yaml
+    variables:
+      replicas:
+        values:
+          range: [1, 3]
+          coverage: 2
+        realization:
+          - targets: [actions/actions.yaml]
+            pattern: "replicas: 1 #CAMP"
+            replacements:
+              - "replicas: {value} #CAMP"
+      limitcpu:
+        values:
+          range: [50, 200]
+          coverage: 150
+        realization:
+          - targets: [actions/actions.yaml]
+            pattern: "cpu: 200m #CAMP limits:cpu"
+            replacements:
+              - "cpu: {value}m"
+      limitmemory:
+        values:
+          range: [200, 600]
+          coverage: 200
+        realization:
+          - targets: [actions/actions.yaml]
+            pattern: "memory: 500Mi #CAMP limits:memory"
+            replacements:
+              - "memory: {value}Mi"
+
+  filterstore:
+    provides_services: [ Filterstore ]
+    implementation:
+      docker:
+        file: filterstore/filterstore.yaml
+    variables:
+      replicas:
+        values:
+          range: [1, 3]
+          coverage: 2
+        realization:
+          - targets: [filterstore/filterstore.yaml]
+            pattern: "replicas: 3 #CAMP"
+            replacements:
+              - "replicas: {value} #CAMP"
+      limitcpu:
+        values:
+          range: [500, 1000]
+          coverage: 500
+        realization:
+          - targets: [filterstore/filterstore.yaml]
+            pattern: "cpu: 1000m #CAMP limits:cpu"
+            replacements:
+              - "cpu: {value}m"
+      limitmemory:
+        values:
+          range: [400, 800]
+          coverage: 400
+        realization:
+          - targets: [filterstore/filterstore.yaml]
+            pattern: "memory: 800Mi #CAMP limits:memory"
+            replacements:
+              - "memory: {value}Mi"
+
+  cassandra:
+    provides_services: [ Cassandra ]
+    implementation:
+      docker:
+        file: cassandra/cassandra.yaml
+    variables:
+      image:
+        values: [v2, v3]
+        realization:
+          - targets: [cassandra/cassandra.yaml]
+            pattern: "image: cassandra #CAMP"
+            replacements:
+              - "image: \"cassandra:2\""
+              - "image: \"cassandra:3\""
+      replicas:
+        values:
+          range: [1, 3]
+          coverage: 2
+        realization:
+          - targets: [cassandra/cassandra.yaml]
+            pattern: "replicas: 3 #CAMP"
+            replacements:
+              - "replicas: {value} #CAMP"
