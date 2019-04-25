@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cassandra
+    type: db
+  name: cassandra
+spec:
+  ports:
+    - port: 9042
+  selector:
+    app: cassandra
+  clusterIP: None
+---
+apiVersion: "apps/v1beta1"
+kind: StatefulSet
+metadata:
+  name: cassandra
+spec:
+  serviceName: cassandra
+  replicas: 3 #CAMP
+  template:
+    metadata:
+      labels:
+        app: cassandra
+        type: db
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: "kubernetes.io/hostname"
+            labelSelector:
+              matchLabels:
+                app: cassandra
+      containers:
+      - name: cassandra
+        image: cassandra #CAMP
+        imagePullPolicy: Always
+        args:
+        - -R
+        ports:
+        - containerPort: 7000
+          name: intra-node
+        - containerPort: 7001
+          name: tls-intra-node
+        - containerPort: 7199
+          name: jmx
+        - containerPort: 9042
+          name: cql
+        resources:
+          limits:
+            cpu: 500m #CAMP
+            memory: 1Gi #CAMP
+          requests:
+           cpu: 200m
+           memory: 1Gi
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "nodetool drain"]
+        env:
+          - name: MAX_HEAP_SIZE #CAMP
+            value: 512M #CAMP
+          - name: HEAP_NEWSIZE #CAMP
+            value: 100M #CAMP
+          - name: CASSANDRA_SEEDS
+            value: "cassandra-0.cassandra.default.svc.cluster.local"
+          - name: CASSANDRA_CLUSTER_NAME
+            value: "K8Demo"
+          - name: CASSANDRA_DC
+            value: "DC1-K8Demo"
+          - name: CASSANDRA_RACK
+            value: "Rack1-K8Demo"
+          - name: CASSANDRA_AUTO_BOOTSTRAP
+            value: "false"
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        volumeMounts:
+        - name: cassandra-data
+          mountPath: /var/lib/cassandra
+  volumeClaimTemplates:
+  - metadata:
+      name: cassandra-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 100Gi

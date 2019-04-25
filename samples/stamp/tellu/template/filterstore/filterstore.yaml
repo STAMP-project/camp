@@ -1,0 +1,82 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: filterstore
+  labels:
+    domain: tellucloud
+    app: filterstore
+    type: core
+spec:
+  selector:
+    app: filterstore
+  ports:
+    - name: metrics
+      port: 9090
+---
+kind: Deployment
+apiVersion: apps/v1beta2
+metadata:
+  name: filterstore
+  labels:
+    domain: tellucloud
+    app: filterstore
+    type: core
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: filterstore
+  template:
+    metadata:
+      labels:
+        domain: tellucloud
+        app: filterstore
+        type: core
+    spec:
+      volumes:
+      - name: logs
+        persistentVolumeClaim:
+          claimName: logs
+      - name: config
+        configMap:
+          name: filterstore
+      containers:
+      - name: filterstore
+        image: tellu/filterstore:latest
+        terminationMessagePath: /logs/termination/filterstore.log
+        terminationMessagePolicy: File
+        env:
+        - name: LOGDIR
+          value: "/logs"
+        - name: CONFIGDIR
+          value: "/config"
+        - name: SERVICE_NAME
+          value: filterstore
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: logs
+          mountPath: /logs
+        - name: config
+          mountPath: /config
+        resources:
+          requests:
+            cpu: 400m
+            memory: 400Mi
+          limits:
+            cpu: 1000m #CAMP limits:cpu
+            memory: 800Mi #CAMP limits:memory
+        readinessProbe:
+          httpGet:
+            path: /service/health
+            port: 9090
+          initialDelaySeconds: 30
+          timeoutSeconds: 2
+          periodSeconds: 10 # default
+          failureThreshold: 6
+        livenessProbe:
+          httpGet:
+            path: /service/health
+            port: 9090
+          initialDelaySeconds: 120
+          timeoutSeconds: 2
