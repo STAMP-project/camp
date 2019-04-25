@@ -5,8 +5,14 @@ changes that were made.
 
 *   Development
 
-
 *   CAMP v0.3
+
+    *   CAMP v0.3.5 (Apr. 25, 2019)
+
+        * Fix [Issue
+          46](https://github.com/STAMP-project/camp/issues/46) about
+          failing string concatenation in the UI during `camp
+          execute`.
 
     *   CAMP v0.3.4 (Apr. 12, 2019)
 
