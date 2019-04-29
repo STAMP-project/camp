@@ -13,9 +13,10 @@
 from camp.entities.model import DockerFile, DockerImage
 
 from os import makedirs
-from os.path import exists, isdir, join as join_paths, split as split_path
+from os.path import exists, isdir, join as join_paths, split as split_path, \
+    relpath
 
-from re import sub
+from re import sub, subn
 
 from shutil import rmtree, copytree
 
@@ -109,10 +110,13 @@ class Builder(object):
 
     def _file_for(self, instance, resource):
         if instance.definition.name in resource:
-            _, path = split_path(resource)
+            print(resource)
+            path = relpath(resource, instance.definition.name)
+            #_, path = split_path(resource)
             return join_paths(self._directory_for(instance), path)
         else:
             return join_paths(self._output_directory, resource)
+
 
     def _adjust_docker_file(self, instance):
         self._record_dependency_of(instance)
@@ -169,9 +173,12 @@ class Builder(object):
         with open(path, "r") as resource_file:
             content = resource_file.read()
         with open(path, "w") as resource_file:
-            new_content = sub(pattern,
-                              replacement,
-                              content)
+            new_content, match = subn(pattern,
+                                      replacement,
+                                      content)
+            if match == 0:
+                print("Cannot find pattern '{0}' in file '{1}'!".format(pattern, path))
+                print("File content is '{0}'!".format(content))
             resource_file.write(new_content)
 
 
