@@ -39,7 +39,7 @@ If you are unsure about how to generate new configuration with CAMP,
 please check the camp generate and camp realize commands.
 
 Let us consider a [Java
-WebApp](http://github.com/stamp-project/camp/samples/java) as a
+WebApp](http://github.com/stamp-project/camp/tree/master/samples/java) as a
 running example of CAMP execute. We called it "Greetings" as
 it simply returns a greeting message.
 
@@ -75,7 +75,7 @@ deployment including both the integration test and the service.
 ### The CAMP Model
 
 Let's first look at the [CAMP
-model](http://github.com/stamp-project/camp/samples/java/camp.yaml),
+model](http://github.com/stamp-project/camp/tree/master/samples/java/camp.yaml),
 where we specify how to change the underlying version of the Tomcat
 application server, as in the following excerpt:
 
@@ -132,7 +132,7 @@ CAMP requires a template deployment, which it will modifies according
 to the given CAMP model.
 
 As you can see in our project structure, our [deployment
-template](http://github.com/stamp-project/camp/samples/java/template)
+template](http://github.com/stamp-project/camp/tree/master/samples/java/template)
 contains the code source for both the Greeting service and its
 integration test, along with Dockerfile that specify how to build and
 install this pieces of software.
@@ -141,9 +141,9 @@ install this pieces of software.
 
 Our greetings service is simple Jersey REST service. Here the Java
 code of the REST end point, but we also have the necessary
-[`web.xml`](http://github.com/stamp-project/camp/samples/java/template/greetings/src/main/webapp/WEB-INF/web.xml)
+[`web.xml`](http://github.com/stamp-project/camp/tree/master/samples/java/template/greetings/src/main/webapp/WEB-INF/web.xml)
 to specify servlets' bindings and the [Maven POM
-file](http://github.com/stamp-project/camp/samples/java/template/greetings/pom.xml)
+file](http://github.com/stamp-project/camp/tree/master/samples/java/template/greetings/pom.xml)
 to build the project.
 
 ```java
