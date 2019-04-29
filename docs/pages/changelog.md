@@ -8,6 +8,13 @@ changes that were made.
 
 *   CAMP v0.3
 
+    *   CAMP v0.3.7 (Apr. 29, 2019)
+
+        *   Fix [Issue
+            40](https://github.com/STAMP-project/camp/issues/40) about
+            vain substitution that were not reported and that went wrong
+            silently.
+
     *   CAMP v0.3.6 (Apr. 29, 2019)
 
         *   Fix [Issue
