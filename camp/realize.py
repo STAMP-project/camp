@@ -163,8 +163,7 @@ class Builder(object):
             raise RuntimeError("Component implement '%s' not supported yet" \
                                % kind.__name__)
 
-    REGEX_FROM = r'FROM\s+([a-zA-Z0-9\._-]*/?[a-zA-Z0-9\._-]+:[a-zA-Z0-9\._-]+)'
-
+    REGEX_FROM = r'FROM\s+(?:[a-zA-Z0-9\._-]*/)?[a-zA-Z0-9\._-]+(?:\:[a-zA-Z0-9\._-]+)?'
 
 
     def _realize_variables(self, instance):
