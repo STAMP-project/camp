@@ -22,6 +22,33 @@ from shutil import rmtree, copytree
 
 
 
+
+class InvalidSubstitution(Exception):
+    """
+    Thrown when no match is found when performing a substitution
+    """
+
+    def __init__(self, target, pattern, content):
+        self._target = target
+        self._pattern = pattern
+        self._content = content
+
+    @property
+    def target(self):
+        return self._target
+
+
+    @property
+    def pattern(self):
+        return self._pattern
+
+
+    @property
+    def content(self):
+        return self._content
+
+
+
 class Builder(object):
 
 
@@ -111,7 +138,6 @@ class Builder(object):
     def _file_for(self, instance, resource):
         if instance.definition.name in resource:
             path = relpath(resource, instance.definition.name)
-            #_, path = split_path(resource)
             return join_paths(self._directory_for(instance), path)
         else:
             return join_paths(self._output_directory, resource)
@@ -172,12 +198,12 @@ class Builder(object):
         with open(path, "r") as resource_file:
             content = resource_file.read()
         with open(path, "w") as resource_file:
-            new_content, match = subn(pattern,
-                                      replacement,
-                                      content)
-            if match == 0:
-                print("Cannot find pattern '{0}' in file '{1}'!".format(pattern, path))
-                print("File content is '{0}'!".format(content))
+            new_content, match_count = subn(pattern,
+                                            replacement,
+                                            content)
+            if match_count == 0:
+                raise InvalidSubstitution(path, pattern, content)
+
             resource_file.write(new_content)
 
 

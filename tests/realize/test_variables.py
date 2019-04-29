@@ -151,7 +151,6 @@ class VariablesRealization(TestCase):
             config_file.write("parameter=XYZ")
 
 
-
     def test_succeeds_in_orchestration_file(self):
         model = Model(
             components=[
@@ -185,6 +184,43 @@ class VariablesRealization(TestCase):
         self.realize(configuration)
 
         self.assert_file_contains("config_1/docker-compose.yml", "mem=2")
+
+
+    def test_raises_error_when_no_match_if_found_in_target(self):
+        """
+        See Issue #40
+        """
+        model = Model(
+            components=[
+                Component(name="server",
+                          provided_services=[Service("Awesome")],
+                          variables=[
+                              Variable(
+                                  name="memory",
+                                  value_type=str,
+                                  values=["1GB", "2GB"],
+                                  realization=[
+                                      Substitution(
+                                          targets=["docker-compose.yml"],
+                                          pattern="pattern that does not exist",
+                                          replacements=["mem=1", "mem=2"])
+                                  ])
+                          ],
+                          implementation=DockerFile("server/Dockerfile"))
+            ],
+            goals=Goals(services=[Service("Awesome")]))
+
+        server = model.resolve("server")
+        configuration = Configuration(
+            model,
+            instances = [
+                Instance(name="server_0",
+                         definition=server,
+                         configuration=[(server.variables[0], "2GB")])
+            ])
+
+        with self.assertRaises(Exception):
+            self.realize(configuration)
 
 
     def realize(self, configuration):

@@ -16,6 +16,7 @@ from camp.directories import InputDirectory, OutputDirectory, \
 from camp.entities.validation import Checker, InvalidModel
 from camp.execute.engine import Engine, SimulatedShell, Shell, \
     ShellCommandFailed, ReportFormatNotSupported
+from camp.realize import InvalidSubstitution
 from camp.ui import UI
 
 from traceback import extract_tb
@@ -111,6 +112,9 @@ class Camp(object):
 
         except NoConfigurationFound as error:
             self._ui.no_configuration_found(error)
+
+        except InvalidSubstitution as error:
+            self._ui.invalid_substitution(error)
 
         except Exception as error:
             stack_trace = extract_tb(exc_info()[2])

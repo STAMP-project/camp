@@ -137,6 +137,18 @@ class UI(object):
                     folder=error.searched_folder)
 
 
+    def invalid_substitution(self, error):
+        self._print(self.INVALID_SUBSTITUTION, searched=error.pattern,
+                    target=error.target)
+
+    INVALID_SUBSTITUTION=("\n"
+                          "Error:\n"
+                          "Vain substitution: No match found!'\n"
+                          "  - pattern: '{searched}'\n"
+                          "  - target file: '{target}'\n"
+                          "Is the pattern approptiate? What about the file content?")
+
+
     def shell_command_failed(self, error):
         self._print("\nTest execution aborted!")
         self._print(" - Error: A shell command failed (code: {code})", code=error.exit_code)
