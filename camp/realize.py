@@ -110,7 +110,6 @@ class Builder(object):
 
     def _file_for(self, instance, resource):
         if instance.definition.name in resource:
-            print(resource)
             path = relpath(resource, instance.definition.name)
             #_, path = split_path(resource)
             return join_paths(self._directory_for(instance), path)

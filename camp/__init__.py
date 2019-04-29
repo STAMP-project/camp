@@ -13,7 +13,7 @@ class About:
 
     PROGRAM = "CAMP"
 
-    VERSION = "0.3.5"
+    VERSION = "0.3.6"
 
     LICENSE = "MIT"
 
