@@ -23,7 +23,7 @@ from unittest import TestCase
 
 
 
-class VariablesAreRealized(TestCase):
+class VariablesRealization(TestCase):
 
 
     def setUp(self):
@@ -60,7 +60,7 @@ class VariablesAreRealized(TestCase):
             docker_file.write("mem=XXX")
 
 
-    def test_substitution_in_component_files(self):
+    def test_succeeds_in_component_files(self):
         model = Model(
             components=[
                 Component(name="server",
@@ -97,7 +97,7 @@ class VariablesAreRealized(TestCase):
         self.assert_file_contains("config_1/images/server_0/server.cfg", "mem=2")
 
 
-    def test_substitution_in_inner_component_files(self):
+    def test_succeeds_in_inner_component_files(self):
         """
         See Issue #48, https://github.com/STAMP-project/camp/issues/48
         """
@@ -152,7 +152,7 @@ class VariablesAreRealized(TestCase):
 
 
 
-    def test_substitution_in_orchestration_file(self):
+    def test_succeeds_in_orchestration_file(self):
         model = Model(
             components=[
                 Component(name="server",
