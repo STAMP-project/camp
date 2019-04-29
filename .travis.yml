@@ -58,7 +58,7 @@ after_success:
         docker tag ${DOCKER_USERNAME}/${NAME}:dev ${DOCKER_USERNAME}/${NAME}:latest 
         docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
 
-        LAST_MASTER_COMMIT=$(cat .git/refs/heads/master)
+        LAST_MASTER_COMMIT=$(git ls-remote https://github.com/STAMP-project/camp.git refs/heads/master | cut -f 1)
         [[ "${LAST_MASTER_COMMIT}" == "${TRAVIS_COMMIT}" ]] && \
             IS_LAST_COMMIT_ON_MASTER="true" || IS_LAST_COMMIT_ON_MASTER="false"
         [[ "${TRAVIS_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] && \
