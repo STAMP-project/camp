@@ -127,6 +127,17 @@ class TheShellShould(TestCase):
                           self.log)
 
 
+    def test_do_not_raise_exception_when_command_fails_as_expected(self):
+        self._shell.execute("cat file_that_does_not_exist",
+                            allow_failure=True)
+
+        expected_log = ("\n"
+                        "camp@bash:./$ cat file_that_does_not_exist\n"
+                        "cat: file_that_does_not_exist: No such file or directory\n")
+        self.assertEquals(expected_log,
+                          self.log)
+
+
     def test_raise_exception_when_a_command_does_not_exist(self):
         with self.assertRaises(ShellCommandFailed):
             self._shell.execute("unknown_exec with dummy parameters")
