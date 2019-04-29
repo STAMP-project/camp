@@ -35,11 +35,11 @@ class Shell(object):
         self._listener = listener or ShellListener()
 
 
-    def execute(self, command, working_directory=None):
+    def execute(self, command, working_directory=None, allow_failure=False):
         self._working_directory = working_directory or self._working_directory
         self._listener.on_shell_command(command, self._working_directory)
         self._output_in_logs(command)
-        result = self._run_shell(command)
+        result = self._run_shell(command, allow_failure)
         self._restore_working_directory()
         return result
 
@@ -51,7 +51,7 @@ class Shell(object):
     LOG_OUTPUT = "\ncamp@bash:{0}$ {1}\n"
 
 
-    def _run_shell(self, command):
+    def _run_shell(self, command, allow_failure):
         try:
             process = Popen(command.split(),
                             cwd=self._working_directory,
@@ -59,7 +59,7 @@ class Shell(object):
             stdout, stderr = process.communicate()
             self._log.write(stdout)
             self._log.write(stderr)
-            if process.returncode != 0:
+            if not allow_failure and process.returncode != 0:
                 raise ShellCommandFailed(command,
                                          process.returncode,
                                          stdout,
@@ -99,7 +99,7 @@ class SimulatedShell(Shell):
         super(SimulatedShell, self).__init__(log, working_directory, listener)
 
 
-    def _run_shell(self, command):
+    def _run_shell(self, command, allow_failure):
         self._log.write(self.COMMAND_SIMULATED.encode())
         return ""
 
@@ -250,7 +250,12 @@ class Engine(object):
         command = self.RUN_TESTS.format(
             component=self._component.name,
             command=self._component.test_settings.test_command)
-        self._shell.execute(command, path)
+
+        # We allow failure because some test commands return non-zero
+        # code when tests fail (e.g., mvn test).
+        # See Issue #49
+        self._shell.execute(command, path, allow_failure=True)
+
 
     # We CANNOT use Docker volumes (option -v). If CAMP runs within a
     # container that spawns new containers by sharing the docker
