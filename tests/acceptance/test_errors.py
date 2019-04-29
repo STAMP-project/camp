@@ -85,3 +85,9 @@ class UnexpectedErrorsAreCaught(CampTests):
     def test_with_realize_configurations(self, mock):
         mock.side_effect = RuntimeError("This was really unexpected!")
         self.realize()
+
+
+    @patch("camp.execute.engine.Engine.execute")
+    def test_with_execute_configurations(self, mock):
+        mock.side_effect = RuntimeError("This was really unexpected!")
+        self.execute()
