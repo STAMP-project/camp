@@ -8,6 +8,13 @@ changes that were made.
 
 *   CAMP v0.3
 
+    *   CAMP v0.3.8 (Apr. 29, 2019)
+
+        *   Fix [Issue
+            49](https://github.com/STAMP-project/camp/issues/49) about
+            CAMP reporting an error when tests fail during CAMP
+            execute.
+
     *   CAMP v0.3.7 (Apr. 29, 2019)
 
         *   Fix [Issue
