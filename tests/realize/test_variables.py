@@ -51,6 +51,9 @@ class VariablesAreRealized(TestCase):
             docker_file.write("mem=XXX")
 
 
+
+
+
     def create_docker_compose_file(self):
         path = join_paths(self._workspace, "template", "docker-compose.yml")
         with open(path, "w") as docker_file:
@@ -92,6 +95,61 @@ class VariablesAreRealized(TestCase):
 
         self.assert_file_contains("config_1/images/server_0/Dockerfile", "mem=2")
         self.assert_file_contains("config_1/images/server_0/server.cfg", "mem=2")
+
+
+    def test_substitution_in_inner_component_files(self):
+        """
+        See Issue #48, https://github.com/STAMP-project/camp/issues/48
+        """
+        self._create_inner_configuration_file()
+        model = Model(
+            components=[
+                Component(name="server",
+                          provided_services=[Service("Awesome")],
+                          variables=[
+                              Variable(
+                                  name="memory",
+                                  value_type=str,
+                                  values=["1GB", "2GB"],
+                                  realization=[
+                                      Substitution(
+                                          targets=["server/src/config/settings.ini"],
+                                          pattern="parameter=XYZ",
+                                          replacements=["parameter=1GB",
+                                                        "parameter=2GB"])
+                                  ])
+                          ],
+                          implementation=DockerFile("server/Dockerfile"))
+            ],
+            goals=Goals(services=[Service("Awesome")]))
+
+        server = model.resolve("server")
+        configuration = Configuration(
+            model,
+            instances = [
+                Instance(name="server_0",
+                         definition=server,
+                         configuration=[(server.variables[0], "2GB")])
+            ])
+
+        self.realize(configuration)
+
+        self.assert_file_contains(
+            "config_1/images/server_0/src/config/settings.ini",
+            "parameter=2GB")
+
+
+    def _create_inner_configuration_file(self):
+        path = join_paths(self._workspace,
+                          "template",
+                          "server",
+                          "src",
+                          "config")
+        makedirs(path)
+        resource = join_paths(path, "settings.ini")
+        with open(resource, "w") as config_file:
+            config_file.write("parameter=XYZ")
+
 
 
     def test_substitution_in_orchestration_file(self):
