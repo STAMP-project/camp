@@ -5,6 +5,11 @@ changes that were made.
 
 *   Development
 
+    *   Revised STAMP/Atos CityGo case study
+
+    *   Fix [Issue
+        43](https://github.com/STAMP-project/camp/issues/43) about the
+        broken links into the CAMP execute documentation.
 
 *   CAMP v0.3
 
