@@ -13,11 +13,39 @@
 from camp.entities.model import DockerFile, DockerImage
 
 from os import makedirs
-from os.path import exists, isdir, join as join_paths, split as split_path
+from os.path import exists, isdir, join as join_paths, split as split_path, \
+    relpath
 
-from re import sub
+from re import sub, subn
 
 from shutil import rmtree, copytree
+
+
+
+
+class InvalidSubstitution(Exception):
+    """
+    Thrown when no match is found when performing a substitution
+    """
+
+    def __init__(self, target, pattern, content):
+        self._target = target
+        self._pattern = pattern
+        self._content = content
+
+    @property
+    def target(self):
+        return self._target
+
+
+    @property
+    def pattern(self):
+        return self._pattern
+
+
+    @property
+    def content(self):
+        return self._content
 
 
 
@@ -109,10 +137,11 @@ class Builder(object):
 
     def _file_for(self, instance, resource):
         if instance.definition.name in resource:
-            _, path = split_path(resource)
+            path = relpath(resource, instance.definition.name)
             return join_paths(self._directory_for(instance), path)
         else:
             return join_paths(self._output_directory, resource)
+
 
     def _adjust_docker_file(self, instance):
         self._record_dependency_of(instance)
@@ -134,8 +163,7 @@ class Builder(object):
             raise RuntimeError("Component implement '%s' not supported yet" \
                                % kind.__name__)
 
-    REGEX_FROM = r'FROM\s+([a-zA-Z0-9\._-]*/?[a-zA-Z0-9\._-]+:[a-zA-Z0-9\._-]+)'
-
+    REGEX_FROM = r'FROM\s+(?:[a-zA-Z0-9\._-]*/)?[a-zA-Z0-9\._-]+(?:\:[a-zA-Z0-9\._-]+)?'
 
 
     def _realize_variables(self, instance):
@@ -169,9 +197,12 @@ class Builder(object):
         with open(path, "r") as resource_file:
             content = resource_file.read()
         with open(path, "w") as resource_file:
-            new_content = sub(pattern,
-                              replacement,
-                              content)
+            new_content, match_count = subn(pattern,
+                                            replacement,
+                                            content)
+            if match_count == 0:
+                raise InvalidSubstitution(path, pattern, content)
+
             resource_file.write(new_content)
 
 

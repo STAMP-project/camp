@@ -17,7 +17,6 @@ python:
 env:
   global:
     - NAME="camp"
-    - CODECOV_TOKEN="6dfaf6b6-29f5-4816-8ace-908bbbb7e01e"
   matrix:
     - Z3_VERSION="4.8.4.d6df51951f4c" Z3_PLATFORM="x64-debian-8.11" PUBLISH="true"
     - Z3_VERSION="4.7.1" Z3_PLATFORM="x64-debian-8.10"
@@ -31,8 +30,8 @@ services:
   - docker
 
 before_install:
-  - pip install codecov
-  
+  - pip install codacy-coverage
+
 install:
   - |
     docker build --no-cache \
@@ -47,21 +46,42 @@ script:
     docker run --name tests \
                -v /var/run/docker.sock:/var/run/docker.sock \
                -t ${DOCKER_USERNAME}/${NAME}:dev \
-               green -qrfvv -s 1 tests
-  - docker cp tests:/camp/.coverage .coverage
-  - codecov
+               /bin/bash -c "green -qrfvv -s 1 tests && coverage xml"
+  - docker cp tests:/camp/coverage.xml coverage.xml
+  - python-codacy-coverage -r coverage.xml
 
 after_success:
-  - |  
-    if [[ ! -z "${PUBLISH}" && "${TRAVIS_BRANCH}" == "master" && "${TRAVIS_PYTHON_VERSION}" == "3.5" ]]
-    then
-       docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-       docker push ${DOCKER_USERNAME}/${NAME}:dev
-       echo ${TRAVIS_TAG}
-       if [[ "${TRAVIS_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
-       then
-          docker tag ${DOCKER_USERNAME}/${NAME}:dev ${DOCKER_USERNAME}/${NAME}:${TRAVIS_TAG} 
-          docker tag ${DOCKER_USERNAME}/${NAME}:dev ${DOCKER_USERNAME}/${NAME}:latest 
-          docker push ${DOCKER_USERNAME}/${NAME}
-      fi
+  - |
+    if [[ ! -z "${PUBLISH}" && "${TRAVIS_PYTHON_VERSION}" == "3.5" && "${TRAVIS_PULL_REQUEST}" == "false" ]]
+    then    
+        docker tag ${DOCKER_USERNAME}/${NAME}:dev ${DOCKER_USERNAME}/${NAME}:${TRAVIS_TAG} 
+        docker tag ${DOCKER_USERNAME}/${NAME}:dev ${DOCKER_USERNAME}/${NAME}:latest 
+        docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+
+        LAST_MASTER_COMMIT=$(git ls-remote https://github.com/STAMP-project/camp.git refs/heads/master | cut -f 1)
+        [[ "${LAST_MASTER_COMMIT}" == "${TRAVIS_COMMIT}" ]] && \
+            IS_LAST_COMMIT_ON_MASTER="true" || IS_LAST_COMMIT_ON_MASTER="false"
+        [[ "${TRAVIS_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] && \
+            IS_RELEASE="true" || IS_RELEASE="false"
+
+        printf "%s='%s'\n" "LAST_COMMIT_ON_MASTER" ${LAST_MASTER_COMMIT}
+        printf "%s='%s'\n" "TRAVIS_COMMIT" ${TRAVIS_COMMIT}
+        printf "%s='%s'\n" "IS_LAST_COMMIT_ON_MASTER" ${IS_LAST_COMMIT_ON_MASTER}
+        printf "%s='%s'\n" "TRAVIS_TAG" ${TRAVIS_TAG}
+        printf "%s='%s'\n" "IS_RELEASE" ${IS_RELEASE}
+
+        if "${IS_RELEASE}"
+        then
+            docker push ${DOCKER_USERNAME}/${NAME}:${TRAVIS_TAG}
+            if "${IS_LAST_COMMIT_ON_MASTER}"
+            then
+                docker push ${DOCKER_USERNAME}/${NAME}:latest
+            fi
+
+        else
+            if "${IS_LAST_COMMIT_ON_MASTER}"
+            then
+                docker push ${DOCKER_USERNAME}/${NAME}:dev
+            fi
+        fi
     fi

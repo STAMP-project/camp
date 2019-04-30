@@ -15,7 +15,6 @@ from camp.entities.model import Model, Component, Goals, Configuration, \
     Instance, Service, Feature, DockerImage, DockerFile
 from camp.realize import Builder
 
-from os import makedirs
 from os.path import isdir, join as join_paths
 
 from re import search
