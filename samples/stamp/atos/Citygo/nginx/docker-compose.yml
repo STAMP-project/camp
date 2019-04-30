@@ -1,0 +1,129 @@
+# Each service defined here deploy CityGo platform
+# This docker-compose file deploy the platfomr using Nginx Proxy Server
+#
+# Nginx acts as a proxy server and sends that request to Gunicorm
+#
+# Maintainer: Fernando Méndez Requena - fernando.mendez@atos.net 
+
+version: '2'
+
+services:
+  db:
+    container_name: my_postgres
+    build: ../Citygo/Postgres
+    environment:
+      - max_connections=500
+      - shared_buffers=256
+      - port=5432
+      - POSTGRES_DB=citygo_malaga
+      - POSTGRES_USER=citygo
+      - POSTGRES_PASSWORD=5X6sdoq0!?az=v2aSX
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - dsne-django-nginx
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    
+  mongo:
+    container_name: "my_mongo"
+    image: mongo:4.0.6-xenial
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./data/db:/data/db
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    networks:
+      - dsne-django-nginx
+    
+  nginx:
+    build: ./nginx
+    container_name: "my_nginx"
+    ports: 
+      - "80:80"
+    environment:
+      - gzip=on
+      - worker_connections=1240
+      - accept_mutex=off
+      - multi_accept=off
+      - keepalive_timeout=300s
+      - keepalive_requests=1000000
+      - limit_conn_servers=1000
+      - limit_conn_connlimit=10240
+      - limit_rate=4096k
+      - burst=20
+      - worker_processes=auto
+      - worker_rlimit_nofile=100000
+      - gzip_comp_level=3
+      - gzip_min_length=256
+      - reset_timedout_connection=on
+    volumes:
+      - ./app/:/usr/src/app/
+      - static_volume:/usr/src/app/static
+      - dsne-nginx-cert:/etc/ssl/certs:ro
+    depends_on:
+      - web
+    networks:
+      - dsne-django-nginx
+  web:
+    build: ./app
+    container_name: "my_web"
+    restart: always
+    command: bash -c "python manage.py migrate --no-input && gunicorn citygo_settings.wsgi:application -b 0.0.0.0:80 --workers 3"
+    environment:
+      - DJANGO_SETTINGS_MODULE=citygo_settings.settings
+      - BROWSERNAME=chrome
+      - PLATFORM=LINUX
+      - JAVASCRIPTENABLED=True
+      - MAXINSTANCES=50
+      - CSSSELECTORSENABLED=True
+      - BROWSERCONNECTIONENABLED=True
+    networks:
+      - dsne-django-nginx
+    volumes:
+      - ./app/:/usr/src/app/
+      - static_volume:/usr/src/app/static
+    expose: 
+      - "80"
+    depends_on:
+      - db
+      - mongo
+
+  hub:
+    container_name: "selenium_hub"
+    image: selenium/hub
+    volumes:
+      - /dev/shm:/dev/shm/
+    networks:
+      - dsne-django-nginx
+    ports:
+      - "4444:4444"
+
+  selenium_chrome:
+    container_name: selenium_chrome
+    image: selenium/node-chrome-debug
+    environment:
+      - HUB_PORT_4444_TCP_ADDR=hub
+      - HUB_PORT_4444_TCP_PORT=4444
+    ports:
+      - "5900:5900"
+    depends_on:
+      - hub
+    networks:
+      - dsne-django-nginx
+
+volumes:
+  static_volume:
+  dsne-nginx-cert:
+  postgres_data:
+
+networks:
+  dsne-django-nginx:
+    driver: bridge
