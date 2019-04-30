@@ -5,6 +5,10 @@ changes that were made.
 
 *   Development
 
+    *   Add a new sample, where we apply CAMP to test multiple
+        configurations of
+        [Sphinx](https://github.com/sphinx-doc/sphinx.git).
+
     *   Revised STAMP/Atos CityGo case study
 
     *   Fix [Issue
