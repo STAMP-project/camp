@@ -146,7 +146,7 @@ class UI(object):
                           "Vain substitution: No match found!'\n"
                           "  - pattern: '{searched}'\n"
                           "  - target file: '{target}'\n"
-                          "Is the pattern approptiate? What about the file content?")
+                          "Is the pattern appropriate? What about the file content?")
 
 
     def shell_command_failed(self, error):
