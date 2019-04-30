@@ -8,6 +8,35 @@ changes that were made.
 
 *   CAMP v0.3
 
+    *   CAMP v0.3.8 (Apr. 29, 2019)
+
+        *   Fix [Issue
+            49](https://github.com/STAMP-project/camp/issues/49) about
+            CAMP reporting an error when tests fail during CAMP
+            execute.
+
+    *   CAMP v0.3.7 (Apr. 29, 2019)
+
+        *   Fix [Issue
+            40](https://github.com/STAMP-project/camp/issues/40) about
+            vain substitution that were not reported and that went wrong
+            silently.
+
+    *   CAMP v0.3.6 (Apr. 29, 2019)
+
+        *   Fix [Issue
+            48](https://github.com/STAMP-project/camp/issues/48) about
+            the `camp realize` command, which failed when a variable
+            substitution targeted a file nested in a subdirectory of a
+            component template.
+
+    *   CAMP v0.3.5 (Apr. 25, 2019)
+
+        *   Fix [Issue
+            46](https://github.com/STAMP-project/camp/issues/46) about
+            failing string concatenation in the UI during `camp
+            execute`.
+
     *   CAMP v0.3.4 (Apr. 12, 2019)
 
         *   Expose the parameter of CAMP execute in the CAMP model.
@@ -18,7 +47,7 @@ changes that were made.
             [Issue 104](https://guthub.com/cleancut/green/issue/104)).
 
         *   Drop the tecor tool that was in the repository under the
-            `modules`directory. This is replaced by CAMP execute.
+            `modules` directory. This is replaced by CAMP execute.
 
     *   CAMP v0.3.3 (Apr. 9, 2019)
 

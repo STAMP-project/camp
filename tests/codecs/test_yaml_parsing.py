@@ -18,12 +18,16 @@ from camp.entities.model import DockerFile, DockerImage, Substitution, \
 from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest, \
     TestSuite, TestReport
 
-from io import BytesIO, StringIO
+from io import BytesIO
 
 from sys import version_info
 
 from unittest import TestCase
 
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 
 class BuiltModelAreComplete(TestCase):
@@ -932,9 +936,10 @@ class MissingMandatoryEntriesAreReported(TestCase):
             path="components/server/tests/reports",
             candidates=["pattern"])
 
+
     def assert_missing(self, text, path, candidates):
         try:
-            model = self._codec.load_model_from(StringIO(text))
+            self._codec.load_model_from(StringIO(text))
             self.fail("InvalidYAMLModel should have been thrown!")
 
         except InvalidYAMLModel as error:
@@ -951,13 +956,6 @@ class TestReportsAreSerialized(TestCase):
 
     def setUp(self):
         self._output = StringIO()
-
-        # With Python 2.7, PyYAML fails to write unicode strings into
-        # a StringIO object. See Issue #289 in PyYAML. We use a
-        # BytesIO object instead in this case.
-        if version_info < (3, 5):
-            self._output = BytesIO()
-
         self._codec = YAML()
 
 

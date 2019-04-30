@@ -30,7 +30,7 @@ class DefaultValuesAreCorrect(TestCase):
 
 
 
-    def test_given_no_working_directory(self):
+    def test_given_no_output_directory(self):
         command_line = "realize -d workspace"
 
         command = Command.extract_from(command_line.split())

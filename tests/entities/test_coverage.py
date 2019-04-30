@@ -61,7 +61,7 @@ class FindMaximumCoverageSmallerOrEqualToTheRequestedOne(TestCase):
                               values)
 
 
-    def test_given_a_coverage_above_the_maximum_coverage(self):
+    def test_given_a_coverage_way_above_the_maximum_coverage(self):
         values = Variable.cover(0, 6, 12)
 
         self._assertItemsEqual([0, 6],
