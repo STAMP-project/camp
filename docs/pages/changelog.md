@@ -5,17 +5,25 @@ changes that were made.
 
 *   Development
 
-    *   Add a new sample, where we apply CAMP to test multiple
-        configurations of
-        [Sphinx](https://github.com/sphinx-doc/sphinx.git).
-
-    *   Revised STAMP/Atos CityGo case study
-
-    *   Fix [Issue
-        43](https://github.com/STAMP-project/camp/issues/43) about the
-        broken links into the CAMP execute documentation.
 
 *   CAMP v0.3
+
+    *   CAMP v0.3.9 (May 1, 2019)
+
+        *   Fix [Issue
+            53](https://github.com/STAMP-project/camp/issues/53) about
+            the UnicodeDecodeError thrown by the ASCII codecs when
+            locale does not force UTF-8.
+
+        *   Add a new sample, where we apply CAMP to test multiple
+            configurations of
+            [Sphinx](https://github.com/sphinx-doc/sphinx.git).
+
+        *   Revised STAMP/Atos CityGo case study
+
+        *   Fix [Issue
+            43](https://github.com/STAMP-project/camp/issues/43) about
+            the broken links into the CAMP execute documentation.
 
     *   CAMP v0.3.8 (Apr. 29, 2019)
 
