@@ -33,6 +33,7 @@ before_install:
   - pip install codacy-coverage
 
 install:
+  - sed -ir "s/COMMIT_HASH = None/COMMIT_HASH = \"${TRAVIS_COMMIT}\"/I" camp/__init__.py
   - |
     docker build --no-cache \
                  --build-arg PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} \
