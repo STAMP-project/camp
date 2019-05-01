@@ -31,7 +31,7 @@ class UI(object):
     def welcome(self):
         self._print("{program} v{version} ({ipr})",
                     program=About.PROGRAM,
-                    version=About.VERSION,
+                    version=About.full_version(),
                     ipr=About.LICENSE)
         self._print(About.COPYRIGHT)
         self._print("")
