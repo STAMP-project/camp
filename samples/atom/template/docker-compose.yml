@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+
+  sphinx:
+    build: ./atom
+    command: echo "Ready!"
