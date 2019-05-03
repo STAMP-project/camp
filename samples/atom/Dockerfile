@@ -15,4 +15,4 @@ RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | b
     && cd /root && mkdir github && cd /root/github && git clone https://github.com/atom/atom.git && chmod -R 755 /root/github/atom \
     && cd /root/github/atom/script && ./bootstrap \
     && cd /root/github/atom/script && ./build --no-bootstrap \
-    && Xvfb :99 -ac -screen 0 1280x1024x16 && cd /root/github/atom/script && ./test
+    && (Xvfb :99 -ac -screen 0 1280x1024x16 &) && cd /root/github/atom/script && ./test
