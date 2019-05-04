@@ -45,10 +45,10 @@ class VariablesRealization(TestCase):
                               "mem=XXX")
 
 
-    def create_config_file(self):
+    def create_config_file(self, content="mem=XXX"):
         path = join_paths(self._workspace, "template", "server", "server.cfg")
         with open(path, "w") as docker_file:
-            docker_file.write("mem=XXX")
+            docker_file.write(content)
 
 
 
@@ -97,9 +97,51 @@ class VariablesRealization(TestCase):
         self.assert_file_contains("config_1/images/server_0/server.cfg", "mem=2")
 
 
+    def test_succeeds_when_pattern_contains_regex_sensitive_character(self):
+        """
+        See Issue #56
+        """
+        self.create_config_file(content="\"resolve\": \"^1.1.6\"")
+        model = Model(
+            components=[
+                Component(name="server",
+                          provided_services=[Service("Awesome")],
+                          variables=[
+                              Variable(
+                                  name="memory",
+                                  value_type=str,
+                                  values=["1GB", "2GB"],
+                                  realization=[
+                                      Substitution(
+                                          targets=["server/server.cfg"],
+                                          pattern="\"resolve\": \"^1.1.6\"",
+                                          replacements=["\"resolve\": 1",
+                                                        "\"resolve\": 2"])
+                                  ])
+                          ],
+                          implementation=DockerFile("server/Dockerfile"))
+            ],
+            goals=Goals(services=[Service("Awesome")]))
+
+        server = model.resolve("server")
+        configuration = Configuration(
+            model,
+            instances = [
+                Instance(name="server_0",
+                         definition=server,
+                         configuration=[(server.variables[0], "2GB")])
+            ])
+
+        self.realize(configuration)
+
+        self.assert_file_contains(
+            "config_1/images/server_0/server.cfg",
+            "\"resolve\": 2")
+
+
     def test_succeeds_in_inner_component_files(self):
         """
-        See Issue #48, https://github.com/STAMP-project/camp/issues/48
+        See Issue #48
         """
         self._create_inner_configuration_file()
         model = Model(
