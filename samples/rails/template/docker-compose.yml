@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+
+  rails:
+    build: ./rails
+    command: echo "Ready!"
