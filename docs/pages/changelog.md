@@ -5,6 +5,8 @@ changes that were made.
 
 *   Development
 
+    *   Update version numbers so they include the related short Git
+        commit hash (for releases).
 
 *   CAMP v0.3
 
