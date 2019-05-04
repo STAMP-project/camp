@@ -16,7 +16,7 @@ from os import makedirs
 from os.path import exists, isdir, join as join_paths, split as split_path, \
     relpath
 
-from re import sub, subn
+from re import escape, sub, subn
 
 from shutil import rmtree, copytree
 
@@ -179,7 +179,8 @@ class Builder(object):
                     self._file_for(instance, each_target),
                     instance,
                     each_substitution.pattern,
-                    replacement)
+                    replacement,
+                    escape_pattern=True)
 
     @staticmethod
     def _select_replacement(variable, substitution, value):
@@ -193,16 +194,20 @@ class Builder(object):
         raise RuntimeError("Invalid replacements for variable '%s'!" % variable.name)
 
 
-    def _replace_in(self, path, instance, pattern, replacement):
-        with open(path, "r") as resource_file:
+    def _replace_in(self, path, instance, pattern, replacement, escape_pattern=False):
+        with open(path, "r+") as resource_file:
             content = resource_file.read()
-        with open(path, "w") as resource_file:
-            new_content, match_count = subn(pattern,
+
+            escaped_pattern = pattern
+            if escape_pattern:
+                escaped_pattern = escape(pattern)
+            new_content, match_count = subn(escaped_pattern,
                                             replacement,
                                             content)
             if match_count == 0:
                 raise InvalidSubstitution(path, pattern, content)
 
+            resource_file.seek(0)
             resource_file.write(new_content)
 
 
