@@ -60,6 +60,7 @@ jobs:
     machine:
       image: circleci/classic:201808-01
     steps:
+      - checkout
       - attach_workspace:
           at: ./
       - run: |
@@ -67,6 +68,7 @@ jobs:
       - run: |
           if [[ -z "${CIRCLE_PULL_REQUEST}" ]]
           then
+              CIRCLE_TAG=$(git tag -l --points-at HEAD)
               docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
               if [[ "${CIRCLE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
               then
