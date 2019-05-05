@@ -1,30 +1,105 @@
 version: 2
 jobs:
+  
   build:
     machine:
-      - image: circleci/classic:201808-01
+      image: circleci/classic:201808-01
     steps:
       - checkout
       - run: |
+          sed -ir "s/COMMIT_HASH = None/COMMIT_HASH = \"${CIRCLE_SHA1}\"/I" camp/__init__.py          
+      - run: |
           docker build --no-cache \
-                 --build-arg PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} \
+                 --build-arg PYTHON_VERSION=3.5 \
                  --build-arg WITH_TESTS=--camp-with-tests \
-                 --build-arg Z3_VERSION=${Z3_VERSION} \
-                 --build-arg Z3_PLATFORM=${Z3_PLATFORM} \
-                 -t ${DOCKER_USERNAME}/${NAME}:dev .
+                 --build-arg Z3_VERSION=4.8.4.d6df51951f4c \
+                 --build-arg Z3_PLATFORM=x64-debian-8.11 \
+                 -t camp:ci .
+      - run: |
+          docker save -o camp-ci.tar camp:ci
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - camp-ci.tar
+            
   test:
     machine:
-      - image: circleci/classic:201808-01
+      image: circleci/classic:201808-01
     steps:
-      - checkout
+      - attach_workspace:
+          at: ./
+      - run: |
+          docker load -i camp-ci.tar
       - run: |
           docker run --name tests \
                      -v /var/run/docker.sock:/var/run/docker.sock \
-                     -t ${DOCKER_USERNAME}/${NAME}:dev \
+                     -t camp:ci \
                       /bin/bash -c "green -qrfvv -s 1 tests && coverage xml"
+      - run: |
+          docker cp tests:/camp/coverage.xml coverage.xml
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - coverage.xml
+
+  coverage:
+    docker:
+      - image: circleci/python:3.6.8-stretch
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./
+      - run: |
+          python3 -m virtualenv .venv
+          source .venv/bin/activate
+          pip install codacy-coverage
+          python-codacy-coverage -r coverage.xml
+        
+                      
+  publish:
+    machine:
+      image: circleci/classic:201808-01
+    steps:
+      - attach_workspace:
+          at: ./
+      - run: |
+          docker load -i camp-ci.tar
+      - run: |
+          if [[ -z "${CIRCLE_PULL_REQUEST}" ]]
+          then
+              docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+              if [[ "${CIRCLE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+              then
+                  docker tag camp:ci ${DOCKER_USERNAME}/camp:${CIRCLE_TAG}
+                  docker push ${DOCKER_USERNAME}/camp:${CIRCLE_TAG}
+                  if [[ "${CIRCLE_TAG}" == "$(git describe --abbrev=0)" ]]
+                  then
+                      docker tag camp:ci ${DOCKER_USERNAME}/camp:latest
+                      docker push ${DOCKER_USERNAME}/camp:latest
+                  fi
+              fi
+              LAST_COMMIT=$(git ls-remote https://github.com/STAMP-project/camp.git refs/heads/master | cut -f 1)
+              if [[ "${CIRCLE_SHA1}" == "${LAST_COMMIT}" ]]
+              then
+                  docker tag camp:ci ${DOCKER_USERNAME}/camp:dev
+                  docker push ${DOCKER_USERNAME}/camp:dev
+              fi
+          fi
+
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build
-      - test
+      - test:
+          requires:
+            - build
+      - coverage:
+          requires:
+            - test
+      - publish:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master

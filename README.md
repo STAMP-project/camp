@@ -1,5 +1,5 @@
 ![GitHub tag](https://img.shields.io/github/tag/STAMP-project/camp.svg)
-[![Build Status](https://travis-ci.org/STAMP-project/camp.svg?branch=master)](https://travis-ci.org/STAMP-project/camp)
+[![Build Status](https://img.shields.io/circleci/project/github/STAMP-project/camp/master.svg)](https://circleci.com/gh/STAMP-project/workflows/camp)
 [![Test Coverage](https://img.shields.io/codacy/coverage/916007abcf574c8eadbde9ef5b720a5a.svg)](https://www.codacy.com/app/fchauvel/camp?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=STAMP-project/camp&amp;utm_campaign=Badge_Coverage)
 [![Code Grade](https://img.shields.io/codacy/grade/916007abcf574c8eadbde9ef5b720a5a.svg)](https://www.codacy.com/app/SINTEF-9012/camp?utm_source=github.com&utm_medium=referral&utm_content=STAMP-project/camp&utm_campaign=Badge_Grade)
 
