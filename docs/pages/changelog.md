@@ -5,21 +5,24 @@ changes that were made.
 
 *   Development
 
-    *   Fix [Issue
-        #56](https://github.com/STAMP-project/camp/issues/53) about
-        substitutions pattern that contains characters interpreted by
-        the Python regular expression engine.
-
-    *   New sample where we apply CAMP on [Ruby on
-        Rails](https://github.com/STAMP-project/camp/issues/53).
-
-    *   New sample where we apply CAMP on [the Atom
-        project](https://github.com/atom/atom).
-
-    *   Update version numbers so they include the related short Git
-        commit hash (for releases).
 
 *   CAMP v0.3
+
+    *   CAMP v0.3.10 (May 5, 2019)
+
+        *   Fix [Issue
+            #56](https://github.com/STAMP-project/camp/issues/53)
+            about substitutions pattern that contains characters
+            interpreted by the Python regular expression engine.
+
+        *   New sample where we apply CAMP on [Ruby on
+            Rails](https://github.com/STAMP-project/camp/issues/53).
+
+        *   New sample where we apply CAMP on [the Atom
+            project](https://github.com/atom/atom).
+
+        *   Update version numbers so they include the related short Git
+            commit hash (for releases).
 
     *   CAMP v0.3.9 (May 1, 2019)
 
