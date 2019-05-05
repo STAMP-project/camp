@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  build:
+    machine:
+      - image: circleci/classic:201808-01
+    steps:
+      - checkout
+      - run: |
+          docker build --no-cache \
+                 --build-arg PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} \
+                 --build-arg WITH_TESTS=--camp-with-tests \
+                 --build-arg Z3_VERSION=${Z3_VERSION} \
+                 --build-arg Z3_PLATFORM=${Z3_PLATFORM} \
+                 -t ${DOCKER_USERNAME}/${NAME}:dev .
+  test:
+    machine:
+      - image: circleci/classic:201808-01
+    steps:
+      - checkout
+      - run: |
+          docker run --name tests \
+                     -v /var/run/docker.sock:/var/run/docker.sock \
+                     -t ${DOCKER_USERNAME}/${NAME}:dev \
+                      /bin/bash -c "green -qrfvv -s 1 tests && coverage xml"
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test
