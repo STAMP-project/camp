@@ -346,12 +346,42 @@ class Substitution(Visitee):
 
 
 
+class ResourceSelection(Visitee):
+    """Select a specific ressource, that is a file or a directory
+       Immutable value object
+    """
+
+    def __init__(self, resource):
+        self._resource = resource
+
+
+    @property
+    def resource(self):
+        return self._resource
+
+
+    def __eq__(self, other):
+        if not isinstance(other, ResourceSelection):
+            return False
+        return tuple(self._resource) == tuple(other.resource)
+
+
+    def __hash__(self):
+        return hash(tuple(self._resource))
+
+
+    def __repr__(self):
+        return "ResourceSelection(%s)" % self._resource
+
+
+
 class Implementation(Visitee):
     pass
 
 
 
 class DockerFile(Implementation):
+
     """
     Value objects
     """
