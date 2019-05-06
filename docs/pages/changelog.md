@@ -5,6 +5,12 @@ changes that were made.
 
 *   Development
 
+    *   Add new "rename" realization operator. It enables renaming
+        a specific file from the template.
+
+    *   Add new "select" realization operator. It enables the
+        selection (or the rejection) of specific files from the
+        template, depending on the value selected in a configuration.
 
 *   CAMP v0.3
 
