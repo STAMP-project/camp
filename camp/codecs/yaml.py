@@ -331,20 +331,21 @@ class YAML(Codec):
                 Keys.REALIZATION,
                 "#%d" % index]
 
-        resource = None
+        resources = []
         for key, item in data.items():
             if key == Keys.SELECT:
-                if not isinstance(item, str):
-                    self._wrong_type(str, type(item), *(path + [key]))
-                resource = item
+                if not isinstance(item, list):
+                    self._wrong_type(list, type(item), *(path + [key]))
+                    continue
+                resources = item
 
             else:
                 self._ignore(*(path + [key]))
 
-        if not resource:
+        if not resources:
             self._missing([Keys.SELECT], *path)
 
-        return ResourceSelection(resource)
+        return ResourceSelection(*resources)
 
 
     def _parse_substitution(self, component, variable, index, data):

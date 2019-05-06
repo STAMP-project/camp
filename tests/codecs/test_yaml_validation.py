@@ -109,7 +109,9 @@ class IgnoredEntriesAreReported(TestCase):
                              "         memory:\n"
                              "            values: [ 1GB, 2GB]\n"
                              "            realization: \n"
-                             "              - select: \"${value}_docker-compose.yml\"\n"
+                             "              - select: \n"
+                             "                 - config_1GB\n"
+                             "                 - config_2GB\n"
                              "                extra: this entry should be reported\n"
                              "goals:\n"
                              "   running:\n"
@@ -381,10 +383,10 @@ class TypeMismatchAreReported(TestCase):
             "             - select: 123\n"
             "goals:\n"
             "  running: [ Awesome ]\n",
-            expected="str",
+            expected="list",
             found="int",
             path="components/server/variables/memory/realization/#1/select",
-            warning_count=1)
+            warning_count=2)
 
 
     def test_with_a_number_as_renamed_resource(self):
