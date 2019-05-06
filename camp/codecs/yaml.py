@@ -16,7 +16,7 @@ from __future__ import absolute_import
 from camp.codecs.commons import Codec
 from camp.entities.model import Model, Component, Service, Goals, Variable, \
     Feature, DockerFile, DockerImage, Substitution, Instance, Configuration, \
-    TestSettings, ResourceSelection
+    TestSettings, ResourceSelection, RenameResource
 
 from yaml import safe_load as load_yaml, safe_dump as dump_yaml
 
@@ -315,7 +315,12 @@ class YAML(Codec):
              or Keys.TARGETS in data:
             return self._parse_substitution(component, variable, index, data)
 
-        raise ValueError("Invalid realisation in entry")
+        elif Keys.RENAME in data \
+             or Keys.INTO in data:
+            return self._parse_rename_resource(component, variable, index, data)
+
+        else:
+            raise ValueError("Invalid realisation in entry")
 
 
     def _parse_resource_selection(self, component, variable, index, data):
@@ -340,7 +345,6 @@ class YAML(Codec):
             self._missing([Keys.SELECT], *path)
 
         return ResourceSelection(resource)
-
 
 
     def _parse_substitution(self, component, variable, index, data):
@@ -386,6 +390,40 @@ class YAML(Codec):
         return Substitution(targets, pattern, replacements)
 
     UNDEFINED_PATTERN = "missing pattern!"
+
+
+    def _parse_rename_resource(self, component, variable, index, data):
+        path = [Keys.COMPONENTS,
+                component,
+                Keys.VARIABLES,
+                variable,
+                Keys.REALIZATION,
+                "#%d" % index]
+
+        resource = None
+        new_name = None
+        for key, item in data.items():
+            if key == Keys.RENAME:
+                if not isinstance(item, str):
+                    self._wrong_type(str, type(item), *(path + [key]))
+                resource = item
+
+            elif key == Keys.INTO:
+                if not isinstance(item, str):
+                    self._wrong_type(str, type(item), *(path + [key]))
+                new_name = item
+
+            else:
+                self._ignore(*(path + [key]))
+
+        if not resource:
+            self._missing([Keys.RENAME], *path)
+
+        if not new_name:
+            self._missing([Keys.INTO], *path)
+
+        return RenameResource(resource, new_name)
+
 
 
     def _parse_implementation(self, name, data):
@@ -528,6 +566,7 @@ class Keys:
     GOALS = "goals"
     IMAGE = "image"
     IMPLEMENTATION = "implementation"
+    INTO = "into"
     INSTANCES = "instances"
     NAME = "name"
     PATTERN = "pattern"
@@ -535,6 +574,7 @@ class Keys:
     PROVIDES_SERVICES = "provides_services"
     RANGE = "range"
     REALIZATION = "realization"
+    RENAME = "rename"
     REPLACEMENTS = "replacements"
     REPORTS = "reports"
     REPORT_FORMAT = "format"

@@ -117,6 +117,23 @@ class IgnoredEntriesAreReported(TestCase):
                              expected="components/server/variables/memory/realization/#1/extra")
 
 
+    def test_when_an_extra_entry_is_in_a_resource_rename(self):
+        self.assert_extra_in("components:\n"
+                             "   server:\n"
+                             "      provides_services: [ Wonderful ]\n"
+                             "      variables:\n"
+                             "         memory:\n"
+                             "            values: [ 1GB, 2GB]\n"
+                             "            realization: \n"
+                             "              - rename: \"docker-compose.yml\"\n"
+                             "                into: whatever.yaml\n"
+                             "                extra: this entry should be reported\n"
+                             "goals:\n"
+                             "   running:\n"
+                             "      - Wonderful\n",
+                             expected="components/server/variables/memory/realization/#1/extra")
+
+
 
     def test_when_an_extra_entry_is_in_the_implementation(self):
         self.assert_extra_in("components:\n"
@@ -130,6 +147,7 @@ class IgnoredEntriesAreReported(TestCase):
                              "   running:\n"
                              "      - Wonderful\n",
                              expected="components/server/implementation/extra")
+
 
 
     def test_when_an_extra_entry_is_in_docker(self):
@@ -369,6 +387,43 @@ class TypeMismatchAreReported(TestCase):
             warning_count=1)
 
 
+    def test_with_a_number_as_renamed_resource(self):
+        self.assert_warning(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Awesome ]\n"
+            "      variables:\n"
+            "        memory:\n"
+            "          values: [1GB, 2GB ]\n"
+            "          realization:\n"
+            "             - rename: 123\n"
+            "               into: \"whatever.txt\"\n"
+            "goals:\n"
+            "  running: [ Awesome ]\n",
+            expected="str",
+            found="int",
+            path="components/server/variables/memory/realization/#1/rename",
+            warning_count=1)
+
+
+    def test_with_a_number_as_resource_new_name(self):
+        self.assert_warning(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Awesome ]\n"
+            "      variables:\n"
+            "        memory:\n"
+            "          values: [1GB, 2GB ]\n"
+            "          realization:\n"
+            "             - rename: \"my-resource.txt\"\n"
+            "               into: 123\n"
+            "goals:\n"
+            "  running: [ Awesome ]\n",
+            expected="str",
+            found="int",
+            path="components/server/variables/memory/realization/#1/into",
+            warning_count=1)
+
 
     def assert_warning(self, text,  expected, found, path, warning_count=1):
         try:
@@ -547,6 +602,40 @@ class MissingMandatoryEntriesAreReported(TestCase):
             "      - Wonderful\n",
             path="components/server/variables/memory/realization/#1",
             candidates=["replacements"])
+
+
+    def test_when_omitting_renamed_resource(self):
+        self.assert_missing(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      variables:\n"
+            "        memory:\n"
+            "          values: [1GB, 2GB, 4GB]\n"
+            "          realization:\n"
+            "             - into: whatever.txt\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            path="components/server/variables/memory/realization/#1",
+            candidates=["rename"])
+
+
+    def test_when_omitting_resource_new_name(self):
+        self.assert_missing(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      variables:\n"
+            "        memory:\n"
+            "          values: [1GB, 2GB, 4GB]\n"
+            "          realization:\n"
+            "             - rename: whatever.txt\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            path="components/server/variables/memory/realization/#1",
+            candidates=["into"])
 
 
     def test_when_omitting_the_docker_file(self):
