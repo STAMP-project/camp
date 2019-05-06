@@ -10,11 +10,12 @@
 
 
 
-from camp.entities.model import DockerFile, DockerImage
+from camp.entities.model import DockerFile, DockerImage, Substitution, \
+    ResourceSelection
 
-from os import makedirs
-from os.path import exists, isdir, join as join_paths, split as split_path, \
-    relpath
+from os import makedirs, remove
+from os.path import exists, isdir, isfile, join as join_paths, \
+    split as split_path, relpath
 
 from re import escape, sub, subn
 
@@ -59,6 +60,9 @@ class Builder(object):
 
 
     def build(self, configuration, input_directory=None, output_directory=None):
+        """
+        Entry point of the realization engine
+        """
         self._images = []
         if input_directory:
             self._input_directory = input_directory
@@ -172,15 +176,31 @@ class Builder(object):
 
 
     def _realize(self, instance, variable, value):
-        for each_substitution in variable.realization:
-            for each_target in each_substitution.targets:
-                replacement = self._select_replacement(variable, each_substitution, value)
-                self._replace_in(
-                    self._file_for(instance, each_target),
-                    instance,
-                    each_substitution.pattern,
-                    replacement,
-                    escape_pattern=True)
+        for each_realization in variable.realization:
+            if isinstance(each_realization, Substitution):
+                self._substitute(instance, variable, value, each_realization)
+
+            elif isinstance(each_realization, ResourceSelection):
+                self._select_resource(instance, variable, value, each_realization)
+
+            else:
+                message = UNKNOWN_REALIZATION_TYPE.format(
+                    type=type(each_realization))
+                raise ValueError(message)
+
+    UNKNOWN_REALIZATION_TYPE = "Realization type '{type}' is not yet supported!"
+
+
+    def _substitute(self, instance, variable, value, substitution):
+        for each_target in substitution.targets:
+            replacement = self._select_replacement(variable, substitution, value)
+            self._replace_in(
+                self._file_for(instance, each_target),
+                instance,
+                substitution.pattern,
+                replacement,
+                escape_pattern=True)
+
 
     @staticmethod
     def _select_replacement(variable, substitution, value):
@@ -209,6 +229,24 @@ class Builder(object):
 
             resource_file.seek(0)
             resource_file.write(new_content)
+
+
+    def _select_resource(self, instance, variable, value, selection):
+        deletions = 0
+        for index, any_value in enumerate(variable.domain):
+            if value != any_value:
+                deletions += 1
+                discarded = selection.resources[index]
+                resource = self._file_for(instance, discarded)
+                if isfile(resource):
+                    remove(resource)
+                else:
+                    rmtree(resource)
+
+        if deletions == len(variable.domain):
+            raise RuntimeError("Everything deleted! {}/{} (value={})".format(
+                instance.name, variable.name, value
+            ))
 
 
     @staticmethod
