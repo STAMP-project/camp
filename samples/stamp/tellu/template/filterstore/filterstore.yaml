@@ -22,7 +22,7 @@ metadata:
     app: filterstore
     type: core
 spec:
-  replicas: 3
+  replicas: 3 #CAMP
   selector:
     matchLabels:
       app: filterstore
