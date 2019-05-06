@@ -58,12 +58,12 @@ class ResourceSelectionsShould(TestCase):
 
 
     def setUp(self):
-        self._resource = "whatever.txt"
-        self._selection = ResourceSelection(self._resource)
+        self._resource = ["whatever.txt", "doesnt_matter.ini" ]
+        self._selection = ResourceSelection(*self._resource)
 
 
-    def test_expose_the_selected_resource(self):
-        self.assertEqual(self._resource, self._selection.resource)
+    def test_expose_the_selected_resources(self):
+        self.assertEqual(self._resource, self._selection.resources)
 
 
     def test_equal_itself(self):
@@ -76,12 +76,12 @@ class ResourceSelectionsShould(TestCase):
 
 
     def test_equal_another_identical_selection(self):
-        other = ResourceSelection(self._resource)
+        other = ResourceSelection(*self._resource)
         self.assertEqual(self._selection, other)
 
 
     def test_have_the_same_hash_than_an_identical_resource(self):
-        other = ResourceSelection(self._resource)
+        other = ResourceSelection(*self._resource)
         self.assertEqual(hash(self._selection), hash(other))
 
 

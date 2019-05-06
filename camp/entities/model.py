@@ -351,27 +351,27 @@ class ResourceSelection(Visitee):
        Immutable value object
     """
 
-    def __init__(self, resource):
-        self._resource = resource
+    def __init__(self, *resources):
+        self._resources = [ each for each in resources ] if resources else []
 
 
     @property
-    def resource(self):
-        return self._resource
+    def resources(self):
+        return self._resources
 
 
     def __eq__(self, other):
         if not isinstance(other, ResourceSelection):
             return False
-        return tuple(self._resource) == tuple(other.resource)
+        return tuple(self._resources) == tuple(other.resources)
 
 
     def __hash__(self):
-        return hash(tuple(self._resource))
+        return hash(tuple(self._resources))
 
 
     def __repr__(self):
-        return "ResourceSelection(%s)" % self._resource
+        return "ResourceSelection(%s)" % self._resources
 
 
 
