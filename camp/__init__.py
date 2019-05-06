@@ -13,7 +13,7 @@ class About:
 
     PROGRAM = "CAMP"
 
-    VERSION = "0.3.9"
+    VERSION = "0.3.10"
 
     COMMIT_HASH = None
 
