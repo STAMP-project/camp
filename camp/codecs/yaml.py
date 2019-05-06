@@ -16,7 +16,7 @@ from __future__ import absolute_import
 from camp.codecs.commons import Codec
 from camp.entities.model import Model, Component, Service, Goals, Variable, \
     Feature, DockerFile, DockerImage, Substitution, Instance, Configuration, \
-    TestSettings
+    TestSettings, ResourceSelection, RenameResource
 
 from yaml import safe_load as load_yaml, safe_dump as dump_yaml
 
@@ -262,8 +262,8 @@ class YAML(Codec):
                 value_type = item
             elif key == Keys.REALIZATION:
                 for index, each in enumerate(item, 1):
-                    substitution = self._parse_substitution(component, name, index, each)
-                    realization.append(substitution)
+                    action = self._parse_realization_action(component, name, index, each)
+                    realization.append(action)
             else:
                 self._ignore(*(path + [key]))
 
@@ -304,6 +304,49 @@ class YAML(Codec):
             self._wrong_type(dict, type(item), *path)
 
         return values
+
+
+    def _parse_realization_action(self, component, variable, index, data):
+        if Keys.SELECT in data:
+            return self._parse_resource_selection(component, variable, index, data)
+
+        elif Keys.PATTERN in data \
+             or Keys.REPLACEMENTS in data \
+             or Keys.TARGETS in data:
+            return self._parse_substitution(component, variable, index, data)
+
+        elif Keys.RENAME in data \
+             or Keys.INTO in data:
+            return self._parse_rename_resource(component, variable, index, data)
+
+        else:
+            raise ValueError("Invalid realisation in entry")
+
+
+    def _parse_resource_selection(self, component, variable, index, data):
+        path = [Keys.COMPONENTS,
+                component,
+                Keys.VARIABLES,
+                variable,
+                Keys.REALIZATION,
+                "#%d" % index]
+
+        resources = []
+        for key, item in data.items():
+            if key == Keys.SELECT:
+                if not isinstance(item, list):
+                    self._wrong_type(list, type(item), *(path + [key]))
+                    continue
+                resources = item
+
+            else:
+                self._ignore(*(path + [key]))
+
+        if not resources:
+            self._missing([Keys.SELECT], *path)
+
+        return ResourceSelection(*resources)
+
 
     def _parse_substitution(self, component, variable, index, data):
         path = [Keys.COMPONENTS,
@@ -348,6 +391,40 @@ class YAML(Codec):
         return Substitution(targets, pattern, replacements)
 
     UNDEFINED_PATTERN = "missing pattern!"
+
+
+    def _parse_rename_resource(self, component, variable, index, data):
+        path = [Keys.COMPONENTS,
+                component,
+                Keys.VARIABLES,
+                variable,
+                Keys.REALIZATION,
+                "#%d" % index]
+
+        resource = None
+        new_name = None
+        for key, item in data.items():
+            if key == Keys.RENAME:
+                if not isinstance(item, str):
+                    self._wrong_type(str, type(item), *(path + [key]))
+                resource = item
+
+            elif key == Keys.INTO:
+                if not isinstance(item, str):
+                    self._wrong_type(str, type(item), *(path + [key]))
+                new_name = item
+
+            else:
+                self._ignore(*(path + [key]))
+
+        if not resource:
+            self._missing([Keys.RENAME], *path)
+
+        if not new_name:
+            self._missing([Keys.INTO], *path)
+
+        return RenameResource(resource, new_name)
+
 
 
     def _parse_implementation(self, name, data):
@@ -490,6 +567,7 @@ class Keys:
     GOALS = "goals"
     IMAGE = "image"
     IMPLEMENTATION = "implementation"
+    INTO = "into"
     INSTANCES = "instances"
     NAME = "name"
     PATTERN = "pattern"
@@ -497,6 +575,7 @@ class Keys:
     PROVIDES_SERVICES = "provides_services"
     RANGE = "range"
     REALIZATION = "realization"
+    RENAME = "rename"
     REPLACEMENTS = "replacements"
     REPORTS = "reports"
     REPORT_FORMAT = "format"
@@ -505,6 +584,7 @@ class Keys:
     REQUIRES_FEATURES = "requires_features"
     REQUIRES_SERVICES = "requires_services"
     RUNNING = "running"
+    SELECT = "select"
     SERVICE_PROVIDERS = "service_providers"
     TARGETS = "targets"
     TEST_SETTINGS = "tests"
