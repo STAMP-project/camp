@@ -14,7 +14,7 @@ components:
       replicas:
         values:
           range: [1, 3]
-          coverage: 2
+          coverage: 1
         realization:
           - targets: [actions/actions.yaml]
             pattern: "replicas: 1 #CAMP"
@@ -48,7 +48,7 @@ components:
       replicas:
         values:
           range: [1, 3]
-          coverage: 2
+          coverage: 1
         realization:
           - targets: [filterstore/filterstore.yaml]
             pattern: "replicas: 3 #CAMP"
@@ -90,7 +90,7 @@ components:
       replicas:
         values:
           range: [1, 3]
-          coverage: 2
+          coverage: 1
         realization:
           - targets: [cassandra/cassandra.yaml]
             pattern: "replicas: 3 #CAMP"
