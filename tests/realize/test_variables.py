@@ -11,8 +11,7 @@
 
 
 from camp.entities.model import Model, Component, Variable, Substitution, \
-    DockerFile, Instance, Configuration, Service, Goals, ResourceSelection, \
-    RenameResource
+    DockerFile, Instance, Configuration, Service, Goals, ResourceSelection
 from camp.realize import Builder
 
 from os import makedirs
@@ -99,44 +98,6 @@ class Realization(TestCase):
         self.assert_exists("config_1/images/server_0/config.ini")
         self.assert_does_not_exist("config_1/images/server_0/apache_config.ini")
 
-
-    def test_rename_a_specifc_resource(self):
-        self.create_template_file(component="server",
-                                  resource="apache_config.ini")
-
-        model = Model(
-            components=[
-                Component(name="server",
-                          provided_services=[Service("Awesome")],
-                          variables=[
-                              Variable(
-                                  name="provider",
-                                  value_type=str,
-                                  values=["apache", "nginx"],
-                                  realization=[
-                                      RenameResource(
-                                          "server/apache_config.ini",
-                                          "server/config.json"
-                                      )
-                                  ])
-                          ],
-                          implementation=DockerFile("server/Dockerfile"))
-            ],
-            goals=Goals(services=[Service("Awesome")]))
-
-        server = model.resolve("server")
-        configuration = Configuration(
-            model,
-            instances = [
-                Instance(name="server_0",
-                         definition=server,
-                         configuration=[(server.variables[0], "nginx")])
-            ])
-
-        self.realize(configuration)
-
-        self.assert_exists("config_1/images/server_0/config.json")
-        self.assert_does_not_exist("config_1/images/server_0/apache_config.ini")
 
 
     def test_substitute_in_component_files(self):
