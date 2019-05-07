@@ -331,6 +331,7 @@ class YAML(Codec):
                 Keys.REALIZATION,
                 "#%d" % index]
 
+        destination = None
         resources = []
         for key, item in data.items():
             if key == Keys.SELECT:
@@ -339,13 +340,19 @@ class YAML(Codec):
                     continue
                 resources = item
 
+            elif key == Keys.AS:
+                if not isinstance(item, str):
+                    self._wrong_type(str, type(item), *(path + [key]))
+                    continue
+                destination = item
+
             else:
                 self._ignore(*(path + [key]))
 
         if not resources:
             self._missing([Keys.SELECT], *path)
 
-        return ResourceSelection(*resources)
+        return ResourceSelection(destination, resources)
 
 
     def _parse_substitution(self, component, variable, index, data):
@@ -555,6 +562,7 @@ class Keys:
     The labels that are fixed in the YAML
     """
 
+    AS = "as"
     COMMAND = "command"
     COMPONENTS = "components"
     CONFIGURATION = "configuration"

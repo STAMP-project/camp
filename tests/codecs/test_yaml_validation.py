@@ -371,6 +371,7 @@ class TypeMismatchAreReported(TestCase):
             path="components/server/variables/memory/realization/#1/targets",
             warning_count=2)
 
+
     def test_with_a_number_as_selected_resource(self):
         self.assert_warning(
             "components:\n"
@@ -381,12 +382,32 @@ class TypeMismatchAreReported(TestCase):
             "          values: [1GB, 2GB ]\n"
             "          realization:\n"
             "             - select: 123\n"
+            "               as: file.txt\n"
             "goals:\n"
             "  running: [ Awesome ]\n",
             expected="list",
             found="int",
             path="components/server/variables/memory/realization/#1/select",
             warning_count=2)
+
+
+    def test_with_a_number_as_selected_resource_final_name(self):
+        self.assert_warning(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Awesome ]\n"
+            "      variables:\n"
+            "        memory:\n"
+            "          values: [1GB, 2GB ]\n"
+            "          realization:\n"
+            "             - select: [\"a.txt\", \"b.txt\"]\n"
+            "               as: 123\n"
+            "goals:\n"
+            "  running: [ Awesome ]\n",
+            expected="str",
+            found="int",
+            path="components/server/variables/memory/realization/#1/as",
+            warning_count=1)
 
 
     def test_with_a_number_as_renamed_resource(self):

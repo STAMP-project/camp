@@ -243,19 +243,35 @@ class Builder(object):
     def _select_resource(self, instance, variable, value, selection):
         deletions = 0
         for index, any_value in enumerate(variable.domain):
-            if value != any_value:
+            if value == any_value:
+                self._rename(instance,
+                             selection.resources[index],
+                             selection.destination)
+
+            else:
                 deletions += 1
-                discarded = selection.resources[index]
-                resource = self._file_for(instance, discarded)
-                if isfile(resource):
-                    remove(resource)
-                else:
-                    rmtree(resource)
+                self._delete(instance, selection.resources[index])
 
         if deletions == len(variable.domain):
             raise RuntimeError("Everything deleted! {}/{} (value={})".format(
                 instance.name, variable.name, value
             ))
+
+
+    def _rename(self, instance, source, destination):
+        resource = self._file_for(instance, source)
+        renamed = self._file_for(instance, destination)
+        print("DBG/Rename: ", resource, "\ninto", renamed)
+        move(resource, renamed)
+
+
+    def _delete(self, instance, discarded):
+        resource = self._file_for(instance, discarded)
+        print("DBG/DELETE: ", resource)
+        if isfile(resource):
+            remove(resource)
+        else:
+            rmtree(resource)
 
 
     @staticmethod

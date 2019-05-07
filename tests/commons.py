@@ -17,10 +17,10 @@ from camp.directories import InputDirectory, OutputDirectory
 from camp.generate import Z3Problem
 from camp.realize import Builder
 
-from os import makedirs
+from os import makedirs, listdir
 from os.path import exists, isdir, join as join_paths, basename
 
-from shutil import copytree, rmtree
+from shutil import copytree, copy2, rmtree
 
 from tempfile import mkdtemp
 
@@ -28,32 +28,34 @@ from unittest import TestCase
 
 
 
-class Sample(object):
+SAMPLE_DIRECTORY = "samples"
 
-
-    def __init__(self, path):
-        self._temporary_directory = mkdtemp(prefix="camp_")
-        workspace = join_paths(self._temporary_directory, "acceptance")
-        self._source = join_paths("samples", path)
-        self._input = InputDirectory(self._copy(self._source, workspace), YAML())
-        self._output = OutputDirectory(join_paths(self._input.path, "out"), YAML())
-        self._model = None
+class Scenario(object):
 
 
     @staticmethod
-    def _copy(source, workspace):
-        destination = join_paths(workspace, basename(source))
-        if source and exists(source):
-            if isdir(destination):
-                rmtree(destination)
-            copytree(source, destination)
+    def from_sample(relative_path):
+        scenario = Scenario()
+        sample_directory = join_paths(SAMPLE_DIRECTORY, relative_path)
+        working_directory = scenario.directory
 
-        else:
-            if isdir(destination):
-                rmtree(destination)
-            makedirs(destination)
-        return destination
+        # Copy all the content
+        for item in listdir(sample_directory):
+            source = join_paths(sample_directory, item)
+            destination = join_paths(working_directory, item)
+            if isdir(source):
+                copytree(source, destination)
+            else:
+                copy2(source, destination)
+        return scenario
 
+
+    def __init__(self, path=""):
+        temporary_directory = join_paths(mkdtemp(prefix="camp_"), path)
+        makedirs(temporary_directory, exist_ok=True)
+        self._input = InputDirectory(temporary_directory, YAML())
+        self._output = OutputDirectory(join_paths(self._input.path, "out"), YAML())
+        self._model = None
 
 
     @property
@@ -97,9 +99,8 @@ class Sample(object):
         self._input.create_model(content)
 
 
-    def create_template(self, component, relative_path, content):
+    def create_template(self, component, relative_path, content="whatever"):
         self._input.create_template_file(component, relative_path, content)
-
 
 
 
@@ -117,26 +118,26 @@ class GeneratedConfiguration(object):
 
 
 
-class CampTests(TestCase):
+class CampTest(TestCase):
 
     __test__ = False
 
 
     def generate_all(self):
-        self.camp("generate", "--all", "-d", self.sample.directory)
+        self.camp("generate", "--all", "-d", self.scenario.directory)
 
 
     def generate_coverage(self):
-        self.camp("generate", "--coverage", "-d", self.sample.directory)
+        self.camp("generate", "--coverage", "-d", self.scenario.directory)
 
 
     def realize(self):
-        self.camp("realize", "-d", self.sample.directory)
+        self.camp("realize", "-d", self.scenario.directory)
 
 
     def execute(self):
         self.camp("execute",
-                  "-d", self.sample.directory)
+                  "-d", self.scenario.directory)
 
     @staticmethod
     def camp(*arguments):
@@ -153,4 +154,4 @@ class CampTests(TestCase):
 
     def create_configurations(self, *configurations):
         for index, configuration in enumerate(configurations, 1):
-            self.sample.create_configuration(index, configuration)
+            self.scenario.create_configuration(index, configuration)

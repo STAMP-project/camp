@@ -10,20 +10,20 @@
 
 
 
-from tests.acceptance.commons import CampTests, Sample
+from tests.commons import CampTest, Scenario
 
 
 
-class FilesAreGenerated(CampTests):
+class FilesAreGenerated(CampTest):
 
 
     def setUp(self):
-        self.sample = Sample("awesome")
+        self.scenario = Scenario.from_sample("awesome")
 
 
     def test_generate_all(self):
         self.generate_all()
-        self.assertEqual(6, len(self.sample.generated_configurations))
+        self.assertEqual(6, len(self.scenario.generated_configurations))
 
 
     def test_generate_coverage(self):
@@ -31,5 +31,5 @@ class FilesAreGenerated(CampTests):
         # /!\ FLAKY TEST: The number of configurations generated Z3
         # seems to vary, though it should always build 3
         # configurations. Check the build reports (e.g., #146)
-        self.assertIn(len(self.sample.generated_configurations),
+        self.assertIn(len(self.scenario.generated_configurations),
                       [3, 4])
