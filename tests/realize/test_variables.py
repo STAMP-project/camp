@@ -60,7 +60,7 @@ class Realization(TestCase):
         self.create_template_file(component="server",
                                   resource="apache_config.ini")
         self.create_template_file(component="server",
-                                  resource="nginx_config.json")
+                                  resource="nginx_config.ini")
 
         model = Model(
             components=[
@@ -73,8 +73,11 @@ class Realization(TestCase):
                                   values=["apache", "nginx"],
                                   realization=[
                                       ResourceSelection(
-                                          "server/apache_config.ini",
-                                          "server/nginx_config.json"
+                                          "server/config.ini",
+                                          [
+                                              "server/apache_config.ini",
+                                              "server/nginx_config.ini"
+                                          ]
                                       )
                                   ])
                           ],
@@ -93,7 +96,7 @@ class Realization(TestCase):
 
         self.realize(configuration)
 
-        self.assert_exists("config_1/images/server_0/nginx_config.json")
+        self.assert_exists("config_1/images/server_0/config.ini")
         self.assert_does_not_exist("config_1/images/server_0/apache_config.ini")
 
 

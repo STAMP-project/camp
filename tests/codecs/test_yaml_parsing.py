@@ -277,6 +277,7 @@ class BuiltModelAreComplete(TestCase):
             "             - select: \n"
             "                - apache_config.ini\n"
             "                - nginx_config.ini\n"
+            "               as: config.ini\n"
             "goals:\n"
             "   running:\n"
             "      - Wonderful\n",
@@ -295,8 +296,8 @@ class BuiltModelAreComplete(TestCase):
                                 "values": ["apache", "nginx" ],
                                 "realization": [
                                     ResourceSelection(
-                                        "apache_config.ini",
-                                        "nginx_config.ini")
+                                        "config.ini",
+                                        ["apache_config.ini", "nginx_config.ini"])
                                 ]
                             }
                         }

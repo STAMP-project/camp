@@ -10,20 +10,20 @@
 
 
 
-from tests.acceptance.commons import CampTests, Sample
+from tests.commons import CampTest, Scenario
 
 
 
-class FilesAreGenerated(CampTests):
+class FilesAreGenerated(CampTest):
 
 
     def setUp(self):
-        self.sample = Sample("stamp/atos")
+        self.scenario = Scenario.from_sample("stamp/atos")
 
 
     def test_generate_coverage(self):
         self.generate_coverage()
-        self.assertEqual(10, len(self.sample.generated_configurations))
+        self.assertEqual(10, len(self.scenario.generated_configurations))
 
 
 
@@ -32,9 +32,9 @@ class FilesAreGenerated(CampTests):
 
         self.realize()
 
-        self.assertEqual(2, len(self.sample.generated_configurations))
+        self.assertEqual(2, len(self.scenario.generated_configurations))
 
-        configuration = self.sample.generated_configurations[0]
+        configuration = self.scenario.generated_configurations[0]
 
         self._assert_generated(configuration,
                                "docker-compose.yml",

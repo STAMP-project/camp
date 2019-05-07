@@ -56,39 +56,60 @@ class TheTestSettingsShould(TestCase):
 
 class ResourceSelectionsShould(TestCase):
 
-
     def setUp(self):
-        self._resource = ["whatever.txt", "doesnt_matter.ini" ]
-        self._selection = ResourceSelection(*self._resource)
-
+        self._destination = "file.txt"
+        self._resources = ["whatever.txt", "doesnt_matter.ini" ]
+        self._selection = ResourceSelection(self._destination,
+                                            self._resources)
 
     def test_expose_the_selected_resources(self):
-        self.assertEqual(self._resource, self._selection.resources)
+        self.assertEqual(self._resources,
+                         self._selection.resources)
+
+
+    def test_expose_its_destination(self):
+        self.assertEqual(self._destination,
+                         self._selection.destination)
 
 
     def test_equal_itself(self):
         self.assertEqual(self._selection, self._selection)
 
 
-    def test_differ_from_a_different_selection(self):
-        other = ResourceSelection("something different")
+    def test_differ_from_a_selection_with_a_different_resources(self):
+        other = ResourceSelection(self._destination,
+                                  ["resource_1.txt", "resource_2.txt"])
+        self.assertNotEqual(self._selection, other)
+
+
+    def test_differ_from_a_selection_with_a_different_destination(self):
+        other = ResourceSelection("something_different.txt",
+                                  self._resources)
         self.assertNotEqual(self._selection, other)
 
 
     def test_equal_another_identical_selection(self):
-        other = ResourceSelection(*self._resource)
-        self.assertEqual(self._selection, other)
+        twin = ResourceSelection(self._destination,
+                                  self._resources)
+        self.assertEqual(self._selection, twin)
 
 
     def test_have_the_same_hash_than_an_identical_resource(self):
-        other = ResourceSelection(*self._resource)
-        self.assertEqual(hash(self._selection), hash(other))
+        twin = ResourceSelection(self._destination,
+                                  self._resources)
+        self.assertEqual(hash(self._selection), hash(twin))
 
 
-    def test_have_a_different_hash_from_an_identical_resource(self):
-        other = ResourceSelection("whatever different")
+    def test_have_a_different_hash_from_a_selection_with_different_resource(self):
+        other = ResourceSelection(self._destination,
+                                  ["resource_1.txt", "resource_2.txt"])
         self.assertNotEqual(hash(self._selection), hash(other))
 
+
+    def test_have_a_different_hash_from_a_selection_with_a_different_destination(self):
+        other = ResourceSelection("something_different.txt",
+                                  self._resources)
+        self.assertNotEqual(hash(self._selection), hash(other))
 
 
 class RenameResourceShould(TestCase):
