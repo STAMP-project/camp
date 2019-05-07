@@ -1,0 +1,168 @@
+name: purescript
+version: '0.12.5'
+synopsis: PureScript Programming Language Compiler
+description: A small strongly, statically typed programming language with expressive
+  types, inspired by Haskell and compiling to JavaScript.
+category: Language
+author: >
+  Phil Freeman <paf31@cantab.net>,
+  Gary Burgess <gary.burgess@gmail.com>,
+  Hardy Jones <jones3.hardy@gmail.com>,
+  Harry Garrood <harry@garrood.me>,
+  Christoph Hegemann <christoph.hegemann1337@gmail.com>
+maintainer: Phil Freeman <paf31@cantab.net>
+copyright: (c) 2013-17 Phil Freeman, (c) 2014-17 Gary Burgess
+license: BSD3
+github: purescript/purescript
+homepage: http://www.purescript.org/
+extra-source-files:
+  - app/static/*
+  - bundle/build.sh
+  - bundle/README
+  - tests/purs/**/*.js
+  - tests/purs/**/*.purs
+  - tests/purs/**/*.json
+  - tests/json-compat/**/*.json
+  - tests/support/*.json
+  - tests/support/setup-win.cmd
+  - tests/support/psci/**.purs
+  - tests/support/psci/**.edit
+  - tests/support/pscide/src/**/*.purs
+  - tests/support/pscide/src/**/*.js
+  - tests/support/pscide/src/**/*.fail
+  - stack.yaml
+  - README.md
+  - INSTALL.md
+  - CONTRIBUTORS.md
+  - CONTRIBUTING.md
+dependencies:
+  - aeson >=1.0 && <1.5
+  - aeson-better-errors >=0.8
+  - ansi-terminal >=0.7.1 && <0.9
+  - array
+  - base >=4.8 && <4.13
+  - base-compat >=0.6.0
+  - blaze-html >=0.8.1 && <0.10
+  - bower-json >=1.0.0.1 && <1.1
+  - boxes >=0.1.4 && <0.2.0
+  - bytestring
+  - Cabal >= 2.2
+  - cheapskate >=0.1 && <0.2
+  - clock
+  - containers
+  - data-ordlist >=0.4.7.0
+  - deepseq
+  - directory >=1.2.3
+  - dlist
+  - edit-distance
+  - file-embed
+  - filepath
+  - fsnotify >=0.2.1
+  - Glob >=0.9 && <0.10
+  - haskeline >=0.7.0.0
+  - language-javascript >=0.6.0.9 && <0.7
+  - lifted-base >=0.2.3 && <0.2.4
+  - microlens-platform >=0.3.9.0 && <0.4
+  - monad-control >=1.0.0.0 && <1.1
+  - monad-logger >=0.3 && <0.4
+  - mtl >=2.1.0 && <2.3.0
+  - parallel >=3.2 && <3.3
+  - parsec >=3.1.10
+  - pattern-arrows >=0.0.2 && <0.1
+  - process >=1.2.0 && <1.7
+  - protolude >=0.1.6
+  - regex-tdfa
+  - safe >=0.3.9 && <0.4
+  - scientific >=0.3.4.9 && <0.4
+  - semigroups >=0.16.2 && <0.19
+  - sourcemap >=0.1.6
+  - split
+  - stm >=0.2.4.0
+  - stringsearch
+  - syb
+  - text
+  - time
+  - transformers >=0.3.0 && <0.6
+  - transformers-base >=0.4.0 && <0.5
+  - transformers-compat >=0.3.0
+  - unordered-containers
+  - utf8-string >=1 && <2
+  - vector
+
+library:
+  source-dirs: src
+  ghc-options: -Wall -O2
+  other-modules: Paths_purescript
+  default-extensions:
+    - ConstraintKinds
+    - DataKinds
+    - DeriveFunctor
+    - EmptyDataDecls
+    - FlexibleContexts
+    - KindSignatures
+    - LambdaCase
+    - MultiParamTypeClasses
+    - NoImplicitPrelude
+    - PatternGuards
+    - PatternSynonyms
+    - RankNTypes
+    - RecordWildCards
+    - OverloadedStrings
+    - ScopedTypeVariables
+    - TupleSections
+    - ViewPatterns
+    - NoMonadFailDesugaring
+
+executables:
+  purs:
+    main: Main.hs
+    source-dirs: app
+    ghc-options: -Wall -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
+    other-modules:
+      - Command.Bundle
+      - Command.Compile
+      - Command.Docs
+      - Command.Docs.Html
+      - Command.Hierarchy
+      - Command.Ide
+      - Command.Publish
+      - Command.REPL
+      - Paths_purescript
+      - Version
+
+    dependencies:
+      - ansi-wl-pprint
+      - file-embed
+      - http-types
+      - network >= 3.0.1.1
+      - optparse-applicative >=0.13.0
+      - purescript
+      - wai ==3.*
+      - wai-websockets ==3.*
+      - warp ==3.*
+      - websockets >=0.9 && <0.13
+      - gitrev >=1.2.0 && <1.4
+    when:
+    - condition: flag(release)
+      then:
+        cpp-options: -DRELEASE
+      else:
+        dependencies:
+        - gitrev >=1.2.0 && <1.4
+
+tests:
+  tests:
+    main: Main.hs
+    source-dirs: tests
+    ghc-options: -Wall
+    dependencies:
+      - purescript
+      - tasty
+      - tasty-hspec
+      - hspec
+      - hspec-discover
+      - HUnit
+    default-extensions:
+      - NoImplicitPrelude
+
+stability: experimental
