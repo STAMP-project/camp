@@ -3,13 +3,16 @@
 Below is the list of CAMP versions, along with a quick summary of the
 changes that were made.
 
-*   Development
+*   CAMP v0.4
 
-    *   Add new "select" realization operator. It enables the
-        selection (and the rejection) of specific files from the
-        template, depending on the value selected in a configuration
-        and eventually renaming the selected resource (see the
-        [documentation](https://stamp-project.github.io/camp/pages/realize.html#variables)).
+    *   CAMP v0.4.0 (May 7, 2019)
+
+        *   Add new "select" realization operator. It enables the
+            selection (and the rejection) of specific files from the
+            template, depending on the value selected in a
+            configuration and eventually renaming the selected
+            resource (see the
+            [documentation](https://stamp-project.github.io/camp/pages/realize.html#variables)).
 
 *   CAMP v0.3
 
