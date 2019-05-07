@@ -5,12 +5,11 @@ changes that were made.
 
 *   Development
 
-    *   Add new "rename" realization operator. It enables renaming
-        a specific file from the template.
-
     *   Add new "select" realization operator. It enables the
-        selection (or the rejection) of specific files from the
-        template, depending on the value selected in a configuration.
+        selection (and the rejection) of specific files from the
+        template, depending on the value selected in a configuration
+        and eventually renaming the selected resource (see the
+        [documentation](https://stamp-project.github.io/camp/pages/realize.html#variables)).
 
 *   CAMP v0.3
 
@@ -34,7 +33,7 @@ changes that were made.
 
         *   Fix [Issue
             53](https://github.com/STAMP-project/camp/issues/53) about
-            the UnicodeDecodeError thrown by the ASCII codecs when
+            the UnicodeDecodeError thrown by the ASCII codec when
             locale does not force UTF-8.
 
         *   Add a new sample, where we apply CAMP to test multiple

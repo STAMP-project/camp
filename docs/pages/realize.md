@@ -195,10 +195,10 @@ docker-compose file, or other configurations files.
 ---
 
 
-### File Selection
+### Resource Selection
 
 We can also select specific files from the template, depending on the
-value that CAMP set in the current configuration. Consider the
+value that CAMP sets in the current configuration. Consider the
 following example:
 
 ```yaml
@@ -209,6 +209,7 @@ following example:
          - select:
             - apache-docker-compose.yml
             - nginx-docker-compose.yml
+           as: docker-compose.yml
 ```
 
 When CAMP builds a configuration where the variable `front-end` is set
@@ -217,20 +218,9 @@ but remove the file `nginx-docker-compose.yml` from the generated
 configuration (but not from the template, which never
 changes). Conversely, in a configuration where the variable
 `front-end` is set to `nginx`, CAMP would keep the file
-`nginx-docker-compose.yml` and delete `apache-docker-compose.yml`
+`nginx-docker-compose.yml` and delete `apache-docker-compose.yml`. In
+any case, the selected file will be renamed as `docker-compose.yml` in
+the configuration files that CAMP generates.
 
-
-### Resource Renaming
-We can also rename files from the template, as follows
-
-```yaml
-    variables:
-      front_end:
-        values: [ apache, nginx ]
-        realization:
-         - rename: apache-docker-compose.yml
-           into: docker-compose.yml
-```
-
-Regardless of the value assigned to the `front-end` variable CAMP will
-rename the file `apache-docker-compose.yml` into `docker-compose.yml`.
+Note that the `as` clause is optional and amy be omitted if there is
+no need to rename the selected resource.
