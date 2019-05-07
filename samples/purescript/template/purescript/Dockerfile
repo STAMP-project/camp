@@ -3,7 +3,7 @@ FROM debian:9-slim
 ENV NVM_DIR /usr/local/nvm
 ENV NODE_VERSION 8.9.3
 
-RUN apt-get update && apt-get install -y curl build-essential libtinfo-dev libgmp-dev zlib1g-dev python git
+RUN apt-get update && apt-get install -y curl build-essential libtinfo-dev libgmp-dev zlib1g-dev python git libghc-gitrev-dev
 
 ADD src /purescript
 
