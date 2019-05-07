@@ -52,6 +52,43 @@ class ResourceSelectionShould(CampTest):
             self._assert_generated(each_configuration, "images/server_0/settings.py")
 
 
+    def test_handle_selecting_without_renaming(self):
+        self.scenario.create_template("server", "Dockerfile")
+        self.scenario.create_template("server", "nginx_settings.py")
+        self.scenario.create_template("server", "apache_settings.py")
+
+        self.scenario.create_model(
+            "goals:\n"
+            "  running: [ MyService ]\n"
+            "components:\n"
+            "  server:\n"
+            "    provides_services: [ MyService ]\n"
+            "    variables:\n"
+            "      proxy:\n"
+            "        values: [ nginx, apache ]\n"
+            "        realization:\n"
+            "         - select: \n"
+            "             - server/nginx_settings.py\n"
+            "             - server/apache_settings.py\n"
+            "    implementation:\n"
+            "      docker:\n"
+            "        file: server/Dockerfile\n"
+        )
+
+        self.generate_all()
+        self.realize()
+
+        configurations = self.scenario.generated_configurations
+        for each_configuration in self.scenario.generated_configurations:
+            if each_configuration.model.resolve("server_0")["proxy"] == "nginx":
+                self._assert_generated(each_configuration,
+                                       "images/server_0/nginx_settings.py")
+            elif each_configuration.model.resolve("server_0")["proxy"] == "apache":
+                self._assert_generated(each_configuration,
+                                       "images/server_0/apache_settings.py")
+
+
+
     def test_handle_directory(self):
         self.scenario.create_template("server", "Dockerfile")
         self.scenario.create_template("server", "nginx/settings.py")

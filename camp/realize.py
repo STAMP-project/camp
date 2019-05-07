@@ -11,7 +11,7 @@
 
 
 from camp.entities.model import DockerFile, DockerImage, Substitution, \
-    ResourceSelection, RenameResource
+    ResourceSelection
 
 from os import makedirs, remove
 from os.path import exists, isdir, isfile, join as join_paths, \
@@ -180,9 +180,6 @@ class Builder(object):
             if isinstance(each_realization, Substitution):
                 self._substitute(instance, variable, value, each_realization)
 
-            elif isinstance(each_realization, RenameResource):
-                self._rename_resource(instance, variable, value, each_realization)
-
             elif isinstance(each_realization, ResourceSelection):
                 self._select_resource(instance, variable, value, each_realization)
 
@@ -234,19 +231,14 @@ class Builder(object):
             resource_file.write(new_content)
 
 
-    def _rename_resource(self, instance, variable, value, rename):
-        resource = self._file_for(instance, rename.resource)
-        renamed = self._file_for(instance, rename.new_name)
-        move(resource, renamed)
-
-
     def _select_resource(self, instance, variable, value, selection):
         deletions = 0
         for index, any_value in enumerate(variable.domain):
             if value == any_value:
-                self._rename(instance,
-                             selection.resources[index],
-                             selection.destination)
+                if selection.destination:
+                    self._rename(instance,
+                                 selection.resources[index],
+                                 selection.destination)
 
             else:
                 deletions += 1

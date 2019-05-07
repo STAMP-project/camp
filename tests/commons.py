@@ -112,6 +112,11 @@ class GeneratedConfiguration(object):
         self._model = model
 
 
+    @property
+    def model(self):
+        return self._model
+
+
     def includes_file(self, path_to_file):
         return exists(join_paths(self._path, path_to_file))
 

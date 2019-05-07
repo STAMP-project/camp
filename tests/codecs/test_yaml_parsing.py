@@ -14,7 +14,7 @@ from __future__ import unicode_literals
 
 from camp.codecs.yaml import YAML, InvalidYAMLModel
 from camp.entities.model import DockerFile, DockerImage, Substitution, \
-    TestSettings, ResourceSelection, RenameResource
+    TestSettings, ResourceSelection
 from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest, \
     TestSuite, TestReport
 
@@ -299,46 +299,6 @@ class BuiltModelAreComplete(TestCase):
                                         "config.ini",
                                         ["apache_config.ini", "nginx_config.ini"])
                                 ]
-                            }
-                        }
-                    }
-                },
-                "goals": {
-                    "services": ["Wonderful"],
-                    "features": []
-                }
-            })
-
-
-    def test_given_a_component_with_a_variable_with_resource_renaming(self):
-        self.assert_complete(
-            "components:\n"
-            "   server:\n"
-            "      provides_services: [ Wonderful ]\n"
-            "      variables:\n"
-            "        memory:\n"
-            "          type: Text\n"
-            "          values: [apache, nginx]\n"
-            "          realization:\n"
-            "             - rename: \"config.ini\"\n"
-            "               into: \"settings.ini\"\n"
-            "goals:\n"
-            "   running:\n"
-            "      - Wonderful\n",
-            expectations={
-                "services": ["Wonderful"],
-                "features": [],
-                "components" : {
-                    "server": {
-                        "provided_services": ["Wonderful"],
-                        "required_services": [],
-                        "provided_features": [],
-                        "required_features": [],
-                        "implementation": None,
-                        "variables": {
-                            "memory": {
-                                "values": ["apache", "nginx" ],
-                                "realization": [ RenameResource("config.ini", "settings.ini") ]
                             }
                         }
                     }

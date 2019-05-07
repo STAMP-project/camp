@@ -385,43 +385,6 @@ class ResourceSelection(Visitee):
 
 
 
-class RenameResource(Visitee):
-    """Rename a specific resource, that is a file or a directory in the
-    template
-    Immutable Value-object
-    """
-
-    def __init__(self, resource, new_name):
-        self._resource = resource
-        self._new_name = new_name
-
-
-    @property
-    def resource(self):
-        return self._resource
-
-
-    @property
-    def new_name(self):
-        return self._new_name
-
-
-    def __eq__(self, other):
-        if not isinstance(other, RenameResource):
-            return False
-        return tuple([self._resource, self._new_name]) == \
-            tuple([other.resource, other.new_name])
-
-
-    def __hash__(self):
-        return hash(tuple([self._resource, self._new_name]))
-
-
-    def __repr__(self):
-        return "RenameResourceSelection(%s, %s)" % (self._resource, self._new_name)
-
-
-
 class Implementation(Visitee):
     pass
 
