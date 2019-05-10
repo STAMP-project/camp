@@ -1,0 +1,78 @@
+user nginx;
+
+worker_processes ${worker_processes};
+worker_rlimit_nofile ${worker_rlimit_nofile};
+
+include /etc/nginx/modules-enabled/*.conf;
+
+events{
+  worker_connections ${worker_connections};
+  accept_mutex ${accept_mutex};
+  multi_accept ${multi_accept};
+}
+
+http {
+  
+  ############### 
+  #Basic Settings
+  ###############
+  
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  reset_timedout_connection ${reset_timedout_connection};
+  default_type application/octet-stream;
+
+  #################
+  #Gzip Settings
+  #################
+
+  gzip ${gzip};
+  gzip_types image/jpeg image/bmp/ text/plain text/css application/json application/javascript text/javascript;
+  gzip_comp_level ${gzip_comp_level};
+  gzip_min_length ${gzip_min_length};
+
+  
+  #################
+  # Limits Settings
+  #################
+  
+  limit_req_log_level warn;
+  #Rate Limiting 
+  limit_req_status 460; # Status to send
+
+
+  #################
+  #Logging Settings
+  #################
+
+  access_log /var/log/nginx/access.log;
+  error_log /var/log/nginx/error.log;
+
+  #RPS tests
+  keepalive_timeout ${keepalive_timeout};
+  keepalive_requests ${keepalive_requests};
+
+  upstream web {
+    ip_hash;
+    server web:80;
+  }
+
+  server {
+    listen 80;
+    server_name localhost;
+    
+    location /static {
+        autoindex on;
+        include /etc/nginx/mime.types;
+        alias /usr/src/app/static;
+    }
+    
+    location / {
+      proxy_pass http://web/;
+      
+      #Bandwidth Limiting 
+      limit_rate ${limit_rate}; #Speed limit (kb/s)
+    }
+  }
+}
