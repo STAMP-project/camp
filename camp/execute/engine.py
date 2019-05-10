@@ -17,6 +17,10 @@ from camp.entities.report import TestReport, TestSuite
 from camp.execute.reporting.junit import JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
+from camp.execute.reporting.jmeter import JMeterCSVReader, \
+    JMeterCSVElementNotSupported
+
+
 from os import listdir
 from os.path import isdir, join as join_paths
 
@@ -344,6 +348,7 @@ def select_reader_for(report_format):
 
 SUPPORTED_REPORT_FORMAT = {
     "JUNIT": JUnitXMLReader,
+    "JMETER": JMeterCSVReader,
 }
 
 
