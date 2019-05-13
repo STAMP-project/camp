@@ -41,7 +41,7 @@ class JMeterCSVReader(ReportReader):
 
 		tests = []
 
-		reader = csv.DictReader(csvfile.splitlines())
+		reader = csv.DictReader(csvfile)
 
 		if reader.line_num == 0:
 			raise JMeterCSVInvalidReport("Empty JMeter Report")

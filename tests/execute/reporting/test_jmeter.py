@@ -30,7 +30,7 @@ class TheJMeterCSVReaderShould(TestCase):
 
 
         with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(csv_report)
+            self._reader._extract_from_text(csv_report.splitlines())
 
     def test_raise_exception_when_given_empty_CSV_report_no_label_column(self):
         csv_report = (
@@ -39,7 +39,7 @@ class TheJMeterCSVReaderShould(TestCase):
 
 
         with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(csv_report)
+            self._reader._extract_from_text(csv_report.splitlines())
 
     def test_raise_exception_when_given_invalid_CSV_report_no_error_percentage_column(self):
         csv_report = (
@@ -48,7 +48,7 @@ class TheJMeterCSVReaderShould(TestCase):
 
 
         with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(csv_report)
+            self._reader._extract_from_text(csv_report.splitlines())
 
     def test_raise_exception_when_given_invalid_CSV_report(self):
         csv_report = (
@@ -57,4 +57,4 @@ class TheJMeterCSVReaderShould(TestCase):
 
 
         with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(csv_report)
+            self._reader._extract_from_text(csv_report.splitlines())
