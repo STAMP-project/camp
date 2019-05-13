@@ -17,7 +17,14 @@ from camp.execute.reporting.jmeter import JMeterCSVReader, \
 
 from unittest import TestCase
 
+import os
+
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 class TheJMeterCSVReaderShould(TestCase):
+
+	
 
     def setUp(self):
         self._reader = JMeterCSVReader()
@@ -31,6 +38,14 @@ class TheJMeterCSVReaderShould(TestCase):
 
         with self.assertRaises(JMeterCSVInvalidReport):
             self._reader._extract_from_text(csv_report.splitlines())
+
+    def test_raise_exception_when_given_empty_CSV_report_from_file(self):
+    	
+        csv_report = os.path.join(THIS_DIR, os.pardir, 'data_folder/empty_jmeter_report.csv')
+
+
+        with self.assertRaises(JMeterCSVInvalidReport):
+            self._reader._extract_from_text(csv_report)
 
     def test_raise_exception_when_given_empty_CSV_report_no_label_column(self):
         csv_report = (
@@ -58,3 +73,10 @@ class TheJMeterCSVReaderShould(TestCase):
 
         with self.assertRaises(JMeterCSVInvalidReport):
             self._reader._extract_from_text(csv_report.splitlines())
+
+    def test_raise_exception_when_given_invalid_CSV_report_from_file(self):
+        csv_report = os.path.join(THIS_DIR, os.pardir, 'data_folder/invalid_jmeter_report.csv')
+
+
+        with self.assertRaises(JMeterCSVInvalidReport):
+            self._reader._extract_from_text(csv_report)
