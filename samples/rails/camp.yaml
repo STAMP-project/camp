@@ -37,7 +37,7 @@ components:
         file: sphinx/Dockerfile
 
     tests:
-      command: bundle exec rake test TESTOPTS="--ci-report"
+      command: bash run_test.sh
       reports:
         format: junit
         location: camp/
