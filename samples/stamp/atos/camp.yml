@@ -10,17 +10,25 @@
 
 goals:
   running:
-    - web
+    - citygo
 
 components:
 
-  web:
-    provides_services: [ web ]
+  dashboard:
+    provides_services: [ citygo ]
     requires_services: [ Postgres ]
+    requires_services: [ web ]
     requires_features: [ Python ]
     variables:
+      implementation:
+      values: [apache, nginx]
+      realization:
+        - select:
+          - docker-compose-apache.yml
+          - docker-compose-nginx.yml
+          as: docker-compose.yml
+    
       thread_limit:
-        type: Integer
         values: [64, 128]
         realization:
           - targets: [ docker-compose.yml ]
@@ -29,7 +37,6 @@ components:
               - ThreadLimit=64
               - ThreadLimit=128
       threads_per_child:
-        type: Integer
         values:
           range: [0, 128]
           realization:
@@ -38,30 +45,26 @@ components:
             replacements:
               - ThreadsPerChild=64
       max_request_workers:
-        type: Integer
         values: [0,150]
         realization:
           - targets: [ docker-compose.yml ]
             pattern: "MaxRequestWorkers=150"
             replacements:
               - MaxRequestWorkers=150
-      implementation:
+
+    nginx:
+      provides_services: [ nginx ]
+     
+      variables:
+        implementation:
         values: [apache, nginx]
         realization:
           - select:
             - docker-compose-apache.yml
             - docker-compose-nginx.yml
             as: docker-compose.yml
-      command: python manage.py migrate --no-input && gunicorn citygo_settings.wsgi:application -b 0.0.0.0:80 --workers 3
-      
-    nginx:
-      provides_services: [ nginx ]
-     
-      variables:
         worker_connections:
-          type: Integer
-          values:
-            range: [2, 1024]
+          values: [2,64,1024]
           realization:
             - targets: [docker-compose.yml]
               pattern: "worker_connections=1024"
@@ -74,15 +77,6 @@ components:
               pattern: "gzip=on"
               replacements:
                 - gzip=off
-
-        implementation:
-        values: [apache, nginx]
-        realization:
-          - select:
-            - docker-compose-apache.yml
-            - docker-compose-nginx.yml
-            as: docker-compose.yml
-
 
   python:
     provides_features: [ Python ]
