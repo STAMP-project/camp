@@ -24,9 +24,9 @@ class JMeterCSVReader(ReportReader):
     NUM_OF_SAMPLES = "# Samples"
     AVG_RESP_TIME = "Average"
     MEDIAN_RESP_TIME = "Median"
-    PERCENTILE_90_RESP_TIME = "90\% Line"
-    PERCENTILE_95_RESP_TIME = "95\% Line"
-    PERCENTILE_99_RESP_TIME = "99\% Line"
+    PERCENTILE_RESP_TIME_90 = "90\% Line"
+    PERCENTILE_RESP_TIME_95 = "95\% Line"
+    PERCENTILE_RESP_TIME_99 = "99\% Line"
     MIN_RESP_TIME = "Min"
     MAX_RESP_TIME = "Max"
     ERR_PERCENTAGE = "Error \%"
@@ -41,19 +41,22 @@ class JMeterCSVReader(ReportReader):
 
 		tests = []
 
-		fieldnames = (URL_LABEL,NUM_OF_SAMPLES,AVG_RESP_TIME,MEDIAN_RESP_TIME,PERCENTILE_RESP_TIME_90,PERCENTILE_RESP_TIME_95,PERCENTILE_RESP_TIME_99,MIN_RESP_TIME,MAX_RESP_TIME,ERR_PERCENTAGE,THROUGHPUT,RECEIVED_BYTES,)
+		reader = csv.DictReader(csvfile.splitlines())
 
-		reader = csv.DictReader( csvfile, fieldnames)
+		if reader.line_num == 0:
+			raise JMeterCSVInvalidReport("Empty JMeter Report")
 
-		if URL_LABEL not in reader.fieldnames:
+		if self.URL_LABEL not in reader.fieldnames:
 			raise JMeterCSVInvalidReport("No URL Label present in JMeter Report")
 
-		if ERR_PERCENTAGE not in reader.fieldnames:
+		if self.ERR_PERCENTAGE not in reader.fieldnames:
 			raise JMeterCSVInvalidReport("No error percentage value present in JMeter Report")
 
+
 		for row in reader:
-			test = self._extract_test_from(each)
+			test = self._extract_test_from(row)
     		tests.append(test)
+
 
     def _extract_test_from(self, element):
     	identifier = element.get(self.URL_LABEL)

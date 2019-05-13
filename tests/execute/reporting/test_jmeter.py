@@ -23,8 +23,38 @@ class TheJMeterCSVReaderShould(TestCase):
         self._reader = JMeterCSVReader()
 
 
+    def test_raise_exception_when_given_empty_CSV_report(self):
+        csv_report = (
+        	"Label,# Samples,Average,Median,90\% Line,95\% Line,99\% Line,Min,Max,Error \%,Throughput,Received KB/sec,Sent KB/sec"
+        	)
+
+
+        with self.assertRaises(JMeterCSVInvalidReport):
+            self._reader._extract_from_text(csv_report)
+
+    def test_raise_exception_when_given_empty_CSV_report_no_label_column(self):
+        csv_report = (
+        	"# Samples,Average,Median,90\% Line,95\% Line,99\% Line,Min,Max,Error \%,Throughput,Received KB/sec,Sent KB/sec"
+        	)
+
+
+        with self.assertRaises(JMeterCSVInvalidReport):
+            self._reader._extract_from_text(csv_report)
+
+    def test_raise_exception_when_given_invalid_CSV_report_no_error_percentage_column(self):
+        csv_report = (
+        	"Label,# Samples,Average,Median,90\% Line,95\% Line,99\% Line,Min,Max,Throughput,Received KB/sec,Sent KB/sec"
+        	)
+
+
+        with self.assertRaises(JMeterCSVInvalidReport):
+            self._reader._extract_from_text(csv_report)
+
     def test_raise_exception_when_given_invalid_CSV_report(self):
-        csv_report = "# Samples,Average,Median,90\% Line,95\% Line,99\% Line,Min,Max,Throughput,Received KB\/sec,Sent KB\/sec"
+        csv_report = (
+        	"# Samples,Average,Median,90\% Line,95\% Line,99\% Line,Min,Max,Throughput,Received KB/sec,Sent KB/sec"
+        	)
+
 
         with self.assertRaises(JMeterCSVInvalidReport):
             self._reader._extract_from_text(csv_report)
