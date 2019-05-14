@@ -12,6 +12,7 @@
 
 from tests.commons import CampTest, Scenario
 
+from unittest import skip
 
 
 class FilesAreGenerated(CampTest):
@@ -20,13 +21,13 @@ class FilesAreGenerated(CampTest):
     def setUp(self):
         self.scenario = Scenario.from_sample("stamp/atos")
 
-
+    @skip
     def test_generate_coverage(self):
         self.generate_coverage()
         self.assertEqual(10, len(self.scenario.generated_configurations))
 
 
-
+    @skip
     def test_after_we_realize_coverage(self):
         self.create_configurations(self.CONFIG_1, self.CONFIG_2)
 
