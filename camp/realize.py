@@ -229,6 +229,7 @@ class Builder(object):
 
             resource_file.seek(0)
             resource_file.write(new_content)
+            resource_file.truncate()
 
 
     def _select_resource(self, instance, variable, value, selection):
@@ -253,13 +254,11 @@ class Builder(object):
     def _rename(self, instance, source, destination):
         resource = self._file_for(instance, source)
         renamed = self._file_for(instance, destination)
-        print("DBG/Rename: ", resource, "\ninto", renamed)
         move(resource, renamed)
 
 
     def _delete(self, instance, discarded):
         resource = self._file_for(instance, discarded)
-        print("DBG/DELETE: ", resource)
         if isfile(resource):
             remove(resource)
         else:

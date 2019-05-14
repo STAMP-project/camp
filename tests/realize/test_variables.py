@@ -99,6 +99,51 @@ class Realization(TestCase):
         self.assert_does_not_exist("config_1/images/server_0/apache_config.ini")
 
 
+    def test_substitution_with_pattern_longer_than_replacement(self):
+        """
+        See Issue 57
+        """
+        self.create_template_file(component="server",
+                                  resource="config.ini",
+                                  content=("value: This is a very very long pattern\n"
+                                           "Here is the end\n"))
+
+        model = Model(
+            components=[
+                Component(name="server",
+                          provided_services=[Service("Awesome")],
+                          variables=[
+                              Variable(
+                                  name="config",
+                                  value_type=str,
+                                  values=["v1"],
+                                  realization=[
+                                      Substitution(
+                                          targets=["server/config.ini"],
+                                          pattern="value: This is a very very long pattern",
+                                          replacements=["value: v1"])
+                                  ])
+                          ],
+                          implementation=DockerFile("server/Dockerfile"))
+            ],
+            goals=Goals(services=[Service("Awesome")]))
+
+        server = model.resolve("server")
+        configuration = Configuration(
+            model,
+            instances = [
+                Instance(name="server_0",
+                         definition=server,
+                         configuration=[(server.variables[0], "v1")])
+            ])
+
+        self.realize(configuration)
+
+        self.assert_file_contains_exactly(
+            "config_1/images/server_0/config.ini",
+            ("value: v1\n"
+             "Here is the end\n"))
+
 
     def test_substitute_in_component_files(self):
         model = Model(
@@ -308,6 +353,12 @@ class Realization(TestCase):
         with open(path, "r") as resource_file:
             content = resource_file.read()
             self.assertIn(pattern, content)
+
+    def assert_file_contains_exactly(self, resource, expected):
+        path = join_paths(self._workspace, resource)
+        with open(path, "r") as resource_file:
+            content = resource_file.read()
+            self.assertEquals(expected, content)
 
 
     def assert_exists(self, resource):
