@@ -5,6 +5,14 @@ changes that were made.
 
 *   CAMP v0.4
 
+    *   CAMP v0.4.1 (May 14, 2019)
+
+        *   Fix [Issue
+            57](https://github.com/STAMP-project/camp/issues/57). Truncate
+            the end of rewritten files to avoid that patterns replaced
+            by shorter fragments (in terms of number of characters)
+            lead to files having some leftovers at the end.
+
     *   CAMP v0.4.0 (May 7, 2019)
 
         *   Add new "select" realization operator. It enables the
@@ -19,7 +27,7 @@ changes that were made.
     *   CAMP v0.3.10 (May 5, 2019)
 
         *   Fix [Issue
-            #56](https://github.com/STAMP-project/camp/issues/53)
+            56](https://github.com/STAMP-project/camp/issues/53)
             about substitutions pattern that contains characters
             interpreted by the Python regular expression engine.
 
