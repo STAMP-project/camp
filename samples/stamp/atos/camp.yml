@@ -21,13 +21,12 @@ components:
     requires_features: [ Python ]
     variables:
       implementation:
-      values: [apache, nginx]
-      realization:
-        - select:
-          - docker-compose-apache.yml
-          - docker-compose-nginx.yml
-          as: docker-compose.yml
-    
+        values: [apache, nginx]
+        realization:
+          - select:
+             - docker-compose-apache.yml
+             - docker-compose-nginx.yml
+            as: docker-compose.yml
       thread_limit:
         values: [64, 128]
         realization:
@@ -37,9 +36,10 @@ components:
               - ThreadLimit=64
               - ThreadLimit=128
       threads_per_child:
-        values:
+        values: 
           range: [0, 128]
-          realization:
+          coverage: 20
+        realization:
           - targets: [ docker-compose.yml ]
             pattern: "ThreadsPerChild=25"
             replacements:
@@ -52,31 +52,31 @@ components:
             replacements:
               - MaxRequestWorkers=150
 
-    nginx:
-      provides_services: [ nginx ]
-     
-      variables:
-        implementation:
+  nginx:
+    provides_services: [ nginx ]
+    variables:
+      implementation:
         values: [apache, nginx]
         realization:
           - select:
-            - docker-compose-apache.yml
-            - docker-compose-nginx.yml
+              - docker-compose-apache.yml
+              - docker-compose-nginx.yml
             as: docker-compose.yml
-        worker_connections:
-          values: [2,64,1024]
-          realization:
-            - targets: [docker-compose.yml]
-              pattern: "worker_connections=1024"
-              replacements: 
-                - worker_connections=64
-        gzip:
-          values: [on, off]
-          realization:
-            - targets: [ docker-compose.yml ]
-              pattern: "gzip=on"
-              replacements:
-                - gzip=off
+      worker_connections:
+        values: [2,64,1024]
+        realization:
+          - targets: [docker-compose.yml]
+            pattern: "worker_connections=1024"
+            replacements: 
+              - worker_connections=64
+      gzip:
+        values: [on, off]
+        realization:
+          - targets: [ docker-compose.yml ]
+            pattern: "gzip=on"
+            replacements:
+              - gzip=on
+              - gzip=off
 
   python:
     provides_features: [ Python ]
@@ -87,9 +87,10 @@ components:
   postgres:
     provides_services: [ Postgres ]
     requires_features: [ Ubuntu ]
-    implementation:
-       values: [apache, nginx]
-       realization:
+    variables:
+      implementation:
+        values: [apache, nginx]
+        realization:
          - select:
            - docker-compose-apache.yml
            - docker-compose-nginx.yml
