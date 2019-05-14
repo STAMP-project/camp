@@ -1,0 +1,60 @@
+#
+# CAMP
+#
+# Copyright (C) 2017 -- 2019 SINTEF Digital
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+
+
+goals:
+  running:
+    - SphinxTests
+
+
+components:
+
+  sphinx:
+    provides_services: [ SphinxTests ]
+    variables:
+     # python:
+     #   values: [ v3.5, v3.6, v3.7 ]
+     #   realization:
+     #    - targets: [ sphinx/Dockerfile ]
+     #      pattern: "python:3.5-slim"
+     #      replacements:
+     #        - python:3.5-slim
+     #        - python:3.6-slim
+     #        - python:3.7-slim
+
+      alabaster:
+        values: [ v0.7.1, v0.7.2, v0.7.3, v0.7.4, v0.7.5, v0.7.6, v0.7.7, v0.7.8, v0.7.9, v0.7.10, v0.7.11, v0.7.12 ]
+        realization:
+         - targets: [ sphinx/src/setup.py ]
+           pattern: 'alabaster>=0.7,<0.8'
+           replacements:
+             - "alabaster==0.7.1"
+             - "alabaster==0.7.2"
+             - "alabaster==0.7.3"
+             - "alabaster==0.7.4"
+             - "alabaster==0.7.5"
+             - "alabaster==0.7.6"
+             - "alabaster==0.7.7"
+             - "alabaster==0.7.8"
+             - "alabaster==0.7.9"
+             - "alabaster==0.7.10"
+             - "alabaster==0.7.11"
+             - "alabaster==0.7.12"
+
+    implementation:
+      docker:
+        file: sphinx/Dockerfile
+
+    tests:
+      command: pytest --junitxml=camp/report.xml
+      reports:
+        format: junit
+        location: camp/
+        pattern: .xml
