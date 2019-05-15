@@ -13,6 +13,20 @@ explain here:
  * How to [contribute to the documentation](#documentation);
  * How to [build and modify the code](#building)
 
+---
+
+**Note** Your suggestions and feedback are *welcome*.  Please, tell us
+what you think and what you expect in the next release in [our
+survey](https://www.stamp-project.eu/view/main/betatestingsurvey/). As
+a recognition for your useful feedback, you might receive a limited
+edition “STAMP Software Test Pilot” gift and be added as a STAMP
+contributor.  This offer is limited to the beta testers interacting
+with the STAMP project team, by 31 September, 2019. You will be
+contacted individually for a customized gift and for contribution
+opportunities.
+
+---
+
 
 <a name="todo"/>
 ## TODO List
