@@ -10,65 +10,46 @@
 
 goals:
   running:
-    - citygo
+    - Entry
 
 components:
 
-  dashboard:
-    provides_services: [ citygo ]
-    requires_services: [ Postgres ]
-    requires_services: [ web ]
-    requires_features: [ Python ]
-    variables:
-      implementation:
-        values: [apache, nginx]
-        realization:
-          - select:
-             - docker-compose-apache.yml
-             - docker-compose-nginx.yml
-            as: docker-compose.yml
-      thread_limit:
-        values: [64, 128]
-        realization:
-          - targets: [ docker-compose.yml ]
-            pattern: "ThreadLimit=64"
-            replacements:
-              - ThreadLimit=64
-              - ThreadLimit=128
-      threads_per_child:
-        values: 
-          range: [0, 128]
-          coverage: 20
-        realization:
-          - targets: [ docker-compose.yml ]
-            pattern: "ThreadsPerChild=25"
-            replacements:
-              - ThreadsPerChild=64
-      max_request_workers:
-        values: [0,150]
-        realization:
-          - targets: [ docker-compose.yml ]
-            pattern: "MaxRequestWorkers=150"
-            replacements:
-              - MaxRequestWorkers=150
+  browser:
+    provides_services: [ Entry ]
+    requires_services: [ Test ]
+    implementation:
+      docker:
+        image: selenium/node-chrome-debug
 
+  hub:
+    provides_services: [ Test ]
+    requires_services: [ Proxy ]
+    implementation:
+      docker:
+        image: selenium/hub
+
+  apache:
+    provides_services: [ Proxy ]
+    requires_services: [ Citygo ]
+      
   nginx:
-    provides_services: [ nginx ]
+    provides_services: [ Proxy ]
+    requires_services: [ Citygo ]
     variables:
-      implementation:
-        values: [apache, nginx]
-        realization:
-          - select:
-              - docker-compose-apache.yml
-              - docker-compose-nginx.yml
-            as: docker-compose.yml
-      worker_connections:
-        values: [2,64,1024]
-        realization:
-          - targets: [docker-compose.yml]
-            pattern: "worker_connections=1024"
-            replacements: 
-              - worker_connections=64
+      # implementation:
+      #   values: [apache, nginx]
+      #   realization:
+      #     - select:
+      #         - docker-compose-apache.yml
+      #         - docker-compose-nginx.yml
+      #       as: docker-compose.yml
+      # worker_connections:
+      #   values: [2,64,1024]
+      #   realization:
+      #     - targets: [docker-compose.yml]
+      #       pattern: "worker_connections=1024"
+      #       replacements: 
+      #         - worker_connections=64
       gzip:
         values: [on, off]
         realization:
@@ -78,6 +59,49 @@ components:
               - gzip=on
               - gzip=off
 
+  dashboard:
+    provides_services: [ Citygo ]
+    requires_services: [ Postgres, Mongo ]
+    requires_features: [ Python ]
+    # variables:
+      # implementation:
+      #   values: [apache, nginx]
+      #   realization:
+      #     - select:
+      #        - docker-compose-apache.yml
+      #        - docker-compose-nginx.yml
+      #       as: docker-compose.yml
+      # thread_limit:
+      #   values: [64, 128]
+      #   realization:
+      #     - targets: [ docker-compose.yml ]
+      #       pattern: "ThreadLimit=64"
+      #       replacements:
+      #         - ThreadLimit=64
+      #         - ThreadLimit=128
+      # threads_per_child:
+      #   values: 
+      #     range: [0, 128]
+      #     coverage: 20
+      #   realization:
+      #     - targets: [ docker-compose.yml ]
+      #       pattern: "ThreadsPerChild=25"
+      #       replacements:
+      #         - ThreadsPerChild=64
+      # max_request_workers:
+      #   values: [0,150]
+      #   realization:
+      #     - targets: [ docker-compose.yml ]
+      #       pattern: "MaxRequestWorkers=150"
+      #       replacements:
+      #         - MaxRequestWorkers=150
+
+  mongo:
+    provides_services: [ Mongo ]
+    implementation:
+      docker:
+        image: mongo:4.0.6-xenial
+      
   python:
     provides_features: [ Python ]
     implementation:
@@ -87,14 +111,14 @@ components:
   postgres:
     provides_services: [ Postgres ]
     requires_features: [ Ubuntu ]
-    variables:
-      implementation:
-        values: [apache, nginx]
-        realization:
-         - select:
-           - docker-compose-apache.yml
-           - docker-compose-nginx.yml
-           as: docker-compose.yml
+    # variables:
+    #   implementation:
+    #     values: [apache, nginx]
+    #     realization:
+    #      - select:
+    #        - docker-compose-apache.yml
+    #        - docker-compose-nginx.yml
+    #        as: docker-compose.yml
 
   ubuntu:
     provides_features: [ Ubuntu ]
