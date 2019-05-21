@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_eu_stamp_camp_samples_testman_domain_TCExecution" modelAttribute="TCExecution_" path="/tcexecutions" versionField="Version" z="EZy50ykCnEAmjGk9w3iAy+xsVq4=">
+        <field:datetime dateTimePattern="${TCExecution__executedon_date_format}" field="executedOn" id="c_eu_stamp_camp_samples_testman_domain_TCExecution_executedOn" z="eVzKnpALo4TSyMKWEjvpgVoQ/38="/>
+        <field:input field="tester" id="c_eu_stamp_camp_samples_testman_domain_TCExecution_tester" z="xZuYFtyg6k5py+XaPjb4HRFB6yg="/>
+        <field:select field="executionStatus" id="c_eu_stamp_camp_samples_testman_domain_TCExecution_executionStatus" items="${tcexecstatuses}" path="tcexecstatuses" z="Fz6/JuMe3YWCRpuC0lSQaFWSk+U="/>
+    </form:update>
+</div>

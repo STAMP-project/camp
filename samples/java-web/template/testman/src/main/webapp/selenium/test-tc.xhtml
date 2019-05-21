@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+<link href="http://localhost:8080/" rel="selenium.base"/>
+<title>Selenium test for TCController</title>
+</head>
+<body>
+    <table border="1" cellpadding="1" cellspacing="1">
+        <thead>
+            <tr>
+                <td colspan="3" rowspan="1">Selenium test for TCController</td>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+                    <td>open</td>
+                    <td>http://localhost:8080/testman/tcs?form&amp;lang=it_IT</td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td>_tcId_id</td>
+                    <td>someTcId1</td>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td>_summary_id</td>
+                    <td>someSummary1</td>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td>_steps_id</td>
+                    <td>someSteps1</td>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td>_expectedResult_id</td>
+                    <td>someExpectedResult1</td>
+                </tr>
+                <tr>
+                    <td>clickAndWait</td>
+                    <td>//input[@id = 'proceed']</td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td>verifyText</td>
+                    <td>_s_eu_stamp_camp_samples_testman_domain_TC_tcId_tcId_id</td>
+                    <td>someTcId1</td>
+                </tr>
+                <tr>
+                    <td>verifyText</td>
+                    <td>_s_eu_stamp_camp_samples_testman_domain_TC_summary_summary_id</td>
+                    <td>someSummary1</td>
+                </tr>
+                <tr>
+                    <td>verifyText</td>
+                    <td>_s_eu_stamp_camp_samples_testman_domain_TC_steps_steps_id</td>
+                    <td>someSteps1</td>
+                </tr>
+                <tr>
+                    <td>verifyText</td>
+                    <td>_s_eu_stamp_camp_samples_testman_domain_TC_expectedResult_expectedResult_id</td>
+                    <td>someExpectedResult1</td>
+                </tr>
+            </tbody>
+    </table>
+</body>
+</html>

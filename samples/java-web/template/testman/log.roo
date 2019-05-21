@@ -1,0 +1,49 @@
+// Spring Roo 1.3.2.RELEASE [rev 8387857] log opened at 2019-05-21 16:05:13
+hint
+project --topLevelPackage eu.stamp.camp.samples.testman
+hint
+jpa setup --provider HIBERNATE --database HYPERSONIC_PERSISTENT 
+hint
+// [failed] entity jpa --class eu.stamp.camp.samples.testman.domain.TestCase
+entity jpa --class eu.stamp.camp.samples.testman.domain.TC
+hint
+field string --fieldName tcId --notNull --sizeMin 2
+field string --fieldName summary --notNull 
+field string --fieldName steps --notNull 
+field string --fieldName expectedResult --notNull 
+entity jpa --class ~.domain.TCExecution
+field date --fieldName executedOn --type java.util.Date
+field string --fieldName tester
+enum type --class ~.domain.TCExecStatus
+enum constant --name SUCCESS
+enum constant --name FAIL
+enum constant --name SUSPENDED
+focus --class ~.domain.TCExecution
+field enum --type ~.domain.TCExecStatus --fieldName executionStatus
+focus --class ~.domain.TC
+field set --fieldName executions --type ~.domain.TCExecution
+hint
+hint test
+hint tests
+hint topics
+help
+hint
+perform tests
+// [failed] entity jpa --class ~.domain.TC --testAutomatically 
+test integration 
+test mock 
+test stub 
+focus --class ~.domain.TCExecution
+test integration
+test mock
+perform tests
+web mvc setup
+web mvc all --package ~.web
+security setup
+selenium test --controller ~.web.TCController
+selenium test --controller ~.web.TCExecutionController
+exit
+// Spring Roo 1.3.2.RELEASE [rev 8387857] log closed at 2019-05-21 16:34:46
+// Spring Roo 1.3.2.RELEASE [rev 8387857] log opened at 2019-05-21 17:40:06
+exit
+// Spring Roo 1.3.2.RELEASE [rev 8387857] log closed at 2019-05-21 18:38:54
