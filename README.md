@@ -4,7 +4,24 @@
 [![Code Grade](https://img.shields.io/codacy/grade/916007abcf574c8eadbde9ef5b720a5a.svg)](https://www.codacy.com/app/SINTEF-9012/camp?utm_source=github.com&utm_medium=referral&utm_content=STAMP-project/camp&utm_campaign=Badge_Grade)
 [![Docker Pulls](https://img.shields.io/docker/pulls/fchauvel/camp.svg)](https://hub.docker.com/r/fchauvel/camp/)
 
+
 # CAMP &mdash; Amplify your Configuration Tests
+
+---
+
+**Give us feedback!** Please take 5’ of your time to fill in this
+[quick
+questionnaire](https://www.stamp-project.eu/view/main/betatestingsurvey/).
+
+This is important for us. As a recognition for your feedback, you will
+receive a limited edition “STAMP Software Test Pilot” **gift** and be
+recognized as a STAMP contributor.
+
+This campaign will close on 31 September, 2019. You will be contacted
+individually for a customized gift and for contribution opportunities.
+
+---
+
 
 CAMP (Configuration AMPlification) takes as input a sample testing
 configuration and generates automatically a number of diverse
