@@ -1,0 +1,59 @@
+#
+# CAMP
+#
+# Copyright (C) 2017 -- 2019 SINTEF Digital
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+
+
+goals:
+  running:
+    - AtomTests
+
+
+components:
+
+  atom:
+    provides_services: [ AtomTests ]
+    variables:
+      normalizepackagedata:
+        values: [ v2.0.0, v2.1.0, v2.2.0, v2.2.1, v2.3.0, v2.3.1, v2.3.2, v2.3.3, v2.3.4, v2.3.5, v2.3.6, v2.3.7, v2.3.8, v2.4.0, v2.4.1, v2.4.2, v2.5.0 ]
+        realization:
+         - targets: [ atom/src/package.json ]
+           pattern: '"normalize-package-data": "^2.0.0"'
+           replacements:
+             - '"normalize-package-data": "2.0.0"'
+             - '"normalize-package-data": "2.1.0"'
+             - '"normalize-package-data": "2.2.0"'
+             - '"normalize-package-data": "2.2.1"'
+             - '"normalize-package-data": "2.3.0"'
+             - '"normalize-package-data": "2.3.1"'
+             - '"normalize-package-data": "2.3.2"'
+             - '"normalize-package-data": "2.3.3"'
+             - '"normalize-package-data": "2.3.4"'
+             - '"normalize-package-data": "2.3.5"'
+             - '"normalize-package-data": "2.3.6"'
+             - '"normalize-package-data": "2.3.7"'
+             - '"normalize-package-data": "2.3.8"'
+             - '"normalize-package-data": "2.4.0"'
+             - '"normalize-package-data": "2.4.1"'
+             - '"normalize-package-data": "2.4.2"'
+             - '"normalize-package-data": "2.5.0"'
+
+
+
+
+
+    implementation:
+      docker:
+        file: atom/Dockerfile
+
+    # tests:
+    #   command: pytest --junitxml=camp/report.xml
+    #   reports:
+    #     format: junit
+    #     location: camp/
+    #     pattern: .xml
