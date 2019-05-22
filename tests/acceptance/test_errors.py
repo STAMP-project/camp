@@ -12,16 +12,16 @@
 
 from mock import patch
 
-from tests.acceptance.commons import Sample, CampTests
+from tests.commons import Scenario, CampTest
 
 
 
 
-class MissingCAMPModelIsReported(CampTests):
+class MissingCAMPModelIsReported(CampTest):
 
 
     def setUp(self):
-        self.sample = Sample("missing_camp_model")
+        self.scenario = Scenario("missing_camp_model")
 
 
     def test_when_we_generate_all(self):
@@ -33,12 +33,12 @@ class MissingCAMPModelIsReported(CampTests):
 
 
 
-class MissingConfigurationsAreReported(CampTests):
+class MissingConfigurationsAreReported(CampTest):
 
 
     def setUp(self):
-        self.sample = Sample("missing_configurations")
-        self.sample.create_model("goals:\n"
+        self.scenario = Scenario("missing_configurations")
+        self.scenario.create_model("goals:\n"
                                  "  running: [ Awesome ]\n"
                                  "components:\n"
                                  "   server:\n"
@@ -46,19 +46,19 @@ class MissingConfigurationsAreReported(CampTests):
                                  "      implementation:\n"
                                  "         docker:\n"
                                  "            file: server/Dockerfile\n")
-        self.sample.create_template("server", "Dockerfile", "DOESN'T MATTER")
+        self.scenario.create_template("server", "Dockerfile", "DOESN'T MATTER")
 
 
     def test_with_camp_realize(self):
         self.realize()
 
 
-class VainSubstitutionAreReported(CampTests):
+class VainSubstitutionAreReported(CampTest):
 
 
     def setUp(self):
-        self.sample = Sample("vain_substitutions")
-        self.sample.create_model("goals:\n"
+        self.scenario = Scenario("vain_substitutions")
+        self.scenario.create_model("goals:\n"
                                  "  running: [ Awesome ]\n"
                                  "components:\n"
                                  "   server:\n"
@@ -75,7 +75,7 @@ class VainSubstitutionAreReported(CampTests):
                                  "      implementation:\n"
                                  "         docker:\n"
                                  "            file: server/Dockerfile\n")
-        self.sample.create_template("server", "Dockerfile", "Blah blah blah!")
+        self.scenario.create_template("server", "Dockerfile", "Blah blah blah!")
 
 
     def test_with_camp_realize(self):
@@ -84,12 +84,12 @@ class VainSubstitutionAreReported(CampTests):
 
 
 
-class UnexpectedErrorsAreCaught(CampTests):
+class UnexpectedErrorsAreCaught(CampTest):
 
 
     def setUp(self):
-        self.sample = Sample("unexpected_errors")
-        self.sample.create_model("goals:\n"
+        self.scenario = Scenario("unexpected_errors")
+        self.scenario.create_model("goals:\n"
                                  "  running: [ Awesome ]\n"
                                  "components:\n"
                                  "   server:\n"
@@ -97,8 +97,8 @@ class UnexpectedErrorsAreCaught(CampTests):
                                  "      implementation:\n"
                                  "         docker:\n"
                                  "            file: server/Dockerfile\n")
-        self.sample.create_template("server", "Dockerfile", "DOESN'T MATTER")
-        self.sample.create_configuration(1,
+        self.scenario.create_template("server", "Dockerfile", "DOESN'T MATTER")
+        self.scenario.create_configuration(1,
                                          "instances:\n"
                                          "  server_0:\n"
                                          "    definition: server\n"

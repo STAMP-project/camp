@@ -10,21 +10,21 @@
 
 
 
-from tests.acceptance.commons import CampTests, Sample
+from tests.commons import CampTest, Scenario
 
 
 
-class JavaGreetingsShould(CampTests):
+class JavaGreetingsShould(CampTest):
 
 
     def setUp(self):
-        self.sample = Sample("java")
+        self.scenario = Scenario.from_sample("java")
 
 
     def test_yield_three_configurations(self):
         self.generate_all()
 
-        configurations = self.sample.generated_configurations
+        configurations = self.scenario.generated_configurations
 
         self.assertEqual(3, len(configurations))
 
@@ -34,6 +34,6 @@ class JavaGreetingsShould(CampTests):
         self.realize()
         self.execute()
 
-        report = self.sample.fetch_test_report()
+        report = self.scenario.fetch_test_report()
 
         self.assertEqual(3, len(report["reports"]))

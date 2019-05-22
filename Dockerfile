@@ -32,4 +32,6 @@ RUN bash install.sh \
         --z3-platform ${Z3_PLATFORM} \
         --install-docker \
         --camp-from-sources ${WITH_TESTS} ${DEBUG}
-        
+
+# Avoid UnicodeDecodeError as per Issue #53
+ENV LANG C.UTF-8

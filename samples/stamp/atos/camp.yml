@@ -8,45 +8,100 @@
 # of the MIT license.  See the LICENSE file for details.
 #
 
-
-
 goals:
   running:
-    - Showcase
+    - Entry
 
 components:
 
-  showcase:
-    provides_services: [ Showcase ]
-    requires_services: [ Postgres ]
-    requires_features: [ Python ]
-    variables:
-      thread_limit:
-        type: Integer
-        values: [ 64, 128 ]
-        realization:
-          - targets: [ docker-compose.yml ]
-            pattern: "ThreadLimit=64"
-            replacements: [ ThreadLimit=64, ThreadLimit=128 ]
-      threads_per_child:
-        type: Integer
-        values:
-          range: [0, 128]
-          coverage: 10
-        realization:
-          - targets: [ docker-compose.yml ]
-            pattern: ThreadsPerChild=25
-            replacements: ["ThreadsPerChild={value}"]
-      max_request_workers:
-        type: Integer
-        realization:
-          - targets: [ docker-compose.yml ]
-            pattern: MaxRequestWorkers=150
-            replacements: ["MaxRequestWorkers={value}"]
+  browser:
+    provides_services: [ Entry ]
+    requires_services: [ Test ]
     implementation:
       docker:
-        file: showcase/Dockerfile
+        image: selenium/node-chrome-debug
 
+  hub:
+    provides_services: [ Test ]
+    requires_services: [ Proxy ]
+    implementation:
+      docker:
+        image: selenium/hub
+
+  apache:
+    provides_services: [ Proxy ]
+    requires_services: [ Citygo ]
+      
+  nginx:
+    provides_services: [ Proxy ]
+    requires_services: [ Citygo ]
+    variables:
+      # implementation:
+      #   values: [apache, nginx]
+      #   realization:
+      #     - select:
+      #         - docker-compose-apache.yml
+      #         - docker-compose-nginx.yml
+      #       as: docker-compose.yml
+      # worker_connections:
+      #   values: [2,64,1024]
+      #   realization:
+      #     - targets: [docker-compose.yml]
+      #       pattern: "worker_connections=1024"
+      #       replacements: 
+      #         - worker_connections=64
+      gzip:
+        values: [on, off]
+        realization:
+          - targets: [ docker-compose.yml ]
+            pattern: "gzip=on"
+            replacements:
+              - gzip=on
+              - gzip=off
+
+  dashboard:
+    provides_services: [ Citygo ]
+    requires_services: [ Postgres, Mongo ]
+    requires_features: [ Python ]
+    # variables:
+      # implementation:
+      #   values: [apache, nginx]
+      #   realization:
+      #     - select:
+      #        - docker-compose-apache.yml
+      #        - docker-compose-nginx.yml
+      #       as: docker-compose.yml
+      # thread_limit:
+      #   values: [64, 128]
+      #   realization:
+      #     - targets: [ docker-compose.yml ]
+      #       pattern: "ThreadLimit=64"
+      #       replacements:
+      #         - ThreadLimit=64
+      #         - ThreadLimit=128
+      # threads_per_child:
+      #   values: 
+      #     range: [0, 128]
+      #     coverage: 20
+      #   realization:
+      #     - targets: [ docker-compose.yml ]
+      #       pattern: "ThreadsPerChild=25"
+      #       replacements:
+      #         - ThreadsPerChild=64
+      # max_request_workers:
+      #   values: [0,150]
+      #   realization:
+      #     - targets: [ docker-compose.yml ]
+      #       pattern: "MaxRequestWorkers=150"
+      #       replacements:
+      #         - MaxRequestWorkers=150
+
+  mongo:
+    provides_services: [ Mongo ]
+    implementation:
+      docker:
+        image: mongo:4.0.6-xenial
+      
   python:
     provides_features: [ Python ]
     implementation:
@@ -56,37 +111,17 @@ components:
   postgres:
     provides_services: [ Postgres ]
     requires_features: [ Ubuntu ]
-    implementation:
-      docker:
-        file: postgres/Dockerfile
-      
+    # variables:
+    #   implementation:
+    #     values: [apache, nginx]
+    #     realization:
+    #      - select:
+    #        - docker-compose-apache.yml
+    #        - docker-compose-nginx.yml
+    #        as: docker-compose.yml
+
   ubuntu:
     provides_features: [ Ubuntu ]
     implementation:
       docker:
         image: ubuntu:latest
-
-
-constraints:
-#   # thread_per_child < thread_limit
- - showcase_0_threads_per_child.value < showcase_0_thread_limit.value
-#   - CInstance.forall(ci, ci.configuration.exists(val1, Implies(val1.variable == variable("showcase", "threads_per_child"), ci.configuration.exists(val2, And([val2.variable == variable("showcase", "thread_limit"), val1.value < val2.value])))))
-   # MaxRequest_workers < 16 * ThreadsPerChild
- - showcase_0_max_request_workers.value == 16 * showcase_0_threads_per_child.value  
-#   - CInstance.forall(ci, ci.configuration.exists(val1, Implies(val1.variable == variable("showcase", "max_request_workers"), ci.configuration.exists(val2, And([val2.variable == variable("showcase", "threads_per_child"), val1.value < 16 * val2.value])))))
-#   # Or(ThreadsPerChild >= 100 and MaxRequest_workers >= 200,
-#   # ThreadLimit <= 64, max_request_workers >=2
- - Or([And([showcase_0_threads_per_child.value >= 100, showcase_0_max_request_workers.value >= 200]), And([showcase_0_thread_limit.value <= 64, showcase_0_max_request_workers.value >= 2])])  
-#   - Or([CInstance.forall(ci, ci.configuration.exists(val1, Implies(val1.variable == variable("showcase", "threads_per_child"), ci.configuration.exists(val2, And([val2.variable == variable("showcase", "max_request_workers"), val1.value >= 100, val2.value >= 200]))))), CInstance.forall(ci, ci.configuration.exists(val1, Implies(val1.variable == variable("showcase", "thread_limit"), ci.configuration.exists(val2, And([val2.variable == variable("showcase", "max_request_workers"), val1.value <= 64, val2.value >= 2])))))])
-
-
-
-
-
-
-
-
-
-
-
-  

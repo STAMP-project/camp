@@ -3,10 +3,59 @@
 Below is the list of CAMP versions, along with a quick summary of the
 changes that were made.
 
-*   Development
+*   CAMP v0.4
 
+    *   CAMP v0.4.1 (May 14, 2019)
+
+        *   Fix [Issue
+            57](https://github.com/STAMP-project/camp/issues/57). Truncate
+            the end of rewritten files to avoid that patterns replaced
+            by shorter fragments (in terms of number of characters)
+            lead to files having some leftovers at the end.
+
+    *   CAMP v0.4.0 (May 7, 2019)
+
+        *   Add new "select" realization operator. It enables the
+            selection (and the rejection) of specific files from the
+            template, depending on the value selected in a
+            configuration and eventually renaming the selected
+            resource (see the
+            [documentation](https://stamp-project.github.io/camp/pages/realize.html#variables)).
 
 *   CAMP v0.3
+
+    *   CAMP v0.3.10 (May 5, 2019)
+
+        *   Fix [Issue
+            56](https://github.com/STAMP-project/camp/issues/53)
+            about substitutions pattern that contains characters
+            interpreted by the Python regular expression engine.
+
+        *   New sample where we apply CAMP on [Ruby on
+            Rails](https://github.com/STAMP-project/camp/issues/53).
+
+        *   New sample where we apply CAMP on [the Atom
+            project](https://github.com/atom/atom).
+
+        *   Update version numbers so they include the related short Git
+            commit hash (for releases).
+
+    *   CAMP v0.3.9 (May 1, 2019)
+
+        *   Fix [Issue
+            53](https://github.com/STAMP-project/camp/issues/53) about
+            the UnicodeDecodeError thrown by the ASCII codec when
+            locale does not force UTF-8.
+
+        *   Add a new sample, where we apply CAMP to test multiple
+            configurations of
+            [Sphinx](https://github.com/sphinx-doc/sphinx.git).
+
+        *   Revised STAMP/Atos CityGo case study
+
+        *   Fix [Issue
+            43](https://github.com/STAMP-project/camp/issues/43) about
+            the broken links into the CAMP execute documentation.
 
     *   CAMP v0.3.8 (Apr. 29, 2019)
 

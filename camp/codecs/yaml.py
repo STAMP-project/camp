@@ -16,7 +16,7 @@ from __future__ import absolute_import
 from camp.codecs.commons import Codec
 from camp.entities.model import Model, Component, Service, Goals, Variable, \
     Feature, DockerFile, DockerImage, Substitution, Instance, Configuration, \
-    TestSettings
+    TestSettings, ResourceSelection
 
 from yaml import safe_load as load_yaml, safe_dump as dump_yaml
 
@@ -262,8 +262,8 @@ class YAML(Codec):
                 value_type = item
             elif key == Keys.REALIZATION:
                 for index, each in enumerate(item, 1):
-                    substitution = self._parse_substitution(component, name, index, each)
-                    realization.append(substitution)
+                    action = self._parse_realization_action(component, name, index, each)
+                    realization.append(action)
             else:
                 self._ignore(*(path + [key]))
 
@@ -304,6 +304,52 @@ class YAML(Codec):
             self._wrong_type(dict, type(item), *path)
 
         return values
+
+
+    def _parse_realization_action(self, component, variable, index, data):
+        if Keys.SELECT in data:
+            return self._parse_resource_selection(component, variable, index, data)
+
+        elif Keys.PATTERN in data \
+             or Keys.REPLACEMENTS in data \
+             or Keys.TARGETS in data:
+            return self._parse_substitution(component, variable, index, data)
+
+        else:
+            raise ValueError("Invalid realisation in entry")
+
+
+    def _parse_resource_selection(self, component, variable, index, data):
+        path = [Keys.COMPONENTS,
+                component,
+                Keys.VARIABLES,
+                variable,
+                Keys.REALIZATION,
+                "#%d" % index]
+
+        destination = None
+        resources = []
+        for key, item in data.items():
+            if key == Keys.SELECT:
+                if not isinstance(item, list):
+                    self._wrong_type(list, type(item), *(path + [key]))
+                    continue
+                resources = item
+
+            elif key == Keys.AS:
+                if not isinstance(item, str):
+                    self._wrong_type(str, type(item), *(path + [key]))
+                    continue
+                destination = item
+
+            else:
+                self._ignore(*(path + [key]))
+
+        if not resources:
+            self._missing([Keys.SELECT], *path)
+
+        return ResourceSelection(destination, resources)
+
 
     def _parse_substitution(self, component, variable, index, data):
         path = [Keys.COMPONENTS,
@@ -478,6 +524,7 @@ class Keys:
     The labels that are fixed in the YAML
     """
 
+    AS = "as"
     COMMAND = "command"
     COMPONENTS = "components"
     CONFIGURATION = "configuration"
@@ -505,6 +552,7 @@ class Keys:
     REQUIRES_FEATURES = "requires_features"
     REQUIRES_SERVICES = "requires_services"
     RUNNING = "running"
+    SELECT = "select"
     SERVICE_PROVIDERS = "service_providers"
     TARGETS = "targets"
     TEST_SETTINGS = "tests"

@@ -10,29 +10,29 @@
 
 
 
-from tests.acceptance.commons import CampTests, Sample
+from tests.commons import CampTest, Scenario
 
 from unittest import skip
 
 
 
-class FilesAreGenerated(CampTests):
+class FilesAreGenerated(CampTest):
 
 
     def setUp(self):
-        self.sample = Sample("stamp/xwiki")
+        self.scenario = Scenario.from_sample("stamp/xwiki")
 
 
     @skip("Take too long, about 45 min.")
     def test_after_we_generate_all(self):
         self.generate_all()
-        self.assertEqual(64, len(self.sample.generated_configurations))
+        self.assertEqual(64, len(self.scenario.generated_configurations))
 
 
     @skip("Take too long")
     def test_after_we_generate_coverage(self):
         self.generate_coverage()
-        self.assertEqual(4, len(self.sample.generated_configurations))
+        self.assertEqual(4, len(self.scenario.generated_configurations))
 
 
     def test_after_we_realize_coverage(self):
@@ -40,9 +40,9 @@ class FilesAreGenerated(CampTests):
 
         self.realize()
 
-        self.assertEqual(1, len(self.sample.generated_configurations))
+        self.assertEqual(1, len(self.scenario.generated_configurations))
 
-        configuration = self.sample.generated_configurations[0]
+        configuration = self.scenario.generated_configurations[0]
 
         self._assert_generated(configuration,
                                "docker-compose.yml",

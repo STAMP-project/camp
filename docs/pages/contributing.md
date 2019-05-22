@@ -13,24 +13,50 @@ explain here:
  * How to [contribute to the documentation](#documentation);
  * How to [build and modify the code](#building)
 
+---
+
+**Give us feedback!** Please take 5’ of your time to fill in this
+[quick
+questionnaire](https://www.stamp-project.eu/view/main/betatestingsurvey/).
+
+This is important for us. As a recognition for your feedback, you will
+receive a limited edition “STAMP Software Test Pilot” **gift** and be
+recognized as a STAMP contributor.
+
+This campaign will close on 31 September, 2019. You will be contacted
+individually for a customized gift and for contribution opportunities.
+
+---
+
 
 <a name="todo"/>
 ## TODO List
 
 *   Features
 
-    * A "version" command that displays the version.
+    * A "version" command that displays the version of CAMP, but also
+      the version of Z3, Python and the underlying OS.
+
+    * Add option to the generate command to only estimate the number
+      of configurations"
 
 *   Refactorings
 
     *   Rewrite the YAML codec so that it parses test reports and
         returns the proper CAMP object instead of a dictionary.
 
+    *   Refactor the YAML parser so that all the boilerplate code
+        about ignored/missing entries is written once and for all.
+
+    *   Spread the use to tests.commons in the test for CAMP generate
+        and CAMP realize
+
 *   Configuration
 
     *   Find a way to have documentation available per version, when a
         new version is released.
 
+    *   Restore testing multiple versions of python and Z3 on Circle-CI
 
 <a name="layout" />
 ## The Source Code
@@ -169,7 +195,7 @@ runner](https://github.com/CleanCut/green) that simplify visualizing
 results in the command line.
 
 ```console
-$ green -qf -vv tests
+$ green -qfvv tests
 ```
 
 It will stop after the first test that fails and capture the standard

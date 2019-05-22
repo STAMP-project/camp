@@ -31,7 +31,7 @@ class UI(object):
     def welcome(self):
         self._print("{program} v{version} ({ipr})",
                     program=About.PROGRAM,
-                    version=About.VERSION,
+                    version=About.full_version(),
                     ipr=About.LICENSE)
         self._print(About.COPYRIGHT)
         self._print("")
@@ -146,7 +146,7 @@ class UI(object):
                           "Vain substitution: No match found!'\n"
                           "  - pattern: '{searched}'\n"
                           "  - target file: '{target}'\n"
-                          "Is the pattern approptiate? What about the file content?")
+                          "Is the pattern appropriate? What about the file content?")
 
 
     def shell_command_failed(self, error):

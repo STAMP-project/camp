@@ -1,0 +1,86 @@
+#
+# CAMP
+#
+# Copyright (C) 2017 -- 2019 SINTEF Digital
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+
+
+goals:
+  running:
+    - SphinxTests
+
+
+components:
+
+  sphinx:
+    provides_services: [ SphinxTests ]
+    variables:
+     # python:
+     #   values: [ v3.5, v3.6, v3.7 ]
+     #   realization:
+     #    - targets: [ sphinx/Dockerfile ]
+     #      pattern: "python:3.5-slim"
+     #      replacements:
+     #        - python:3.5-slim
+     #        - python:3.6-slim
+     #        - python:3.7-slim
+      jinja2:
+        values: [ v2.3, v2.4, v2.5.5 ]
+        realization:
+         - targets: [ sphinx/src/setup.py ]
+           pattern: 'Jinja2>=2.3'
+           replacements:
+             - "Jinja2==2.3"
+             - "Jinja2==2.4"
+             - "Jinja2==2.5.5"
+      Pygments:
+        values: [ v2.0, v2.0.2 ]
+        realization:
+         - targets: [ sphinx/src/setup.py ]
+           pattern: 'Pygments>=2.0'
+           replacements:
+             - "Pygments==2.0"
+             - "Pygments==2.0.2"
+
+      docutils:
+        values: [ v0.13.1, v0.14 ]
+        realization:
+         - targets: [ sphinx/src/setup.py ]
+           pattern: 'docutils>=0.12'
+           replacements:
+             - "docutils==0.13.1"
+             - "docutils==0.14"
+      babel:
+        values: [ v1.3, v2.1.1, v2.2.0 ]
+        realization:
+         - targets: [ sphinx/src/setup.py ]
+           pattern: 'babel>=1.3,!=2.0'
+           replacements:
+             - "babel==1.3"
+             - "babel==2.1.1"
+             - "babel==2.2.0"
+      alabaster:
+        values: [ v0.7.1, v0.7.2, v0.7.3 ]
+        realization:
+         - targets: [ sphinx/src/setup.py ]
+           pattern: 'alabaster>=0.7,<0.8'
+           replacements:
+             - "alabaster==0.7.1"
+             - "alabaster==0.7.2"
+             - "alabaster==0.7.3"
+
+
+    implementation:
+      docker:
+        file: sphinx/Dockerfile
+
+    tests:
+      command: pytest --junitxml=camp/report.xml
+      reports:
+        format: junit
+        location: camp/
+        pattern: .xml

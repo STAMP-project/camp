@@ -155,6 +155,9 @@ This defines a variable named `threads` whose value ranges from 10
 to 50. See the [`camp generate` documentation for more
 details](generate.html).
 
+
+### Text Substitution
+
 In order to realize the `tests` component, we must tell CAMP where
 it must place the values of this `threads` variable. In the following
 example, we ask CAMP to substitute the `threads` value in the
@@ -186,7 +189,38 @@ contains the text "MAX_THREAD=10".
 
 ---
 
-**Note** Subtitutions may target any files, including the
+**Note** Substitutions may target any files, including the
 docker-compose file, or other configurations files.
 
 ---
+
+
+### Resource Selection
+
+We can also select specific files from the template, depending on the
+value that CAMP sets in the current configuration. Consider the
+following example:
+
+```yaml
+    variables:
+      front_end:
+        values: [ apache, nginx ]
+        realization:
+         - select:
+            - apache-docker-compose.yml
+            - nginx-docker-compose.yml
+           as: docker-compose.yml
+```
+
+When CAMP builds a configuration where the variable `front-end` is set
+to `apache`, CAMP will include the file `apache-docker-compose.yml`
+but remove the file `nginx-docker-compose.yml` from the generated
+configuration (but not from the template, which never
+changes). Conversely, in a configuration where the variable
+`front-end` is set to `nginx`, CAMP would keep the file
+`nginx-docker-compose.yml` and delete `apache-docker-compose.yml`. In
+any case, the selected file will be renamed as `docker-compose.yml` in
+the configuration files that CAMP generates.
+
+Note that the `as` clause is optional and amy be omitted if there is
+no need to rename the selected resource.
