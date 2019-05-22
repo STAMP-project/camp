@@ -103,13 +103,14 @@ Logout,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8"""
 Open home page,13,4.9,4.5,4.6,4.7,5.0,2.1,5.1,0.0,37.16,2.58,6735.0
 Login,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8
 Access personal area,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,27.4,40.03,3.01,535.8
+View roder history,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,100,40.03,3.01,535.8
 Logout,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8"""
 
         test_suite = self._reader._extract_from_text(StringIO.StringIO(csv_report))
 
         self.assertIsInstance(test_suite, TestSuite)
-        self.assertEquals(4, test_suite.run_test_count)
+        self.assertEquals(5, test_suite.run_test_count)
         self.assertEquals(3, test_suite.passed_test_count)
         self.assertEquals(1, test_suite.failed_test_count)
-        self.assertEquals(0, test_suite.erroneous_test_count)
+        self.assertEquals(1, test_suite.erroneous_test_count)
 
