@@ -1,0 +1,35 @@
+#
+# CAMP
+#
+# Copyright (C) 2017 -- 2019 SINTEF Digital
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+
+# Step 1: Build the WAR file
+FROM openjdk:8-jdk-stretch as builder
+
+LABEL maintainer "daniele.gagliardi@eng.it"
+
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends  \
+	maven=3.3.9-4 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir testman
+WORKDIR /testman
+
+COPY . /testman
+RUN mvn clean package
+RUN mv target/testman-0.1.0.BUILD-SNAPSHOT.war target/testman.war
+
+
+# Step 2: Deploy the WAR file into a Tomcat instance
+FROM tomcat:8-jre8
+
+COPY --from=builder /testman/target/testman.war /usr/local/tomcat/webapps/testman.war
+
+CMD ["catalina.sh", "run"]
