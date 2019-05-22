@@ -13,10 +13,19 @@ class About:
 
     PROGRAM = "CAMP"
 
-    VERSION = "0.3.8"
+    VERSION = "0.4.1"
+
+    COMMIT_HASH = None
 
     LICENSE = "MIT"
 
     COPYRIGHT = "Copyright (C) 2017 -- 2019 SINTEF Digital"
 
     DESCRIPTION = "Amplify your configuration tests!"
+
+
+    @staticmethod
+    def full_version():
+        if About.COMMIT_HASH:
+            return "%s-git.%s" % (About.VERSION, About.COMMIT_HASH[:7])
+        return About.VERSION

@@ -1,8 +1,8 @@
-FROM ubuntu
+FROM ubuntu:xenial
 
-LABEL maintainer  Fernando Mendez Requena <fernando.mendez@atos.net>
+MAINTAINER  Fernando Mendez Requena <fernando.mendez.external@atos.net>
 
-#Updated line to solve while testing CAMP
+#Updated line that solve the error while testing CAMP
 RUN apt-get update && apt-get install -my wget gnupg
 
 # Add the PostgreSQL PGP key to verify their Debian packages.
@@ -45,7 +45,7 @@ RUN cd /etc/postgresql/9.3/main && \
 #WORKDIR /docker-entrypoint-initdb.d/
 #ADD init-db.sql /docker-entrypoint-initdb.d
 
-EXPOSE 5432
+EXPOSE 6666
 
 #COPY start.sh /$DIR_DB/start.sh
 
