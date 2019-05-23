@@ -14,4 +14,5 @@ people have contributed in various ways.
  - Anatoly Vasilevskiy (SINTEF)
  - Brice Morin (SINTEF)
  - Franck Chauvel (SINTEF)
+ - Daniele Gagliardi (ENG)
  
