@@ -65,6 +65,10 @@ To verify that the application is well started, please browse: http://localhost:
 
 ## 2- Set up the Docker FGs profiler
 
+First, install needed packages:
+```
+apt-get install cmake linux-tools-common linux-tools-4.4.0-146-generic
+```
 Go back to the project root.
 ```
 cd ~/docker-flame-graphs
