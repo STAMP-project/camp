@@ -18,7 +18,7 @@ from camp.execute.reporting.junit import JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
 from camp.execute.reporting.jmeter import JMeterCSVReader, \
-    JMeterCSVElementNotSupported
+    JMeterCSVInvalidReport
 
 
 from os import listdir
