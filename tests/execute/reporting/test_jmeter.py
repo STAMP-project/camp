@@ -17,7 +17,7 @@ from camp.execute.reporting.jmeter import JMeterCSVReader, \
 
 from unittest import TestCase
 
-import StringIO
+import io
 
 class TheJMeterCSVReaderShould(TestCase):
 
@@ -31,7 +31,7 @@ class TheJMeterCSVReaderShould(TestCase):
         csv_report = """Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Sent KB/sec"""
 
         with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(StringIO.StringIO(csv_report))
+            self._reader._extract_from_text(io.StringIO(csv_report))
 
 	    
 
@@ -47,19 +47,19 @@ class TheJMeterCSVReaderShould(TestCase):
         csv_report = """# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Sent KB/sec"""
 
         with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(StringIO.StringIO(csv_report))
+            self._reader._extract_from_text(io.StringIO(csv_report))
 
     def test_raise_exception_when_given_invalid_CSV_report_no_error_percentage_column(self):
         csv_report = """Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Throughput,Received KB/sec,Sent KB/sec"""
 
         with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(StringIO.StringIO(csv_report))
+            self._reader._extract_from_text(io.StringIO(csv_report))
 
     def test_raise_exception_when_given_invalid_CSV_report(self):
         csv_report = """# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Throughput,Received KB/sec,Sent KB/sec"""
 
         with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(StringIO.StringIO(csv_report))
+            self._reader._extract_from_text(io.StringIO(csv_report))
 
     def test_raise_exception_when_given_invalid_CSV_report_from_file(self):
         csv_report = open('tests/execute/reporting/data_folder/invalid_jmeter_report.csv','r')
@@ -76,7 +76,7 @@ Login,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8
 Access personal area,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,20.0,40.03,3.01,535.8
 Logout,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8"""
 
-        test_suite = self._reader._extract_from_text(StringIO.StringIO(csv_report))
+        test_suite = self._reader._extract_from_text(io.StringIO(csv_report))
 
         self.assertIsInstance(test_suite, TestSuite)
         self.assertEquals(4, test_suite.run_test_count)
@@ -89,7 +89,7 @@ Login,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8
 Access personal area,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8
 Logout,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8"""
 
-        test_suite = self._reader._extract_from_text(StringIO.StringIO(csv_report))
+        test_suite = self._reader._extract_from_text(io.StringIO(csv_report))
 
         self.assertIsInstance(test_suite, TestSuite)
         self.assertEquals(4, test_suite.run_test_count)
@@ -106,7 +106,7 @@ Access personal area,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,27.4,40.03,3.01,535.8
 View roder history,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,100,40.03,3.01,535.8
 Logout,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8"""
 
-        test_suite = self._reader._extract_from_text(StringIO.StringIO(csv_report))
+        test_suite = self._reader._extract_from_text(io.StringIO(csv_report))
 
         self.assertIsInstance(test_suite, TestSuite)
         self.assertEquals(5, test_suite.run_test_count)
