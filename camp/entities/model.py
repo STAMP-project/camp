@@ -457,6 +457,57 @@ class DockerImage(Implementation):
 
 
 
+class ComponentResourceSelection(object):
+    """
+    Resource selection associated with a given component (as opposed to
+    realisation actions associated with variables.
+
+    Value object / data type
+    """
+
+    def __init__(self, selected_resource, alternatives, alias=None):
+        if selected_resource in alternatives:
+            message = self.INCONSISTENT_ALTERNATIVES.format(selected_resource,
+                                                            alternatives)
+            raise ValueError(message)
+        self._selected = selected_resource
+        self._alternatives = set(alternatives)
+        self._alias = alias
+
+    INCONSISTENT_ALTERNATIVES = ("The selected resource '{}' appears among "
+                                 "alternatives '{}'")
+
+
+    @property
+    def selected_resource(self):
+        return self._selected
+
+
+    @property
+    def alternatives(self):
+        return self._alternatives
+
+
+    @property
+    def alias(self):
+        return self._alias if self._alias else self._selected
+
+
+    def __eq__(self, other):
+        if not isinstance(other, ComponentResourceSelection):
+            return False
+
+        return self._selected == other._selected \
+            and self._alternatives == other._alternatives \
+            and self._alias == other._alias
+
+
+    def __hash__(self):
+        content = tuple([self._selected, self._alias]) \
+                  + tuple(self._alternatives)
+        return hash(content)
+
+
 class TestSettings(object):
     """
     Immutable Value Object
