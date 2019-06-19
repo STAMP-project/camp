@@ -191,7 +191,8 @@ class Component(NamedElement):
                  required_services=None,
                  variables=None,
                  implementation=None,
-                 test_settings=None):
+                 test_settings=None,
+                 realization=None):
         super(Component, self).__init__(name)
         self._required_features = [each for each in required_features] \
                                   if required_features else []
@@ -205,6 +206,8 @@ class Component(NamedElement):
                           if variables else {}
         self._implementation = implementation
         self._test_settings = test_settings
+        self._realization = [each for each in realization] \
+                            if realization else []
 
 
     @property
@@ -245,6 +248,11 @@ class Component(NamedElement):
     @property
     def test_settings(self):
         return self._test_settings
+
+
+    @property
+    def realization(self):
+        return self._realization
 
 
 
@@ -506,6 +514,13 @@ class ComponentResourceSelection(object):
         content = tuple([self._selected, self._alias]) \
                   + tuple(self._alternatives)
         return hash(content)
+
+
+    def __repr__(self):
+        return "ComponentResourceSelection('{}', {}, '{}')".format(
+            self._selected,
+            "[" + ",".join(self._alternatives) + "]",
+            self._alias)
 
 
 class TestSettings(object):
