@@ -3,6 +3,16 @@
 Below is the list of CAMP versions, along with a quick summary of the
 changes that were made.
 
+*   CAMP v0.5
+
+    *   CAMP v0.5.0 (June 20, 2019)
+
+        *   New resource selection operator at the component level (as
+            opposed to the one provided at the variable level in
+            v0.4.0). It enables the selection (and the rejection) of
+            resources (files or directories) depending on the
+            component instances included in a configuration.
+
 *   CAMP v0.4
 
     *   CAMP v0.4.1 (May 14, 2019)
