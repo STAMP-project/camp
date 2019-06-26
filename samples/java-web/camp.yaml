@@ -29,7 +29,7 @@ components:
         location: perftest_script
         pattern: .csv
 
-  greetings:
+  testman:
     provides_services: [ Testman ]
     variables:
       tomcat:

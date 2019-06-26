@@ -6,7 +6,7 @@ services:
     build: ./tests
     command: echo Ready!
 
-  greetings:
+  testman:
     build: ./testman
     ports:
       - "8080:8080"
