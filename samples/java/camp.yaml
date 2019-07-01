@@ -23,7 +23,7 @@ components:
       docker:
         file: tests/Dockerfile
     tests:
-      command: mvn -B test
+      command: mvn -B test -Dhttp.proxyHost=proxy.eng.it -Dhttp.proxyPort=3128 -Dhttps.proxyHost=proxy.eng.it -Dhttps.proxyPort=3128 -Dhttp.nonProxyHosts=greetings
       reports:
         format: junit
         location: target/surefire-reports
