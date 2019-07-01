@@ -191,7 +191,8 @@ class Component(NamedElement):
                  required_services=None,
                  variables=None,
                  implementation=None,
-                 test_settings=None):
+                 test_settings=None,
+                 realization=None):
         super(Component, self).__init__(name)
         self._required_features = [each for each in required_features] \
                                   if required_features else []
@@ -205,6 +206,8 @@ class Component(NamedElement):
                           if variables else {}
         self._implementation = implementation
         self._test_settings = test_settings
+        self._realization = [each for each in realization] \
+                            if realization else []
 
 
     @property
@@ -245,6 +248,11 @@ class Component(NamedElement):
     @property
     def test_settings(self):
         return self._test_settings
+
+
+    @property
+    def realization(self):
+        return self._realization
 
 
 
@@ -455,6 +463,64 @@ class DockerImage(Implementation):
     def __repr__(self):
         return "DockerImage('%s')" % self._docker_image
 
+
+
+class ComponentResourceSelection(object):
+    """
+    Resource selection associated with a given component (as opposed to
+    realisation actions associated with variables.
+
+    Value object / data type
+    """
+
+    def __init__(self, selected_resource, alternatives, alias=None):
+        if selected_resource in alternatives:
+            message = self.INCONSISTENT_ALTERNATIVES.format(selected_resource,
+                                                            alternatives)
+            raise ValueError(message)
+        self._selected = selected_resource
+        self._alternatives = set(alternatives)
+        self._alias = alias
+
+    INCONSISTENT_ALTERNATIVES = ("The selected resource '{}' appears among "
+                                 "alternatives '{}'")
+
+
+    @property
+    def selected_resource(self):
+        return self._selected
+
+
+    @property
+    def alternatives(self):
+        return self._alternatives
+
+
+    @property
+    def alias(self):
+        return self._alias if self._alias else self._selected
+
+
+    def __eq__(self, other):
+        if not isinstance(other, ComponentResourceSelection):
+            return False
+
+        return self._selected == other._selected \
+            and self._alternatives == other._alternatives \
+            and self._alias == other._alias
+
+
+    def __hash__(self):
+        content = tuple([self._selected, self._alias]) \
+                  + tuple(self._alternatives)
+        return hash(content)
+
+
+    def __repr__(self):
+        return "ComponentResourceSelection('{}', {}, '{}')".format(
+            self._selected,
+            "[" + ",".join(self._alternatives) + "]",
+            self._alias)
 
 
 class TestSettings(object):
