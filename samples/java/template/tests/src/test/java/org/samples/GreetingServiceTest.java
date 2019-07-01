@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.Proxy;
+import java.net.InetSocketAddress;
 
 
 public class GreetingServiceTest {
@@ -18,12 +20,15 @@ public class GreetingServiceTest {
     @Test
     public void testStatusCode() throws Exception {
 
-	URL resource = new URL(String.format(END_POINT, "franck"));
-	HttpURLConnection connection = (HttpURLConnection) resource.openConnection();
+    	//Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxy.eng.it", 3128));
 
-	int responseCode = connection.getResponseCode();
+		URL resource = new URL(String.format(END_POINT, "franck"));
+		//HttpURLConnection connection = (HttpURLConnection) resource.openConnection(proxy);
+		HttpURLConnection connection = (HttpURLConnection) resource.openConnection(Proxy.NO_PROXY);
 
-	assertEquals(200, responseCode);
+		int responseCode = connection.getResponseCode();
+
+		assertEquals(200, responseCode);
 
     }
 
