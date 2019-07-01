@@ -121,6 +121,11 @@ class GeneratedConfiguration(object):
         return exists(join_paths(self._path, path_to_file))
 
 
+    def content_of(self, resource):
+        path = join_paths(self._path, resource)
+        with open(path, "r") as content:
+            return content.read()
+
 
 
 class CampTest(TestCase):
@@ -156,6 +161,13 @@ class CampTest(TestCase):
             self.assertTrue(configuration.includes_file(each),
                             "Missing file '%s'" % each)
 
+    def _assert_missing(self, configuration, *files):
+        for each in files:
+            self.assertFalse(configuration.includes_file(each),
+                             "Unexpected file '%s'" % each)
+
+    def assert_file_contains(self, configuration, resource, fragment):
+        self.assertIn(fragment, configuration.content_of(resource))
 
     def create_configurations(self, *configurations):
         for index, configuration in enumerate(configurations, 1):

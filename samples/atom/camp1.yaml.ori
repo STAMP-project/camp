@@ -1,0 +1,46 @@
+#
+# CAMP
+#
+# Copyright (C) 2017 -- 2019 SINTEF Digital
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+
+
+goals:
+  running:
+    - AtomTests
+
+
+components:
+
+  atom:
+    provides_services: [ AtomTests ]
+    variables:
+      fsplus:
+        values: [ v3.0.1, v3.0.2, v3.1.0, v3.1.1 ]
+        realization:
+         - targets: [ atom/src/package.json ]
+           pattern: '"fs-plus": "^3.0.1"'
+           replacements:
+             - '"fs-plus": "3.0.1"'
+             - '"fs-plus": "3.0.2"'
+             - '"fs-plus": "3.1.0"'
+             - '"fs-plus": "3.1.1"'
+
+
+
+
+
+    implementation:
+      docker:
+        file: atom/Dockerfile
+
+    # tests:
+    #   command: pytest --junitxml=camp/report.xml
+    #   reports:
+    #     format: junit
+    #     location: camp/
+    #     pattern: .xml

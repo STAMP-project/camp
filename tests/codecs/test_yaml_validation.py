@@ -40,7 +40,7 @@ class IgnoredEntriesAreReported(TestCase):
     def assert_extra_in(self, text, expected):
         try :
             self._codec.load_model_from(StringIO(text))
-            fail("Should have raised an exception!")
+            self.fail("Should have raised an exception!")
         except InvalidYAMLModel as error:
             self.assertEqual(1, len(error.warnings))
             self.assertEqual(expected,
@@ -192,6 +192,21 @@ class IgnoredEntriesAreReported(TestCase):
                              "      - Wonderful\n",
                              expected="components/server/tests/reports/extra")
 
+
+    def test_when_an_extra_entry_is_component_realization_selected_resource(self):
+        self.assert_extra_in("components:\n"
+                             "   server:\n"
+                             "      provides_services: [ Wonderful ]\n"
+                             "      realization:\n"
+                             "       - select: apache_docker-compose.yml\n"
+                             "         instead_of:\n"
+                             "          - nginx_docker-compose.yml\n"
+                             "         extra: stuff\n"
+                             "         as: docker-compose.yml\n"
+                             "goals:\n"
+                             "   running:\n"
+                             "      - Wonderful\n",
+                             expected="components/server/realization/#1/extra")
 
 
 
@@ -391,6 +406,79 @@ class TypeMismatchAreReported(TestCase):
             path="components/server/variables/memory/realization/#1/as",
             warning_count=1)
 
+    def test_with_a_number_as_selected_resource_final_name(self):
+        self.assert_warning(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      realization:\n"
+            "       - select: apache_docker-compose.yml\n"
+            "         instead_of:\n"
+            "          - nginx_docker-compose.yml\n"
+            "         as: 1234\n"
+            "goals:\n"
+            "   running: [ Wonderful ]\n",
+            expected="str",
+            found="int",
+            path="components/server/realization/#1/as",
+            warning_count=1)
+
+
+    def test_with_a_number_as_component_selected_resource(self):
+        self.assert_warning(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      realization:\n"
+            "       - select: 1234\n"
+            "         instead_of:\n"
+            "          - nginx_docker-compose.yml\n"
+            "         as: docker-compose.yml\n"
+            "goals:\n"
+            "   running: [ Wonderful ]\n",
+            expected="str",
+            found="int",
+            path="components/server/realization/#1/select",
+            warning_count=2)
+
+
+    def test_with_a_number_as_component_resource_alternatives(self):
+        self.assert_warning(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      realization:\n"
+            "       - select: apache_docker-compose-yml\n"
+            "         instead_of: 1234\n"
+            "         as: docker-compose.yml\n"
+            "goals:\n"
+            "   running: [ Wonderful ]\n",
+            expected="list",
+            found="int",
+            path="components/server/realization/#1/instead_of",
+            warning_count=2)
+
+
+    def test_with_a_number_as_component_specific_resource_alternative(self):
+        self.assert_warning(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      realization:\n"
+            "       - select: apache_docker-compose-yml\n"
+            "         instead_of: \n"
+            "          - nginx_docker-compose.yml\n"
+            "          - 2\n"
+            "         as: docker-compose.yml\n"
+            "goals:\n"
+            "   running: [ Wonderful ]\n",
+            expected="str",
+            found="int",
+            path="components/server/realization/#1/instead_of/#2",
+            warning_count=1)
+
+
+
 
     def assert_warning(self, text,  expected, found, path, warning_count=1):
         try:
@@ -410,6 +498,7 @@ class TypeMismatchAreReported(TestCase):
 
 
 class TypeMismatchesAreNotReportedWhenStringIsExpected(TestCase):
+
 
 
     def setUp(self):
@@ -655,6 +744,40 @@ class MissingMandatoryEntriesAreReported(TestCase):
             "      - Wonderful\n",
             path="components/server/tests/reports",
             candidates=["pattern"])
+
+
+    def test_when_omitting_component_realisation_discarded_resources(self):
+        self.assert_missing(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      realization:\n"
+            "       - select: apache_docker-compose-yml\n"
+            "         # Missing: instead_of: \n"
+            "         # - nginx_docker-compose.yml\n"
+            "         as: docker-compose.yml\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            path="components/server/realization/#1",
+            candidates=["instead_of"])
+
+    def test_when_omitting_component_realisation_selected_resource(self):
+        self.assert_missing(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      realization:\n"
+            "       - # Missing select: apache_docker-compose-yml\n"
+            "         instead_of: \n"
+            "          - nginx_docker-compose.yml\n"
+            "         as: docker-compose.yml\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            path="components/server/realization/#1",
+            candidates=["select"])
+
 
 
     def assert_missing(self, text, path, candidates):

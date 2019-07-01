@@ -10,7 +10,8 @@ generate`. We explain here:
  1. How to [use the `camp realize` command](#usage);
  2. How to [organize the template orchestration](#template);
  3. How to [specify the components' implementation ](#implementation); 
- 4. How to [specify the variables' realization](#variables).
+ 4. How to [specify component-level realization](#component);
+ 5. How to [specify variable-level realization](#variables).
 
 
 ## Usage
@@ -130,6 +131,51 @@ components:
             image: postgres:10.6-alpine
 ```
 CAMP will fetch the image `postgres:10.6-alpine` from Docker Hub.
+
+
+## Component Realization
+<a name="components" />
+
+We may attach realization actions, directly onto components. CAMP
+triggers these actions when it realizes every instances.
+
+For instance, consider a case where two components offer the same
+service, say "WebProxy" for instance. Our orchestration could use
+either Apache and NGinx as proxies. We can ask CAMP to select a
+specific orchestration descriptor (i.e., a docker-compose file)
+depending on which web proxy implementation CAMP chooses.
+
+To do so, we define a realization action in each possible component,
+at the component level (as opposed to variable-level). This action
+specifies which orchestration descriptor CAMP must include and which
+ones it must delete.
+
+```yaml
+components:
+
+    # This is the first candidate web proxy
+    nginx:
+       provide_services: [ WebProxy ]
+       realization:
+        - select: nginx_docker-compose.yml
+          instead_of:
+           - apache_docker-compose.yml
+          as: docker-compose.yml
+
+    # Here comes the second one.
+    apache:
+       provide_services: [ WebProxy ]
+       realization:
+        - select: apache_docker-compose.yml
+          instead_of:
+            - nginx_docker-compose.yml
+          as: docker-compose.yml
+```
+
+Depending on the component that CAMP includes in the configuration, it will
+delete the useless alternatives (specified by the `instead_of`clause)
+and rename the adequate one (clause `select`) using the given alias
+(clause `as`).
 
 
 ## Variable Realization

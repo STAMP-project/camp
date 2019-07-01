@@ -119,3 +119,92 @@ class ResourceSelectionShould(CampTest):
         configurations = self.scenario.generated_configurations
         for each_configuration in self.scenario.generated_configurations:
             self._assert_generated(each_configuration, "images/server_0/config")
+
+
+
+class ComponentResourceSelectionShould(CampTest):
+
+
+    def setUp(self):
+        self.scenario = Scenario()
+
+    def test_handle_files(self):
+        self.scenario.create_template("nginx", "Dockerfile")
+        self.scenario.create_template(None, "nginx_docker-compose.yml")
+        self.scenario.create_template(None, "apache_docker-compose.yml")
+
+        self.scenario.create_model(
+            "goals:\n"
+            "  running: [ MyService ]\n"
+            "components:\n"
+            "  nginx:\n"
+            "    provides_services: [ MyService ]\n"
+            "    realization:\n"
+            "      - select: nginx_docker-compose.yml\n"
+            "        instead_of:\n"
+            "          - apache_docker-compose.yml\n"
+            "        as: docker-compose.yml\n"
+            "    implementation:\n"
+            "      docker:\n"
+            "        file: nginx/Dockerfile\n"
+        )
+
+        self.generate_all()
+        self.realize()
+
+        configurations = self.scenario.generated_configurations
+        for each_configuration in self.scenario.generated_configurations:
+            self._assert_generated(each_configuration, "docker-compose.yml")
+
+        for each_configuration in self.scenario.generated_configurations:
+            self._assert_missing(each_configuration,
+                                 "nginx_docker-compose.yml",
+                                 "apache_docker-compose.yml")
+
+
+    def test_select_resource_before_substitutions_take_place(self):
+        self.scenario.create_template("nginx", "Dockerfile")
+        self.scenario.create_template(None,
+                                      "nginx_docker-compose.yml",
+                                      "build: ./nginx\n"
+                                      "nginx_variable=value")
+        self.scenario.create_template(None,
+                                      "apache_docker-compose.yml",
+                                      "apache_variable=value")
+
+        self.scenario.create_model(
+            "goals:\n"
+            "  running: [ MyService ]\n"
+            "components:\n"
+            "  nginx:\n"
+            "    provides_services: [ MyService ]\n"
+            "    variables:\n"
+            "      version:\n"
+            "        values: [ v2.0 ]\n"
+            "        realization:\n"
+            "          - targets: [docker-compose.yml]\n"
+            "            pattern: nginx_variable=value\n"
+            "            replacements:\n"
+            "             - nginx_variable=something_else\n"
+            "    realization:\n"
+            "      - select: nginx_docker-compose.yml\n"
+            "        instead_of:\n"
+            "          - apache_docker-compose.yml\n"
+            "        as: docker-compose.yml\n"
+            "    implementation:\n"
+            "      docker:\n"
+            "        file: nginx/Dockerfile\n"
+        )
+
+        self.generate_all()
+        self.realize()
+
+        configurations = self.scenario.generated_configurations
+        self.assertEquals(1, len(configurations))
+        for each_configuration in self.scenario.generated_configurations:
+            self._assert_generated(each_configuration, "docker-compose.yml")
+
+            self.assertIn("nginx_variable=something_else",
+                          each_configuration.content_of("docker-compose.yml"))
+            self.assertIn("build: ./images/nginx_0",
+                          each_configuration.content_of("docker-compose.yml"))

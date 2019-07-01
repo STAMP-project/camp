@@ -16,7 +16,7 @@ from __future__ import absolute_import
 from camp.codecs.commons import Codec
 from camp.entities.model import Model, Component, Service, Goals, Variable, \
     Feature, DockerFile, DockerImage, Substitution, Instance, Configuration, \
-    TestSettings, ResourceSelection
+    TestSettings, ResourceSelection, ComponentResourceSelection
 
 from yaml import safe_load as load_yaml, safe_dump as dump_yaml
 
@@ -169,6 +169,7 @@ class YAML(Codec):
         variables = []
         implementation = None
         test_settings = None
+        realization = None
 
         for key, item in data.items():
 
@@ -218,6 +219,12 @@ class YAML(Codec):
                     continue
                 test_settings = self._parse_test_settings(name, item)
 
+            elif key == Keys.REALIZATION:
+                if not isinstance(item, list):
+                    self._wrong_type(list, type(item), Keys.COMPONENTS, name, key)
+                    continue
+                realization = self._parse_component_realization(name, item)
+
             else:
                 self._ignore(Keys.COMPONENTS, name, key)
 
@@ -229,7 +236,8 @@ class YAML(Codec):
                          required_features=required_features,
                          variables=variables,
                          implementation=implementation,
-                         test_settings=test_settings)
+                         test_settings=test_settings,
+                         realization=realization)
 
     @staticmethod
     def _escape(name):
@@ -460,17 +468,17 @@ class YAML(Codec):
         for key, item in data.items():
             if key == Keys.REPORT_LOCATION:
                 if not isinstance(item, str):
-                    self._wrong_types(str, type(item), path + [key])
+                    self._wrong_type(str, type(item), path + [key])
                     continue
                 location = item
             elif key == Keys.REPORT_PATTERN:
                 if not isinstance(item, str):
-                    self._wrong_types(str, type(item), path + [key])
+                    self._wrong_type(str, type(item), path + [key])
                     continue
                 pattern = item
             elif key == Keys.REPORT_FORMAT:
                 if not isinstance(item, str):
-                    self._wrong_types(str, type(item), path + [key])
+                    self._wrong_type(str, type(item), path + [key])
                     continue
                 file_format = item
             else:
@@ -484,6 +492,61 @@ class YAML(Codec):
             self._missing([Keys.REPORT_FORMAT], *path)
 
         return (file_format, location, pattern)
+
+
+    def _parse_component_realization(self, component, data):
+        path = [Keys.COMPONENTS, component, Keys.REALIZATION]
+        actions = []
+        for index, each_action in enumerate(data, 1):
+            path_to_action = path + ["#%d" % index]
+            if not isinstance(each_action, dict):
+                self._wrong_type(dict, type(item), path_to_action)
+                continue
+            action = self._parse_component_resource_selection(path_to_action,
+                                                              each_action)
+            actions.append(action)
+        return actions
+
+
+    def _parse_component_resource_selection(self, path, data):
+        resource = ""
+        alternatives = []
+        alias = None
+        for key, item in data.items():
+            if key == Keys.SELECT:
+                if not isinstance(item, str):
+                    self._wrong_type(str, type(item), *(path + [key]))
+                    continue
+                resource = item
+            elif key == Keys.INSTEAD_OF:
+                alternatives = []
+                if not isinstance(item, list):
+                    self._wrong_type(list, type(item), *(path + [key]))
+                    continue
+                for index, each_alternative in enumerate(item, 1):
+                    if not isinstance(each_alternative, str):
+                        self._wrong_type(str,
+                                          type(each_alternative),
+                                          *(path + [key, "#%d" % index]))
+                        continue
+                    alternatives.append(each_alternative)
+            elif key == Keys.AS:
+                if not isinstance(item, str):
+                    self._wrong_type(str, type(item), *(path + [key]))
+                    continue
+                alias = item
+
+            else:
+                self._ignore(*(path +[key]))
+
+        if not resource:
+            self._missing([Keys.SELECT], *path)
+
+        if not alternatives:
+            self._missing([Keys.INSTEAD_OF], *path)
+
+        return ComponentResourceSelection(resource, alternatives, alias)
+
 
 
     def _parse_goals(self, data):
@@ -538,6 +601,7 @@ class Keys:
     IMAGE = "image"
     IMPLEMENTATION = "implementation"
     INSTANCES = "instances"
+    INSTEAD_OF = "instead_of"
     NAME = "name"
     PATTERN = "pattern"
     PROVIDES_FEATURES = "provides_features"
