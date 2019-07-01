@@ -294,8 +294,15 @@ class Engine(object):
         return self._shell.execute(docker_ps, path)
 
 
+    # Fix for Issue 63.
+    #
+    # The docker-compose naming convention changed from 1.22 to 1.23
+    # and the simple index append for each container run, was replaced
+    # by a random number".
+    # See https://github.com/docker/compose/issues/6316
+    #
     GET_CONTAINER_ID = ("docker ps --all --quiet "
-                        "--filter name={configuration}_{component}_run_1")
+                        "--filter name={configuration}_{component}_run_")
 
 
     FETCH_TEST_REPORTS=("docker cp "
