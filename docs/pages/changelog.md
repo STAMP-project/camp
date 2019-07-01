@@ -5,6 +5,15 @@ changes that were made.
 
 *   CAMP v0.5
 
+    *   CAMP v0.5.1 (July 1, 2019)
+
+        *   Fix [Issue
+            63](https://github.com/STAMP-project/camp/issues/63). Update
+            the pattern that CAMP uses to retrieve the container on
+            which tests were run. Docker-compose changed naming
+            convention after 1.22 and the new convention was not
+            compatible with the pattern that CAMP uses anymmore.
+
     *   CAMP v0.5.0 (June 20, 2019)
 
         *   New resource selection operator at the component level (as
