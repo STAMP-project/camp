@@ -3,6 +3,14 @@
 Below is the list of CAMP versions, along with a quick summary of the
 changes that were made.
 
+
+*   Development
+
+    *   Add a '-v' command that display the version of the key
+        dependencies, including, OS, Python, Z3 solver, Docker, and
+        Docker-compose.
+
+
 *   CAMP v0.5
 
     *   CAMP v0.5.1 (July 1, 2019)
