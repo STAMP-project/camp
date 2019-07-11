@@ -324,7 +324,6 @@ class Engine(object):
 
         for each_report in test_reports:
             try:
-                print("current report: " + each_report)
                 self._listener.on_reading_report(each_report)
                 with open(each_report, "r") as report:
                     file_content = report.read()
