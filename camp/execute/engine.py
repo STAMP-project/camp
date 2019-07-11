@@ -17,8 +17,8 @@ from camp.entities.report import TestReport, TestSuite
 from camp.execute.reporting.junit import JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
-from camp.execute.reporting.jmeter import JMeterCSVReader, \
-    JMeterCSVInvalidReport
+from camp.execute.reporting.jmeter import JMeterJSONReader, \
+    JMeterJSONInvalidReport
 
 
 from os import listdir
@@ -317,12 +317,14 @@ class Engine(object):
             self._component.test_settings.report_format)
 
         directory = join_paths(path, "test-reports")
+
         test_reports = self._shell.find_all_files(
             self._component.test_settings.report_pattern,
             directory)
 
         for each_report in test_reports:
             try:
+                print("current report: " + each_report)
                 self._listener.on_reading_report(each_report)
                 with open(each_report, "r") as report:
                     file_content = report.read()
@@ -355,7 +357,7 @@ def select_reader_for(report_format):
 
 SUPPORTED_REPORT_FORMAT = {
     "JUNIT": JUnitXMLReader,
-    "JMETER": JMeterCSVReader,
+    "JMETER": JMeterJSONReader,
 }
 
 

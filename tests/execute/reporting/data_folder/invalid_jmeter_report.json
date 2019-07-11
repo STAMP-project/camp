@@ -1,0 +1,15 @@
+{
+  "Home page-0" : {
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "meanResTime" : 312.16666666666674,
+    "minResTime" : 4.0,
+    "maxResTime" : 1362.0,
+    "pct1ResTime" : 1362.0,
+    "pct2ResTime" : 1362.0,
+    "pct3ResTime" : 1362.0,
+    "throughput" : 0.054574230048571065,
+    "receivedKBytesPerSec" : 0.010232668134107075,
+    "sentKBytesPerSec" : 0.020483101317058085
+  }
+}

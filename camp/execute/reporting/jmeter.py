@@ -8,61 +8,60 @@
 # of the MIT license.  See the LICENSE file for details.
 #
 
-import csv
+import json
 
 from camp.entities.report import SuccessfulTest, FailedTest, \
 	ErroneousTest, TestSuite
 from camp.execute.reporting.commons import ReportReader
 
 
-class JMeterCSVReader(ReportReader):
+class JMeterJSONReader(ReportReader):
 	"""
-	Extracts camp.execute.TestSuite objects from JMeter CSV Agregate report
+	Extracts camp.execute.TestSuite objects from JMeter JSON Agregate report
 	"""
 
-	URL_LABEL = "Label"
-	NUM_OF_SAMPLES = "# Samples"
-	AVG_RESP_TIME = "Average"
-	MEDIAN_RESP_TIME = "Median"
-	PERCENTILE_RESP_TIME_90 = "90% Line"
-	PERCENTILE_RESP_TIME_95 = "95% Line"
-	PERCENTILE_RESP_TIME_99 = "99% Line"
-	MIN_RESP_TIME = "Min"
-	MAX_RESP_TIME = "Max"
-	ERR_PERCENTAGE = "Error %"
-	THROUGHPUT = "Throughput"
-	RECEIVED_BYTES = "Received KB/sec"
-	SENT_BYTES = "Sent KB/sec"
+	TRANSACTION = "transaction"
+	NUM_OF_SAMPLES = "sampleCount"
+	ERR_COUNT = "errorCount"
+	ERR_PERCENTAGE = "errorPct"
+	AVG_RESP_TIME = "meanResTime"
+	MIN_RESP_TIME = "minResTime"
+	MAX_RESP_TIME = "maxResTime"
+	PERCENTILE_RESP_TIME_1 = "pct1ResTime"
+	PERCENTILE_RESP_TIME_2 = "pct2ResTime"
+	PERCENTILE_RESP_TIME_3 = "pct3ResTime"
+	THROUGHPUT = "throughput"
+	RECEIVED_BYTES_PER_SEC = "receivedKBytesPerSec"
+	SENT_BYTES_PER_SEC = "sentKBytesPerSec"
 
 
-	def _extract_from_text(self, csvfile):
+	def _extract_from_text(self, json_report):
 
     	# TODO: currently it doesn't take into account all JMeter report fields
 
 		tests = []
 
-		reader = csv.DictReader(csvfile)
+		json_report = json.load(json_report)
 
-		if self.URL_LABEL not in reader.fieldnames:
-			raise JMeterCSVInvalidReport("No URL Label present in JMeter Report")
+		if not json_report:
+			raise JMeterJSONInvalidReport("Empty JMeter Report: " + json.dumps(json_report))
 
-		if self.ERR_PERCENTAGE not in reader.fieldnames:
-			raise JMeterCSVInvalidReport("No error percentage value present in JMeter Report")
-
-		for row in reader:
-			test = self._extract_test_from(row)
+		for sample,sample_data in json_report.items():
+			test = self._extract_test_from(sample_data)
 			tests.append(test)
         
-		if reader.line_num == 1:
-			raise JMeterCSVInvalidReport("Empty JMeter Report")
-
 		return TestSuite("all samples", *tests)
 
 
 
-	def _extract_test_from(self, element):
-		identifier = element.get(self.URL_LABEL)
-		error_percentage = element.get(self.ERR_PERCENTAGE)
+	def _extract_test_from(self, jmeter_sample_data):
+		if self.TRANSACTION not in jmeter_sample_data:
+			raise JMeterJSONInvalidReport("No URL Label present in JMeter Report: "  + json.dumps(jmeter_sample_data))
+		if self.ERR_PERCENTAGE not in jmeter_sample_data:
+			raise JMeterJSONInvalidReport("No error percentage value present in JMeter Report: "  + json.dumps(jmeter_sample_data))
+
+		identifier = jmeter_sample_data[self.TRANSACTION]
+		error_percentage = jmeter_sample_data[self.ERR_PERCENTAGE]
 		if float(error_percentage) == 100:
 			message = "No successful call to sample"
 			return ErroneousTest(identifier, message)
@@ -73,7 +72,7 @@ class JMeterCSVReader(ReportReader):
 
 		return SuccessfulTest(identifier)
 
-class JMeterCSVInvalidReport(Exception):
+class JMeterJSONInvalidReport(Exception):
 
 
 	def __init__(self, element):
