@@ -12,10 +12,6 @@ FROM openjdk:8-jdk-stretch
 
 LABEL maintainer "franck.chauvel@sintef.no"
 
-#ENV http_proxy "http://proxy.eng.it:3128"
-#ENV https_proxy "http://proxy.eng.it:3128"
-
-
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends  \
 	maven=3.3.9-4 \
