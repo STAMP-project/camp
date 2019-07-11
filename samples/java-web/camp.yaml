@@ -26,8 +26,8 @@ components:
       command: -n -t perftest_script/testman.jmx -l perftest_script/testman.csv -e -o perftest_script/testman-perftest-report
       reports:
         format: jmeter
-        location: perftest_script
-        pattern: .csv
+        location: perftest_script/testman-perftest-report
+        pattern: .json
 
   testman:
     provides_services: [ Testman ]
