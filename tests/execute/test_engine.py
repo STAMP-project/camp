@@ -13,7 +13,7 @@ from camp.entities.model import Component, TestSettings
 from camp.execute.engine import ShellCommandFailed, Shell, SimulatedShell, \
     Engine, ExecutorListener, ReportFormatNotSupported, select_reader_for
 from camp.execute.reporting.junit import JUnitXMLReader
-from camp.execute.reporting.jmeter import JMeterCSVReader
+from camp.execute.reporting.jmeter import JMeterJSONReader
 
 from io import BytesIO
 
