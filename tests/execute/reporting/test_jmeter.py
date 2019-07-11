@@ -12,105 +12,434 @@
 
 from camp.entities.report import FailedTest, SuccessfulTest, \
     TestSuite, ErroneousTest
-from camp.execute.reporting.jmeter import JMeterCSVReader, \
-    JMeterCSVInvalidReport
+from camp.execute.reporting.jmeter import JMeterJSONReader, \
+    JMeterJSONInvalidReport
 
 from unittest import TestCase
 
 import io
 
-class TheJMeterCSVReaderShould(TestCase):
-
-	
+class TheJMeterJSONReaderShould(TestCase):
 
     def setUp(self):
-        self._reader = JMeterCSVReader()
+        self._reader = JMeterJSONReader()
 
 
-    def test_raise_exception_when_given_empty_CSV_report(self):
-        csv_report = """Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Sent KB/sec"""
+    def test_raise_exception_when_given_empty_JSON_report(self):
+        json_report = """{}"""
 
-        with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(io.StringIO(csv_report))
+        with self.assertRaises(JMeterJSONInvalidReport):
+            self._reader._extract_from_text(io.StringIO(json_report))
 
-	    
-
-    def test_raise_exception_when_given_empty_CSV_report_from_file(self):
+    def test_raise_exception_when_given_empty_JSON_report_from_file(self):
     	
-        csv_report = open('tests/execute/reporting/data_folder/empty_jmeter_report.csv', 'r')
+        with open('tests/execute/reporting/data_folder/empty_jmeter_report.json') as json_report:
+            with self.assertRaises(JMeterJSONInvalidReport):
+                self._reader._extract_from_text(json_report)
+
+    def test_raise_exception_when_given_empty_JSON_report_no_label_column(self):
+        json_report = """{
+   "Home page-0" : {
+     "sampleCount" : 6,
+     "errorCount" : 0,
+     "errorPct" : 0.0,
+     "meanResTime" : 312.16666666666674,
+     "minResTime" : 4.0,
+     "maxResTime" : 1362.0,
+     "pct1ResTime" : 1362.0,
+     "pct2ResTime" : 1362.0,
+     "pct3ResTime" : 1362.0,
+     "throughput" : 0.054574230048571065,
+     "receivedKBytesPerSec" : 0.010232668134107075,
+     "sentKBytesPerSec" : 0.020483101317058085
+   },
+   "Test case creation page" : {
+     "sampleCount" : 12,
+     "errorCount" : 0,
+     "meanResTime" : 58.91666666666668,
+     "minResTime" : 9.0,
+     "maxResTime" : 479.0,
+     "pct1ResTime" : 346.4000000000005,
+     "pct2ResTime" : 479.0,
+     "pct3ResTime" : 479.0,
+     "throughput" : 0.09469995896335112,
+     "receivedKBytesPerSec" : 0.5705271779017645,
+     "sentKBytesPerSec" : 0.04337332104864421}}"""
+
+        with self.assertRaises(JMeterJSONInvalidReport):
+            self._reader._extract_from_text(io.StringIO(json_report))
+
+    def test_raise_exception_when_given_invalid_JSON_report_no_error_percentage_column(self):
+        json_report = """{
+  "Home page-0" : {
+    "transaction" : "Home page-0",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 312.16666666666674,
+    "minResTime" : 4.0,
+    "maxResTime" : 1362.0,
+    "pct1ResTime" : 1362.0,
+    "pct2ResTime" : 1362.0,
+    "pct3ResTime" : 1362.0,
+    "throughput" : 0.054574230048571065,
+    "receivedKBytesPerSec" : 0.010232668134107075,
+    "sentKBytesPerSec" : 0.020483101317058085
+  },
+  "Test case creation page" : {
+    "transaction" : "Test case creation page",
+    "sampleCount" : 12,
+    "errorCount" : 0,
+    "meanResTime" : 58.91666666666668,
+    "minResTime" : 9.0,
+    "maxResTime" : 479.0,
+    "pct1ResTime" : 346.4000000000005,
+    "pct2ResTime" : 479.0,
+    "pct3ResTime" : 479.0,
+    "throughput" : 0.09469995896335112,
+    "receivedKBytesPerSec" : 0.5705271779017645,
+    "sentKBytesPerSec" : 0.04337332104864421}}"""
 
 
-        with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(csv_report)
+        with self.assertRaises(JMeterJSONInvalidReport):
+            self._reader._extract_from_text(io.StringIO(json_report))
 
-    def test_raise_exception_when_given_empty_CSV_report_no_label_column(self):
-        csv_report = """# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Sent KB/sec"""
+    def test_raise_exception_when_given_invalid_JSON_report(self):
+        json_report = """{
+  "Home page-0" : {
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "meanResTime" : 312.16666666666674,
+    "minResTime" : 4.0,
+    "maxResTime" : 1362.0,
+    "pct1ResTime" : 1362.0,
+    "pct2ResTime" : 1362.0,
+    "pct3ResTime" : 1362.0,
+    "throughput" : 0.054574230048571065,
+    "receivedKBytesPerSec" : 0.010232668134107075,
+    "sentKBytesPerSec" : 0.020483101317058085
+  },
+  "Test case creation page" : {
+    "sampleCount" : 12,
+    "errorCount" : 0,
+    "meanResTime" : 58.91666666666668,
+    "minResTime" : 9.0,
+    "maxResTime" : 479.0,
+    "pct1ResTime" : 346.4000000000005,
+    "pct2ResTime" : 479.0,
+    "pct3ResTime" : 479.0,
+    "throughput" : 0.09469995896335112,
+    "receivedKBytesPerSec" : 0.5705271779017645,
+    "sentKBytesPerSec" : 0.04337332104864421}}"""
 
-        with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(io.StringIO(csv_report))
+        with self.assertRaises(JMeterJSONInvalidReport):
+            self._reader._extract_from_text(io.StringIO(json_report))
 
-    def test_raise_exception_when_given_invalid_CSV_report_no_error_percentage_column(self):
-        csv_report = """Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Throughput,Received KB/sec,Sent KB/sec"""
+    def test_raise_exception_when_given_invalid_JSON_report_from_file(self):
+        with open('tests/execute/reporting/data_folder/invalid_jmeter_report.json','r') as json_report:
+            with self.assertRaises(JMeterJSONInvalidReport):
+                self._reader._extract_from_text(json_report)
 
-        with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(io.StringIO(csv_report))
+    def test_extract_a_testsuite_from_JSON(self):
 
-    def test_raise_exception_when_given_invalid_CSV_report(self):
-        csv_report = """# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Throughput,Received KB/sec,Sent KB/sec"""
+        json_report = """{
+  "Home page-0" : {
+    "transaction" : "Home page-0",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 312.16666666666674,
+    "minResTime" : 4.0,
+    "maxResTime" : 1362.0,
+    "pct1ResTime" : 1362.0,
+    "pct2ResTime" : 1362.0,
+    "pct3ResTime" : 1362.0,
+    "throughput" : 0.054574230048571065,
+    "receivedKBytesPerSec" : 0.010232668134107075,
+    "sentKBytesPerSec" : 0.020483101317058085
+  },
+  "Test case creation page" : {
+    "transaction" : "Test case creation page",
+    "sampleCount" : 12,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 58.91666666666668,
+    "minResTime" : 9.0,
+    "maxResTime" : 479.0,
+    "pct1ResTime" : 346.4000000000005,
+    "pct2ResTime" : 479.0,
+    "pct3ResTime" : 479.0,
+    "throughput" : 0.09469995896335112,
+    "receivedKBytesPerSec" : 0.5705271779017645,
+    "sentKBytesPerSec" : 0.04337332104864421
+  },
+  "Save new test case" : {
+    "transaction" : "Save new test case",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 59.66666666666667,
+    "minResTime" : 42.0,
+    "maxResTime" : 128.0,
+    "pct1ResTime" : 128.0,
+    "pct2ResTime" : 128.0,
+    "pct3ResTime" : 128.0,
+    "throughput" : 0.054262794714803796,
+    "receivedKBytesPerSec" : 0.2956898383873098,
+    "sentKBytesPerSec" : 0.06072769799137222
+  }}
+"""
 
-        with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(io.StringIO(csv_report))
-
-    def test_raise_exception_when_given_invalid_CSV_report_from_file(self):
-        csv_report = open('tests/execute/reporting/data_folder/invalid_jmeter_report.csv','r')
-
-
-        with self.assertRaises(JMeterCSVInvalidReport):
-            self._reader._extract_from_text(csv_report)
-
-    def test_extract_a_testsuite_from_CSV(self):
-
-        csv_report = """Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Sent KB/sec
-Open home page,13,4.9,4.5,4.6,4.7,5.0,2.1,5.1,0.0,37.16,2.58,6735.0
-Login,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8
-Access personal area,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,20.0,40.03,3.01,535.8
-Logout,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8"""
-
-        test_suite = self._reader._extract_from_text(io.StringIO(csv_report))
+        test_suite = self._reader._extract_from_text(io.StringIO(json_report))
 
         self.assertIsInstance(test_suite, TestSuite)
-        self.assertEquals(4, test_suite.run_test_count)
+        self.assertEqual(3, test_suite.run_test_count)
 
-    def test_extract_a_successful_testsuite_from_CSV(self):
+    def test_extract_a_successful_testsuite_from_JSON(self):
 
-        csv_report = """Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Sent KB/sec
-Open home page,13,4.9,4.5,4.6,4.7,5.0,2.1,5.1,0.0,37.16,2.58,6735.0
-Login,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8
-Access personal area,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8
-Logout,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8"""
+        json_report = """{
+  "Home page-0" : {
+    "transaction" : "Home page-0",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 312.16666666666674,
+    "minResTime" : 4.0,
+    "maxResTime" : 1362.0,
+    "pct1ResTime" : 1362.0,
+    "pct2ResTime" : 1362.0,
+    "pct3ResTime" : 1362.0,
+    "throughput" : 0.054574230048571065,
+    "receivedKBytesPerSec" : 0.010232668134107075,
+    "sentKBytesPerSec" : 0.020483101317058085
+  },
+  "Test case creation page" : {
+    "transaction" : "Test case creation page",
+    "sampleCount" : 12,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 58.91666666666668,
+    "minResTime" : 9.0,
+    "maxResTime" : 479.0,
+    "pct1ResTime" : 346.4000000000005,
+    "pct2ResTime" : 479.0,
+    "pct3ResTime" : 479.0,
+    "throughput" : 0.09469995896335112,
+    "receivedKBytesPerSec" : 0.5705271779017645,
+    "sentKBytesPerSec" : 0.04337332104864421
+  },
+  "Save new test case" : {
+    "transaction" : "Save new test case",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 59.66666666666667,
+    "minResTime" : 42.0,
+    "maxResTime" : 128.0,
+    "pct1ResTime" : 128.0,
+    "pct2ResTime" : 128.0,
+    "pct3ResTime" : 128.0,
+    "throughput" : 0.054262794714803796,
+    "receivedKBytesPerSec" : 0.2956898383873098,
+    "sentKBytesPerSec" : 0.06072769799137222
+  },
+  "Home page-1" : {
+    "transaction" : "Home page-1",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 475.8333333333333,
+    "minResTime" : 8.0,
+    "maxResTime" : 1401.0,
+    "pct1ResTime" : 1401.0,
+    "pct2ResTime" : 1401.0,
+    "pct3ResTime" : 1401.0,
+    "throughput" : 0.05525625086337892,
+    "receivedKBytesPerSec" : 0.18384574872219922,
+    "sentKBytesPerSec" : 0.022753631947322377
+  },
+  "Show recorded execution" : {
+    "transaction" : "Show recorded execution",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 11.333333333333332,
+    "minResTime" : 9.0,
+    "maxResTime" : 15.0,
+    "pct1ResTime" : 15.0,
+    "pct2ResTime" : 15.0,
+    "pct3ResTime" : 15.0,
+    "throughput" : 0.055062036561192275,
+    "receivedKBytesPerSec" : 0.27697709992841935,
+    "sentKBytesPerSec" : 0.02548770051758314
+  },
+  "Home page" : {
+    "transaction" : "Home page",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 789.6666666666667,
+    "minResTime" : 12.0,
+    "maxResTime" : 2766.0,
+    "pct1ResTime" : 2766.0,
+    "pct2ResTime" : 2766.0,
+    "pct3ResTime" : 2766.0,
+    "throughput" : 0.054570259208731244,
+    "receivedKBytesPerSec" : 0.19179527626193724,
+    "sentKBytesPerSec" : 0.04295276261937244
+  },
+  "Login" : {
+    "transaction" : "Login",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 76.0,
+    "minResTime" : 18.0,
+    "maxResTime" : 312.0,
+    "pct1ResTime" : 312.0,
+    "pct2ResTime" : 312.0,
+    "pct3ResTime" : 312.0,
+    "throughput" : 0.05586748233190871,
+    "receivedKBytesPerSec" : 0.19346298080951982,
+    "sentKBytesPerSec" : 0.05897729336014972
+  }}
+ """
 
-        test_suite = self._reader._extract_from_text(io.StringIO(csv_report))
+        test_suite = self._reader._extract_from_text(io.StringIO(json_report))
 
         self.assertIsInstance(test_suite, TestSuite)
-        self.assertEquals(4, test_suite.run_test_count)
-        self.assertEquals(4, test_suite.passed_test_count)
-        self.assertEquals(0, test_suite.failed_test_count)
-        self.assertEquals(0, test_suite.erroneous_test_count)
+        self.assertEqual(7, test_suite.run_test_count)
+        self.assertEqual(7, test_suite.passed_test_count)
+        self.assertEqual(0, test_suite.failed_test_count)
+        self.assertEqual(0, test_suite.erroneous_test_count)
 
-    def test_extract_a_testsuite_with_failed_tests_from_CSV(self):
+    def test_extract_a_testsuite_with_failed_tests_from_JSON(self):
 
-        csv_report = """Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Sent KB/sec
-Open home page,13,4.9,4.5,4.6,4.7,5.0,2.1,5.1,0.0,37.16,2.58,6735.0
-Login,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8
-Access personal area,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,27.4,40.03,3.01,535.8
-View roder history,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,100,40.03,3.01,535.8
-Logout,13,5.1,4.3,4.2,4.9,5.3,3.7,6.1,0.0,40.03,3.01,535.8"""
+        json_report = """{
+  "Home page-0" : {
+    "transaction" : "Home page-0",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 312.16666666666674,
+    "minResTime" : 4.0,
+    "maxResTime" : 1362.0,
+    "pct1ResTime" : 1362.0,
+    "pct2ResTime" : 1362.0,
+    "pct3ResTime" : 1362.0,
+    "throughput" : 0.054574230048571065,
+    "receivedKBytesPerSec" : 0.010232668134107075,
+    "sentKBytesPerSec" : 0.020483101317058085
+  },
+  "Test case creation page" : {
+    "transaction" : "Test case creation page",
+    "sampleCount" : 12,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 58.91666666666668,
+    "minResTime" : 9.0,
+    "maxResTime" : 479.0,
+    "pct1ResTime" : 346.4000000000005,
+    "pct2ResTime" : 479.0,
+    "pct3ResTime" : 479.0,
+    "throughput" : 0.09469995896335112,
+    "receivedKBytesPerSec" : 0.5705271779017645,
+    "sentKBytesPerSec" : 0.04337332104864421
+  },
+  "Save new test case" : {
+    "transaction" : "Save new test case",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 59.66666666666667,
+    "minResTime" : 42.0,
+    "maxResTime" : 128.0,
+    "pct1ResTime" : 128.0,
+    "pct2ResTime" : 128.0,
+    "pct3ResTime" : 128.0,
+    "throughput" : 0.054262794714803796,
+    "receivedKBytesPerSec" : 0.2956898383873098,
+    "sentKBytesPerSec" : 0.06072769799137222
+  },
+  "Home page-1" : {
+    "transaction" : "Home page-1",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 475.8333333333333,
+    "minResTime" : 8.0,
+    "maxResTime" : 1401.0,
+    "pct1ResTime" : 1401.0,
+    "pct2ResTime" : 1401.0,
+    "pct3ResTime" : 1401.0,
+    "throughput" : 0.05525625086337892,
+    "receivedKBytesPerSec" : 0.18384574872219922,
+    "sentKBytesPerSec" : 0.022753631947322377
+  },
+  "Show recorded execution" : {
+    "transaction" : "Show recorded execution",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 100,
+    "meanResTime" : 11.333333333333332,
+    "minResTime" : 9.0,
+    "maxResTime" : 15.0,
+    "pct1ResTime" : 15.0,
+    "pct2ResTime" : 15.0,
+    "pct3ResTime" : 15.0,
+    "throughput" : 0.055062036561192275,
+    "receivedKBytesPerSec" : 0.27697709992841935,
+    "sentKBytesPerSec" : 0.02548770051758314
+  },
+  "Home page" : {
+    "transaction" : "Home page",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 10.0,
+    "meanResTime" : 789.6666666666667,
+    "minResTime" : 12.0,
+    "maxResTime" : 2766.0,
+    "pct1ResTime" : 2766.0,
+    "pct2ResTime" : 2766.0,
+    "pct3ResTime" : 2766.0,
+    "throughput" : 0.054570259208731244,
+    "receivedKBytesPerSec" : 0.19179527626193724,
+    "sentKBytesPerSec" : 0.04295276261937244
+  },
+  "Login" : {
+    "transaction" : "Login",
+    "sampleCount" : 6,
+    "errorCount" : 0,
+    "errorPct" : 2.3,
+    "meanResTime" : 76.0,
+    "minResTime" : 18.0,
+    "maxResTime" : 312.0,
+    "pct1ResTime" : 312.0,
+    "pct2ResTime" : 312.0,
+    "pct3ResTime" : 312.0,
+    "throughput" : 0.05586748233190871,
+    "receivedKBytesPerSec" : 0.19346298080951982,
+    "sentKBytesPerSec" : 0.05897729336014972
+  }}
+ """
 
-        test_suite = self._reader._extract_from_text(io.StringIO(csv_report))
+        test_suite = self._reader._extract_from_text(io.StringIO(json_report))
 
         self.assertIsInstance(test_suite, TestSuite)
-        self.assertEquals(5, test_suite.run_test_count)
-        self.assertEquals(3, test_suite.passed_test_count)
-        self.assertEquals(1, test_suite.failed_test_count)
-        self.assertEquals(1, test_suite.erroneous_test_count)
+        self.assertEqual(7, test_suite.run_test_count)
+        self.assertEqual(4, test_suite.passed_test_count)
+        self.assertEqual(2, test_suite.failed_test_count)
+        self.assertEqual(1, test_suite.erroneous_test_count)
 
+
+    def test_extract_a_testsuite_from_actual_JSON_report_on_file(self):
+        
+        with open('tests/execute/reporting/data_folder/statistics.json', 'r') as json_report:
+
+            test_suite = self._reader._extract_from_text(json_report)
+
+            self.assertIsInstance(test_suite, TestSuite)
+            self.assertEqual(22, test_suite.run_test_count)
+            self.assertEqual(22, test_suite.passed_test_count)
+            self.assertEqual(0, test_suite.failed_test_count)
+            self.assertEqual(0, test_suite.erroneous_test_count)
