@@ -49,7 +49,7 @@ class JMeterJSONReader(ReportReader):
 		for sample,sample_data in json_report.items():
 			test = self._extract_test_from(sample_data)
 			tests.append(test)
-        
+
 		return TestSuite("all samples", *tests)
 
 

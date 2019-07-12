@@ -17,8 +17,7 @@ from camp.entities.report import TestReport, TestSuite
 from camp.execute.reporting.junit import JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
-from camp.execute.reporting.jmeter import JMeterJSONReader, \
-    JMeterJSONInvalidReport
+from camp.execute.reporting.jmeter import JMeterJSONReader
 
 
 from os import listdir

@@ -17,7 +17,8 @@ from camp.execute.reporting.jmeter import JMeterJSONReader, \
 
 from unittest import TestCase
 
-import io
+import json
+
 
 class TheJMeterJSONReaderShould(TestCase):
 
@@ -36,6 +37,54 @@ class TheJMeterJSONReaderShould(TestCase):
         with open('tests/execute/reporting/data_folder/empty_jmeter_report.json') as json_report:
             with self.assertRaises(JMeterJSONInvalidReport):
                 self._reader._extract_from_text(json_report.read())
+
+    def test_extract_a_failed_test_from_JSON(self):
+        jmeter_sample_report = """{
+     "transaction" : "Home page-0",
+     "sampleCount" : 6,
+     "errorCount" : 0,
+     "errorPct" : 34.5,
+     "meanResTime" : 312.16666666666674,
+     "minResTime" : 4.0,
+     "maxResTime" : 1362.0,
+     "pct1ResTime" : 1362.0,
+     "pct2ResTime" : 1362.0,
+     "pct3ResTime" : 1362.0,
+     "throughput" : 0.054574230048571065,
+     "receivedKBytesPerSec" : 0.010232668134107075,
+     "sentKBytesPerSec" : 0.020483101317058085
+   }"""
+
+        test = self._reader._extract_test_from(json.loads(jmeter_sample_report))
+
+        self.assertIsInstance(test, FailedTest)
+        self.assertEqual("Home page-0", test.identifier)
+        self.assertEqual("34.5% of errors calling the sample", test.failure)
+
+
+    def test_extract_an_erroneous_test_from_JSON(self):
+        jmeter_sample_report = """{
+     "transaction" : "Home page-0",
+     "sampleCount" : 6,
+     "errorCount" : 0,
+     "errorPct" : 100,
+     "meanResTime" : 312.16666666666674,
+     "minResTime" : 4.0,
+     "maxResTime" : 1362.0,
+     "pct1ResTime" : 1362.0,
+     "pct2ResTime" : 1362.0,
+     "pct3ResTime" : 1362.0,
+     "throughput" : 0.054574230048571065,
+     "receivedKBytesPerSec" : 0.010232668134107075,
+     "sentKBytesPerSec" : 0.020483101317058085
+   }"""
+
+        test = self._reader._extract_test_from(json.loads(jmeter_sample_report))
+
+        self.assertIsInstance(test, ErroneousTest)
+        self.assertEqual("Home page-0", test.identifier)
+        self.assertEqual("No successful call to sample", test.error)
+
 
     def test_raise_exception_when_given_empty_JSON_report_no_label_column(self):
         json_report = """{
