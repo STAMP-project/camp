@@ -311,7 +311,7 @@ class TheReportReaderSelectionShould(TestCase):
 
     def test_return_the_jmeter_report_reader(self):
         reader = select_reader_for("jmeter")
-        self.assertIsInstance(reader, JMeterCSVReader)
+        self.assertIsInstance(reader, JMeterJSONReader)
 
 
     def test_raise_an_exception_when_format_is_not_supported(self):
