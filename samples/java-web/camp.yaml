@@ -27,7 +27,7 @@ components:
       reports:
         format: jmeter
         location: perftest_script/testman-perftest-report
-        pattern: .json
+        pattern: statistics.json
 
   testman:
     provides_services: [ Testman ]
