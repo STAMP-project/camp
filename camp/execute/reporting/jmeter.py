@@ -46,7 +46,7 @@ class JMeterJSONReader(ReportReader):
 		if not json_report:
 			raise JMeterJSONInvalidReport("Empty JMeter Report: " + json.dumps(json_report))
 
-		for sample,sample_data in json_report.items():
+		for sample_data in json_report.values():
 			test = self._extract_test_from(sample_data)
 			tests.append(test)
 

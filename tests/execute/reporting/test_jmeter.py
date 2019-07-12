@@ -482,7 +482,7 @@ class TheJMeterJSONReaderShould(TestCase):
 
 
     def test_extract_a_testsuite_from_actual_JSON_report_on_file(self):
-        
+
         with open('tests/execute/reporting/data_folder/statistics.json', 'r') as json_report:
 
             test_suite = self._reader._extract_from_text(json_report.read())
