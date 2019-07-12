@@ -20,10 +20,7 @@ public class GreetingServiceTest {
     @Test
     public void testStatusCode() throws Exception {
 
-    	//Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxy.eng.it", 3128));
-
 		URL resource = new URL(String.format(END_POINT, "franck"));
-		//HttpURLConnection connection = (HttpURLConnection) resource.openConnection(proxy);
 		HttpURLConnection connection = (HttpURLConnection) resource.openConnection(Proxy.NO_PROXY);
 
 		int responseCode = connection.getResponseCode();

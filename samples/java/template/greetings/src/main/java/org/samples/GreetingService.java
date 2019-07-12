@@ -20,13 +20,6 @@ import javax.ws.rs.core.Response;
 @Path("/hello")
 public class GreetingService {
 
-	// static {
-	// 	System.setProperty("http.proxyHost", "proxy.eng.it");
-	// 	System.setProperty("http.proxyPort", "3128");
-	// 	System.setProperty("https.proxyHost", "proxy.eng.it");
-	// 	System.setProperty("https.proxyPort", "3128");
-	// }
-
 	@GET
 	@Path("/{name}")
 	public Response getMessage(@PathParam("name") String name) {
