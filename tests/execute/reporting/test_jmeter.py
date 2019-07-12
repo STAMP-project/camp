@@ -29,13 +29,13 @@ class TheJMeterJSONReaderShould(TestCase):
         json_report = """{}"""
 
         with self.assertRaises(JMeterJSONInvalidReport):
-            self._reader._extract_from_text(io.StringIO(json_report))
+            self._reader._extract_from_text(json_report)
 
     def test_raise_exception_when_given_empty_JSON_report_from_file(self):
     	
         with open('tests/execute/reporting/data_folder/empty_jmeter_report.json') as json_report:
             with self.assertRaises(JMeterJSONInvalidReport):
-                self._reader._extract_from_text(json_report)
+                self._reader._extract_from_text(json_report.read())
 
     def test_raise_exception_when_given_empty_JSON_report_no_label_column(self):
         json_report = """{
@@ -67,7 +67,7 @@ class TheJMeterJSONReaderShould(TestCase):
      "sentKBytesPerSec" : 0.04337332104864421}}"""
 
         with self.assertRaises(JMeterJSONInvalidReport):
-            self._reader._extract_from_text(io.StringIO(json_report))
+            self._reader._extract_from_text(json_report)
 
     def test_raise_exception_when_given_invalid_JSON_report_no_error_percentage_column(self):
         json_report = """{
@@ -102,7 +102,7 @@ class TheJMeterJSONReaderShould(TestCase):
 
 
         with self.assertRaises(JMeterJSONInvalidReport):
-            self._reader._extract_from_text(io.StringIO(json_report))
+            self._reader._extract_from_text(json_report)
 
     def test_raise_exception_when_given_invalid_JSON_report(self):
         json_report = """{
@@ -133,12 +133,12 @@ class TheJMeterJSONReaderShould(TestCase):
     "sentKBytesPerSec" : 0.04337332104864421}}"""
 
         with self.assertRaises(JMeterJSONInvalidReport):
-            self._reader._extract_from_text(io.StringIO(json_report))
+            self._reader._extract_from_text(json_report)
 
     def test_raise_exception_when_given_invalid_JSON_report_from_file(self):
         with open('tests/execute/reporting/data_folder/invalid_jmeter_report.json','r') as json_report:
             with self.assertRaises(JMeterJSONInvalidReport):
-                self._reader._extract_from_text(json_report)
+                self._reader._extract_from_text(json_report.read())
 
     def test_extract_a_testsuite_from_JSON(self):
 
@@ -190,7 +190,7 @@ class TheJMeterJSONReaderShould(TestCase):
   }}
 """
 
-        test_suite = self._reader._extract_from_text(io.StringIO(json_report))
+        test_suite = self._reader._extract_from_text(json_report)
 
         self.assertIsInstance(test_suite, TestSuite)
         self.assertEqual(3, test_suite.run_test_count)
@@ -305,7 +305,7 @@ class TheJMeterJSONReaderShould(TestCase):
   }}
  """
 
-        test_suite = self._reader._extract_from_text(io.StringIO(json_report))
+        test_suite = self._reader._extract_from_text(json_report)
 
         self.assertIsInstance(test_suite, TestSuite)
         self.assertEqual(7, test_suite.run_test_count)
@@ -423,7 +423,7 @@ class TheJMeterJSONReaderShould(TestCase):
   }}
  """
 
-        test_suite = self._reader._extract_from_text(io.StringIO(json_report))
+        test_suite = self._reader._extract_from_text(json_report)
 
         self.assertIsInstance(test_suite, TestSuite)
         self.assertEqual(7, test_suite.run_test_count)
@@ -436,7 +436,7 @@ class TheJMeterJSONReaderShould(TestCase):
         
         with open('tests/execute/reporting/data_folder/statistics.json', 'r') as json_report:
 
-            test_suite = self._reader._extract_from_text(json_report)
+            test_suite = self._reader._extract_from_text(json_report.read())
 
             self.assertIsInstance(test_suite, TestSuite)
             self.assertEqual(22, test_suite.run_test_count)
