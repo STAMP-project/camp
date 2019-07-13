@@ -17,6 +17,9 @@ from camp.entities.report import TestReport, TestSuite
 from camp.execute.reporting.junit import JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
+from camp.execute.reporting.jmeter import JMeterJSONReader
+
+
 from os import listdir
 from os.path import isdir, join as join_paths
 
@@ -313,6 +316,7 @@ class Engine(object):
             self._component.test_settings.report_format)
 
         directory = join_paths(path, "test-reports")
+
         test_reports = self._shell.find_all_files(
             self._component.test_settings.report_pattern,
             directory)
@@ -351,6 +355,7 @@ def select_reader_for(report_format):
 
 SUPPORTED_REPORT_FORMAT = {
     "JUNIT": JUnitXMLReader,
+    "JMETER": JMeterJSONReader,
 }
 
 
