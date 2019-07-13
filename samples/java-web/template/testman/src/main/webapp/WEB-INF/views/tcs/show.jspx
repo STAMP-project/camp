@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_eu_stamp_camp_samples_testman_domain_TC" object="${tc_}" path="/tcs" z="pvN02VsexIBfWhMayhnFjwNhlws=">
+        <field:display field="tcId" id="s_eu_stamp_camp_samples_testman_domain_TC_tcId" object="${tc_}" z="rvj3ttUZ0MsSE7cWUXwW+MhIVTQ="/>
+        <field:display field="summary" id="s_eu_stamp_camp_samples_testman_domain_TC_summary" object="${tc_}" z="rlkegWpAmtI33dqWBygtUZyCP50="/>
+        <field:display field="steps" id="s_eu_stamp_camp_samples_testman_domain_TC_steps" object="${tc_}" z="cWFXxh4jKVVTx8B8T/5eZJWtr4Q="/>
+        <field:display field="expectedResult" id="s_eu_stamp_camp_samples_testman_domain_TC_expectedResult" object="${tc_}" z="OMQaTXfEMFJGSpbCbJXXanCFCfo="/>
+        <field:display field="executions" id="s_eu_stamp_camp_samples_testman_domain_TC_executions" object="${tc_}" z="a0iX0nLlKabIKpu9ymemhja6ab8="/>
+    </page:show>
+</div>

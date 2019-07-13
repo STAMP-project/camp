@@ -1,0 +1,46 @@
+#
+# CAMP
+#
+# Copyright (C) 2017 -- 2019 SINTEF Digital
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+
+
+goals:
+  running:
+    - PerformanceTests
+
+
+components:
+
+  tests:
+    provides_services: [ PerformanceTests ]
+    requires_services: [ Testman ]
+    implementation:
+      docker:
+        file: tests/Dockerfile
+    tests:
+      command: -n -t perftest_script/testman.jmx -l perftest_script/testman.csv -e -o perftest_script/testman-perftest-report
+      reports:
+        format: jmeter
+        location: perftest_script/testman-perftest-report
+        pattern: statistics.json
+
+  testman:
+    provides_services: [ Testman ]
+    variables:
+      tomcat:
+        values: [ v7, v8, v9 ]
+        realization:
+         - targets: [ testman/Dockerfile ]
+           pattern: "tomcat:8-jre8"
+           replacements:
+             - tomcat:7-jre8
+             - tomcat:8-jre8
+             - tomcat:9-jre8
+    implementation:
+      docker:
+        file: testman/Dockerfile

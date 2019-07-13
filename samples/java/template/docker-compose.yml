@@ -5,8 +5,10 @@ services:
   tests:
     build: ./tests
     command: echo Ready!
+    depends_on:
+      - greetings
 
   greetings:
     build: ./greetings
     ports:
-      - "8080:8080"
+      - "9080:8080"
