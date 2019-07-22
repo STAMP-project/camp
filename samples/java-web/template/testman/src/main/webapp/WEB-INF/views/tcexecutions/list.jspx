@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_eu_stamp_camp_samples_testman_domain_TCExecution" items="${tcexecutions}" z="xeKBFmwjp4WdptHjjF26TnZmy5s=">
+        <table:table data="${tcexecutions}" id="l_eu_stamp_camp_samples_testman_domain_TCExecution" path="/tcexecutions" z="gm4v63agvQngGdOUMHVGz4JUxEc=">
+            <table:column date="true" dateTimePattern="${TCExecution__executedon_date_format}" id="c_eu_stamp_camp_samples_testman_domain_TCExecution_executedOn" property="executedOn" z="gj1nYslFoi12mu4p9CfArNYWwEA="/>
+            <table:column id="c_eu_stamp_camp_samples_testman_domain_TCExecution_tester" property="tester" z="2higTAIh8/OCGDn3YOd/ObLuVew="/>
+            <table:column id="c_eu_stamp_camp_samples_testman_domain_TCExecution_executionStatus" property="executionStatus" z="DcDwnFIPl3I2r+q5JanEpxn1t8A="/>
+        </table:table>
+    </page:list>
+</div>

@@ -15,6 +15,6 @@ COPY . /greetings
 
 WORKDIR /greetings
 
-RUN pip install .
+RUN pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org .
 
 CMD python greetings.py

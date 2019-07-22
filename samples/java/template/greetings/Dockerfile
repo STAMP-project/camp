@@ -23,12 +23,13 @@ RUN mkdir greetings
 WORKDIR /greetings
 
 COPY . /greetings
-RUN mvn clean package
+RUN mvn clean package 
 RUN mv target/greetings-1.0-SNAPSHOT.war target/greetings.war
 
 
 # Step 2: Deploy the WAR file into a Tomcat instance
 FROM tomcat:8-jre8
+
 
 COPY --from=builder /greetings/target/greetings.war /usr/local/tomcat/webapps/greetings.war
 

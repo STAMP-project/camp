@@ -9,7 +9,7 @@
 #
 
 
-
+from camp import About
 from camp.codecs.yaml import InvalidYAMLModel
 from camp.directories import InputDirectory, OutputDirectory, \
     MissingModel, NoConfigurationFound
@@ -19,9 +19,13 @@ from camp.execute.engine import Engine, SimulatedShell, Shell, \
 from camp.realize import InvalidSubstitution
 from camp.ui import UI
 
+from platform import system, dist, release
+
+from subprocess import check_output
+
 from traceback import extract_tb
 
-from sys import exc_info
+from sys import exc_info, version_info
 
 
 
@@ -36,6 +40,25 @@ class Camp(object):
         self._output = None
         self._ui = UI()
 
+
+    def show_versions(self):
+        self._ui.welcome()
+
+        os_version = system() + " " + release() + " (" + " ".join(dist()).strip() +")"
+
+        python = version_info
+
+        import z3;
+        z3_version = z3.get_version_string()
+
+        docker_version = check_output(["docker", "--version"]).decode("utf-8")
+        compose_version = check_output(["docker-compose", "--version"]).decode("utf-8")
+
+        self._ui.show_versions(os_version,
+                               python,
+                               z3_version,
+                               docker_version.strip(),
+                               compose_version.strip())
 
     def generate(self, arguments):
         self._ui.welcome()

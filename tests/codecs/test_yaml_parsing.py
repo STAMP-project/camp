@@ -14,7 +14,7 @@ from __future__ import unicode_literals
 
 from camp.codecs.yaml import YAML, InvalidYAMLModel
 from camp.entities.model import DockerFile, DockerImage, Substitution, \
-    TestSettings, ResourceSelection
+    TestSettings, ResourceSelection, ComponentResourceSelection
 from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest, \
     TestSuite, TestReport
 
@@ -349,6 +349,45 @@ class BuiltModelAreComplete(TestCase):
             })
 
 
+    def test_given_a_component_with_realization(self):
+        self.assert_complete(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      realization:\n"
+            "        - select: apache_docker-compose.yml\n"
+            "          instead_of:\n"
+            "           - nginx_docker-compose.yml\n"
+            "          as: docker-compose.yml\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expectations={
+                "services": ["Wonderful"],
+                "features": [],
+                "components" : {
+                    "server": {
+                        "provided_services": ["Wonderful"],
+                        "required_services": [],
+                        "provided_features": [],
+                        "required_features": [],
+                        "implementation": None,
+                        "variables": {},
+                        "realization": [
+                            ComponentResourceSelection(
+                                "apache_docker-compose.yml",
+                                ["nginx_docker-compose.yml"],
+                                "docker-compose.yml")
+                        ]
+                    }
+                },
+                "goals": {
+                    "services": ["Wonderful"],
+                    "features": []
+                }
+            })
+
+
 
     def assert_complete(self, text, expectations):
         model = self._codec.load_model_from(StringIO(text))
@@ -396,9 +435,11 @@ class BuiltModelAreComplete(TestCase):
                          component.implementation)
         self.assert_variables(component, expectation["variables"])
         if "tests" in expectation:
-            print(vars(component.test_settings))
             self.assertEqual(expectation["tests"],
                              component.test_settings)
+        if "realization" in expectation:
+            self._assertItemsEqual(expectation["realization"],
+                                  component.realization)
 
 
     def assert_variables(self, component, variables):

@@ -12,7 +12,8 @@
 
 from __future__ import unicode_literals
 
-from camp.entities.model import TestSettings, ResourceSelection
+from camp.entities.model import TestSettings, ResourceSelection, \
+    ComponentResourceSelection
 
 from unittest import TestCase
 
@@ -110,3 +111,107 @@ class ResourceSelectionsShould(TestCase):
         other = ResourceSelection("something_different.txt",
                                   self._resources)
         self.assertNotEqual(hash(self._selection), hash(other))
+
+
+
+class ComponentResourceSelectionShould(TestCase):
+
+    def setUp(self):
+        self._selected_resource = "foo_config.ini"
+        self._alternatives = set([
+            "bar_config.ini",
+            "quz_config.ini"])
+        self._alias = "config.ini"
+        self._selection = ComponentResourceSelection(
+            self._selected_resource,
+            self._alternatives,
+            self._alias)
+
+
+    def test_expose_the_selected_resource(self):
+        self.assertEquals(self._selection.selected_resource,
+                          self._selected_resource)
+
+
+    def test_expose_the_candidates_resources(self):
+        self.assertEquals(self._selection.alternatives,
+                          self._alternatives)
+
+
+    def test_expose_the_desired_alias(self):
+        self.assertEquals(self._selection.alias,
+                          self._alias)
+
+
+    def test_detect_selected_resource_appears_in_alternatives(self):
+        with self.assertRaises(ValueError):
+            ComponentResourceSelection("foo.ini",
+                                       ["foo.ini", "quz.ini"],
+                                       "prout.ini")
+
+    def test_use_the_selected_resource_as_alias_if_none_given(self):
+        selection = ComponentResourceSelection(self._selected_resource,
+                                               self._alternatives)
+        self.assertEquals(selection.alias,
+                          self._selected_resource)
+
+    # Test the equality
+
+    def test_equals_itself(self):
+        self.assertEquals(self._selection, self._selection)
+
+
+    def test_equals_a_similiar_resource_selection(self):
+        other = ComponentResourceSelection(self._selected_resource,
+                                           self._alternatives,
+                                           self._alias)
+        self.assertEquals(self._selection, other)
+
+
+    def test_differs_when_selected_resource_are_different(self):
+        other = ComponentResourceSelection("something_else",
+                                           self._alternatives,
+                                           self._alias)
+        self.assertNotEquals(other, self._selection)
+
+
+    def test_differs_when_alternatives_are_different(self):
+        other = ComponentResourceSelection(self._selected_resource,
+                                           ["bar.ini"],
+                                           self._alias)
+        self.assertNotEquals(other, self._selection)
+
+
+    def test_differs_when_aliases_are_different(self):
+        other = ComponentResourceSelection(self._selected_resource,
+                                           self._alternatives,
+                                           "something_different")
+        self.assertNotEquals(other, self._selection)
+
+
+    def test_has_the_same_hash_than_similar_selection(self):
+        other = ComponentResourceSelection(self._selected_resource,
+                                           self._alternatives,
+                                           self._alias)
+        self.assertEquals(hash(self._selection), hash(other))
+
+
+    def test_has_a_differen_hash_when_selected_resources_vary(self):
+        other = ComponentResourceSelection("something_different",
+                                           self._alternatives,
+                                           self._alias)
+        self.assertNotEquals(hash(self._selection), hash(other))
+
+
+    def test_has_a_differen_hash_when_alternatives_vary(self):
+        other = ComponentResourceSelection(self._selected_resource,
+                                           ["something", "different"],
+                                           self._alias)
+        self.assertNotEquals(hash(self._selection), hash(other))
+
+
+    def test_has_a_differen_hash_when_aliases_vary(self):
+        other = ComponentResourceSelection(self._selected_resource,
+                                           self._alternatives,
+                                           "something.different")
+        self.assertNotEquals(hash(self._selection), hash(other))

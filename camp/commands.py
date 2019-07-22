@@ -23,6 +23,13 @@ class Command(object):
         parser = ArgumentParser(prog=About.PROGRAM,
                                 description=About.DESCRIPTION)
 
+        parser.add_argument("-v",
+                            "--version",
+                            dest="command",
+                            action="store_const",
+                            const="show_version",
+                            help="Show the versions of CAMP and its dependencies")
+
         subparsers = parser.add_subparsers(dest="command")
 
         generate = subparsers.add_parser(
@@ -92,6 +99,9 @@ class Command(object):
         elif namespace.command == "execute":
             return Execute(namespace.working_directory,
                            namespace.is_simulated)
+
+        elif namespace.command == "show_version":
+            return ShowVersions()
 
         else:
             message = "The command '%s' is not yet implemented." % namespace.command
@@ -183,3 +193,15 @@ class Execute(Command):
 
     def send_to(self, camp):
         camp.execute(self)
+
+
+
+class ShowVersions(Command):
+
+
+    def __init__(self):
+        super(ShowVersions, self).__init__(None)
+
+
+    def send_to(self, camp):
+        camp.show_versions()

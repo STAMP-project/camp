@@ -17,6 +17,9 @@ from camp.entities.report import TestReport, TestSuite
 from camp.execute.reporting.junit import JUnitXMLReader, \
     JUnitXMLElementNotSupported
 
+from camp.execute.reporting.jmeter import JMeterJSONReader
+
+
 from os import listdir
 from os.path import isdir, join as join_paths
 
@@ -290,8 +293,15 @@ class Engine(object):
         return self._shell.execute(docker_ps, path)
 
 
+    # Fix for Issue 63.
+    #
+    # The docker-compose naming convention changed from 1.22 to 1.23
+    # and the simple index append for each container run, was replaced
+    # by a random number".
+    # See https://github.com/docker/compose/issues/6316
+    #
     GET_CONTAINER_ID = ("docker ps --all --quiet "
-                        "--filter name={configuration}_{component}_run_1")
+                        "--filter name={configuration}_{component}_run_")
 
 
     FETCH_TEST_REPORTS=("docker cp "
@@ -306,6 +316,7 @@ class Engine(object):
             self._component.test_settings.report_format)
 
         directory = join_paths(path, "test-reports")
+
         test_reports = self._shell.find_all_files(
             self._component.test_settings.report_pattern,
             directory)
@@ -344,6 +355,7 @@ def select_reader_for(report_format):
 
 SUPPORTED_REPORT_FORMAT = {
     "JUNIT": JUnitXMLReader,
+    "JMETER": JMeterJSONReader,
 }
 
 

@@ -103,7 +103,9 @@ class InputDirectory(Directory):
 
 
     def create_template_file(self, component_name, path, content):
-        resource = join_paths(self._path, self.TEMPLATE_FOLDER, component_name, path)
+        resource = join_paths(self._path, self.TEMPLATE_FOLDER, path)
+        if component_name:
+            resource = join_paths(self._path, self.TEMPLATE_FOLDER, component_name, path)
         folder = dirname(resource)
         if not isdir(folder):
             makedirs(folder)
