@@ -37,6 +37,14 @@ class UI(object):
         self._print("")
 
 
+    def show_versions(self, os, python, z3, docker, compose):
+        self._print(" - " + os)
+        self._print(" - Python " + ".".join(str(each) for each in python))
+        self._print(" - Z3 " + z3)
+        self._print(" - " + docker)
+        self._print(" - " + compose)
+
+
     def goodbye(self):
         self._print("\nThat's all folks!")
 

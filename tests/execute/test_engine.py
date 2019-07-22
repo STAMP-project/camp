@@ -13,6 +13,7 @@ from camp.entities.model import Component, TestSettings
 from camp.execute.engine import ShellCommandFailed, Shell, SimulatedShell, \
     Engine, ExecutorListener, ReportFormatNotSupported, select_reader_for
 from camp.execute.reporting.junit import JUnitXMLReader
+from camp.execute.reporting.jmeter import JMeterJSONReader
 
 from io import BytesIO
 
@@ -307,6 +308,10 @@ class TheReportReaderSelectionShould(TestCase):
     def test_return_the_junit_report_reader(self):
         reader = select_reader_for("junit")
         self.assertIsInstance(reader, JUnitXMLReader)
+
+    def test_return_the_jmeter_report_reader(self):
+        reader = select_reader_for("jmeter")
+        self.assertIsInstance(reader, JMeterJSONReader)
 
 
     def test_raise_an_exception_when_format_is_not_supported(self):

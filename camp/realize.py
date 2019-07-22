@@ -11,15 +11,15 @@
 
 
 from camp.entities.model import DockerFile, DockerImage, Substitution, \
-    ResourceSelection
+    ResourceSelection, ComponentResourceSelection
 
-from os import makedirs, remove
+from os import listdir, makedirs, remove, sep as path_separator
 from os.path import exists, isdir, isfile, join as join_paths, \
-    split as split_path, relpath
+     normpath, split as split_path, relpath
 
 from re import escape, sub, subn
 
-from shutil import copytree, move, rmtree
+from shutil import copyfile, copytree, move, rmtree
 
 
 
@@ -70,18 +70,29 @@ class Builder(object):
             self._output_directory = output_directory
 
         self._prepare_output_directory()
-        self._generate_docker_compose_file(configuration)
+        self._copy_orchestration_files()
         for each_instance in configuration.instances:
             self._copy_template_for(each_instance)
             if each_instance.feature_provider:
                 self._adjust_docker_file(each_instance)
+            self._realize_component(each_instance)
             self._realize_variables(each_instance)
+        self._adjust_docker_compose_file(configuration)
         self._generate_build_script()
 
 
     def _prepare_output_directory(self):
         self._clean_or_create(self._image_directory)
 
+
+    def _copy_orchestration_files(self):
+        count = 0
+        for any_file in listdir(self._template_folder):
+            path_to_file = join_paths(self._template_folder, any_file)
+            if isfile(path_to_file):
+                count += 1
+                destination = join_paths(self._output_directory, any_file)
+                copyfile(path_to_file, destination)
 
     @staticmethod
     def _clean_or_create(directory):
@@ -95,18 +106,21 @@ class Builder(object):
         return join_paths(self._output_directory, "images")
 
 
-    def _generate_docker_compose_file(self, configuration):
-        template = join_paths(self._template_folder, "docker-compose.yml")
-        if exists(template):
-            with open(template, "r") as source:
+    def _adjust_docker_compose_file(self, configuration):
+        orchestration = join_paths(self._output_directory, "docker-compose.yml")
+        if exists(orchestration):
+            with open(orchestration, "r") as source:
                 content = source.read()
                 for each_instance in configuration.instances:
-                    content = sub(r"build:\s*\./" + each_instance.definition.name,
-                                  "build: ./images/" + each_instance.name,
-                                  content)
+                    content, count = subn(r"build:\s*\./" + each_instance.definition.name,
+                                          "build: ./images/" + each_instance.name,
+                                          content)
+                    # Investigating Issue #55
+                    # if count == 0:
+                    #     raise RuntimeError("Component " + each_instance.definition.name \
+                    #                        + " cannot be found in the dockerfile")
 
-            destination = join_paths(self._output_directory, "docker-compose.yml")
-            with open(destination, "w") as target:
+            with open(orchestration, "w") as target:
                 target.write(content)
 
 
@@ -140,7 +154,9 @@ class Builder(object):
 
 
     def _file_for(self, instance, resource):
-        if instance.definition.name in resource:
+        normalized_path = normpath(resource)
+        parts = normalized_path.split(path_separator)
+        if instance.definition.name in parts:
             path = relpath(resource, instance.definition.name)
             return join_paths(self._directory_for(instance), path)
         else:
@@ -168,6 +184,23 @@ class Builder(object):
                                % kind.__name__)
 
     REGEX_FROM = r'FROM\s+(?:[a-zA-Z0-9\._-]*/)?[a-zA-Z0-9\._-]+(?:\:[a-zA-Z0-9\._-]+)?'
+
+
+    def _realize_component(self, instance):
+        for any_action in instance.definition.realization:
+            if isinstance(any_action, ComponentResourceSelection):
+                self._rename(instance,
+                             any_action.selected_resource,
+                             any_action.alias)
+                for each_alternative in any_action.alternatives:
+                    self._delete(instance, each_alternative)
+
+            else:
+                message = UNSUPPORTED_COMPONENT_REALIZATION.format(type(any_action))
+                raise RuntimeError(message)
+
+    UNSUPPORTED_COMPONENT_REALIZATION = \
+        "Unsupported component realization action: '{}'"
 
 
     def _realize_variables(self, instance):

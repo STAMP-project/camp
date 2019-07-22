@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+<link href="http://localhost:8080/" rel="selenium.base"/>
+<title>Selenium test for TCExecutionController</title>
+</head>
+<body>
+    <table border="1" cellpadding="1" cellspacing="1">
+        <thead>
+            <tr>
+                <td colspan="3" rowspan="1">Selenium test for TCExecutionController</td>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+                    <td>open</td>
+                    <td>http://localhost:8080/testman/tcexecutions?form&amp;lang=it_IT</td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td>_executedOn_id</td>
+                    <td>21-mag-2019</td>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td>_tester_id</td>
+                    <td>someTester1</td>
+                </tr>
+                <tr>
+                    <td>clickAndWait</td>
+                    <td>//input[@id = 'proceed']</td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td>verifyText</td>
+                    <td>_s_eu_stamp_camp_samples_testman_domain_TCExecution_executedOn_executedOn_id</td>
+                    <td>21-mag-2019</td>
+                </tr>
+                <tr>
+                    <td>verifyText</td>
+                    <td>_s_eu_stamp_camp_samples_testman_domain_TCExecution_tester_tester_id</td>
+                    <td>someTester1</td>
+                </tr>
+            </tbody>
+    </table>
+</body>
+</html>

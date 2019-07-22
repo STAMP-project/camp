@@ -3,6 +3,33 @@
 Below is the list of CAMP versions, along with a quick summary of the
 changes that were made.
 
+
+*   Development
+
+    *   Add a '-v' command that display the version of the key
+        dependencies, including, OS, Python, Z3 solver, Docker, and
+        Docker-compose.
+
+
+*   CAMP v0.5
+
+    *   CAMP v0.5.1 (July 1, 2019)
+
+        *   Fix [Issue
+            63](https://github.com/STAMP-project/camp/issues/63). Update
+            the pattern that CAMP uses to retrieve the container on
+            which tests were run. Docker-compose changed naming
+            convention after 1.22 and the new convention was not
+            compatible with the pattern that CAMP uses anymmore.
+
+    *   CAMP v0.5.0 (June 20, 2019)
+
+        *   New resource selection operator at the component level (as
+            opposed to the one provided at the variable level in
+            v0.4.0). It enables the selection (and the rejection) of
+            resources (files or directories) depending on the
+            component instances included in a configuration.
+
 *   CAMP v0.4
 
     *   CAMP v0.4.1 (May 14, 2019)

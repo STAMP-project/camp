@@ -114,3 +114,6 @@ _site/
 
 # Mac OSX
 .DS_Store
+
+# Roo log
+roo.log

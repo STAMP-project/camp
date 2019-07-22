@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_eu_stamp_camp_samples_testman_domain_TC" items="${tcs}" z="VSr+Div/l1DprUq/OFt8OwSJq9c=">
+        <table:table data="${tcs}" id="l_eu_stamp_camp_samples_testman_domain_TC" path="/tcs" z="khj6PiSf5zIdJ6w15nqf/GCtrGg=">
+            <table:column id="c_eu_stamp_camp_samples_testman_domain_TC_tcId" property="tcId" z="fIpxTRryNlS+u4BtPPPnXSz+zTU="/>
+            <table:column id="c_eu_stamp_camp_samples_testman_domain_TC_summary" property="summary" z="NyD+QTs0dXFbRy513oLCaT2Ju/M="/>
+            <table:column id="c_eu_stamp_camp_samples_testman_domain_TC_steps" property="steps" z="Kw+d8IMZRCEzUyn2pgToe1V+i4A="/>
+            <table:column id="c_eu_stamp_camp_samples_testman_domain_TC_expectedResult" property="expectedResult" z="rJE9goDCHHOQIW2Win6UNXlrb7c="/>
+            <table:column id="c_eu_stamp_camp_samples_testman_domain_TC_executions" property="executions" z="CoMBV0pgH4wTfSSR2sLauwYsD4w="/>
+        </table:table>
+    </page:list>
+</div>
