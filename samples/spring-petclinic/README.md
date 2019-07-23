@@ -10,8 +10,8 @@ replacements: [ "XXX.XXX.XXX.XXX" ] #provide your host machine IP
 ```
 Generate configurations to support different DB (PetClinic app + MySQL and PetClinic app + Postgres).
 ```
-docker run -t -v $PWD:/campworkingdir -v /var/run/docker.sock:/var/run/docker.sock -t fchauvel/camp:latest camp generate -d /campworkingdir
-docker run -t -v $PWD:/campworkingdir -v /var/run/docker.sock:/var/run/docker.sock -t fchauvel/camp:latest camp realize -d /campworkingdir
+docker run -t -v $PWD:/campworkingdir -v /var/run/docker.sock:/var/run/docker.sock -t fchauvel/camp:v0.5.1 camp generate -d /campworkingdir
+docker run -t -v $PWD:/campworkingdir -v /var/run/docker.sock:/var/run/docker.sock -t fchauvel/camp:v0.5.1 camp realize -d /campworkingdir
 ```
 Select one of the two generated applications to run, available in `out/`.
 ```

@@ -9,13 +9,13 @@ This repository demonstrates how to collect traces from different Proactive conf
 
 The two latter configs are generated using CAMP and the first one is used as baseline or reference.
 
-The `Dockerfile` for each configuration shows how to instrument Proactive to collect traces. The script `run.sh` is executed for every configuration. It executes the following taks:
+The `Dockerfile` for each configuration shows how to instrument Proactive to collect traces. The script `run.sh` is executed for every configuration. It executes the following tasks:
 - Run the Proactive server `
 /activeeon_enterprise-pca_server-linux-x64-8.5.0-SNAPSHOT/bin/proactive-server &`. The JVM is configured with the options `-XX:+PreserveFramePointer -agentpath:/liblagent.so`
 -  Get the corresponding `PID` of the Java process
 - Attach the profiler to the Java process `java -cp /libperfagent.jar:$JAVA_HOME/lib/tools.jar net.virtualvoid.perf.AttachOnce $PID` 
 - Wait until the Proactive server is up `sleep 500` 
-- Run some tests/load using the proactive client. Here, we send and execute a `workflow-test.xml` in the schedulrer `/activeeon_enterprise-pca_server-linux-x64-8.5.0-SNAPSHOT/bin/proactive-client -s /workflow-test.xml`
+- Run some tests/load using the proactive client. Here, we send and execute a `workflow-test.xml` in the scheduler `/activeeon_enterprise-pca_server-linux-x64-8.5.0-SNAPSHOT/bin/proactive-client -s /workflow-test.xml`
 - We record traces for 300 seconds. The frequency is the default one `perf record -e cpu-clock -p $PID -a -g -o /data/perf.data -- sleep 300`
 - We shutdown properly the scheduler using the proactive client.
 - We copy traces to the mounted /data folder
