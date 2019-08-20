@@ -4,11 +4,18 @@ Below is the list of CAMP versions, along with a quick summary of the
 changes that were made.
 
 
-*   Development
+*   CAMP v0.6
 
-    *   Add a '-v' command that display the version of the key
-        dependencies, including, OS, Python, Z3 solver, Docker, and
-        Docker-compose.
+    *   CAMP v0.6.0 (Aug. 20, 2019)
+
+        *   Add support for JMeter test execution, report
+            collection and report aggregation. Thanks to
+            [Daniele](https://github.com/danzone) for contributing
+            this new feature!
+
+        *   Add a '-v' command that display the version of the key
+            dependencies, including, OS, Python, Z3 solver, Docker, and
+            Docker-compose.
 
 
 *   CAMP v0.5
