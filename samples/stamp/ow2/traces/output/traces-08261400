@@ -1,0 +1,373 @@
+---- Installing FlameGraph ----
+fatal: destination path '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/FlameGraph' already exists and is not an empty directory.
+---- Building and Running all configurations at all frequencies ----
+Sending build context to Docker daemon  18.43kB
+Step 1/4 : FROM debian:stretch
+ ---> 8d31923452f8
+Step 2/4 : RUN apt-get update && apt-get dist-upgrade -y &&     apt-get install -y tomcat8 strace --no-install-recommends
+ ---> Using cache
+ ---> 4fbf82811d5f
+Step 3/4 : COPY entrypoint.sh /entrypoint.sh
+ ---> Using cache
+ ---> c322ace5ff4d
+Step 4/4 : ENTRYPOINT strace -o /data/strace.log -f -c -Scalls sh /entrypoint.sh
+ ---> Using cache
+ ---> bd2694f6a2e8
+[Warning] One or more build-args [PROFILER_FREQ] were not consumed
+Successfully built bd2694f6a2e8
+Successfully tagged tracedconfig:latest
+26-Aug-2019 12:58:58.605 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with JAR file [/usr/share/tomcat8/lib/commons-dbcp.jar], exists: [false], canRead: [false]
+26-Aug-2019 12:58:58.615 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with JAR file [/usr/share/tomcat8/lib/commons-pool.jar], exists: [false], canRead: [false]
+26-Aug-2019 12:58:58.616 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/common/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 12:58:58.618 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/common], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 12:58:58.619 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/common/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 12:58:58.620 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/common], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 12:58:58.627 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/server/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 12:58:58.629 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/server], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 12:58:58.631 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/server/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 12:58:58.633 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/server], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 12:58:58.634 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/shared/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 12:58:58.635 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/shared], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 12:58:58.636 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/shared/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 12:58:58.637 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/shared], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 12:58:58.833 SEVERE [main] org.apache.catalina.startup.Catalina.initDirs Cannot find specified temporary folder at /tmp/tomcat8-tomcat8-tmp
+26-Aug-2019 12:59:00.714 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version:        Apache Tomcat/8.5.14 (Debian)
+26-Aug-2019 12:59:00.715 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Aug 24 2018 19:44:12 UTC
+26-Aug-2019 12:59:00.716 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server number:         8.5.14.0
+26-Aug-2019 12:59:00.718 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Linux
+26-Aug-2019 12:59:00.719 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            4.4.0-159-generic
+26-Aug-2019 12:59:00.719 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+26-Aug-2019 12:59:00.720 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             /usr/lib/jvm/java-8-openjdk-amd64/jre
+26-Aug-2019 12:59:00.722 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           1.8.0_222-8u222-b10-1~deb9u1-b10
+26-Aug-2019 12:59:00.722 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Oracle Corporation
+26-Aug-2019 12:59:00.724 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         /var/lib/tomcat8
+26-Aug-2019 12:59:00.724 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         /usr/share/tomcat8
+26-Aug-2019 12:59:00.729 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=/var/lib/tomcat8/conf/logging.properties
+26-Aug-2019 12:59:00.731 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+26-Aug-2019 12:59:00.734 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.awt.headless=true
+26-Aug-2019 12:59:00.735 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Xmx512m
+26-Aug-2019 12:59:00.735 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:+UseConcMarkSweepGC
+26-Aug-2019 12:59:00.735 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+26-Aug-2019 12:59:00.736 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.endorsed.dirs=/usr/share/tomcat8/endorsed
+26-Aug-2019 12:59:00.736 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=/var/lib/tomcat8
+26-Aug-2019 12:59:00.737 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=/usr/share/tomcat8
+26-Aug-2019 12:59:00.737 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=/tmp/tomcat8-tomcat8-tmp
+26-Aug-2019 12:59:00.739 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: /usr/java/packages/lib/amd64:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib
+26-Aug-2019 12:59:01.245 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+26-Aug-2019 12:59:01.342 INFO [main] org.apache.tomcat.util.net.NioSelectorPool.getSharedSelector Using a shared selector for servlet write/read
+26-Aug-2019 12:59:01.378 INFO [main] org.apache.catalina.startup.Catalina.load Initialization processed in 2549 ms
+26-Aug-2019 12:59:01.568 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service Catalina
+26-Aug-2019 12:59:01.569 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet Engine: Apache Tomcat/8.5.14 (Debian)
+26-Aug-2019 12:59:01.621 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory /var/lib/tomcat8/webapps/ROOT
+26-Aug-2019 12:59:05.818 INFO [localhost-startStop-1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+26-Aug-2019 12:59:05.915 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory /var/lib/tomcat8/webapps/ROOT has finished in 4,293 ms
+26-Aug-2019 12:59:05.926 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+26-Aug-2019 12:59:05.969 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 4587 ms
+./demo.sh: line 45:  4893 Killed                  timeout -k 60s 100s docker run -v $LOGDIR:/data --cap-add=ALL --name tracedcontainer tracedconfig:latest >> $LOGDIR/out.log
+tracedcontainer
+./demo.sh: line 55: /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config0/profiling/traces.txt: No such file or directory
+cp: cannot stat '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config0/profiling/*.map': No such file or directory
+failed to open /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config0/profiling/perf.data: No such file or directory
+Sending build context to Docker daemon  20.48kB
+Step 1/4 : FROM debian:stretch
+ ---> 8d31923452f8
+Step 2/4 : RUN apt-get update && apt-get dist-upgrade -y &&     apt-get install -y tomcat8 strace --no-install-recommends
+ ---> Using cache
+ ---> 4fbf82811d5f
+Step 3/4 : COPY entrypoint.sh /entrypoint.sh
+ ---> Using cache
+ ---> c322ace5ff4d
+Step 4/4 : ENTRYPOINT strace -o /data/strace.log -f -c -Scalls sh /entrypoint.sh
+ ---> Using cache
+ ---> bd2694f6a2e8
+[Warning] One or more build-args [PROFILER_FREQ] were not consumed
+Successfully built bd2694f6a2e8
+Successfully tagged tracedconfig:latest
+26-Aug-2019 13:01:38.531 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with JAR file [/usr/share/tomcat8/lib/commons-dbcp.jar], exists: [false], canRead: [false]
+26-Aug-2019 13:01:38.539 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with JAR file [/usr/share/tomcat8/lib/commons-pool.jar], exists: [false], canRead: [false]
+26-Aug-2019 13:01:38.540 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/common/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:01:38.541 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/common], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:01:38.543 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/common/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:01:38.543 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/common], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:01:38.547 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/server/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:01:38.552 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/server], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:01:38.553 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/server/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:01:38.554 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/server], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:01:38.556 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/shared/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:01:38.557 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/shared], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:01:38.558 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/shared/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:01:38.559 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/shared], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:01:38.651 SEVERE [main] org.apache.catalina.startup.Catalina.initDirs Cannot find specified temporary folder at /tmp/tomcat8-tomcat8-tmp
+26-Aug-2019 13:01:39.541 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version:        Apache Tomcat/8.5.14 (Debian)
+26-Aug-2019 13:01:39.542 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Aug 24 2018 19:44:12 UTC
+26-Aug-2019 13:01:39.542 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server number:         8.5.14.0
+26-Aug-2019 13:01:39.543 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Linux
+26-Aug-2019 13:01:39.543 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            4.4.0-159-generic
+26-Aug-2019 13:01:39.544 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+26-Aug-2019 13:01:39.544 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             /usr/lib/jvm/java-8-openjdk-amd64/jre
+26-Aug-2019 13:01:39.545 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           1.8.0_222-8u222-b10-1~deb9u1-b10
+26-Aug-2019 13:01:39.546 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Oracle Corporation
+26-Aug-2019 13:01:39.547 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         /var/lib/tomcat8
+26-Aug-2019 13:01:39.550 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         /usr/share/tomcat8
+26-Aug-2019 13:01:39.551 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=/var/lib/tomcat8/conf/logging.properties
+26-Aug-2019 13:01:39.551 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+26-Aug-2019 13:01:39.554 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.awt.headless=true
+26-Aug-2019 13:01:39.555 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Xmx512m
+26-Aug-2019 13:01:39.555 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:+UseConcMarkSweepGC
+26-Aug-2019 13:01:39.556 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+26-Aug-2019 13:01:39.556 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.endorsed.dirs=/usr/share/tomcat8/endorsed
+26-Aug-2019 13:01:39.557 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=/var/lib/tomcat8
+26-Aug-2019 13:01:39.557 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=/usr/share/tomcat8
+26-Aug-2019 13:01:39.557 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=/tmp/tomcat8-tomcat8-tmp
+26-Aug-2019 13:01:39.558 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: /usr/java/packages/lib/amd64:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib
+26-Aug-2019 13:01:39.791 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+26-Aug-2019 13:01:39.848 INFO [main] org.apache.tomcat.util.net.NioSelectorPool.getSharedSelector Using a shared selector for servlet write/read
+26-Aug-2019 13:01:39.859 INFO [main] org.apache.catalina.startup.Catalina.load Initialization processed in 1208 ms
+26-Aug-2019 13:01:39.941 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service Catalina
+26-Aug-2019 13:01:39.943 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet Engine: Apache Tomcat/8.5.14 (Debian)
+26-Aug-2019 13:01:39.962 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory /var/lib/tomcat8/webapps/ROOT
+26-Aug-2019 13:01:42.221 INFO [localhost-startStop-1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+26-Aug-2019 13:01:42.285 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory /var/lib/tomcat8/webapps/ROOT has finished in 2,322 ms
+26-Aug-2019 13:01:42.289 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+26-Aug-2019 13:01:42.319 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 2458 ms
+./demo.sh: line 45:  5343 Killed                  timeout -k 60s 100s docker run -v $LOGDIR:/data --cap-add=ALL --name tracedcontainer tracedconfig:latest >> $LOGDIR/out.log
+tracedcontainer
+./demo.sh: line 55: /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config0/profiling/traces.txt: No such file or directory
+cp: cannot stat '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config0/profiling/*.map': No such file or directory
+failed to open /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config0/profiling/perf.data: No such file or directory
+Sending build context to Docker daemon  20.48kB
+Step 1/4 : FROM debian:stretch
+ ---> 8d31923452f8
+Step 2/4 : RUN apt-get update && apt-get dist-upgrade -y &&     apt-get install -y tomcat8 strace --no-install-recommends
+ ---> Using cache
+ ---> 4fbf82811d5f
+Step 3/4 : COPY entrypoint.sh /entrypoint.sh
+ ---> Using cache
+ ---> c322ace5ff4d
+Step 4/4 : ENTRYPOINT strace -o /data/strace.log -f -c -Scalls sh /entrypoint.sh
+ ---> Using cache
+ ---> bd2694f6a2e8
+[Warning] One or more build-args [PROFILER_FREQ] were not consumed
+Successfully built bd2694f6a2e8
+Successfully tagged tracedconfig:latest
+26-Aug-2019 13:04:18.844 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with JAR file [/usr/share/tomcat8/lib/commons-dbcp.jar], exists: [false], canRead: [false]
+26-Aug-2019 13:04:18.850 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with JAR file [/usr/share/tomcat8/lib/commons-pool.jar], exists: [false], canRead: [false]
+26-Aug-2019 13:04:18.857 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/common/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:04:18.858 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/common], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:04:18.859 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/common/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:04:18.860 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/common], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:04:18.863 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/server/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:04:18.864 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/server], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:04:18.865 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/server/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:04:18.866 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/server], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:04:18.868 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/shared/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:04:18.870 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/shared], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:04:18.871 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/shared/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:04:18.872 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/shared], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:04:18.959 SEVERE [main] org.apache.catalina.startup.Catalina.initDirs Cannot find specified temporary folder at /tmp/tomcat8-tomcat8-tmp
+26-Aug-2019 13:04:19.771 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version:        Apache Tomcat/8.5.14 (Debian)
+26-Aug-2019 13:04:19.772 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Aug 24 2018 19:44:12 UTC
+26-Aug-2019 13:04:19.772 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server number:         8.5.14.0
+26-Aug-2019 13:04:19.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Linux
+26-Aug-2019 13:04:19.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            4.4.0-159-generic
+26-Aug-2019 13:04:19.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+26-Aug-2019 13:04:19.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             /usr/lib/jvm/java-8-openjdk-amd64/jre
+26-Aug-2019 13:04:19.774 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           1.8.0_222-8u222-b10-1~deb9u1-b10
+26-Aug-2019 13:04:19.774 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Oracle Corporation
+26-Aug-2019 13:04:19.774 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         /var/lib/tomcat8
+26-Aug-2019 13:04:19.775 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         /usr/share/tomcat8
+26-Aug-2019 13:04:19.775 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=/var/lib/tomcat8/conf/logging.properties
+26-Aug-2019 13:04:19.776 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+26-Aug-2019 13:04:19.776 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.awt.headless=true
+26-Aug-2019 13:04:19.777 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Xmx512m
+26-Aug-2019 13:04:19.777 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:+UseConcMarkSweepGC
+26-Aug-2019 13:04:19.778 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+26-Aug-2019 13:04:19.778 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.endorsed.dirs=/usr/share/tomcat8/endorsed
+26-Aug-2019 13:04:19.779 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=/var/lib/tomcat8
+26-Aug-2019 13:04:19.779 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=/usr/share/tomcat8
+26-Aug-2019 13:04:19.780 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=/tmp/tomcat8-tomcat8-tmp
+26-Aug-2019 13:04:19.780 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: /usr/java/packages/lib/amd64:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib
+26-Aug-2019 13:04:19.996 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+26-Aug-2019 13:04:20.028 INFO [main] org.apache.tomcat.util.net.NioSelectorPool.getSharedSelector Using a shared selector for servlet write/read
+26-Aug-2019 13:04:20.034 INFO [main] org.apache.catalina.startup.Catalina.load Initialization processed in 1076 ms
+26-Aug-2019 13:04:20.102 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service Catalina
+26-Aug-2019 13:04:20.103 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet Engine: Apache Tomcat/8.5.14 (Debian)
+26-Aug-2019 13:04:20.121 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory /var/lib/tomcat8/webapps/ROOT
+26-Aug-2019 13:04:22.430 INFO [localhost-startStop-1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+26-Aug-2019 13:04:22.490 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory /var/lib/tomcat8/webapps/ROOT has finished in 2,369 ms
+26-Aug-2019 13:04:22.495 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+26-Aug-2019 13:04:22.528 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 2492 ms
+./demo.sh: line 45:  5695 Killed                  timeout -k 60s 100s docker run -v $LOGDIR:/data --cap-add=ALL --name tracedcontainer tracedconfig:latest >> $LOGDIR/out.log
+tracedcontainer
+./demo.sh: line 55: /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config0/profiling/traces.txt: No such file or directory
+cp: cannot stat '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config0/profiling/*.map': No such file or directory
+failed to open /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config0/profiling/perf.data: No such file or directory
+Sending build context to Docker daemon  20.48kB
+Step 1/4 : FROM debian:stretch
+ ---> 8d31923452f8
+Step 2/4 : RUN apt-get update && apt-get dist-upgrade -y &&     apt-get install -y tomcat8 strace --no-install-recommends
+ ---> Using cache
+ ---> 4fbf82811d5f
+Step 3/4 : COPY entrypoint.sh /entrypoint.sh
+ ---> Using cache
+ ---> c322ace5ff4d
+Step 4/4 : ENTRYPOINT strace -o /data/strace.log -f -c -Scalls sh /entrypoint.sh
+ ---> Using cache
+ ---> bd2694f6a2e8
+[Warning] One or more build-args [PROFILER_FREQ] were not consumed
+Successfully built bd2694f6a2e8
+Successfully tagged tracedconfig:latest
+26-Aug-2019 13:06:59.176 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with JAR file [/usr/share/tomcat8/lib/commons-dbcp.jar], exists: [false], canRead: [false]
+26-Aug-2019 13:06:59.182 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with JAR file [/usr/share/tomcat8/lib/commons-pool.jar], exists: [false], canRead: [false]
+26-Aug-2019 13:06:59.184 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/common/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:06:59.185 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/common], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:06:59.186 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/common/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:06:59.187 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/common], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:06:59.190 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/server/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:06:59.191 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/server], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:06:59.194 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/server/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:06:59.196 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/server], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:06:59.199 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/shared/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:06:59.199 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/var/lib/tomcat8/shared], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:06:59.200 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/shared/classes], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:06:59.201 WARNING [main] org.apache.catalina.startup.ClassLoaderFactory.validateFile Problem with directory [/usr/share/tomcat8/shared], exists: [false], isDirectory: [false], canRead: [false]
+26-Aug-2019 13:06:59.270 SEVERE [main] org.apache.catalina.startup.Catalina.initDirs Cannot find specified temporary folder at /tmp/tomcat8-tomcat8-tmp
+26-Aug-2019 13:06:59.965 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version:        Apache Tomcat/8.5.14 (Debian)
+26-Aug-2019 13:06:59.966 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Aug 24 2018 19:44:12 UTC
+26-Aug-2019 13:06:59.966 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server number:         8.5.14.0
+26-Aug-2019 13:06:59.967 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Linux
+26-Aug-2019 13:06:59.968 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            4.4.0-159-generic
+26-Aug-2019 13:06:59.969 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+26-Aug-2019 13:06:59.969 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             /usr/lib/jvm/java-8-openjdk-amd64/jre
+26-Aug-2019 13:06:59.970 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           1.8.0_222-8u222-b10-1~deb9u1-b10
+26-Aug-2019 13:06:59.971 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Oracle Corporation
+26-Aug-2019 13:06:59.972 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         /var/lib/tomcat8
+26-Aug-2019 13:06:59.972 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         /usr/share/tomcat8
+26-Aug-2019 13:06:59.973 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=/var/lib/tomcat8/conf/logging.properties
+26-Aug-2019 13:06:59.973 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+26-Aug-2019 13:06:59.974 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.awt.headless=true
+26-Aug-2019 13:06:59.974 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Xmx512m
+26-Aug-2019 13:06:59.974 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:+UseConcMarkSweepGC
+26-Aug-2019 13:06:59.975 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+26-Aug-2019 13:06:59.977 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.endorsed.dirs=/usr/share/tomcat8/endorsed
+26-Aug-2019 13:06:59.978 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=/var/lib/tomcat8
+26-Aug-2019 13:06:59.979 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=/usr/share/tomcat8
+26-Aug-2019 13:06:59.982 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=/tmp/tomcat8-tomcat8-tmp
+26-Aug-2019 13:06:59.984 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: /usr/java/packages/lib/amd64:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib
+26-Aug-2019 13:07:00.164 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+26-Aug-2019 13:07:00.203 INFO [main] org.apache.tomcat.util.net.NioSelectorPool.getSharedSelector Using a shared selector for servlet write/read
+26-Aug-2019 13:07:00.211 INFO [main] org.apache.catalina.startup.Catalina.load Initialization processed in 942 ms
+26-Aug-2019 13:07:00.291 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service Catalina
+26-Aug-2019 13:07:00.295 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet Engine: Apache Tomcat/8.5.14 (Debian)
+26-Aug-2019 13:07:00.317 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory /var/lib/tomcat8/webapps/ROOT
+26-Aug-2019 13:07:02.210 INFO [localhost-startStop-1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+26-Aug-2019 13:07:02.270 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory /var/lib/tomcat8/webapps/ROOT has finished in 1,952 ms
+26-Aug-2019 13:07:02.274 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+26-Aug-2019 13:07:02.297 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 2084 ms
+./demo.sh: line 45:  6020 Killed                  timeout -k 60s 100s docker run -v $LOGDIR:/data --cap-add=ALL --name tracedcontainer tracedconfig:latest >> $LOGDIR/out.log
+tracedcontainer
+./demo.sh: line 55: /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config0/profiling/traces.txt: No such file or directory
+cp: cannot stat '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config0/profiling/*.map': No such file or directory
+failed to open /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config0/profiling/perf.data: No such file or directory
+Sending build context to Docker daemon  213.5kB
+Step 1/3 : FROM mysql:5
+ ---> e1e1680ac726
+Step 2/3 : ENV MYSQL_DATABASE lutece
+ ---> Using cache
+ ---> 2b41ec753685
+Step 3/3 : COPY ./sql-scripts/ /docker-entrypoint-initdb.d/
+ ---> Using cache
+ ---> 82edb236bab7
+[Warning] One or more build-args [PROFILER_FREQ] were not consumed
+Successfully built 82edb236bab7
+Successfully tagged tracedconfig:latest
+error: database is uninitialized and password option is not specified 
+  You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD
+tracedcontainer
+./demo.sh: line 55: /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config1/profiling/traces.txt: No such file or directory
+cp: cannot stat '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config1/profiling/*.map': No such file or directory
+failed to open /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config1/profiling/perf.data: No such file or directory
+Sending build context to Docker daemon    215kB
+Step 1/3 : FROM mysql:5
+ ---> e1e1680ac726
+Step 2/3 : ENV MYSQL_DATABASE lutece
+ ---> Using cache
+ ---> 2b41ec753685
+Step 3/3 : COPY ./sql-scripts/ /docker-entrypoint-initdb.d/
+ ---> Using cache
+ ---> 82edb236bab7
+[Warning] One or more build-args [PROFILER_FREQ] were not consumed
+Successfully built 82edb236bab7
+Successfully tagged tracedconfig:latest
+error: database is uninitialized and password option is not specified 
+  You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD
+tracedcontainer
+./demo.sh: line 55: /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config1/profiling/traces.txt: No such file or directory
+cp: cannot stat '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config1/profiling/*.map': No such file or directory
+failed to open /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config1/profiling/perf.data: No such file or directory
+Sending build context to Docker daemon    215kB
+Step 1/3 : FROM mysql:5
+ ---> e1e1680ac726
+Step 2/3 : ENV MYSQL_DATABASE lutece
+ ---> Using cache
+ ---> 2b41ec753685
+Step 3/3 : COPY ./sql-scripts/ /docker-entrypoint-initdb.d/
+ ---> Using cache
+ ---> 82edb236bab7
+[Warning] One or more build-args [PROFILER_FREQ] were not consumed
+Successfully built 82edb236bab7
+Successfully tagged tracedconfig:latest
+error: database is uninitialized and password option is not specified 
+  You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD
+tracedcontainer
+./demo.sh: line 55: /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config1/profiling/traces.txt: No such file or directory
+cp: cannot stat '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config1/profiling/*.map': No such file or directory
+failed to open /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config1/profiling/perf.data: No such file or directory
+Sending build context to Docker daemon    215kB
+Step 1/3 : FROM mysql:5
+ ---> e1e1680ac726
+Step 2/3 : ENV MYSQL_DATABASE lutece
+ ---> Using cache
+ ---> 2b41ec753685
+Step 3/3 : COPY ./sql-scripts/ /docker-entrypoint-initdb.d/
+ ---> Using cache
+ ---> 82edb236bab7
+[Warning] One or more build-args [PROFILER_FREQ] were not consumed
+Successfully built 82edb236bab7
+Successfully tagged tracedconfig:latest
+error: database is uninitialized and password option is not specified 
+  You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD
+tracedcontainer
+./demo.sh: line 55: /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config1/profiling/traces.txt: No such file or directory
+cp: cannot stat '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config1/profiling/*.map': No such file or directory
+failed to open /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config1/profiling/perf.data: No such file or directory
+unable to prepare context: unable to evaluate symlinks in Dockerfile path: lstat /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/Dockerfile: no such file or directory
+error: database is uninitialized and password option is not specified 
+  You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD
+tracedcontainer
+./demo.sh: line 55: /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/profiling/traces.txt: No such file or directory
+cp: cannot stat '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/profiling/*.map': No such file or directory
+failed to open /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/profiling/perf.data: No such file or directory
+unable to prepare context: unable to evaluate symlinks in Dockerfile path: lstat /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/Dockerfile: no such file or directory
+error: database is uninitialized and password option is not specified 
+  You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD
+tracedcontainer
+./demo.sh: line 55: /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/profiling/traces.txt: No such file or directory
+cp: cannot stat '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/profiling/*.map': No such file or directory
+failed to open /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/profiling/perf.data: No such file or directory
+unable to prepare context: unable to evaluate symlinks in Dockerfile path: lstat /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/Dockerfile: no such file or directory
+error: database is uninitialized and password option is not specified 
+  You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD
+tracedcontainer
+./demo.sh: line 55: /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/profiling/traces.txt: No such file or directory
+cp: cannot stat '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/profiling/*.map': No such file or directory
+failed to open /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/profiling/perf.data: No such file or directory
+unable to prepare context: unable to evaluate symlinks in Dockerfile path: lstat /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/Dockerfile: no such file or directory
+error: database is uninitialized and password option is not specified 
+  You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD
+tracedcontainer
+./demo.sh: line 55: /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/profiling/traces.txt: No such file or directory
+cp: cannot stat '/home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/profiling/*.map': No such file or directory
+failed to open /home/assadm/STAMP-project/camp/samples/stamp/ow2/traces/configs/config2/profiling/perf.data: No such file or directory
+---- Cleaning a bit ----
+
