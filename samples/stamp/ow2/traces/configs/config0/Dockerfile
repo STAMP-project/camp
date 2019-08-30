@@ -2,7 +2,7 @@ FROM debian:stretch
 
 # install needed apps
 RUN apt-get update && apt-get dist-upgrade -y && \
-    apt-get install -y mysql-client default-jdk ant maven git tomcat8 --no-install-recommends
+    apt-get install -y mysql-client default-jdk ant maven git tomcat8 strace --no-install-recommends
 
 # define the fully qualified artifact of the site
 ARG site=site-forms-demo-1.0.0-SNAPSHOT
