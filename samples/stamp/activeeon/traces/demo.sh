@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 LANGUAGE="java" # set this variable to anything else if your app is not Java-based
-#FREQS=(15013 16103 17203 18301) #(97 193 283) # Frequencies, in Hz, at which the profiler will be executed
+FREQS=(15013 16103 17203 18301) #(97 193 283) # Frequencies, in Hz, at which the profiler will be executed
 DIR=$(pwd)
 
 # create a global dir to aggregate all traces
@@ -31,9 +31,10 @@ FLAMEGRAPH_DIR=$DIR/FlameGraph
 function build
 {
   INDEX=$1
-
+  FREQ=$2
+  
   cd $DIR/configs/config$INDEX
-  docker build -t tracedconfig:latest .
+  docker build -t tracedconfig:latest --build-arg PROFILER_FREQ=$FREQ .
 
   cd $DIR
 }
@@ -43,7 +44,8 @@ function build
 function run
 {
   INDEX=$1
-
+  FREQ=$2
+  
   LOGDIR=$DIR/configs/config$INDEX/profiling
 
   docker run -p 8080:8080 -m 4g -v $LOGDIR:/data --cap-add=ALL --name tracedcontainer tracedconfig:latest
@@ -69,8 +71,11 @@ function run
 echo "---- Building and Running all configurations at all frequencies ----"
 for INDEX in $(seq 0 2); do
   mkdir -p $DIR/configs/config$INDEX/profiling
-    build $INDEX
-    run $INDEX 
+  for FREQ in ${FREQS[@]}; do
+  
+  build $INDEX $FREQ
+    run $INDEX $FREQ 
+done
 done
 wait
 echo "---- Cleaning a bit ----"

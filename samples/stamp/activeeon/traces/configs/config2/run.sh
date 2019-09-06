@@ -12,7 +12,8 @@ sleep 500
 
 /activeeon_enterprise-pca_server-linux-x64-8.5.0-SNAPSHOT/bin/proactive-client -s /workflow-test.xml
 
-perf record -e cpu-clock -p $PID -a -g -o /data/perf.data -- sleep 300
+PROFILER_FREQ=$(cat /.profiler)
+perf record -e cpu-clock -F $PROFILER_FREQ -p $PID -a -g -o /data/perf.data -- sleep 300
 
 
 cp /tmp/perf*.map /data/perf-$PID.map
