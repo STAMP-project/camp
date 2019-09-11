@@ -23,7 +23,7 @@ components:
       docker:
         file: tests/Dockerfile
     tests:
-      command: -n -t perftest_script/testman.jmx -l perftest_script/testman.csv -e -o perftest_script/testman-perftest-report
+      command: -n -t perftest_script/testman.jmx -l perftest_script/testman-perftest-report/testman.jtl -e -o perftest_script/testman-perftest-report
       reports:
         format: jmeter
         location: perftest_script/testman-perftest-report

@@ -343,11 +343,11 @@ need to explain how to run these tests. We thus elaborate on the
 ```
 
 Note the new `tests` section that describes the command to be run,
-that is `-n -t perftest_script/testman.jmx -l perftest_script/testman.csv -e -o `. as well as the expected format of the test
+that is `-n -t perftest_script/testman.jmx -l perftest_script/testman-perftest-report/testman.jtl -e -o `. as well as the expected format of the test
 reports, their location, and the extension used to detect them.
 
 ---
-**Warning**: As per version 0.4, CAMP only supports JMeter/JSON test
+**Warning**: As per version 0.6, CAMP only supports JMeter/JSON test
 reports produced running JMeter in headless mode.
 ---
 
@@ -466,7 +466,7 @@ TOTAL                          66     66      0      0
 That's all folks!
 ```
 
-The reported that the JMeter script made 22 samples (a sample is a single call to a url). No one of them returned an error. To inspect detailed reports for each configuration simply go to generated config folders and look for `index.html` file within the test-reports folder:
+The test summary reported that the JMeter script made 22 samples (a sample is a single call to a url). No one of them returned an error. To inspect detailed reports for each configuration simply go to generated config folders and look for `index.html` file within the test-reports folder:
 
 ```console
 $ tree
@@ -491,3 +491,4 @@ java-web
             :
             .
 ```
+More over, .jtl files are available to be used, for instance, with Jenkins JMeter plugin (which looks for .jtl reports).
