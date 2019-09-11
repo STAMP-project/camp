@@ -491,4 +491,4 @@ java-web
             :
             .
 ```
-More over, .jtl files are available to be used, for instance, with Jenkins JMeter plugin (which looks for .jtl reports).
+Moreover, .jtl files are available to be used, for instance, with Jenkins JMeter plugin (which looks for .jtl reports).
