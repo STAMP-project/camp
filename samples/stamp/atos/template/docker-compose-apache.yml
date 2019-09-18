@@ -8,7 +8,7 @@ version: '2'
 
 services:
   db:
-    build: ../Citygo/Postgres
+    build: ./postgres
     container_name: my_postgres
     networks:
       - my-app-bridge
@@ -27,8 +27,8 @@ services:
     expose:
       - "5432"
   web:
-    build: ../Citygo
-    container_name: my_web
+    build: ./apache
+    container_name: my_apache_web
     networks:
       - my-app-bridge
     environment:
