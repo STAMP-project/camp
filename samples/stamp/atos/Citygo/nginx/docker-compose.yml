@@ -10,7 +10,7 @@ version: '2'
 services:
   db:
     container_name: my_postgres
-    build: ../Citygo/Postgres
+    build: ./Postgres
     environment:
       - max_connections=500
       - shared_buffers=256
