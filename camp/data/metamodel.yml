@@ -64,6 +64,13 @@
        type: Partner
        multiple: true
        mandatory: true
+
+       # Hold the transitive closure all underlying feature provider
+     - name: stack
+       type: CInstance
+       mandatory: true
+       multiple: true
+
      - name: use_feature
        type: CInstance
      - name: configuration

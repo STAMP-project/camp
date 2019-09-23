@@ -29,7 +29,7 @@ from unittest import TestCase
 
 
 
-class FilesAreGenerated(TestCase):
+class ConfigurationsAreGenerated(TestCase):
 
 
     def test_single_component(self):
@@ -73,6 +73,66 @@ class FilesAreGenerated(TestCase):
             "    requires_features: [ JRE ]\n"
             "  jre:\n"
             "    provides_features: [ JRE ]\n"
+            "goals:\n"
+            "  running:\n"
+            "    - Awesome\n")
+
+        self.invoke_camp_generate()
+
+        self.assert_configuration_count_is(1)
+
+
+    def test_stack_with_three_components(self):
+        self.prepare_sample(
+            "components:\n"
+            "  app:\n"
+            "    provides_services: [ Awesome ]\n"
+            "    requires_features: [ ServletContainer ]\n"
+            "  tomcat:\n"
+            "    provides_features: [ ServletContainer ]\n"
+            "    requires_features: [ JRE ]\n"
+            "  jre:\n"
+            "    provides_features: [ JRE ]\n"
+            "goals:\n"
+            "  running:\n"
+            "    - Awesome\n")
+
+        self.invoke_camp_generate()
+
+        self.assert_configuration_count_is(1)
+
+
+    def test_stack_with_four_components(self):
+        self.prepare_sample(
+            "components:\n"
+            "  app:\n"
+            "    provides_services: [ Awesome ]\n"
+            "    requires_features: [ ServletContainer ]\n"
+            "  tomcat:\n"
+            "    provides_features: [ ServletContainer ]\n"
+            "    requires_features: [ JRE ]\n"
+            "  jre:\n"
+            "    provides_features: [ JRE ]\n"
+            "    requires_features: [ Linux ]\n"
+            "  ubuntu:\n"
+            "    provides_features: [ Linux ]\n"
+            "goals:\n"
+            "  running:\n"
+            "    - Awesome\n")
+
+        self.invoke_camp_generate()
+
+        self.assert_configuration_count_is(1)
+
+
+    def test_stack_with_variable(self):
+        self.prepare_sample(
+            "components:\n"
+            "  app:\n"
+            "    provides_services: [ Awesome ]\n"
+            "    requires_features: [ JRE ]\n"
+            "  jre:\n"
+            "    provides_features: [ JRE ]\n"
             "    variables:\n"
             "      version:\n"
             "        values: [v7, v8]\n"
@@ -83,6 +143,32 @@ class FilesAreGenerated(TestCase):
         self.invoke_camp_generate()
 
         self.assert_configuration_count_is(2)
+
+
+    # See Issue 74
+    def test_stack_with_side_by_side_components(self):
+        self.prepare_sample(
+            "components:\n"
+            "  app:\n"
+            "    provides_services: [ Awesome ]\n"
+            "    requires_features: [ Python, HttpProxy ]\n"
+            "  apache:\n"
+            "    provides_features: [ HttpProxy ]\n"
+            "    requires_features: [ Linux ]\n"
+            "  django:\n"
+            "    provides_features: [ Python ]\n"
+            "    requires_features: [ Linux ]\n"
+            "  ubuntu:\n"
+            "    provides_features: [ Linux ]\n"
+            "\n"
+            "goals:\n"
+            "  running:\n"
+            "    - Awesome\n")
+
+        self.invoke_camp_generate()
+
+        self.assert_configuration_count_is(2)
+
 
 
     def test_orchestrations(self):
@@ -98,7 +184,7 @@ class FilesAreGenerated(TestCase):
             "    provides_services: [ DB ]\n"
             "  postgresql:\n"
             "    provides_services: [ DB ]\n"
-            "    \n"
+            "\n"
             "goals:\n"
             "  running:\n"
             "    - Awesome\n")
@@ -106,6 +192,8 @@ class FilesAreGenerated(TestCase):
         self.invoke_camp_generate()
 
         self.assert_configuration_count_is(2)
+
+
 
 
     def prepare_sample(self, sample):
