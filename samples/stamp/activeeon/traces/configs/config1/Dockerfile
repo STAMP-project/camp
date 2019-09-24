@@ -1,5 +1,8 @@
 FROM openjdk:8
 
+ARG PROFILER_FREQ 
+RUN echo "$PROFILER_FREQ" > /.profiler
+
 RUN apt update
 
 RUN apt-get install -y build-essential cmake wget unzip flex bison && rm -rf /var/lib/apt/lists/*
@@ -12,7 +15,7 @@ RUN cd /root/perf-map-agent && cp out/libperfmap.so /libperfmap.so && cp out/att
 
 RUN cd /root && wget https://github.com/dcapwell/lightweight-java-profiler/archive/master.zip && unzip master.zip && rm -f master.zip
 
-RUN cd /root/lightweight-java-profiler-master &&  make
+RUN cd /root/lightweight-java-profiler-master && sed -i "s/static const int kNumInterrupts = 100;/static const int kNumInterrupts = $PROFILER_FREQ;/" src/globals.h && make
 
 RUN cp /root/lightweight-java-profiler-master/build-64/liblagent.so /liblagent.so
 

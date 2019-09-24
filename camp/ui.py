@@ -60,6 +60,10 @@ class UI(object):
         self._summarize(configuration)
 
 
+    def no_configuration_generated(self):
+        self._print("\nError: No configuration generated! Is the model correct?")
+
+
     def configurations_loaded(self, path):
         self._print("Loading configurations from '{path}' ...", path=path)
 

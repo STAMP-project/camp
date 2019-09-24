@@ -106,6 +106,7 @@ class Z3Problem(object):
 
     def _solve(self):
         z3_solution = cast_all_objects(self._solver.model())
+        #import pprint; pprint.pprint(z3_solution)
 
         self._solver.add(self._context.evaluate(self._as_constraint(z3_solution)))
         return self._extract_from(z3_solution)
@@ -146,6 +147,7 @@ class Z3Problem(object):
                 if "use_feature" in item and item["use_feature"]:
                     provider = result.resolve(item["use_feature"])
                     instance.feature_provider = provider
+
                 if "partners" in item:
                     providers = [result.resolve(z3_solution[each]["endpoint"]) \
                                  for each in item["partners"]]
@@ -399,8 +401,8 @@ class Context(object):
 
 
 INTEGRITY_VARIABLES = [
-    ("CInstance", ["ci", "ci1", "ci2", "spi"]),
-    ("Feature", ["fr", "fp"]),
+    ("CInstance", ["ci", "ci1", "ci2", "ci3", "ci4", "ci5", "spi"]),
+    ("Feature", ["fr", "fp", "f1", "f2", "f3"]),
     ("Partner", ["partner"]),
     ("Service", ["service", "sr", "sp"]),
     ("Variable", ["var"]),
@@ -415,10 +417,59 @@ INTEGRITY_CONSTRAINTS = [
     CInstance.all_instances().count() > 0
     """,
 
-    # Cannot be deploy on itself
+    # -----
+    # DEFINITION of CInstance::stack
+
+    # No feature provider, no stack
     """
-    CInstance.forall(ci, Not(ci["use_feature"] == ci))
+    CInstance.forall(ci1,
+       Implies(
+          ci1.use_feature.undefined(),
+          ci1.stack.count() == 0))
     """,
+
+
+    # The feature provider must be in the stack
+    """
+    CInstance.forall(ci1,
+        Implies(
+           Not(ci1.use_feature.undefined()),
+           ci1.stack.exists(ci2, ci2 == ci1.use_feature)))
+    """,
+
+
+    # Stack Correctness: Any element in the stack is either the
+    # underlying feature provider or somewhere further down the stack
+    """
+    CInstance.forall(ci1,
+       ci1.stack.forall(ci2,
+          Or(ci1.use_feature == ci2,
+             ci1.use_feature.stack.exists(ci3, ci3 == ci2))))
+    """,
+
+
+    # Stack Completness: Every element in my stack is also in the stack of
+    # the element above me in the stack
+    """
+    CInstance.forall(ci1,
+       CInstance.forall(ci2,
+           Implies(
+             ci2.use_feature == ci1,
+             And(
+                ci2.stack.exists(ci3, ci3 == ci1),
+                ci1.stack.forall(ci4,
+                   ci2.stack.exists(ci5, ci5 == ci4))))))
+    """,
+
+
+    # No cycle in the deployment structure
+    """
+    CInstance.forall(ci1,
+       Not(ci1.stack.exists(ci2, ci2 == ci1)))
+    """,
+
+
+    # Service bindings
 
     # An instance cannot use its own services
     """
@@ -426,18 +477,41 @@ INTEGRITY_CONSTRAINTS = [
            partner, partner.endpoint == ci)))
     """,
 
-    # Can only deploy on something that provides the required features
+
+    # STACK CONSTRUCTION THROUGH FEATURES
+
+    # Instances that do not require features cannot have a feature_provider
     """
-    CInstance.forall(ci, ci["definition"]["require_features"].forall(
-    fr, ci.use_feature["definition"].provide_features.exists(fp, fp == fr)))
+    CInstance.forall(ci,
+       Implies(
+          ci.definition.require_features.count() == 0,
+          ci.use_feature.undefined()))
     """,
 
-    # All partner shall connect to an endpoint that provides the requested service
+
+    # Instances that do require features must have one feature_provider that
+    # provides all the required features
+    """
+    CInstance.forall(ci1,
+        ci1.definition.require_features.forall(f1,
+            CInstance.exists(ci2,
+               And(
+                  ci2 == ci1.use_feature,
+                  Or(
+                    ci2.definition.provide_features.exists(f2, f2 == f1),
+                    ci2.stack.exists(ci3,
+                        ci3.definition.provide_features.exists(f3, f3 == f1)))))))
+    """,
+
+
+    # All partner shall connect to an endpoint that provides the requested
+    # service
     """
     Partner.forall(partner,
        partner.endpoint.definition.provide_services.exists(service,
           service == partner.service))
     """,
+
 
     # Instances that do not require services cannot have any
     # service provider
@@ -447,26 +521,6 @@ INTEGRITY_CONSTRAINTS = [
        ci["partners"].count() == 0))
     """,
 
-    # Instances that do not require features cannot have a
-    # feature_provider
-    """
-    CInstance.forall(ci, Implies(ci["definition"]["require_features"].count() == 0,
-    ci["use_feature"].undefined()))
-    """,
-
-    # Instances that do require features must have one
-    # feature_provider
-    """
-    CInstance.forall(ci, Implies(ci["definition"]["require_features"].count() > 0,
-    Not(ci["use_feature"].undefined())))
-    """,
-
-    # All provided features must be used
-    """
-    CInstance.forall(ci1,
-       Implies(ci1.definition.provide_features.count() > 0,
-               CInstance.exists(ci2, ci2.use_feature == ci1)))
-    """,
 
     # Only one pending service
     """
@@ -474,7 +528,7 @@ INTEGRITY_CONSTRAINTS = [
           And([ci1.definition.provide_services.count() > 0,
                CInstance.forall(ci2, ci2.partners.forall(partner,
                     partner.endpoint != ci1))])).count() == 1
-    """
+    """,
 
     # No pending instances
     # """

@@ -66,8 +66,15 @@ class Camp(object):
         try:
             model = self._load_model()
             configurations = self._generate_configurations(arguments, model)
+
+            count = 0
             for index, each_configuration in enumerate(configurations, 1):
                 self._save(index, each_configuration)
+                count += 1
+
+            if count == 0:
+                self._ui.no_configuration_generated()
+
 
         except InvalidYAMLModel as error:
             self._ui.invalid_yaml_model(error)
@@ -108,8 +115,8 @@ class Camp(object):
 
 
     def _save(self, index, configuration):
-        self._output.save_as_graphviz(index, configuration)
         yaml_file = self._output.save_as_yaml(index, configuration)
+        self._output.save_as_graphviz(index, configuration)
         self._ui.new_configuration(index, configuration, yaml_file)
 
 

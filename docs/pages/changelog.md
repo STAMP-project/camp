@@ -6,6 +6,17 @@ changes that were made.
 
 *   CAMP v0.6
 
+    *   CAMP v0.6.1 (Sep. 23, 2019)
+
+        *   Fix [Issue
+            74](https://github.com/STAMP-project/camp/issues/74). Update
+            the integrity constraints that govern how CAMP stacks
+            components together. CAMP thus supports "side-by-side"
+            component inside software stacks.
+
+        *   CAMP reports explicitly when it cannot find any configuration.
+
+
     *   CAMP v0.6.0 (Aug. 20, 2019)
 
         *   Add support for JMeter test execution, report
