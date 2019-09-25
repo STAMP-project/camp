@@ -1,0 +1,127 @@
+version: '2'
+
+services:
+  db:
+    build: ../Citygo/Postgres/new/
+    container_name: my_postgresql
+    environment:
+      - max_connections=500
+      - shared_buffers=256
+      - port=5432
+      - POSTGRES_DB=citygo_malaga
+      - POSTGRES_USER=citygo
+      - POSTGRES_PASSWORD=5X6sdoq0!?az=v2aSX
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - "5432"
+    networks:
+      - my-app-bridge
+
+  apache:
+    build: .
+    container_name: my_apache
+    environment:
+      - HTTPD_VERSION=2.4
+      - StartServers=2
+      - MinSpareThreads=25
+      - MaxSpareThreads=75
+      - ThreadLimit=64
+      - ThreadsPerChild=25
+      - MaxRequestWorkers=150
+      - MaxConnectionsPerChild=0
+      - DJANGO_SETTINGS_MODULE=citygo_settings.settings
+      - BROWSERNAME=chrome
+      - PLATFORM=LINUX
+      - JAVASCRIPTENABLED=True
+      - MAXINSTANCES=50
+      - CSSSELECTORSENABLED=True
+      - BROWSERCONNECTIONENABLED=True
+    volumes: 
+      #- ../Citygo/www:/var/www/html
+      - ./app/:/usr/src/app/
+      - static_volume:/usr/src/app/static
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+      - mongo
+    networks:
+      - my-app-bridge
+
+  web:
+    build: ../dashboard
+    container_name: "my_web"
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=citygo_settings.settings
+      - BROWSERNAME=chrome
+      - PLATFORM=LINUX
+      - JAVASCRIPTENABLED=True
+      - MAXINSTANCES=50
+      - CSSSELECTORSENABLED=True
+      - BROWSERCONNECTIONENABLED=True
+    networks:
+      - my-app-bridge
+    volumes:
+      - ./app/:/usr/src/app/
+      - static_volume:/usr/src/app/static
+    depends_on:
+      - db
+      - mongo
+      - apache
+    ports:
+      - "8000:8000"
+
+  hub:
+    container_name: "selenium_hub"
+    image: selenium/hub
+    volumes:
+      - /dev/shm:/dev/shm/
+    ports:
+      - "4444:4444"
+    networks:
+      - my-app-bridge
+
+
+  selenium_chrome:
+    container_name: selenium_chrome
+    image: selenium/node-chrome-debug
+    environment:
+      - HUB_PORT_4444_TCP_ADDR=hub
+      - HUB_PORT_4444_TCP_PORT=4444
+    ports:
+      - "5900:5900"
+    depends_on:
+      - hub
+    networks:
+      - my-app-bridge
+
+
+
+  mongo:
+    container_name: "my_mongo"
+    image: mongo:4.0.6-xenial
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./data/db:/data/db
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    networks:
+      - my-app-bridge
+
+
+volumes:
+  postgres_data:
+  static_volume:
+
+networks:
+  my-app-bridge:
+    driver: bridge
