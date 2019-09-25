@@ -504,6 +504,17 @@ INTEGRITY_CONSTRAINTS = [
     """,
 
 
+    # There shall not be two components providing the same feature in a
+    # given stack (See Issue 75)
+    """
+    CInstance.forall(ci1,
+       ci1.definition.provide_features.forall(f1,
+          Not(
+             ci1.stack.exists(ci2,
+                 ci2.definition.provide_features.exists(f2, f2 == f1)))))
+    """,
+
+
     # All partner shall connect to an endpoint that provides the requested
     # service
     """

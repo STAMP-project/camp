@@ -170,6 +170,33 @@ class ConfigurationsAreGenerated(TestCase):
         self.assert_configuration_count_is(2)
 
 
+    # See Issue 75
+    def test_stack_with_side_by_side_components_and_choice(self):
+        self.prepare_sample(
+            "components:\n"
+            "  app:\n"
+            "    provides_services: [ Awesome ]\n"
+            "    requires_features: [ Python, HttpProxy ]\n"
+            "  apache:\n"
+            "    provides_features: [ HttpProxy ]\n"
+            "    requires_features: [ Linux ]\n"
+            "  nginx:\n"
+            "    provides_features: [ HttpProxy ]\n"
+            "    requires_features: [ Linux ]\n"
+            "  django:\n"
+            "    provides_features: [ Python ]\n"
+            "    requires_features: [ Linux ]\n"
+            "  ubuntu:\n"
+            "    provides_features: [ Linux ]\n"
+            "\n"
+            "goals:\n"
+            "  running:\n"
+            "    - Awesome\n")
+
+        self.invoke_camp_generate()
+
+        self.assert_configuration_count_is(4)
+
 
     def test_orchestrations(self):
         self.prepare_sample(
