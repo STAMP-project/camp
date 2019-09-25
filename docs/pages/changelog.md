@@ -6,6 +6,14 @@ changes that were made.
 
 *   CAMP v0.6
 
+    *   CAMP v0.6.2 (Sep. 26, 2019)
+
+        *   Fix [Issue
+            75](https://github.com/STAMP-project/camp/issues/75). Add
+            missing constraint that forces CAMP to rule out stacks
+            that contain several components that offer the same
+            feature.
+
     *   CAMP v0.6.1 (Sep. 23, 2019)
 
         *   Fix [Issue
