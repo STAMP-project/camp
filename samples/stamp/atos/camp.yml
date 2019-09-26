@@ -19,37 +19,38 @@ components:
     requires_services: [ Test ]
     implementation:
       docker:
-        image: selenium/node-chrome-debug
+        file: browser/Dockerfile
+    tests:
+      command: pytest -v tests.py --junitxml=report.xml
+      reports:
+        location: "./"
+        pattern: ".xml"
+        format: junit
 
   hub:
     provides_services: [ Test ]
-    requires_services: [ Proxy ]
+    requires_services: [ HttpProxy ]
     implementation:
       docker:
         image: selenium/hub
 
   apache:
-    provides_services: [ Proxy ]
-    requires_services: [ Citygo ]
-      
+    provides_services: [ HttpProxy ]
+    requires_services: [ CityGo ]
+    implementation:
+      docker:
+        file: apache/Dockerfile
+    realization:
+      - select: docker-compose-apache-as-proxy.yml
+        instead_of:
+          - docker-compose-nginx.yml
+          - docker-compose-apache.yml
+        as: docker-compose.yml
+
   nginx:
-    provides_services: [ Proxy ]
-    requires_services: [ Citygo ]
+    provides_services: [ HttpProxy ]
+    requires_services: [ CityGo ]
     variables:
-      # implementation:
-      #   values: [apache, nginx]
-      #   realization:
-      #     - select:
-      #         - docker-compose-apache.yml
-      #         - docker-compose-nginx.yml
-      #       as: docker-compose.yml
-      # worker_connections:
-      #   values: [2,64,1024]
-      #   realization:
-      #     - targets: [docker-compose.yml]
-      #       pattern: "worker_connections=1024"
-      #       replacements: 
-      #         - worker_connections=64
       gzip:
         values: [on, off]
         realization:
@@ -58,67 +59,42 @@ components:
             replacements:
               - gzip=on
               - gzip=off
-
-  dashboard:
-    provides_services: [ Citygo ]
+    implementation:
+      docker:
+        file: nginx/Dockerfile
+    realization:
+      - select: docker-compose-nginx.yml
+        instead_of:
+          - docker-compose-apache.yml
+          - docker-compose-apache-as-proxy.yml
+        as: docker-compose.yml
+        
+  citygo:
+    provides_services: [ CityGo ]
     requires_services: [ Postgres, Mongo ]
     requires_features: [ Python ]
-    # variables:
-      # implementation:
-      #   values: [apache, nginx]
-      #   realization:
-      #     - select:
-      #        - docker-compose-apache.yml
-      #        - docker-compose-nginx.yml
-      #       as: docker-compose.yml
-      # thread_limit:
-      #   values: [64, 128]
-      #   realization:
-      #     - targets: [ docker-compose.yml ]
-      #       pattern: "ThreadLimit=64"
-      #       replacements:
-      #         - ThreadLimit=64
-      #         - ThreadLimit=128
-      # threads_per_child:
-      #   values: 
-      #     range: [0, 128]
-      #     coverage: 20
-      #   realization:
-      #     - targets: [ docker-compose.yml ]
-      #       pattern: "ThreadsPerChild=25"
-      #       replacements:
-      #         - ThreadsPerChild=64
-      # max_request_workers:
-      #   values: [0,150]
-      #   realization:
-      #     - targets: [ docker-compose.yml ]
-      #       pattern: "MaxRequestWorkers=150"
-      #       replacements:
-      #         - MaxRequestWorkers=150
-
+    implementation:
+      docker:
+        file: citygo/Dockerfile
+        
   mongo:
     provides_services: [ Mongo ]
     implementation:
       docker:
         image: mongo:4.0.6-xenial
-      
+
   python:
     provides_features: [ Python ]
+    requires_features: [ Ubuntu ]
     implementation:
       docker:
-        image: python:2.7
-        
+        file: python/Dockerfile
+
   postgres:
     provides_services: [ Postgres ]
-    requires_features: [ Ubuntu ]
-    # variables:
-    #   implementation:
-    #     values: [apache, nginx]
-    #     realization:
-    #      - select:
-    #        - docker-compose-apache.yml
-    #        - docker-compose-nginx.yml
-    #        as: docker-compose.yml
+    implementation:
+      docker:
+        file: postgres/Dockerfile
 
   ubuntu:
     provides_features: [ Ubuntu ]
