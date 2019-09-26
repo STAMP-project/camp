@@ -1,10 +1,10 @@
 FROM debian:stretch
 
-ARG PROFILER_FREQ 
+ARG PROFILER_FREQ
 
 RUN echo "$PROFILER_FREQ" > /.profiler
 
-RUN apt update 
+RUN apt update
 
 # install needed apps
 RUN apt-get update && apt-get dist-upgrade -y && \
@@ -37,7 +37,7 @@ WORKDIR /app
 
 ADD pom.xml /app/pom.xml
 
-RUN mvn lutece:site-assembly
+RUN mvn clean install && mvn lutece:site-assembly
 
 ADD db.properties /app/target/${site}/WEB-INF/conf/db.properties
 
