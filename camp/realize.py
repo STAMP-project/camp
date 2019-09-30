@@ -310,6 +310,9 @@ class Builder(object):
         if instance.feature_provider in self._images:
             index = self._images.index(instance.feature_provider)
             self._images.insert(index+1, instance)
+        elif instance in self._images:
+            index = self._images.index(instance)
+            self._images.insert(index, instance.feature_provider)
         else:
             self._images.append(instance.feature_provider)
             self._images.append(instance)
@@ -331,7 +334,7 @@ class Builder(object):
             stream.write(content)
 
 
-    BUILD_COMMAND = "docker build -t {tag} {folder}"
+    BUILD_COMMAND = "docker build --no-cache -t {tag} {folder}"
 
     def _build_script(self):
         return join_paths(self._image_directory, "build_images.sh")
@@ -343,5 +346,6 @@ class Builder(object):
                          "#\n"
                          "# Build all images and set the appropriate tags\n"
                          "#\n"
+                         "set -e\n"
                          "{0}\n"
                          "echo 'All images ready.'\n")
