@@ -30,11 +30,13 @@ jobs:
           at: ./
       - run: |
           docker load -i camp-ci.tar
-      - run: |
-          docker run --name tests \
-                     -v /var/run/docker.sock:/var/run/docker.sock \
-                     -t camp:ci \
-                      /bin/bash -c "green -qrfvv -s 1 tests && coverage xml"
+      - run:
+          no_output_timeout: 30m
+          command: |
+             docker run --name tests \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        -t camp:ci \
+                        /bin/bash -c "green -qrfvv -s 1 tests && coverage xml"
       - run: |
           docker cp tests:/camp/coverage.xml coverage.xml
       - persist_to_workspace:
