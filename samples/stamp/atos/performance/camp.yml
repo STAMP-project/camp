@@ -1,0 +1,107 @@
+#
+# CAMP
+#
+# Copyright (C) 2017, 2018 SINTEF Digital
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+
+goals:
+  running:
+    - Entry
+
+components:
+
+  browser:
+    provides_services: [ Entry ]
+    requires_services: [ Test ]
+    implementation:
+      docker:
+        file: browser/Dockerfile
+    tests:
+      command: pytest -v tests.py --junitxml=report.xml
+      reports:
+        location: "./"
+        pattern: ".xml"
+        format: junit
+
+  hub:
+    provides_services: [ Test ]
+    requires_services: [ CityGo ]
+    implementation:
+      docker:
+        image: selenium/hub
+        
+  citygo:
+    provides_services: [ CityGo ]
+    requires_services: [ Postgres, Mongo ]
+    requires_features: [ Python ]
+    implementation:
+      docker:
+        file: citygo/Dockerfile
+
+  python:
+    provides_features: [ Python ]
+    requires_features: [ HttpProxy ]
+    implementation:
+      docker:
+        file: python/Dockerfile
+
+  apache:
+    provides_features: [ HttpProxy ]
+    requires_features: [ Ubuntu ]
+    variables:
+      thread_limit:
+        type: Integer
+        values: [ 64, 128 ]
+        realization:
+          - targets: [ docker-compose.yml ]
+            pattern: "ThreadLimit=64"
+            replacements: [ ThreadLimit=64, ThreadLimit=128 ]
+      threads_per_child:
+        type: Integer
+        values:
+          range: [0, 128]
+          coverage: 10
+        realization:
+          - targets: [ docker-compose.yml ]
+            pattern: ThreadsPerChild=25
+            replacements: ["ThreadsPerChild={value}"]
+      max_request_workers:
+        type: Integer
+        realization:
+          - targets: [ docker-compose.yml ]
+            pattern: MaxRequestWorkers=150
+            replacements: ["MaxRequestWorkers={value}"]
+    implementation:
+      docker:
+        file: repo/showcase/Dockerfile
+    implementation:
+      docker:
+        file: apache/Dockerfile
+        
+  mongo:
+    provides_services: [ Mongo ]
+    implementation:
+      docker:
+        image: mongo:4.0.6-xenial
+
+        
+  postgres:
+    provides_services: [ Postgres ]
+    implementation:
+      docker:
+        file: postgres/Dockerfile
+
+  ubuntu:
+    provides_features: [ Ubuntu ]
+    implementation:
+      docker:
+        image: ubuntu:latest
+
+constraints:
+ - apache_0_threads_per_child.value < apache_0_thread_limit.value
+ - apache_0_max_request_workers.value == 16 * apache_0_threads_per_child.value  
+ - Or([And([apache_0_threads_per_child.value >= 100, apache_0_max_request_workers.value >= 200]), And([apache_0_thread_limit.value <= 64, apache_0_max_request_workers.value >= 2])])  

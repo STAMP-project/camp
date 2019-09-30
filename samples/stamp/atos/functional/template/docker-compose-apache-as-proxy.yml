@@ -1,17 +1,10 @@
-# Each service defined here deploy CityGo platform
-# This docker-compose file deploy the platfomr using Apache Server.
-#
-# Maintainer: Fernando Méndez Requena - fernando.mendez@atos.net
-
-
 version: '2'
 
 services:
+
   db:
     build: ./postgres
-    container_name: my_postgres
-    networks:
-      - my-app-bridge
+    container_name: my_postgresql
     environment:
       - max_connections=500
       - shared_buffers=256
@@ -20,18 +13,20 @@ services:
       - POSTGRES_USER=citygo
       - POSTGRES_PASSWORD=5X6sdoq0!?az=v2aSX
       - PGDATA=/var/lib/postgresql/data/pgdata
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
     expose:
       - "5432"
-  web:
-    build: ./citygo
-    container_name: my_web
     networks:
       - my-app-bridge
+
+  apache:
+    build: .
+    container_name: my_apache
     environment:
+      - HTTPD_VERSION=2.4
       - StartServers=2
       - MinSpareThreads=25
       - MaxSpareThreads=75
@@ -39,6 +34,7 @@ services:
       - ThreadsPerChild=25
       - MaxRequestWorkers=150
       - MaxConnectionsPerChild=0
+      - DJANGO_SETTINGS_MODULE=citygo_settings.settings
       - BROWSERNAME=chrome
       - PLATFORM=LINUX
       - JAVASCRIPTENABLED=True
@@ -46,24 +42,51 @@ services:
       - CSSSELECTORSENABLED=True
       - BROWSERCONNECTIONENABLED=True
     volumes: 
-      - ../Citygo/www:/var/www/html
+      #- ../Citygo/www:/var/www/html
+      - ./app/:/usr/src/app/
+      - static_volume:/usr/src/app/static
     ports:
       - "80:80"
     depends_on:
       - db
       - mongo
-    expose: 
-      - "80"
+    networks:
+      - my-app-bridge
+
+  web:
+    build: ./citygo
+    container_name: "my_web"
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=citygo_settings.settings
+      - BROWSERNAME=chrome
+      - PLATFORM=LINUX
+      - JAVASCRIPTENABLED=True
+      - MAXINSTANCES=50
+      - CSSSELECTORSENABLED=True
+      - BROWSERCONNECTIONENABLED=True
+    networks:
+      - my-app-bridge
+    volumes:
+      - ./app/:/usr/src/app/
+      - static_volume:/usr/src/app/static
+    depends_on:
+      - db
+      - mongo
+      - apache
+    ports:
+      - "8000:8000"
 
   hub:
     container_name: "selenium_hub"
     image: selenium/hub
     volumes:
       - /dev/shm:/dev/shm/
-    networks:
-      - my-app-bridge
     ports:
       - "4444:4444"
+    networks:
+      - my-app-bridge
+
 
   selenium_chrome:
     container_name: selenium_chrome
@@ -93,8 +116,10 @@ services:
     networks:
       - my-app-bridge
 
+
 volumes:
   postgres_data:
+  static_volume:
 
 networks:
   my-app-bridge:

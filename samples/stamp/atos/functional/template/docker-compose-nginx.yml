@@ -72,8 +72,9 @@ services:
       - web
     networks:
       - dsne-django-nginx
+
   web:
-    build: ./app
+    build: ./citygo
     container_name: "my_web"
     restart: always
     command: bash -c "python manage.py migrate --no-input && gunicorn citygo_settings.wsgi:application -b 0.0.0.0:80 --workers 3"
