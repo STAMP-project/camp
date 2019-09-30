@@ -630,12 +630,14 @@ class Configuration(Visitee):
 
 
     def __init__(self, model, instances=None):
-        self._instances = {each.name:each for each in instances} \
-                          if instances else {}
+        self._instances = [each for each in instances]
 
 
     def resolve(self, identifier):
-        return self._instances[identifier]
+        for any_instance in self._instances:
+            if any_instance.name == identifier:
+                return any_instance
+        raise KeyError("Unknown instance '{}'!".format(identifier))
 
 
     @property
@@ -645,7 +647,7 @@ class Configuration(Visitee):
 
     @property
     def instances(self):
-        return [ each for each in self._instances.values() ]
+        return self._instances
 
 
     @property
