@@ -15,6 +15,7 @@ from tests.commons import CampTest, Scenario
 from unittest import skip
 
 
+
 class FilesAreGenerated(CampTest):
 
 
