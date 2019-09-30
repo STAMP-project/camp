@@ -1,6 +1,7 @@
 version: '2'
 
 services:
+
   db:
     build: ./postgres
     container_name: my_postgresql
@@ -53,7 +54,7 @@ services:
       - my-app-bridge
 
   web:
-    build: ./dashboard
+    build: ./citygo
     container_name: "my_web"
     restart: always
     environment:
@@ -99,8 +100,6 @@ services:
       - hub
     networks:
       - my-app-bridge
-
-
 
   mongo:
     container_name: "my_mongo"

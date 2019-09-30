@@ -1,6 +1,7 @@
 # Installation of Python 2.7
 
-FROM whatever # Replaced by CAMP during realization
+# Replaced by CAMP during realization
+FROM camp/runtime
 
 RUN apt-get install -y --no-install-recommends python2.7 \
     && rm -rf  /usr/bin/python \
