@@ -31,16 +31,37 @@ components:
 
   greetings:
     provides_services: [ Greetings ]
-    variables:
-      tomcat:
-        values: [ v7, v8, v9 ]
-        realization:
-         - targets: [ greetings/Dockerfile ]
-           pattern: "tomcat:8-jre8"
-           replacements:
-             - tomcat:7-jre8
-             - tomcat:8-jre8
-             - tomcat:9-jre8
+    requires_features: [ ServletContainer ]
     implementation:
       docker:
         file: greetings/Dockerfile
+
+  tomcat:
+    provides_features: [ ServletContainer ]
+    requires_features: [ JRE ]
+    variables:
+      version:
+        values: [ v7, v8, v9 ]
+        realization:
+         - targets: [ tomcat/Dockerfile ]
+           pattern: "TOMCAT_MAJOR=7"
+           replacements:
+             - TOMCAT_MAJOR=7
+             - TOMCAT_MAJOR=8
+             - TOMCAT_MAJOR=9
+         - targets: [ tomcat/Dockerfile ]
+           pattern: "TOMCAT_REVISION=0.96"
+           replacements:
+             - TOMCAT_REVISION=0.96
+             - TOMCAT_REVISION=5.46
+             - TOMCAT_REVISION=0.26
+    implementation:
+      docker:
+        file: tomcat/Dockerfile
+
+  jre:
+    provides_features: [ JRE ]
+    implementation:
+      docker:
+        file: jre/Dockerfile
+

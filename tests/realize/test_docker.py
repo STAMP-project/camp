@@ -36,17 +36,19 @@ class BuilderTest(TestCase):
 
         self._input.create_template_file("server",
                                          "Dockerfile",
-                                         self.DOCKER_FILE)
+                                         ("FROM openjdk:8-jre as builder\n"
+                                          "RUN echo \"build the from the sources\"\n"
+                                          "FROM camp/runtime\n"
+                                          "COPY --from=builder /build/a.out /a.out\n"))
+
         self._input.create_template_file("jdk",
                                          "Dockerfile",
-                                         self.DOCKER_FILE)
+                                         ("FROM openjdk:8-jre\n"
+                                          "RUN echo this is nice\n"))
 
         self._builder = Builder()
 
     WORKING_DIRECTORY = "realize/docker"
-
-    DOCKER_FILE = ("FROM openjdk:8-jre\n"
-                   "RUN echo this is nice\n")
 
 
     def build(self, configuration):
@@ -132,7 +134,8 @@ class DockerFileGenerated(BuilderTest):
         self.assert_generated(
             "config_0/images/server_0/Dockerfile",
             with_patterns=[
-                "FROM openjdk:8-jre"
+                "FROM openjdk:8-jre",
+                "FROM camp/runtime"
             ])
 
 
@@ -161,6 +164,7 @@ class DockerFileGenerated(BuilderTest):
         self.assert_generated(
             "config_0/images/server_0/Dockerfile",
             with_patterns=[
+                "FROM openjdk:8-jre",
                 "FROM fchauvel/test:1.0.1"
             ])
 

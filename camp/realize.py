@@ -183,7 +183,10 @@ class Builder(object):
             raise RuntimeError("Component implement '%s' not supported yet" \
                                % kind.__name__)
 
-    REGEX_FROM = r'FROM\s+(?:[a-zA-Z0-9\._-]*/)?[a-zA-Z0-9\._-]+(?:\:[a-zA-Z0-9\._-]+)?'
+    # Issue 78 about Multi-stages build.
+    # We do not match every single FROM statement, but only those that
+    # start with 'camp', such as 'camp/runtime' for instance.
+    REGEX_FROM = r'FROM\s+camp/[a-zA-Z0-9\._-]+(?:\:[a-zA-Z0-9\._-]+)?'
 
 
     def _realize_component(self, instance):

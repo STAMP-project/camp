@@ -28,8 +28,8 @@ RUN mv target/greetings-1.0-SNAPSHOT.war target/greetings.war
 
 
 # Step 2: Deploy the WAR file into a Tomcat instance
-FROM tomcat:8-jre8
-
+#FROM tomcat:8-jre8
+FROM camp/runtime
 
 COPY --from=builder /greetings/target/greetings.war /usr/local/tomcat/webapps/greetings.war
 
