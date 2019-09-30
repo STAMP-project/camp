@@ -2,7 +2,7 @@ version: '2'
 
 services:
   db:
-    build: ../Citygo/Postgres/new/
+    build: ./postgres
     container_name: my_postgresql
     environment:
       - max_connections=500
@@ -53,7 +53,7 @@ services:
       - my-app-bridge
 
   web:
-    build: ../dashboard
+    build: ./dashboard
     container_name: "my_web"
     restart: always
     environment:
