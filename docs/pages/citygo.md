@@ -23,47 +23,46 @@ $ cd samples/stamp/atos
 ```
 
 We assume hereafter that you already have CAMP up and running. If not,
-please refer to [installation instructions](setup.html).
+please refer to [installation instructions](setup.html). Note that the
+CityGo applications, is not open source, so you won't be able to
+actually deploys and run it. We can however generate and realize the
+configurations.
 
-<a name="input_files"/>
-## The Input Files
+The CityGO application is a Python web application running on top of
+the Django framework. The CityGo case-studies comes into flavours:
+functionals and performance tests.
 
-Here is the structure of the `citygo` directory, which contains both
-the CAMP model and the tenplate orchestrations.
+ * In the **functional** scenario, we run Selenium tests
+ * In the **performance** scenaiorio, we run performance tests using
+   CAMP's JMeter extension.
 
-```bash
-$ tree
-├── camp.yml
-└── template
-    ├── docker-compose.yml
-    ├── postgres
-    │   ├── Dockerfile
-    │   └── postgresql-template.conf
-    └── showcase
-        ├── Dockerfile
-        ├── mpm_prefork-template.conf
-        └── mpm_worker-template.conf
-```
 
-<a name="model"/>
-## The CAMP Model
+## The Performance Scenario
+
+As explained above, in this scenario we run performance tests using
+[JMeter](https://jmeter.apache.org/). The source files for this
+scenario are available in the `samples/stamp/atos/performance`
+directory.
+
+
+<a name="perf-model"/>
+### The CAMP Model
 
 The main objective of this case study is to modify numerical
-variables, which governs the configuration of the Apache server. Note
-that, in the CAMP model (i.e., the file `camp.yml`), these variables
-are attached to the "showcase" component, although the substitution
-will affect the Apache Server as defined in the docker-compose file.
+variables, which governs the configuration of the Apache server. In
+the CAMP model (i.e., the file `camp.yml`), these variables are
+attached to the "apache" component, although the substitution will
+affect the Apache Server as defined in the docker-compose file.
 
-The extract below show the `showcase`component and its three
+The extract below show the `apache`component and its three
 variables, namely `thread_limit`, `threads_per_child` and
 `max_request_workers`.
 
 ```yaml
   [...]
-  showcase:
-    provides_services: [ Showcase ]
-    requires_services: [ Postgres ]
-    requires_features: [ Python ]
+  apache:
+    provides_services: [ HttpProxy ]
+    requires_services: [ CityGo ]
     variables:
       thread_limit:
         type: Integer
@@ -89,12 +88,12 @@ variables, namely `thread_limit`, `threads_per_child` and
             replacements: ["MaxRequestWorkers={value}"]
     implementation:
       docker:
-        file: repo/showcase/Dockerfile
+        file: apache/Dockerfile
   [...]
 ```
 
 
-## How to Generate All Configurations?
+### How to Generate All Configurations?
 
 As for other case-studies, you can generate all possible
 configurations with the following command:
@@ -103,11 +102,16 @@ configurations with the following command:
 $ camp generate -d . --all
 ```
 
+![CityGo
+coverage]({{site.baseurl}}/assets/images/citygo_perf_all_configs.png
+"The configurations that CAMP generates generates on the performance
+scenario.")
+
 In general, the presence of an unbound variable, such
 `max_request_workers` entails *an infinte number of configurations*
 Here however, there are only 10 configurations.
 
-There are three variables: 
+There are three variables:
  * `thread_limit`, which is either 64 or 128
  * `thread_per_child`, which ranges from 0 to 128, with a maximum
    coverage of 10. The actual values are therefore [0, 8, 16, 32, 40,
@@ -139,7 +143,7 @@ configurations.
 
 
 <a name="coverage"/>
-## How to Cover All Possible Variations?
+### How to Cover All Possible Variations?
 
 To generate the set of configurations that cover all variations, we
 use the following commands:
@@ -191,23 +195,119 @@ $ find . -name "*.png" \
    | montage  -label '%d/%f' @- -geometry 300x300 configurations.png
 
 ```
-![CityGo coverage]({{site.baseurl}}/assets/images/citygo_coverage.png "The configurations that CAMPS generate to cover the CityGo case")
-
-
 <a name="realize" /> 
-## How to Realize the Configurations?
+### How to Realize these Configurations?
 
-CAMP has generated configuration in the `out`. But so far, CAMP only
-generates a YAML file for each configuration that indicates how
-components are wired and their configurations.
+CAMP has generated configuration in the `out` folder. But so far, CAMP
+only generates a YAML file for each configuration that indicates how
+components are wired and their configurations (i.e., variable
+settings).
 
 To transform those into real Docker configurations which we can run,
-we invoke the following command:
+we first need to fill the template directory with means to deploy
+every component listed in the `camp.yml` file.
+
+---
+
+**Note** CAMP and docker-compose both describes service
+orchestrations, but they work at *different granularity*
+levels. docker-compose only bind together services and assumes that
+each service is a Docker image. By contrast, CAMP works with
+components that it assembles into software stacks, each stacks
+becoming a service, running in a separate container, as in the
+docker-compose file.
+
+So the `template` directory must contains a docker-compose file, whose
+services must point towards the "top" component of each software
+stacks that CAMP generate.
+
+---
+
+So if we look at one specific configuration that CAMP has generated,
+say Config 1 for instance, we see that Container 2 includes several
+components, that is citygo, running on top of python, running on top
+of ubuntu.
+
+![]({{site.baseurl}}/assets/images/citygo_perf_config_1.png "The first
+configuration generated by CAMP on the 'performance' scenario").
+
+As usual, the template directory must provide installation material
+for every component of the `camp.yml` that is not implemented by a
+pre-existing Docker image. We therefore omit both the `hub` component
+and the `ubuntu` component.
+
+We therefore create the following structure:
+
+```console
+$ tree template -L 2
+template
+├── apache
+│   ├── demo_site.conf
+│   ├── Dockerfile
+│   └── mpm_event.conf
+├── browser
+│   ├── Dockerfile
+│   └── tests.py
+├── citygo
+│   └── Dockerfile
+├── docker-compose.yml
+├── postgres
+│   ├── Dockerfile
+│   ├── init-db.sql
+│   └── postgresql.conf
+└── python
+    └── Dockerfile
+```
+
+In Container 2, CAMP will reassemble the components by creating an
+image where python is deployed on top of ubuntu, and then another
+image where the citygo app is deployed on top of those two. To do so
+we need Dockerfile with specific `FROM` statements that CAMP can
+override to assemble the component as it needs. For instance the
+Dockerfile of the citygo component looks like:
+
+```dockerfile
+FROM camp/runtime
+
+# Describe here how to install Citygo only. CAMP will replace the
+# 'FROM' statement so that it points to an image that already includes
+# both Python and Ubuntu.
+
+RUN apt-get updrade \
+    && ...
+```
+
+CAMP searches for FROM statements whose image name starts with
+`camp/`. By convention, we use 'camp/runtime', to emphasize that the
+FROM statement that CAMP will override at runtime.
+
+Now, the services in the template 'docker-compose' must points towards
+single components in the template directory. When a service in the
+docker-compose file match a 'stack' assembled by CAMP, the
+docker-compose file must point towards the top component of the
+stack. For instance, in Container 2, the citygo service must point to
+the citygo component. For instance:
+
+```yaml
+  web:
+    build: ./citygo
+    container_name: "my_web"
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=citygo_settings.settings
+      - BROWSERNAME=chrome
+```
+
+
+
+Once the template directory contains all needed material to deploy all
+individual component, and the docker-compose file is consistent, we
+can invoke CAMP generate using the following command:
 
 ```console
 $ camp realize -d .
-CAMP v0.1.0 (MIT)
-Copyright (C) 2017, 2018 SINTEF Digital
+CAMP v0.6.3 (MIT)
+Copyright (C) 2017 -- 2019 SINTEF Digital
 
 Model loaded from './camp.yml'.
 Searching configurations in './out' ...
@@ -225,40 +325,65 @@ Searching configurations in './out' ...
 That's all folks!
 ```
 
-We can see that CAMP has generate modified the template for each
+We can see that CAMP has generated modified the template for each
 configurations. For instance:
 
 ```console
-$ tree out/config_1
+$ tree -L 3 out/config_1
 out/config_1
 ├── configuration.dot
-├── configuration.dot.png
 ├── configuration.yml
 ├── docker-compose.yml
 └── images
+    ├── apache_0
+    │   ├── demo_site.conf
+    │   ├── Dockerfile
+    │   └── mpm_event.conf
+    ├── browser_0
+    │   ├── Dockerfile
+    │   └── tests.py
     ├── build_images.sh
+    ├── citygo_0
+    │   └── Dockerfile
     ├── postgres_0
     │   ├── Dockerfile
-    │   └── postgresql-template.conf
-    └── showcase_0
-        ├── Dockerfile
-        ├── mpm_prefork-template.conf
-        └── mpm_worker-template.conf
-``` 
-
-To run these configurations, we must first build the related docker
-images. CAMP generates a shell script (`out/images/build_images.sh`)
-to facilitate just that. We simply run:
-
-```
-$ cd out/config_1/images 
-$ source ./build_images.sh
+    │   ├── init-db.sql
+    │   └── postgresql.conf
+    └── python_0
+        └── Dockerfile
 ```
 
-Once the images are built, we can now start our orchestration using
-docker-compose as follows:
+Note that CAMP has generated a specific shell script
+`build_images.sh`, which it will use to build the images needed for
+Container 2. 
 
+```sh
+#!/bin/bash
+#
+# Generated by CAMP. Edit carefully
+#
+# Build all images and set the appropriate tags
+#
+set -e
+docker build --no-cache -t camp-python_0 ./python_0
+docker build --no-cache -t camp-citygo_0 ./citygo_0
+echo 'All images ready.'
 ```
-$ cd out/config_1
-$ docker-compose -f docker-compose.yml up 
+
+Above, we see that this script will create images with specific tags
+and that this tags are placed into the `FROM` statement of the related
+Dockerfiles. For instance, the Dockerfile of the `citygo_0` component
+contains:
+
+
+```dockerfile
+FROM camp-python_0
+
+# Describe here how to install Citygo only. CAMP will replace the
+# 'FROM' statement so that it points to an image that already includes
+# both Python and Ubuntu.
+
+RUN apt-get updrade \
+    && ...
 ```
+

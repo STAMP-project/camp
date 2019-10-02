@@ -23,7 +23,7 @@ services:
       - my-app-bridge
 
   apache:
-    build: .
+    build: ./apache
     container_name: my_apache
     environment:
       - HTTPD_VERSION=2.4
@@ -78,8 +78,8 @@ services:
       - "8000:8000"
 
   hub:
-    container_name: "selenium_hub"
     image: selenium/hub
+    container_name: "selenium_hub"
     volumes:
       - /dev/shm:/dev/shm/
     ports:
@@ -89,8 +89,8 @@ services:
 
 
   selenium_chrome:
-    container_name: selenium_chrome
     image: selenium/node-chrome-debug
+    container_name: selenium_chrome
     environment:
       - HUB_PORT_4444_TCP_ADDR=hub
       - HUB_PORT_4444_TCP_PORT=4444
@@ -102,8 +102,8 @@ services:
       - my-app-bridge
 
   mongo:
-    container_name: "my_mongo"
     image: mongo:4.0.6-xenial
+    container_name: "my_mongo"
     environment:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
