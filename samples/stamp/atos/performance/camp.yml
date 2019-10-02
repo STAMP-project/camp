@@ -20,6 +20,9 @@ components:
     implementation:
       docker:
         file: browser/Dockerfile
+
+    # TODO: This component has to be updated so as to trigger JMeter
+    # instead of pytest
     tests:
       command: pytest -v tests.py --junitxml=report.xml
       reports:
@@ -29,29 +32,14 @@ components:
 
   hub:
     provides_services: [ Test ]
-    requires_services: [ CityGo ]
+    requires_services: [ HttpProxy ]
     implementation:
       docker:
         image: selenium/hub
-        
-  citygo:
-    provides_services: [ CityGo ]
-    requires_services: [ Postgres, Mongo ]
-    requires_features: [ Python ]
-    implementation:
-      docker:
-        file: citygo/Dockerfile
-
-  python:
-    provides_features: [ Python ]
-    requires_features: [ HttpProxy ]
-    implementation:
-      docker:
-        file: python/Dockerfile
 
   apache:
-    provides_features: [ HttpProxy ]
-    requires_features: [ Ubuntu ]
+    provides_services: [ HttpProxy ]
+    requires_services: [ CityGo ]
     variables:
       thread_limit:
         type: Integer
@@ -77,29 +65,41 @@ components:
             replacements: ["MaxRequestWorkers={value}"]
     implementation:
       docker:
-        file: repo/showcase/Dockerfile
-    implementation:
-      docker:
         file: apache/Dockerfile
         
-  mongo:
-    provides_services: [ Mongo ]
+  citygo:
+    provides_services: [ CityGo ]
+    requires_services: [ Postgres, Mongo ]
+    requires_features: [ Python ]
     implementation:
       docker:
-        image: mongo:4.0.6-xenial
+        file: citygo/Dockerfile
 
-        
-  postgres:
-    provides_services: [ Postgres ]
+  python:
+    provides_features: [ Python ]
+    requires_features: [ Ubuntu ]
     implementation:
       docker:
-        file: postgres/Dockerfile
+        file: python/Dockerfile
 
   ubuntu:
     provides_features: [ Ubuntu ]
     implementation:
       docker:
         image: ubuntu:latest
+      
+  mongo:
+    provides_services: [ Mongo ]
+    implementation:
+      docker:
+        image: mongo:4.0.6-xenial
+
+  postgres:
+    provides_services: [ Postgres ]
+    implementation:
+      docker:
+        file: postgres/Dockerfile
+
 
 constraints:
  - apache_0_threads_per_child.value < apache_0_thread_limit.value
