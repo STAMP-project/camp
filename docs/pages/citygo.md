@@ -198,18 +198,19 @@ $ find . -name "*.png" \
 <a name="realize" /> 
 ### How to Realize these Configurations?
 
-CAMP has generated configuration in the `out` folder. But so far, CAMP
-only generates a YAML file for each configuration that indicates how
-components are wired and their configurations (i.e., variable
-settings).
+CAMP has generated abstract configurations in the `out` folder. This means that CAMP
+has so far only generated a YAML file for each configuration. This YAML file only indicates how
+components are wired together and configured (i.e., variable
+settings). Those abstract configurations cannot be directly executed or deployed. CAMP first needs to "*realize*" them i.e. to link 
+them to concrete, deployable artifacts (Docker configurations).
 
-To transform those into real Docker configurations which we can run,
+To transform abstract CAMP configurations into concrete Docker configurations which we can run,
 we first need to fill the template directory with means to deploy
 every component listed in the `camp.yml` file.
 
 ---
 
-**Note** CAMP and docker-compose both describes service
+> **Note** CAMP and docker-compose both describes service
 orchestrations, but they work at *different granularity*
 levels. docker-compose only bind together services and assumes that
 each service is a Docker image. By contrast, CAMP works with
@@ -223,7 +224,7 @@ stacks that CAMP generate.
 
 ---
 
-So if we look at one specific configuration that CAMP has generated,
+So if we look at one specific abstract configuration that CAMP has generated,
 say Config 1 for instance, we see that Container 2 includes several
 components, that is citygo, running on top of python, running on top
 of ubuntu.
