@@ -86,7 +86,7 @@ components:
     provides_features: [ Ubuntu ]
     implementation:
       docker:
-        image: ubuntu:latest
+        image: ubuntu:xenial
       
   mongo:
     provides_services: [ Mongo ]

@@ -1,4 +1,4 @@
-FROM camp/runtime
+FROM httpd:2.4
 
 MAINTAINER  Fernando Mendez Requena <fernando.mendez@atos.net>
 
