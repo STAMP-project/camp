@@ -41,10 +41,9 @@ components:
       docker:
         file: apache/Dockerfile
     realization:
-      - select: docker-compose-apache-as-proxy.yml
+      - select: docker-compose-apache.yml
         instead_of:
           - docker-compose-nginx.yml
-          - docker-compose-apache.yml
         as: docker-compose.yml
 
   nginx:
@@ -66,16 +65,30 @@ components:
       - select: docker-compose-nginx.yml
         instead_of:
           - docker-compose-apache.yml
-          - docker-compose-apache-as-proxy.yml
         as: docker-compose.yml
         
   citygo:
     provides_services: [ CityGo ]
     requires_services: [ Postgres, Mongo ]
     requires_features: [ Python ]
+    variables:
+      django:
+        values: [ v1.10.2, v2.2.6 ]
+        realization:
+          - targets: [ citygo/requirements.txt ]
+            pattern: "Django==1.10.2"
+            replacements:
+              - "Django==1.10.2"
+              - "Django==2.2.6"
     implementation:
       docker:
         file: citygo/Dockerfile
+
+  ubuntu:
+    provides_features: [ Ubuntu ]
+    implementation:
+      docker:
+        image: ubuntu:xenial
         
   mongo:
     provides_services: [ Mongo ]
@@ -92,12 +105,17 @@ components:
 
   postgres:
     provides_services: [ Postgres ]
+    variables:
+      version:
+        values: [v9, v10, v11]
+        realization:
+          - targets: [ "postgres/Dockerfile" ]
+            pattern: "FROM postgres:9.3"
+            replacements:
+              - "FROM postgres:9.3"
+              - "FROM postgres:10"
+              - "FROM postgres:11"
     implementation:
       docker:
         file: postgres/Dockerfile
 
-  ubuntu:
-    provides_features: [ Ubuntu ]
-    implementation:
-      docker:
-        image: ubuntu:latest
