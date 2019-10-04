@@ -1,6 +1,6 @@
 # See explanation in the README.
 
-FROM camp/runtime
+FROM camp-python_0
 
 
 # Describe here how to install Citygo ontop of the "python" component.
@@ -12,6 +12,7 @@ ENV C_FORCE_ROOT true
 WORKDIR /usr/src/app
 
 RUN chmod -R +x /usr/src/app
+RUN pip install --upgrade pip
 
 COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install -r requirements.txt
