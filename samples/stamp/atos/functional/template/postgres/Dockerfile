@@ -2,8 +2,9 @@ FROM postgres:9.3
 
 MAINTAINER  Fernando Mendez Requena <fernando.mendez.external@atos.net>
 
-RUN apt-get update && apt-get install -my wget gnupg &&  apt-get install -y gettext-base
-
+RUN apt-get update \
+        && apt-get install -my wget gnupg \
+        &&  apt-get install -y gettext-base
 
 USER postgres
 

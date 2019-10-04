@@ -388,3 +388,297 @@ RUN apt-get updrade \
     && ...
 ```
 
+## The Functional Scenario
+
+In the functional tests scenario, we focus on injecting architectural
+changes. We replace Apache with NGinx, we switch between alternative
+versions of both the Django framework and PostgresSQL database. We
+options we select are:
+
+ - Use either Django 1.10.1 or Django 2.2.6
+ - Use either PostgresSQL 9.3, 10 or 11
+ - Use either Apache or NGinx as a proxy
+ - Activate or not the GZip option of the NGinx proxy
+ 
+
+### Modelling Variations in `camp.yml`
+
+To keep things simple, we model change of version using
+variables. For instance, we add a variable named `django` to the
+`citygo` component, as follows.
+
+
+```yaml
+  citygo:
+    provides_services: [ CityGo ]
+    requires_services: [ Postgres, Mongo ]
+    requires_features: [ Python ]
+    variables:
+      django:
+        values: [ v1.10.2, v2.2.6 ]
+```
+
+We proceed in the same way for Postgres and for the option of the
+NGinx proxy.
+
+Switching between Apache or NGinx translates in both component having
+the same signature: Both the `apache` and the `nginx` component provides
+the `HttpProxy` service and requires the `CityGo` service. 
+
+```yaml
+  nginx:
+    provides_services: [ HttpProxy ]
+    requires_services: [ CityGo ]
+    variables:
+      gzip:
+        values: [on, off]
+    implementation:
+      docker:
+        file: nginx/Dockerfile
+
+  apache:
+    provides_services: [ HttpProxy ]
+    requires_services: [ CityGo ]
+    implementation:
+      docker:
+        file: apache/Dockerfile
+```
+
+### Generating Configurations
+
+As shown in the figure below, camp generates 18 configurations using
+the followings command. We omit parts of the output for the sake of
+brevity.
+
+```console
+$ camp generate -d . --all
+CAMP v0.6.3 (MIT)
+Copyright (C) 2017 -- 2019 SINTEF Digital
+
+Loaded './camp.yml'.
+
+ - Config. 1 in './out/config_1/configuration.yml'.
+   Includes ubuntu, citygo (v1.10.2), apache, hub, postgres (v9), mongo, br...
+
+[...]
+
+ - Config. 18 in './out/config_18/configuration.yml'.
+   Includes ubuntu, nginx (True), citygo (v2.2.6), hub, mongo, browser, pos...
+   
+That's all folks!
+```
+
+![]({{site.baseurl}}/assets/images/citygo_func_all_configs.png
+"Configurations that CAMP founds in the functional tests scenarios").
+
+
+### Generation of a Covering Array
+
+We may not be interested in testing every single
+configurations. Instead we may prefer to test every single options at
+least once. This finding a smaller number of configurations that use
+the two versions of Django, both apache and nginx, as well as the
+three version of Postgres.
+
+CAMP can do this by computing a "covering array", that is a small set
+of configuration where each option is used at least once. This yields
+5 configurations. To do so, we proceed as follows
+
+```console
+$ camp  generate -d . --coverage
+CAMP v0.6.3 (MIT)
+Copyright (C) 2017 -- 2019 SINTEF Digital
+
+Loaded './camp.yml'.
+
+ - Config. 1 in './out/config_1/configuration.yml'.
+   Includes ubuntu, hub, python, postgres (v9), citygo (v1.10.2), browser, ...
+
+ - Config. 2 in './out/config_2/configuration.yml'.
+   Includes ubuntu, citygo (v2.2.6), hub, python, postgres (v10), browser, ...
+
+ - Config. 3 in './out/config_3/configuration.yml'.
+   Includes ubuntu, citygo (v2.2.6), hub, postgres (v11), python, browser, ...
+
+ - Config. 4 in './out/config_4/configuration.yml'.
+   Includes ubuntu, citygo (v2.2.6), hub, postgres (v11), python, browser, ...
+
+ - Config. 5 in './out/config_5/configuration.yml'.
+   Includes ubuntu, hub, python, citygo (v1.10.2), postgres (v10), browser,...
+
+That's all folks!
+```
+
+![]({{site.baseurl}}/assets/images/citygo_func_cov_configs.png
+"Configurations that CAMP founds in the functional tests scenarios").
+
+
+### Realisation of the Configurations
+
+At first CAMP generates only models of configurations (as YAML
+files). To obtain deployable configurations, we must complete the
+variation model and detail how each variation must be enacted.
+
+
+### Switching Versions of Postgres
+
+The version of Postgres we use is setup in the [associated
+DockerFile](https://github.com/STAMP-project/camp/blob/master/samples/stamp/atos/functional/template/postgres/Dockerfile),
+more precisely, in the `FROM` statement. We can switch version of
+postgres by simply modifying this FROM statement. We can therefore
+realise the variable we have created in the `postgres` component
+using a substitution, as follows:
+
+```yaml
+  postgres:
+    provides_services: [ Postgres ]
+    variables:
+      version:
+        values: [v9, v10, v11]
+        realization:
+          - targets: [ "postgres/Dockerfile" ]
+            pattern: "FROM postgres:9.3"
+            replacements:
+              - "FROM postgres:9.3"
+              - "FROM postgres:10"
+              - "FROM postgres:11"
+```
+
+Here, each value is associated with a different `FROM` statement. This
+realisation tells CAMP to search for the pattern `FROM postgres:9.3`
+and to substitute it with the adequate replacement (replacements must
+be ordered according to the variable's values).
+
+### Switching Version of Django
+
+The Django framework comes as Python library, which is downloaded when
+we install the CityGo application. The version of the Django framework
+thus written down in the file [`requirements.txt`](), which defines
+the dependencies, as in the following example:
+
+```
+Django==1.10.2
+django-allauth==0.27.0
+django-rest-auth==0.8.1
+djangorestframework==3.4.7
+httplib2==0.9.2
+oauth2==1.9.0.post1
+oauthlib==2.0.0
+psycopg2
+psycopg2-binary
+python-openid==2.2.5
+requests>=2.18.2
+requests-cache==0.4.12
+```
+
+We can therefore switch between versions of Django by replacing the
+fragment `Django==1.10.2`. We do so by defining the realisation of the
+`citygo` component as a substitution:
+
+```yaml
+  citygo:
+    provides_services: [ CityGo ]
+    requires_services: [ Postgres, Mongo ]
+    requires_features: [ Python ]
+    variables:
+      django:
+        values: [ v1.10.2, v2.2.6 ]
+        realization:
+          - targets: [ citygo/requirements.txt ]
+            pattern: "Django==1.10.2"
+            replacements:
+              - "Django==1.10.2"
+              - "Django==2.2.6"
+```
+
+### Switching between Apache and NGinx
+
+To switch between Apache and NGinx requires to modify the service
+orchestration, and in turn, the docker-compose file. To do so, we
+define two docker-compose file and we select the correct one when a
+given component is selected.
+
+```yaml
+  apache:
+    provides_services: [ HttpProxy ]
+    requires_services: [ CityGo ]
+    implementation:
+      docker:
+        file: apache/Dockerfile
+    realization:
+      - select: docker-compose-apache.yml
+        instead_of:
+          - docker-compose-nginx.yml
+        as: docker-compose.yml
+```
+
+With this realisation, attached to the Apache component, when CAMP
+realises a configuration that includes this component, it will select
+the file named `docker-compose-apache.yml` as the `docker-compose.yml`
+and discards the other one.
+
+We proceed in the same way for the NGinx component:
+
+```yaml
+  nginx:
+    provides_services: [ HttpProxy ]
+    requires_services: [ CityGo ]
+    variables:
+      gzip:
+        values: [on, off]
+    implementation:
+      docker:
+        file: nginx/Dockerfile
+    realization:
+      - select: docker-compose-nginx.yml
+        instead_of:
+          - docker-compose-apache.yml
+        as: docker-compose.yml
+
+```
+
+
+### Activating GZip on NGinx
+
+The GZip option is actually set as an environment variable passed to
+associated container, through the `docker-compose.yml` descriptor. We
+can therefore simply search for the pattern `gzip=on` and replace it
+when needed, as follows:
+
+```yaml
+  nginx:
+    provides_services: [ HttpProxy ]
+    requires_services: [ CityGo ]
+    variables:
+      gzip:
+        values: [on, off]
+        realization:
+          - targets: [ docker-compose.yml ]
+            pattern: "gzip=on"
+            replacements:
+              - gzip=on
+              - gzip=off
+    implementation:
+      docker:
+        file: nginx/Dockerfile
+```
+
+
+Once all the possible option are realize, we can build the
+configurations as follows:
+
+```console
+$ camp realize -d .
+CAMP v0.6.3 (MIT)
+Copyright (C) 2017 -- 2019 SINTEF Digital
+
+Loaded './camp.yml'.
+Loading configurations from './out' ...
+ - Built configuration './out/config_1.
+ - Built configuration './out/config_2.
+ - Built configuration './out/config_4.
+ - Built configuration './out/config_3.
+ - Built configuration './out/config_5.
+
+That's all folks!
+```
