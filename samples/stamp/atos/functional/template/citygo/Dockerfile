@@ -1,4 +1,4 @@
-# See explanation in the README.
+
 
 FROM camp/runtime
 
