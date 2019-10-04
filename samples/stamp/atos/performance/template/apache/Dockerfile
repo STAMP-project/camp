@@ -10,8 +10,12 @@ RUN apt-get update -y  && \
     libapache2-mod-wsgi \
     python2.7 \
     python-pip \
+    python-setuptools \ 
+    python-psycopg2 \ 
     lynx \
     apache2
+    
+RUN pip install --upgrade pip
 
 RUN pip install mod_wsgi
 RUN pip install  virtualenv
