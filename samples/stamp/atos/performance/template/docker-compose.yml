@@ -14,11 +14,11 @@ services:
       - POSTGRES_PASSWORD=5X6sdoq0!?az=v2aSX
       - PGDATA=/var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - "6666:6666"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     expose:
-      - "5432"
+      - "6666"
     networks:
       - my-app-bridge
 
@@ -46,7 +46,7 @@ services:
       - ./app/:/usr/src/app/
       - static_volume:/usr/src/app/static
     ports:
-      - "80:80"
+      - "82:82"
     depends_on:
       - db
       - mongo
@@ -75,7 +75,7 @@ services:
       - mongo
       - apache
     ports:
-      - "8000:8000"
+      - "8003:8003"
 
   hub:
     image: selenium/hub
@@ -110,9 +110,9 @@ services:
     volumes:
       - ./data/db:/data/db
     ports:
-      - "27017:27017"
+      - "22222:22222"
     expose:
-      - "27017"
+      - "22222"
     networks:
       - my-app-bridge
 
