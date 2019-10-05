@@ -13,7 +13,7 @@ RUN apt-get update -y  && \
     python-pip \
     lynx \
     apache2
-    
+
 RUN pip install mod_wsgi
 RUN pip install  virtualenv
 ADD ./requirements.txt ./
@@ -31,7 +31,7 @@ RUN chmod 777 -R /var/log/apache2
 RUN cd /etc/apache2/mods-enabled/ && \
     echo "envsubst < $pwd/mpm_event.conf > ./mpm_event.conf"
 
-EXPOSE 80 3500
+EXPOSE 82 3500
 
 CMD ["apache2ctl", "-D", "FOREGROUND"]
 
