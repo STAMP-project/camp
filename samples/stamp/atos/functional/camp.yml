@@ -21,7 +21,7 @@ components:
       docker:
         file: browser/Dockerfile
     tests:
-      command: pytest -v tests.py --junitxml=report.xml
+      command: pytest -v tests.py  --html=pytest_report.html --junitxml=report.xml --self-contained-html
       reports:
         location: "./"
         pattern: ".xml"
