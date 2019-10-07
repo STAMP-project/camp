@@ -1,6 +1,6 @@
 # See explanation in the README.
 
-FROM camp-python_0
+FROM FROM camp/runtime
 
 
 # Describe here how to install Citygo ontop of the "python" component.
@@ -23,7 +23,7 @@ COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
 # copy project
 COPY . /usr/src/app/
 
-EXPOSE 8000
+EXPOSE 8003
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
