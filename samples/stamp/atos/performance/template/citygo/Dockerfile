@@ -2,29 +2,28 @@
 
 FROM FROM camp/runtime
 
-
 # Describe here how to install Citygo ontop of the "python" component.
 
 ENV PYTHONUNBUFFERED 1
 ENV C_FORCE_ROOT true
 
 # Set work directory
-WORKDIR /usr/src/app
+WORKDIR ./ 
 
-RUN chmod -R +x /usr/src/app
+#RUN chmod -R +x /usr/src/app
 RUN pip install --upgrade pip
 
-COPY ./requirements.txt /usr/src/app/requirements.txt
+COPY ./requirements.txt ./
+
 RUN pip install -r requirements.txt
 
 #copy entrypoint.sh
-COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
+COPY ./entrypoint.sh ./
 
 # copy project
-COPY . /usr/src/app/
+COPY . ./
 
 EXPOSE 8003
 
 # run entrypoint.sh
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
-
+ENTRYPOINT ["./entrypoint.sh"]
