@@ -19,4 +19,4 @@ RUN echo "psql -a -f init-db.sql"
 RUN cd /etc && \
     echo "envsubst </etc/postgresql.conf > /var/lib/postgresql/data/postgresql.conf || cat /var/lib/postgresql/data/postgresql.conf"
 
-EXPOSE 2345
+EXPOSE 6666
