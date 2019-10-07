@@ -9,6 +9,7 @@ RUN apt-get update -y  && \
     apt-get install -y \
     libapache2-mod-wsgi \
     libxml2-dev \
+    python-psycopg2 \
     python2.7 \
     python-pip \
     lynx \
