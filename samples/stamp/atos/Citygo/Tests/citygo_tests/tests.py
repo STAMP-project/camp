@@ -7,6 +7,8 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 import HtmlTestRunner
+#import xmlrunner
+
 
 logging.basicConfig(filename="DEBUG.log", level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 
@@ -116,3 +118,10 @@ class SeleniumTest(unittest.TestCase):
 
 if __name__=='__main__':
     unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output="selenium_test_report"))
+    
+
+    #unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'),
+    #    testRunner=HtmlTestRunner.HTMLTestRunner(output="selenium_test_report"),
+        # these make sure that some options that are not applicable
+        # remain hidden from the help menu.
+    #    failfast=False, buffer=False, catchbreak=False)
