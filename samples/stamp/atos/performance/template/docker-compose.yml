@@ -2,6 +2,11 @@ version: '2'
 
 services:
 
+  browser:
+    build: ./browser
+    networks:
+      - my-app-bridge
+  
   db:
     build: ./postgres
     container_name: my_postgresql
