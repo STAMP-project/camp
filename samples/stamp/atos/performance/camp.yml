@@ -28,7 +28,7 @@ components:
       reports:
         location: "./"
         pattern: ".xml"
-        format: junit
+        format: jmeter
 
   hub:
     provides_services: [ Test ]
