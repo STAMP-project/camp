@@ -1,0 +1,6 @@
+selenium
+html-testRunner==1.2
+pytest-html
+unittest-xml-reporting==2.5.1
+
+
