@@ -1,7 +1,18 @@
 FROM selenium/node-chrome-debug
 
-RUN pip install selenium pytest
+RUN sudo apt-get update && \
+    sudo apt-get upgrade -y && \
+    sudo apt-get install -y \
+    python2.7 \
+    python-pip
 
-COPY ./tests citygo-tests/tests.py
+WORKDIR ./
+
+RUN pip install --upgrade pip
+
+ADD ./requirements.txt ./
+RUN pip install -r requirements.txt
+
+COPY ./tests.py citygo-tests/tests.py
 
 CMD echo "Ready!"

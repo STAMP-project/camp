@@ -10,6 +10,8 @@ WORKDIR ./
 
 RUN pip install --upgrade pip
 
+RUN pip install bzt
+
 COPY ./citygo.jmx citygo-tests/citygo.jmx
 
 CMD echo "Ready!"
