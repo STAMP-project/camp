@@ -8,21 +8,21 @@ ENV PYTHONUNBUFFERED 1
 ENV C_FORCE_ROOT true
 
 # Set work directory
-WORKDIR /app 
+WORKDIR /usr/src/app 
 
-RUN chmod -R +x /app
+RUN chmod -R +x /usr/src/app
 RUN pip install --upgrade pip
 
-COPY ./requirements.txt /app/requirements.txt
+COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install -r requirements.txt
 
 #copy entrypoint.sh
-COPY ./entrypoint.sh /app/requirements.txt
+COPY ./entrypoint.sh /usr/src/app/requirements.txt
 
 # copy project
-COPY . /app/
+COPY . /usr/src/app/
 
 EXPOSE 8003
 
 # run entrypoint.sh
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
