@@ -2,6 +2,6 @@ FROM selenium/node-chrome-debug
 
 RUN pip install selenium pytest
 
-COPY ./tests citygo-tests/tests.py
+COPY ./citygo.jmx citygo-tests/citygo.jmx
 
 CMD echo "Ready!"
