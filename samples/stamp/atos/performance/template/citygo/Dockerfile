@@ -10,7 +10,7 @@ ENV C_FORCE_ROOT true
 # Set work directory
 WORKDIR ./ 
 
-#RUN chmod -R +x /usr/src/app
+RUN chmod -R +x ./
 RUN pip install --upgrade pip
 
 ADD ./requirements.txt ./
