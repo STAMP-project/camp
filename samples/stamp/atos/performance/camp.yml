@@ -24,9 +24,9 @@ components:
     # TODO: This component has to be updated so as to trigger JMeter
     # instead of pytest
     tests:
-      command: bzt citygo.jmx --option=modules.console.disable=false -report
+      command: bzt citygo-tests/citygo.jmx --option=modules.console.disable=false -report
       reports:
-        location: "./"
+        location: "citygo-tests"
         pattern: ".xml"
         format: jmeter
 
