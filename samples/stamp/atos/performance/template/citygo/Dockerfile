@@ -26,4 +26,4 @@ COPY . /usr/src/app/
 EXPOSE 82
 
 # run entrypoint.sh
-CMD ["/bin/bash","/usr/src/app/entrypoint.sh"]
+CMD ["/bin/sh","/usr/src/app/entrypoint.sh"]
