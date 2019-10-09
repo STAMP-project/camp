@@ -23,7 +23,7 @@ RUN cd /var/lib/postgresql/data/postgresql.conf && \
     chmod 700 postgresql.conf && \
     envsubst < $DIR_DB/postgresql.conf > ./postgresql.conf
     
-EXPOSE  ${port}
+EXPOSE $port
 
 # Set the default command to run when starting the container
 CMD ["/usr/bin/postgresql", "-D", "/var/lib/postgresql/data", "-c", "config_file=/var/lib/postgresql/data/postgresql.conf"]
