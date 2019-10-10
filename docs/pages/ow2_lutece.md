@@ -4,20 +4,14 @@ layout: default
 
 # The OW2/Lutece Use-case
 
-This case-study illustrates how CAMP can build multiple variations
-from a single docker-compose orchestration.
+This case-study illustrates how CAMP can to run JMeter performance
+tests against multiple versions of the environment.
 
-
----
-**Note**.
-This case study is under development and is very likely to change.
-
----
 
 This case-study focuses on deploying the
 [Lutece](http://www.lutece.paris.fr/) content management
 system. Lutece is common JEE application, that runs on a servlet
-container such as [Tomcat](http://www.lutece.paris.fr/) and let users
+container such as [Tomcat](http://tomcat.apache.org/) and let users
 develop their own CMS systems. In this case study, Lutece use
 [MySQL](https://www.mysql.com/) to store all content.
 
@@ -38,44 +32,62 @@ The sample directory contains two main entities:
 
 The CAMP model (i.e., the `camp.yml` file) defines what can be varied
 in the orchestration. In this use-case, we focus on having multiple
-versions/configuration of the same components.
+versions/configuration of the same components. We have identified
+three components, tests, lutece and storage. The `tests` component
+represents the node where the performance testing tool (JMeter) is
+deployed. The `lutece` component represents the Java web-app under
+test whereas the `storage` component represents the storage solution
+(MySQL).
 
 
 ```yaml
 goals:
   running:
-   - Lutece
+    - PerfTests
 
 components:
 
+  tests:
+    provides_services: [ PerfTests ]
+    requires_services: [ Lutece ]
+    implementation:
+      docker:
+        file: tests/Dockerfile
+    tests:
+      command: -n -t Forms-test.jmx -l Forms-test.jtl -e -o results
+      reports:
+        format: jmeter
+        location: results
+        pattern: statistics.json
+
   lutece:
-	provides_services: [Lutece]
-	requires_services: [MySQL]
-	implementation:
-	  docker:
-		file: lutece/Dockerfile
+    provides_services: [Lutece]
+    requires_services: [MySQL]
+    implementation:
+      docker:
+        file: lutece/Dockerfile
 
   mysql:
-	provides_services: [MySQL]
-	variables:
-	  version:
-		type: version
-		values: [ 5_6, 5_7 ]
-		realization:
-		  - targets: [ mysql/Dockerfile ]
-			pattern: "FROM mysql:5"
-			replacements: [ "FROM mysql:5.6", "FROM mysql:5.7" ]
-	implementation:
-	  docker:
-		file: mysql/Dockerfile
+    provides_services: [MySQL]
+    variables:
+      version:
+          values: [ 5_6, 5_7 ]
+          realization:
+            - targets: [ mysql/Dockerfile ]
+              pattern: "FROM mysql:5"
+              replacements: [ "FROM mysql:5.6", "FROM mysql:5.7" ]
+    implementation:
+      docker:
+        file: mysql/Dockerfile
 ```
 
-The objective (i.e., the `goal`) is to get the Lutece application up
-and running.
+The objective (i.e., the `goal`) is to get the performance tests up
+and running. This implies that the Lutece application is also up and
+running and, in turn, that the storage is ready too.
 
 Here we define two components, namely `lutece`, the application
-server, and `mysql`, the database where data are stored. Note that
-both component are implemented using a dedicated Dockerfile.
+server, and `mysql`, the database where data are stored. All
+components are implemented using a dedicated Dockerfile.
 
 
 ### The Template
@@ -95,15 +107,21 @@ both the `lutece` and `mysql` component.
 
 ```console
 $ tree template
-
+template
 ├── docker-compose.yml
 ├── lutece
+│   ├── db.properties
 │   ├── Dockerfile
-│   └── site-edito-mini.war
-└── mysql
-	├── Dockerfile
-	└── sql-scripts
-		└── site-edito-mini.sql
+│   ├── entrypoint.sh
+│   └── pom.xml
+├── mysql
+│   ├── Dockerfile
+│   └── sql-scripts
+└── tests
+    ├── Dockerfile
+    ├── Forms-test.jmx
+    ├── Forms-test.jtl
+    └── jmeter.log
 ```
 
 The `docker-compose.yml` file simply defines how to deploy and connect
@@ -124,7 +142,6 @@ mysql> show databases;
 ...
 ```
 
-
 <a name="generate-all"/>
 ## How to Generate All Configurations?
 
@@ -138,10 +155,10 @@ $ camp generate -d . --all
 In this simple example, there are only two configurations, which are
 shown below:
 
-![Lutece Configuration]({{site.baseurl}}/assets/images/lutece_configurations.png
+![Lutece Configuration]({{site.baseurl}}/assets/images/lutece_all_configs.png
 "The configurations that CAMPS generate to cover the OW2/Lutece case")
 
-To better visualize these configurations, we can generate such an
+To better visualise these configurations, we can generate such an
 image using Graphviz and Image Magic as follows. The figure below
 illustrates these selected configurations.
 
@@ -149,24 +166,9 @@ illustrates these selected configurations.
 $ find . -name "*.dot" | xargs -I file dot -Tpng file -o file.png
 $ find . -name "*.png" \
    | tr '\n' ' ' \
-   | montage  -label '%d/%f' @- -geometry 300x300 configurations.png
+   | montage  -label '%d/%f' @- -geometry 500x500 configurations.png
 
 ```
-
-
-<a name="coverage"/>
-## How to Cover All Single Variations?
-
-The command to search of a subset of configurations that covers all
-single variations is:
-
-```console
-$ camp generate -d . --coverage
-```
-
-In this simple case, the two previous configurations are needed to
-cover single variations.
-
 
 <a name="realize"/>
 ## How to Realize the Configurations?
@@ -197,47 +199,95 @@ configurations. For instance:
 ```console
 $ tree out
 out
-├── config_1
+├── config_2
 │   ├── configuration.dot
 │   ├── configuration.yml
 │   ├── docker-compose.yml
-│   └── images
-│       ├── build_images.sh
-│       ├── lutece_0
-│       │   ├── Dockerfile
-│       │   └── site-edito-mini.war
-│       └── mysql_0
-│           ├── Dockerfile
-│           └── sql-scripts
-│               └── site-edito-mini.sql
-└── config_2
-	├── configuration.dot
-	├── configuration.yml
-	├── docker-compose.yml
-	└── images
-		├── build_images.sh
-		├── lutece_0
-		│   ├── Dockerfile
-		│   └── site-edito-mini.war
-		└── mysql_0
-			├── Dockerfile
-			└── sql-scripts
-				└── site-edito-mini.sql
+│   ├── images
+│   │   ├── build_images.sh
+│   │   ├── lutece_0
+│   │   │   ├── db.properties
+│   │   │   ├── Dockerfile
+│   │   │   ├── entrypoint.sh
+│   │   │   └── pom.xml
+│   │   ├── mysql_0
+│   │   │   ├── Dockerfile
+│   │   │   └── sql-scripts
+│   │   │       └── dump.sql
+│   │   └── tests_0
+│   │       ├── Dockerfile
+│   │       ├── Forms-test.jmx
+│   │       ├── Forms-test.jtl
+│   │       └── jmeter.log
 ```
 
-To run these configurations, we must first build the related docker
-images. CAMP generates a shell script (`out/images/build_images.sh`)
-to facilitate just that. We simply run:
+Looking at the Dockerfile of Configuration 2, we can see that CAMP did
+carry out replacement to force the usage of MySQL 5.7, instead of
+MySQL 5.6 in Configuration 1.
 
-```
-$ cd out/config_1/images
-$ source ./build_images.sh
+```dockerfile
+FROM mysql:5.7
+
+ENV MYSQL_ROOT_PASSWORD motdepasse
+ENV MYSQL_DATABASE lutece
+
+COPY ./sql-scripts/ /docker-entrypoint-initdb.d/
 ```
 
-Once the images are built, we can now start our orchestration using
-docker-compose as follows:
 
+## How to Test the Configurations?
+
+At this stage, the configuration are ready to be executed. To runs the
+tests in all configurations, simply invoke `camp execute` as follows:
+
+```console
+$ camp execute -d .
+CAMP v0.6.3 (MIT)
+Copyright (C) 2017 -- 2019 SINTEF Digital
+
+Loaded './camp.yml'.
+Loading configurations from './out' ...
+
+ - Executing ./out/config_1
+   1. Building images ...
+      $ bash build_images.sh (from './out/config_1/images')
+   2. Starting Services ...
+      $ docker-compose up -d (from './out/config_1')
+   3. Running tests ...
+      $ docker-compose run tests -n -t Forms-test.jmx -l Forms-test.jtl -e -o results (from './out/config_1')
+   4. Collecting reports ...
+      $ docker ps --all --quiet --filter name=config_1_tests_run_ (from './out/config_1')
+      $ docker cp 708b84623ff9:/tests/results ./test-reports (from './out/config_1')
+      Reading statistics.json
+   5. Stopping Services ...
+      $ docker-compose down --volumes --rmi all (from './out/config_1')
+
+ - Executing ./out/config_2
+   1. Building images ...
+      $ bash build_images.sh (from './out/config_2/images')
+   2. Starting Services ...
+      $ docker-compose up -d (from './out/config_2')
+   3. Running tests ...
+      $ docker-compose run tests -n -t Forms-test.jmx -l Forms-test.jtl -e -o results (from './out/config_2')
+   4. Collecting reports ...
+      $ docker ps --all --quiet --filter name=config_2_tests_run_ (from './out/config_2')
+      $ docker cp 22d4d293e73f:/tests/results ./test-reports (from './out/config_2')
+      Reading statistics.json
+   5. Stopping Services ...
+      $ docker-compose down --volumes --rmi all (from './out/config_2')
+
+Test SUMMARY:
+
+Configuration                 RUN   PASS   FAIL  ERROR
+-------------------------------------------------------
+./out/config_1                136    136      0      0
+./out/config_2                116    106      1      9
+-------------------------------------------------------
+TOTAL                         252    242      1      9
+
+That's all folks!
 ```
-$ cd out/config_1
-$ docker-compose -f docker-compose.yml up
-```
+
+We see that that 136 tests pass against the first configuration. By
+contrast, 116 tests were run against Configuration 2, 1 test failed
+and 9 raised errors.

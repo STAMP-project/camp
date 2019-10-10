@@ -19,4 +19,5 @@ ADD db.properties /app/target/${site}/WEB-INF/conf/db.properties
 RUN mv /app/target/${site}/ /var/lib/tomcat8/webapps/site-forms-demo
 
 COPY entrypoint.sh /entrypoint.sh
+
 ENTRYPOINT ["sh", "/entrypoint.sh"]
