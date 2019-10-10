@@ -13,7 +13,7 @@ services:
     environment:
       - max_connections=500
       - shared_buffers=256
-      - port=5432
+      - port=6666
       - POSTGRES_DB=citygo_malaga
       - POSTGRES_USER=citygo
       - POSTGRES_PASSWORD=5X6sdoq0!?az=v2aSX
@@ -73,7 +73,7 @@ services:
     networks:
       - my-app-bridge
     volumes:
-      - ./app/:/usr/src/app/
+      #- ./app/:/usr/src/app/
       - static_volume:/usr/src/app/static
     depends_on:
       - db

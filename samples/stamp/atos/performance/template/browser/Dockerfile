@@ -1,7 +1,17 @@
 FROM selenium/node-chrome-debug
 
-RUN pip install selenium pytest
+RUN sudo apt-get update && \
+    sudo apt-get upgrade -y && \
+    sudo apt-get install -y \
+    python2.7 \
+    python-pip
 
-COPY ./tests citygo-tests/tests.py
+WORKDIR ./browser
+
+RUN pip install --upgrade pip
+
+RUN sudo -H pip install bzt
+
+COPY ./citygo.jmx /browser/citygo-tests/citygo.jmx
 
 CMD echo "Ready!"
