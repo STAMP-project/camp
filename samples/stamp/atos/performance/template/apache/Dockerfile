@@ -35,4 +35,3 @@ RUN cd /etc/apache2/mods-enabled/ && \
 EXPOSE 82 3500
 
 CMD ["apache2ctl", "-D", "FOREGROUND"]
-
