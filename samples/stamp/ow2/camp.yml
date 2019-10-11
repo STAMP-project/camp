@@ -10,14 +10,26 @@
 
 goals:
   running:
-    - Lutece
+    - PerfTests
 
 components:
+
+  tests:
+    provides_services: [ PerfTests ]
+    requires_services: [ Lutece ]
+    implementation:
+      docker:
+        file: tests/Dockerfile
+    tests:
+      command: -n -t Forms-test.jmx -l Forms-test.jtl -e -o results
+      reports:
+        format: jmeter
+        location: results
+        pattern: statistics.json
 
   lutece:
     provides_services: [Lutece]
     requires_services: [MySQL]
-    #requires_features : [Tomcat]
     implementation:
       docker:
         file: lutece/Dockerfile

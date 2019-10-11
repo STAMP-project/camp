@@ -4,8 +4,6 @@ services:
 
   tests:
     build: ./tests
-    volumes:
-      - "./tests:/tests"
     depends_on:
       - lutece
 
