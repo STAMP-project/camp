@@ -6,26 +6,6 @@ services:
     build: ./browser
     networks:
       - my-app-bridge
-  
-  db:
-    build: ./postgres
-    container_name: my_postgresql
-    environment:
-      - max_connections=500
-      - shared_buffers=256
-      - port=6666
-      - POSTGRES_DB=citygo_malaga
-      - POSTGRES_USER=citygo
-      - POSTGRES_PASSWORD=5X6sdoq0!?az=v2aSX
-      - PGDATA=/var/lib/postgresql/data/pgdata
-    ports:
-      - "6666:6666"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    expose:
-      - "6666"
-    networks:
-      - my-app-bridge
 
   apache:
     build: ./apache
@@ -46,15 +26,10 @@ services:
       - MAXINSTANCES=50
       - CSSSELECTORSENABLED=True
       - BROWSERCONNECTIONENABLED=True
-    volumes: 
-      #- ../Citygo/www:/var/www/html
-      - ./app/:/usr/src/app/
-      - static_volume:/usr/src/app/static
     ports:
       - "82:82"
     depends_on:
       - db
-      - mongo
     networks:
       - my-app-bridge
 
@@ -70,19 +45,36 @@ services:
       - MAXINSTANCES=50
       - CSSSELECTORSENABLED=True
       - BROWSERCONNECTIONENABLED=True
-    networks:
-      - my-app-bridge
-    volumes:
-      #- ./app/:/usr/src/app/
-      - static_volume:/usr/src/app/static
+      - POSTGRESQL_HOST=db
+      - port=6666
     depends_on:
-      - db
-      - mongo
       - apache
+      - db
+    links:
+      - db:db
     ports:
       - "8003:8003"
-
-  hub:
+    networks:
+      - my-app-bridge
+  
+  db:
+    image: postgres:9.3
+    container_name: my_postgresql
+    restart: always
+    environment:
+      - POSTGRES_DB=citygo_malaga
+      - POSTGRES_USER=citygo
+      - POSTGRES_PASSWORD=5X6sdoq0!?az=v2aSX
+      - PGDATA=/var/lib/postgresql/data/pgdata  
+    command: sh -c "docker-entrypoint.sh -c 'port=6666' -c 'listen_addresses='*'' -c 'max_connections=500' -c 'shared_buffers=256'"
+    ports:
+      - "6666:6666"
+    expose:
+      - "6666"
+    networks:
+      - my-app-bridge
+ 
+ hub:
     image: selenium/hub
     container_name: "selenium_hub"
     volumes:
@@ -121,11 +113,6 @@ services:
     networks:
       - my-app-bridge
 
-
-volumes:
-  postgres_data:
-  static_volume:
-
 networks:
   my-app-bridge:
-    driver: bridge
+
