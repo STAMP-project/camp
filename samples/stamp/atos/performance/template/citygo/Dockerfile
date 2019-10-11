@@ -1,6 +1,6 @@
 # See explanation in the README.
 
-FROM camp/runtime
+FROM python:2.7
 
 # Describe here how to install Citygo ontop of the "python" component.
 
@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED 1
 ENV C_FORCE_ROOT true
 
 # Set work directory
-WORKDIR /usr/src/app 
+WORKDIR /usr/src/app
 
 RUN chmod -R +x /usr/src/app
 RUN pip install --upgrade pip
