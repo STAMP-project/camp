@@ -74,7 +74,7 @@ services:
     networks:
       - my-app-bridge
  
- hub:
+  hub:
     image: selenium/hub
     container_name: "selenium_hub"
     volumes:
