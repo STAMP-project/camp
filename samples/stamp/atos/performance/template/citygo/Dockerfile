@@ -1,7 +1,6 @@
 # See explanation in the README.
 
-FROM python:2.7
-
+FROM camp/runtime
 # Describe here how to install Citygo ontop of the "python" component.
 
 ENV PYTHONUNBUFFERED 1
