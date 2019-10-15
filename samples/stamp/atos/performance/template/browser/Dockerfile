@@ -8,6 +8,7 @@ RUN sudo apt-get update && \
 
 WORKDIR /browser
 
+USER root
 RUN chmod 777 -R /browser
 
 RUN pip install --upgrade pip
