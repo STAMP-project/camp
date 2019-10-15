@@ -6,12 +6,16 @@ RUN sudo apt-get update && \
     python2.7 \
     python-pip
 
-WORKDIR ./browser
+WORKDIR /browser
+
+RUN chmod 777 -R /browser
 
 RUN pip install --upgrade pip
 
 RUN sudo -H pip install bzt
 
 COPY ./citygo.jmx /browser/citygo-tests/citygo.jmx
+
+RUN ls -lR /browser
 
 CMD echo "Ready!"
