@@ -26,12 +26,13 @@ ADD ./mpm_event.conf ./
 ADD ./demo_site_1.conf /etc/apache2/sites-available/000-default.conf
 ADD ./httpd.conf /usr/local/apache2/conf/httpd.conf
 
-CMD service apache2 restart
 
 RUN chmod 777 -R /var/log/apache2
 RUN cd /etc/apache2/mods-enabled/ && \
     echo "envsubst < $pwd/mpm_event.conf > ./mpm_event.conf"
 
-EXPOSE 82 3500
+CMD service apache2 restart
+
+EXPOSE 80 3500
 
 CMD ["apache2ctl", "-D", "FOREGROUND"]
