@@ -27,9 +27,7 @@ services:
       - CSSSELECTORSENABLED=True
       - BROWSERCONNECTIONENABLED=True
     ports:
-      - "82:82"
-    depends_on:
-      - db
+      - "80:80"
     networks:
       - my-app-bridge
 
@@ -49,6 +47,7 @@ services:
       - port=6666
     depends_on:
       - apache
+      - mongo
       - db
     links:
       - db:db
