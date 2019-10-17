@@ -30,10 +30,42 @@ components:
   lutece:
     provides_services: [Lutece]
     requires_services: [MySQL]
+    requires_features: [Tomcat]
     implementation:
       docker:
         file: lutece/Dockerfile
 
+  tomcat:
+    provides_features: [Tomcat]
+    requires_features: [JRE]
+    variables:
+      version:
+        values: [ v7, v8, v9 ]
+        realization:
+         - targets: [ tomcat/Dockerfile ]
+           pattern: "TOMCAT_MAJOR=7"
+           replacements:
+             - TOMCAT_MAJOR=7
+             - TOMCAT_MAJOR=8
+             - TOMCAT_MAJOR=9
+         - targets: [ tomcat/Dockerfile ]
+           pattern: "TOMCAT_REVISION=0.96"
+           replacements:
+             - TOMCAT_REVISION=0.96
+             - TOMCAT_REVISION=5.47
+             - TOMCAT_REVISION=0.27
+    implementation:
+      docker:
+        file: tomcat/Dockerfile
+
+
+  jre:
+    provides_features: [ JRE ]
+    implementation:
+      docker:
+        file: jre/Dockerfile
+
+        
   mysql:
     provides_services: [MySQL]
     variables:

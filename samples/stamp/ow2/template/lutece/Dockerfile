@@ -1,13 +1,26 @@
-FROM debian:stretch
+#
+# CAMP
+#
+# Copyright (C) 2017, 2019 SINTEF Digital
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
 
-# install needed apps
-RUN apt-get update && apt-get dist-upgrade -y && \
-    apt-get install -y mysql-client default-jdk ant maven git tomcat8 --no-install-recommends
-
-# define the fully qualified artifact of the site
 ARG site=site-forms-demo-1.0.0-SNAPSHOT
 
-# build the site and assemble the webapp
+# A first container to build the lutece web app
+FROM debian:stretch as builder
+
+RUN apt-get update && apt-get dist-upgrade -y && \
+        apt-get install -y --no-install-recommends \
+        mysql-client \
+        default-jdk \
+        ant \
+        maven \
+        git
+
 WORKDIR /app
 
 ADD pom.xml /app/pom.xml
@@ -16,7 +29,12 @@ RUN mvn lutece:site-assembly
 
 ADD db.properties /app/target/${site}/WEB-INF/conf/db.properties
 
-RUN mv /app/target/${site}/ /var/lib/tomcat8/webapps/site-forms-demo
+
+# Deploy the web app on a Tomcat, which is installed in
+# /usr/local/tomcat. See template/tomcat/Dockerfile
+FROM camp/runtime
+
+COPY --from=builder /app/target/${site}/ /usr/local/tomcat/webapps/site-forms-demo
 
 COPY entrypoint.sh /entrypoint.sh
 
