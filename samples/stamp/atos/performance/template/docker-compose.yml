@@ -1,12 +1,10 @@
-version: '2'
+version: '3'
 
 services:
 
   browser:
     build: ./browser
-    networks:
-      - my-app-bridge
-
+   
   apache:
     build: ./apache
     container_name: my_apache
@@ -28,9 +26,7 @@ services:
       - BROWSERCONNECTIONENABLED=True
     ports:
       - "80:80"
-    networks:
-      - my-app-bridge
-
+   
   web:
     build: ./citygo
     container_name: "my_web"
@@ -53,9 +49,7 @@ services:
       - db:db
     ports:
       - "8003:8003"
-    networks:
-      - my-app-bridge
-  
+   
   db:
     image: postgres:9.3
     container_name: my_postgresql
@@ -70,9 +64,7 @@ services:
       - "6666:6666"
     expose:
       - "6666"
-    networks:
-      - my-app-bridge
- 
+   
   hub:
     image: selenium/hub
     container_name: "selenium_hub"
@@ -80,10 +72,7 @@ services:
       - /dev/shm:/dev/shm/
     ports:
       - "4444:4444"
-    networks:
-      - my-app-bridge
-
-
+   
   selenium_chrome:
     image: selenium/node-chrome-debug
     container_name: selenium_chrome
@@ -94,9 +83,7 @@ services:
       - "5900:5900"
     depends_on:
       - hub
-    networks:
-      - my-app-bridge
-
+   
   mongo:
     image: mongo:4.0.6-xenial
     container_name: "my_mongo"
@@ -109,9 +96,4 @@ services:
       - "22222:22222"
     expose:
       - "22222"
-    networks:
-      - my-app-bridge
-
-networks:
-  my-app-bridge:
-
+   
