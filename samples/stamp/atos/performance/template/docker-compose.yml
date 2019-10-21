@@ -4,6 +4,8 @@ services:
 
   browser:
     build: ./browser
+    volumes:
+      - /var/log/apache2/:/browser/citygo-tests
    
   apache:
     build: ./apache
@@ -26,6 +28,8 @@ services:
       - BROWSERCONNECTIONENABLED=True
     ports:
       - "80:80"
+    volumes:
+      - /var/log/apache2/:/browser/citygo-tests
    
   web:
     build: ./citygo
@@ -96,4 +100,4 @@ services:
       - "22222:22222"
     expose:
       - "22222"
-   
+
