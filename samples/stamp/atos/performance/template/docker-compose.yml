@@ -5,7 +5,7 @@ services:
   browser:
     build: ./browser
     volumes:
-      - /var/log/apache2/:/browser/citygo-tests
+      - ./logs/:/browser/citygo-tests/apache-logs
    
   apache:
     build: ./apache
@@ -29,7 +29,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - /var/log/apache2/:/browser/citygo-tests
+      - ./logs:/var/log/apache2/
    
   web:
     build: ./citygo
