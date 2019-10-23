@@ -5,28 +5,29 @@
 #
 # Maintainer: Fernando Méndez Requena - fernando.mendez@atos.net 
 
-version: '2'
+version: '3'
 
 services:
+
+  browser:
+    build: ./browser
+    volumes:
+      - ./logs/:/browser/citygo-tests/nginx-logs
+
   db:
-    container_name: my_postgres
-    build: ./postgres
+    image: postgres:9.3
+    container_name: my_postgresql
+    restart: always
     environment:
-      - max_connections=500
-      - shared_buffers=256
-      - port=5432
       - POSTGRES_DB=citygo_malaga
       - POSTGRES_USER=citygo
       - POSTGRES_PASSWORD=5X6sdoq0!?az=v2aSX
-      - PGDATA=/var/lib/postgresql/data/pgdata
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    networks:
-      - dsne-django-nginx
+      - PGDATA=/var/lib/postgresql/data/pgdata  
+    command: sh -c "docker-entrypoint.sh -c 'port=6666' -c 'listen_addresses='*'' -c 'max_connections=500' -c 'shared_buffers=256'"
     ports:
-      - "5432:5432"
+      - "6666:6666"
     expose:
-      - "5432"
+      - "6666"
     
   mongo:
     container_name: "my_mongo"
@@ -40,8 +41,6 @@ services:
       - "27017:27017"
     expose:
       - "27017"
-    networks:
-      - dsne-django-nginx
     
   nginx:
     build: ./nginx
@@ -68,10 +67,9 @@ services:
       - ./app/:/usr/src/app/
       - static_volume:/usr/src/app/static
       - dsne-nginx-cert:/etc/ssl/certs:ro
+      - ./logs/:/var/log/nginx/
     depends_on:
       - web
-    networks:
-      - dsne-django-nginx
 
   web:
     build: ./citygo
@@ -86,8 +84,6 @@ services:
       - MAXINSTANCES=50
       - CSSSELECTORSENABLED=True
       - BROWSERCONNECTIONENABLED=True
-    networks:
-      - dsne-django-nginx
     volumes:
       - ./app/:/usr/src/app/
       - static_volume:/usr/src/app/static
@@ -102,8 +98,6 @@ services:
     image: selenium/hub
     volumes:
       - /dev/shm:/dev/shm/
-    networks:
-      - dsne-django-nginx
     ports:
       - "4444:4444"
 
@@ -117,14 +111,8 @@ services:
       - "5900:5900"
     depends_on:
       - hub
-    networks:
-      - dsne-django-nginx
 
 volumes:
   static_volume:
   dsne-nginx-cert:
   postgres_data:
-
-networks:
-  dsne-django-nginx:
-    driver: bridge
