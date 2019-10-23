@@ -1,0 +1,78 @@
+pipeline {
+    
+    agent any
+    
+    stages {
+    
+    stage('Pull SCM sut'){
+        steps{
+            git (credentialsId: 'git-credentials',  url: 'https://gitlab.atosresearch.eu/ari/stamp_docker_citygoApp', branch: 'master')
+        }
+    }
+    stage('Run CAMP'){
+        steps{
+            sh '''
+            docker pull fchauvel/camp:dev;
+            docker run -d -u root -i -t --name camp -v /var/run/docker.sock:/var/run/docker.sock -v /var/jenkins_home/workspace/citygo_camp/:/stamp_docker_citygoApp/ -t fchauvel/camp:dev
+        '''
+        }
+    }
+    stage('CAMP generate'){
+        steps{
+            sh '''
+            docker exec -d camp sh -c 'rm /stamp_docker_citygoApp/apache/app/Dockerfile && cp -R /stamp_docker_citygoApp/apache/app/server/* ./samples/stamp/atos/performance/template/citygo/';
+            docker exec -i camp sh -c 'cd samples/stamp/atos/performance/ && camp generate -d . --all';
+            exit;
+        '''
+        }
+    }
+    stage('CAMP realize'){
+        steps{
+            sh '''
+            docker exec -i camp sh -c 'cd samples/stamp/atos/performance/ && camp realize -d . && cp -R out/ /stamp_docker_citygoApp/';
+            exit;
+        	'''
+        }
+    }
+    stage('CAMP execute'){
+        steps{
+            sh '''
+            docker exec -i camp sh -c 'cd samples/stamp/atos/performance/ && camp execute -d .';
+            exit;
+        '''
+        }
+    }
+    stage('Publish reports') {
+      steps {
+        script {
+          sh '''
+                docker exec -i camp sh -c 'cp -R samples/stamp/atos/performance/out/* /stamp_docker_citygoApp/out/  &&
+                cp samples/stamp/atos/performance/camp_execute.log /stamp_docker_citygoApp/ && exit';
+                ls -d /var/jenkins_home/workspace/citygo_camp/out/*/ > reportDirNames.txt;
+                cat /var/jenkins_home/workspace/citygo_camp/camp_execute.log | grep "Online report link" > linksPerformanceTestReports.log;
+                rm /var/jenkins_home/workspace/citygo_camp/camp_execute.log;
+                exit;
+            '''
+            zip zipFile: 'JMetterTestsLogs.zip', archive: true, dir: '/var/jenkins_home/workspace/citygo_camp', glob: '**/linksPerformanceTestReports.log'
+          
+          def reportDirectories = readFile('reportDirNames.txt').split("\\r?\\n")
+          sh 'rm -f reportDirNames.txt'
+          for (i = 0; i < reportDirectories.size(); i++) {
+            publishHTML (target: [
+              allowMissing: false,
+              alwaysLinkToLastBuild: false,
+              keepAll: true, 
+              reportDir: reportDirectories[i] + '/test-reports/apache-logs/',
+              reportFiles: 'error.log', 
+              reportName: reportDirectories[i].tokenize('/').last()
+            ])
+          }
+          sh '''
+            docker stop camp && docker rm camp   
+          '''
+        }
+      }
+    }
+  }
+}
+
