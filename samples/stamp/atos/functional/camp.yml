@@ -34,18 +34,6 @@ components:
       docker:
         image: selenium/hub
 
-  apache:
-    provides_services: [ HttpProxy ]
-    requires_services: [ CityGo ]
-    implementation:
-      docker:
-        file: apache/Dockerfile
-    realization:
-      - select: docker-compose-apache.yml
-        instead_of:
-          - docker-compose-nginx.yml
-        as: docker-compose.yml
-
   nginx:
     provides_services: [ HttpProxy ]
     requires_services: [ CityGo ]
@@ -105,17 +93,7 @@ components:
 
   postgres:
     provides_services: [ Postgres ]
-    variables:
-      version:
-        values: [v9, v10, v11]
-        realization:
-          - targets: [ "postgres/Dockerfile" ]
-            pattern: "FROM postgres:9.3"
-            replacements:
-              - "FROM postgres:9.3"
-              - "FROM postgres:10"
-              - "FROM postgres:11"
     implementation:
       docker:
-        file: postgres/Dockerfile
+        file: postgres:9.3
 
