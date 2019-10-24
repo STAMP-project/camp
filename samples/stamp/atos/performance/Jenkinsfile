@@ -3,7 +3,7 @@ pipeline {
     agent any
     
     stages {
-    
+        
     stage('Pull SCM sut'){
         steps{
             git (credentialsId: 'git-credentials',  url: 'https://gitlab.atosresearch.eu/ari/stamp_docker_citygoApp', branch: 'master')
@@ -46,15 +46,20 @@ pipeline {
       steps {
         script {
           sh '''
-                docker exec -i camp sh -c 'cp -R samples/stamp/atos/performance/out/* /stamp_docker_citygoApp/out/  &&
-                cp samples/stamp/atos/performance/camp_execute.log /stamp_docker_citygoApp/ && exit';
+                DATE=${env.BUILD_ID};
+                OUT=/stamp_docker_citygoApp/out/$DATE; 
+                mkdir -p $OUT;
+                docker exec -i camp sh -c 'cp -R samples/stamp/atos/performance/out/* $OUT  &&
+                cp samples/stamp/atos/performance/camp_execute.log $OUT && exit';
                 ls -d /var/jenkins_home/workspace/citygo_camp/out/*/ > reportDirNames.txt;
                 cat /var/jenkins_home/workspace/citygo_camp/camp_execute.log | grep "Online report link" > linksPerformanceTestReports.log;
                 rm /var/jenkins_home/workspace/citygo_camp/camp_execute.log;
+                mkdir -p $DATE;
+                mv /var/jenkins_home/workspace/citygo_camp/linksPerformanceTestReports.log /var/jenkins_home/workspace/citygo_camp/$DATE/; 
                 exit;
             '''
-            zip zipFile: 'JMetterTestsLogs.zip', archive: true, dir: '/var/jenkins_home/workspace/citygo_camp', glob: '**/linksPerformanceTestReports.log'
-          
+            zip zipFile: 'JMetterTestsLogs.zip', archive: true, dir: '/var/jenkins_home/workspace/citygo_camp/${env.BUILD_ID}/', glob: '**/linksPerformanceTestReports.log'
+            
           def reportDirectories = readFile('reportDirNames.txt').split("\\r?\\n")
           sh 'rm -f reportDirNames.txt'
           for (i = 0; i < reportDirectories.size(); i++) {
