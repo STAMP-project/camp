@@ -6,13 +6,20 @@ RUN sudo apt-get update && \
     python2.7 \
     python-pip
 
-WORKDIR ./
+WORKDIR /browser
+
+USER root
+RUN chmod 777 -R /browser
 
 RUN pip install --upgrade pip
 
-ADD ./requirements.txt ./
-RUN pip install -r requirements.txt
+# Install BlazeMetter to run performance Tests
+RUN sudo -H pip install bzt
+COPY ./citygo.jmx /browser/citygo-tests/citygo.jmx
 
-COPY ./tests.py citygo-tests/tests.py
+#Funtional Tests
+COPY ./tests.py /browser/citygo-tests/citygo.jmx/tests.py
+
+RUN ls -lR /browser
 
 CMD echo "Ready!"
