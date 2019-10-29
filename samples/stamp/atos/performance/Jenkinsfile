@@ -29,13 +29,11 @@ pipeline {
     stage('CAMP realize'){
         steps{
 	    script {
-    	    def BUILD_ID= ""
-            BUILD_ID = env.BUILD_ID
                 sh '''  
-            		docker exec -i -e BUILD_ID="${BUILD_ID}" camp sh -c 'cd samples/stamp/atos/performance/ && camp realize -d .';
+            	   docker exec -i camp sh -c 'cd samples/stamp/atos/performance/ && camp realize -d .';
                 '''
             }
-       }
+        }
     }
     
     stage('CAMP execute'){
