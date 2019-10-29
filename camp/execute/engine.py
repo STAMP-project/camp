@@ -240,7 +240,7 @@ class Engine(object):
         working_directory = join_paths(path, "images")
         self._shell.execute(self._BUILD_IMAGES, working_directory)
 
-    _BUILD_IMAGES = "bash build_images.sh"
+    _BUILD_IMAGES = "bash build_images.sh --build"
 
 
     def _start_services(self, path):
@@ -341,7 +341,14 @@ class Engine(object):
     def _stop_services(self, path):
         self._shell.execute(self._STOP_SERVICES, path)
 
-    _STOP_SERVICES = "docker-compose down --volumes --rmi all"
+        working_directory = join_paths(path, "images")
+        self._shell.execute("bash build_images.sh --cleanup", working_directory)
+
+
+    # We use the option '--rmi local' to avoid deleting the image
+    # created by the script 'build_images.sh'. These images will be
+    # deleted by the script afterwards during: 'sh build_images.sh --cleanup'
+    _STOP_SERVICES = "docker-compose down --volumes --rmi local"
 
 
 

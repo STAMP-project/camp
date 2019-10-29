@@ -11,7 +11,8 @@
 # Step 1: Build the WAR file
 FROM openjdk:8-jdk-stretch as builder
 
-LABEL maintainer "franck.chauvel@sintef.no"
+LABEL maintainer="franck.chauvel@sintef.no"
+LABEL stage="intermediate"
 
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends  \

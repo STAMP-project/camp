@@ -117,9 +117,9 @@ class BuildImagesIsGenerated(BuilderTest):
         self.build(configuration)
 
         expected_command_order = (
-            "docker build --no-cache -t camp-jdk_0 ./jdk_0\n"
-            "docker build --no-cache -t camp-tomcat_0 ./tomcat_0\n"
-            "docker build --no-cache -t camp-server_0 ./server_0\n"
+            "docker build --force-rm --no-cache -t camp-jdk_0 ./jdk_0\n"
+            "\tdocker build --force-rm --no-cache -t camp-tomcat_0 ./tomcat_0\n"
+            "\tdocker build --force-rm --no-cache -t camp-server_0 ./server_0\n"
         )
 
         self.assert_generated(
