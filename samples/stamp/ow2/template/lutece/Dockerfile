@@ -13,6 +13,8 @@ ARG site=site-forms-demo-1.0.0-SNAPSHOT
 # A first container to build the lutece web app
 FROM debian:stretch as builder
 
+LABEL stage="intermediate"
+
 RUN apt-get update && apt-get dist-upgrade -y && \
         apt-get install -y --no-install-recommends \
         mysql-client \

@@ -206,5 +206,5 @@ class ComponentResourceSelectionShould(CampTest):
 
             self.assertIn("nginx_variable=something_else",
                           each_configuration.content_of("docker-compose.yml"))
-            self.assertIn("build: ./images/nginx_0",
+            self.assertIn("image: camp-nginx_0",
                           each_configuration.content_of("docker-compose.yml"))

@@ -31,7 +31,10 @@ setup(name="camp",
       packages=find_packages(exclude=["tests*", "tests.*"]),
       include_package_data = True,
       package_data = {
-          "camp": ["data/metamodel.yml"]
+          "camp": [
+              "data/metamodel.yml",
+              "data/manage_images.sh"
+          ]
       },
       license="MIT",
       test_suite="tests",

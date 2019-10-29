@@ -17,6 +17,8 @@ from os import listdir, makedirs, remove, sep as path_separator
 from os.path import exists, isdir, isfile, join as join_paths, \
      normpath, split as split_path, relpath
 
+from pkgutil import get_data
+
 from re import escape, sub, subn
 
 from shutil import copyfile, copytree, move, rmtree
@@ -73,8 +75,7 @@ class Builder(object):
         self._copy_orchestration_files()
         for each_instance in configuration.instances:
             self._copy_template_for(each_instance)
-            if each_instance.feature_provider:
-                self._adjust_docker_file(each_instance)
+            self._adjust_docker_file(each_instance)
             self._realize_component(each_instance)
             self._realize_variables(each_instance)
         self._adjust_docker_compose_file(configuration)
@@ -112,13 +113,12 @@ class Builder(object):
             with open(orchestration, "r") as source:
                 content = source.read()
                 for each_instance in configuration.instances:
+                    # Issue 82: Here we replace "build" clauses by
+                    # "images" clauses to avoid generating additional
+                    # dangling images
                     content, count = subn(r"build:\s*\./" + each_instance.definition.name,
-                                          "build: ./images/" + each_instance.name,
+                                          "image: " + self._docker_tag_for(each_instance),
                                           content)
-                    # Investigating Issue #55
-                    # if count == 0:
-                    #     raise RuntimeError("Component " + each_instance.definition.name \
-                    #                        + " cannot be found in the dockerfile")
 
             with open(orchestration, "w") as target:
                 target.write(content)
@@ -165,22 +165,26 @@ class Builder(object):
 
     def _adjust_docker_file(self, instance):
         self._record_dependency_of(instance)
-        host = instance.feature_provider.definition.implementation
-        kind = type(host)
-        if kind == DockerImage:
-            self._replace_in(
-                self._docker_file_for(instance),
-                instance,
-                self.REGEX_FROM,
-                "FROM " + host.docker_image)
-        elif kind == DockerFile:
-            self._replace_in(
-                self._docker_file_for(instance),
-                instance,
-                self.REGEX_FROM,
-                "FROM %s" % self._docker_tag_for(instance.feature_provider))
+        if not instance.feature_provider:
+            pass
+            # Nothing to change on the dockerfile
         else:
-            raise RuntimeError("Component implement '%s' not supported yet" \
+            host = instance.feature_provider.definition.implementation
+            kind = type(host)
+            if kind == DockerImage:
+                self._replace_in(
+                    self._docker_file_for(instance),
+                    instance,
+                    self.REGEX_FROM,
+                    "FROM " + host.docker_image)
+            elif kind == DockerFile:
+                self._replace_in(
+                    self._docker_file_for(instance),
+                    instance,
+                    self.REGEX_FROM,
+                    "FROM %s" % self._docker_tag_for(instance.feature_provider))
+            else:
+                raise RuntimeError("Component implement '%s' not supported yet" \
                                % kind.__name__)
 
     # Issue 78 about Multi-stages build.
@@ -307,45 +311,56 @@ class Builder(object):
 
 
     def _record_dependency_of(self, instance):
-        if instance.feature_provider in self._images:
-            index = self._images.index(instance.feature_provider)
-            self._images.insert(index+1, instance)
-        elif instance in self._images:
-            index = self._images.index(instance)
-            self._images.insert(index, instance.feature_provider)
+        if instance not in self._images:
+            if instance.feature_provider:
+                if instance.feature_provider in self._images:
+                    index = self._images.index(instance.feature_provider)
+                    self._images.insert(index+1, instance)
+                else:
+                    self._images.append(instance.feature_provider)
+                    self._images.append(instance)
+            else:
+                self._images.append(instance)
         else:
-            self._images.append(instance.feature_provider)
-            self._images.append(instance)
-
+            if instance.feature_provider:
+                if instance.feature_provider not in self._images:
+                    index = self._images.index(instance)
+                    self._images.insert(index, instance.feature_provider)
 
 
     def _generate_build_script(self):
         build_commands = []
+        obselete_images = []
         for each_instance in self._images:
             if isinstance(each_instance.definition.implementation, DockerFile):
                 tag = self._docker_tag_for(each_instance)
+                obselete_images.append(tag)
                 folder = "./" + each_instance.name
                 command = self.BUILD_COMMAND.format(folder=folder, tag=tag)
                 build_commands.append(command)
 
-        build_script = self._build_script()
-        with open(build_script, "w") as stream:
-            content = self.BUILD_SCRIPT_TEXT.format("\n".join(build_commands))
-            stream.write(content)
+        script = self._build_script()
+        with open(script, "w") as stream:
+            body = self._fetch_script_template()
+            body = sub(self.BUILD_COMMAND_MARKER,
+                       "\n\t".join(build_commands),
+                       body)
+            body = sub(self.OBSELETE_IMAGES_MARKER,
+                       " ".join(obselete_images),
+                       body)
+            stream.write(body)
+
+    BUILD_COMMAND_MARKER = "{build_commands}"
+
+    OBSELETE_IMAGES_MARKER = "{obselete_images}"
+
+    def _fetch_script_template(self):
+        return get_data('camp', 'data/manage_images.sh').decode("utf-8")
 
 
-    BUILD_COMMAND = "docker build --no-cache -t {tag} {folder}"
+    # Issue 82: The "--force-rm" option avoids generating many
+    # dangling images and consuming a lot of disk space
+    BUILD_COMMAND = "docker build --force-rm --no-cache -t {tag} {folder}"
 
     def _build_script(self):
         return join_paths(self._image_directory, "build_images.sh")
-
-
-    BUILD_SCRIPT_TEXT = ("#!/bin/bash\n"
-                         "#\n"
-                         "# Generated by CAMP. Edit carefully\n"
-                         "#\n"
-                         "# Build all images and set the appropriate tags\n"
-                         "#\n"
-                         "set -e\n"
-                         "{0}\n"
-                         "echo 'All images ready.'\n")
