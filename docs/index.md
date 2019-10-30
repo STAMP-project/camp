@@ -12,18 +12,19 @@ and output configurations are specified as Dockerfiles or
 docker-compose files.
 
 ## Quick start
-The fastest way to [install CAMP](pages/setup.md) is to use our
-[Installation script
-](https://github.com/STAMP-project/camp/blob/master/install.sh) as follows:
+The fastest solution is to use [docker](https://www.docker.com/) to
+run CAMP and all its dependencies in one container, using the
+following command:
 
-```bash
-$ \curl -L https://github.com/STAMP-project/camp/raw/master/install.sh \
-  | sudo bash
+```console
+fchauvel@debian$ docker run --name camp \
+             -it \
+             -v /var/run/docker.sock:/var/run/docker.sock \
+             -t fchauvel/camp:latest bash
+root@9dd7e1f061ce:/camp# cd samples/java
+root@9dd7e1f061ce:/camp# camp generate -d .
 ```
-
-You can then fetch [the source
-code](https://github.com/STAMP-project/camp) and try out the examples
-from the `samples` directory.
+The Docker image include all [samples available on Github](https://github.com/STAMP-project/camp).
 
 Here are the three main CAMP commands:
 
