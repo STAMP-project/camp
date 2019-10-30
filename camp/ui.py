@@ -148,6 +148,10 @@ class UI(object):
         self._print("   Have you run 'camp generate -d {folder}?",
                     folder=error.searched_folder)
 
+    def no_configuration_with_index(self, index):
+        self._print("Warning: No configuration found with index {index}",
+                    index=index)
+
 
     def invalid_substitution(self, error):
         self._print(self.INVALID_SUBSTITUTION, searched=error.pattern,

@@ -38,6 +38,16 @@ class LongOptionsAreAccepted(TestCase):
         self.assertEqual(True,
                          command.is_simulated)
 
+    def test_with_the_include_option(self):
+        command_line = ["execute", "--include", "1", "2", "3", "4"]
+
+        command = Command.extract_from(command_line)
+
+        self.assertIsInstance(command, Execute)
+        self.assertEqual([1, 2, 3, 4],
+                         command.included_configurations)
+
+
 
 class ShortOptionsAreAccepted(TestCase):
 
@@ -59,6 +69,17 @@ class ShortOptionsAreAccepted(TestCase):
         self.assertIsInstance(command, Execute)
         self.assertEqual(True,
                          command.is_simulated)
+
+
+    def test_with_the_include_option(self):
+        command_line = ["execute", "-i", "1", "2", "3", "4"]
+
+        command = Command.extract_from(command_line)
+
+        self.assertIsInstance(command, Execute)
+        self.assertEqual([1, 2, 3, 4],
+                         command.included_configurations)
+
 
 
 class DefaultValuesAreCorrect(TestCase):
@@ -89,3 +110,13 @@ class DefaultValuesAreCorrect(TestCase):
         self.assertIsInstance(command, Execute)
         self.assertEqual(Execute.DEFAULT_IS_SIMULATED,
                          command.is_simulated)
+
+
+    def test_with_the_include_option(self):
+        command_line = ["execute"]
+
+        command = Command.extract_from(command_line)
+
+        self.assertIsInstance(command, Execute)
+        self.assertEqual(Execute.DEFAULT_INCLUDED,
+                         command.included_configurations)

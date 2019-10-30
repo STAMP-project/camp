@@ -37,3 +37,13 @@ class JavaGreetingsShould(CampTest):
         report = self.scenario.fetch_test_report()
 
         self.assertEqual(3, len(report["reports"]))
+
+
+    def test_run_only_configuration_number_two(self):
+        self.generate_all()
+        self.realize()
+        self.execute(simulated=True, include=[2])
+
+        report = self.scenario.fetch_test_report()
+
+        self.assertEqual(1, len(report["reports"]))
