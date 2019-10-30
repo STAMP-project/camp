@@ -29,13 +29,11 @@ pipeline {
     stage('CAMP realize'){
         steps{
 	    script {
-    	    def BUILD_ID= ""
-            BUILD_ID = env.BUILD_ID
                 sh '''  
-            		docker exec -i -e BUILD_ID="${BUILD_ID}" camp sh -c 'cd samples/stamp/atos/performance/ && camp realize -d .';
+            	   docker exec -i camp sh -c 'cd samples/stamp/atos/performance/ && camp realize -d .';
                 '''
             }
-       }
+        }
     }
     
     stage('CAMP execute'){
@@ -62,7 +60,7 @@ pipeline {
                 rm /var/jenkins_home/workspace/citygo_camp/out/$BUILD_ID/camp_execute.log;
                 exit;
             '''
-            zip zipFile: 'JMetterTestsLogs.zip', archive: true, dir: '/var/jenkins_home/workspace/citygo_camp/out/$BUILD_ID/', glob: '**/linksPerformanceTestReports.log'
+            zip zipFile: 'JMetterTestsLogs.zip', archive: true, dir: '/var/jenkins_home/workspace/citygo_camp/out/'+BUILD_ID+'/', glob: '**/linksPerformanceTestReports.log'
             
           def reportDirectories = readFile('reportDirNames.txt').split("\\r?\\n")
           sh 'rm -f reportDirNames.txt'
