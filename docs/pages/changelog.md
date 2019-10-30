@@ -6,6 +6,16 @@ changes that were made.
 
 *   CAMP v0.6
 
+    *   CAMP v0.6.4 (Oct. 28, 2019)
+
+        *   Fix [Issue
+            82](https://github.com/STAMP-project/camp/issues/82) and
+            avoids accumulating Docker images as CAMP iterates over
+            configurations. We address the problem of multi-stages
+            build that generate "dangling images". CAMP now removes
+            them after each configuration, provided they are labelled
+            "stage=intermediate".
+
     *   CAMP v0.6.3 (Sep. 30, 2019)
 
         *   Fix [Issue
@@ -36,7 +46,6 @@ changes that were made.
             component inside software stacks.
 
         *   CAMP reports explicitly when it cannot find any configuration.
-
 
     *   CAMP v0.6.0 (Aug. 20, 2019)
 
