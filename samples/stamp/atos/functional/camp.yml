@@ -49,11 +49,6 @@ components:
     implementation:
       docker:
         file: nginx/Dockerfile
-    realization:
-      - select: docker-compose-nginx.yml
-        instead_of:
-          - docker-compose-apache.yml
-        as: docker-compose.yml
         
   citygo:
     provides_services: [ CityGo ]
