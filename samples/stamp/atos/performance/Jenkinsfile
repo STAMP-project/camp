@@ -60,7 +60,7 @@ pipeline {
                 rm /var/jenkins_home/workspace/citygo_camp/out/$BUILD_ID/camp_execute.log;
                 exit;
             '''
-            zip zipFile: 'JMetterTestsLogs.zip', archive: true, dir: '/var/jenkins_home/workspace/citygo_camp/out/'+BUILD_ID+'/', glob: '**/linksPerformanceTestReports.log'
+            zip zipFile: BUILD_ID+'_JMetterTestsLogs.zip', archive: true, dir: '/var/jenkins_home/workspace/citygo_camp/out/'+BUILD_ID+'/', glob: '**/linksPerformanceTestReports.log'
             
           def reportDirectories = readFile('reportDirNames.txt').split("\\r?\\n")
           sh 'rm -f reportDirNames.txt'
