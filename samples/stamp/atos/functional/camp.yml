@@ -95,5 +95,5 @@ components:
     provides_services: [ Postgres ]
     implementation:
       docker:
-        file: postgres:9.3
+        image: postgres:9.3
 
