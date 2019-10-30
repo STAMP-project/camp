@@ -76,6 +76,13 @@ class Command(object):
             dest="working_directory",
             help="the directory that contains the input files")
         execute.add_argument(
+            "-i",
+            "--include",
+            dest="included",
+            nargs='+',
+            type=int,
+            help="Set the indexes of the configurations to execute")
+        execute.add_argument(
             "-s",
             "--simulated",
             action="store_true",
@@ -98,7 +105,8 @@ class Command(object):
 
         elif namespace.command == "execute":
             return Execute(namespace.working_directory,
-                           namespace.is_simulated)
+                           namespace.is_simulated,
+                           namespace.included)
 
         elif namespace.command == "show_version":
             return ShowVersions()
@@ -178,17 +186,24 @@ class Execute(Command):
     """
 
     DEFAULT_IS_SIMULATED = False
-
+    DEFAULT_INCLUDED = []
 
     def __init__(self,
                  working_directory=None,
-                 is_simulated=None):
+                 is_simulated=None,
+                 included=None):
         super(Execute, self).__init__(working_directory)
         self._is_simulated = is_simulated or self.DEFAULT_IS_SIMULATED
+        self._included = included or self.DEFAULT_INCLUDED
 
     @property
     def is_simulated(self):
         return self._is_simulated
+
+
+    @property
+    def included_configurations(self):
+        return self._included
 
 
     def send_to(self, camp):

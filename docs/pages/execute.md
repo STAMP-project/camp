@@ -18,13 +18,15 @@ the test reports.
 
 Here is the usage and options:
 ```console
-$ camp execute --help
-usage: CAMP execute [-h] [-d WORKING_DIRECTORY] [-s]
+$ camp execute -h
+usage: CAMP execute [-h] [-d WORKING_DIRECTORY] [-i INCLUDED [INCLUDED ...]] [-s]
 
 optional arguments:
   -h, --help            show this help message and exit
   -d WORKING_DIRECTORY, --directory WORKING_DIRECTORY
                         the directory that contains the input files
+  -i INCLUDED [INCLUDED ...], --include INCLUDED [INCLUDED ...]
+                        Set the indexes of the configurations to execute
   -s, --simulated       Display but do NOT execute the commands that CAMP triggers
 ```
 
@@ -183,15 +185,17 @@ public void testStatusCode() throws Exception {
 
 ### Running CAMP Execute
 
-To run camp execute, you must already have generated and realized the
+To run camp execute, you must already have generated and realised the
 configuration. On this Java example, CAMP generates three
-configurations, one per version of Tomcat.
+configurations, one per version of Tomcat. Note the `--include` option
+(from v0.7) that lets you specify the indexes of the configurations you
+want to execute. By default, CAMP executes all configurations.
 
 ```console
 $ camp generate -d .
 $ camp realize -d .
-$ camp execute -d .
-CAMP v0.3.3 (MIT)
+$ camp execute -d . 
+CAMP v0.7.0 (MIT)
 Copyright (C) 2017 -- 2019 SINTEF Digital
 
 Loaded './camp.yaml'.
@@ -251,6 +255,8 @@ TOTAL                           3      3      0      0
 
 That's all folks
 ```
+
+
 ## Example: Performance Test A Java WebApp
 
 In this example you will see how to use CAMP to generate new configurations, to be performance tested with [Apache JMeter](https://jmeter.apache.org/).
@@ -366,7 +372,7 @@ More specifically, the `tests` Dockerfile leverages a JMeter docker image availa
 
 #### The Testman webapp
 
-Our web test managemeent tool is a Spring Roo web application. Here the Java
+Our web test management tool is a Spring Roo web application. Here the Java
 code of the Java web application, but we also have the necessary
 [`web.xml`](http://github.com/stamp-project/camp/tree/master/samples/java-web/template/testman/src/main/webapp/WEB-INF/web.xml)
 to specify servlets' bindings and the [Maven POM

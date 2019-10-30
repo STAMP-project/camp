@@ -167,10 +167,11 @@ class Camp(object):
             model = self._load_model()
             testing = model.tests
             configurations = self._load_configurations(model)
+            selected_configurations = self._filter(arguments, list(configurations))
             with open("camp_execute.log", "wb") as log_file:
                 shell = self._select_shell(arguments, log_file)
                 engine = Engine(testing, shell, self._ui)
-                reports = engine.execute(configurations)
+                reports = engine.execute(selected_configurations)
                 self._output.save_reports(reports)
                 self._ui.summarize_execution(reports)
 
@@ -205,3 +206,25 @@ class Camp(object):
         if arguments.is_simulated:
             shell = SimulatedShell(log_file, ".", self._ui)
         return shell
+
+
+    def _filter(self, arguments, configurations):
+        if len(arguments._included) == 0:
+            return configurations
+
+        selection = []
+        for each_index in arguments._included:
+            found = self._search_for(each_index, configurations)
+            if not found:
+                self._ui.no_configuration_with_index(each_index)
+            else:
+                selection.append(found)
+        return selection
+
+
+    def _search_for(self, index, configurations):
+        marker = "config_{}".format(index)
+        for any_path, any_config in configurations:
+            if marker in any_path:
+                return (any_path, any_config)
+        return None

@@ -145,9 +145,15 @@ class CampTest(TestCase):
         self.camp("realize", "-d", self.scenario.directory)
 
 
-    def execute(self):
-        self.camp("execute",
-                  "-d", self.scenario.directory)
+    def execute(self, simulated=False, include=None):
+        parameters = ["execute", "-d", self.scenario.directory]
+        if simulated:
+            parameters.append("-s")
+        if include:
+            parameters.append("--include")
+            for each in include:
+                parameters.append(str(each))
+        self.camp(*parameters)
 
     @staticmethod
     def camp(*arguments):
