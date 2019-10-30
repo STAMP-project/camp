@@ -21,7 +21,7 @@ components:
       docker:
         file: browser/Dockerfile
     tests:
-      command: pytest -v tests.py  --html=pytest_report.html --junitxml=report.xml --self-contained-html
+      command:  bzt citygo-tests/citygo.jmx --option=modules.console.disable=false -report && pytest -v citygo-tests/tests.py  --html=pytest_report.html --junitxml=report.xml --self-contained-html
       reports:
         location: "./"
         pattern: ".xml"
