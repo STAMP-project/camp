@@ -18,7 +18,7 @@ RUN sudo -H pip install bzt
 COPY ./citygo.jmx /browser/citygo-tests/citygo.jmx
 
 #Funtional Tests
-COPY ./tests.py /browser/citygo-tests/citygo.jmx/tests.py
+COPY ./tests.py /browser/citygo-tests/tests.py
 
 RUN ls -lR /browser
 
