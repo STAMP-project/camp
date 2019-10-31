@@ -21,7 +21,7 @@ components:
       docker:
         file: browser/Dockerfile
     tests:
-      command: pytest -v tests.py  --html=pytest_report.html --junitxml=report.xml --self-contained-html
+      command:  bzt citygo-tests/citygo.jmx --option=modules.console.disable=false -report && pytest -v citygo-tests/tests.py  --html=pytest_report.html --junitxml=report.xml --self-contained-html
       reports:
         location: "./"
         pattern: ".xml"
@@ -56,13 +56,13 @@ components:
     requires_features: [ Python ]
     variables:
       django:
-        values: [ v1.10.2, v2.2.6 ]
+        values: [ v1.10.2, v1.11 ]
         realization:
           - targets: [ citygo/requirements.txt ]
             pattern: "Django==1.10.2"
             replacements:
               - "Django==1.10.2"
-              - "Django==2.2.6"
+              - "Django==1.11"
     implementation:
       docker:
         file: citygo/Dockerfile
