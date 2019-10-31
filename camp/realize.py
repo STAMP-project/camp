@@ -330,23 +330,24 @@ class Builder(object):
 
     def _generate_build_script(self):
         build_commands = []
-        obselete_images = []
+        delete_commands = []
         for each_instance in self._images:
             if isinstance(each_instance.definition.implementation, DockerFile):
                 tag = self._docker_tag_for(each_instance)
-                obselete_images.append(tag)
+                delete_command = self.DELETE_COMMAND.format(image=tag)
+                delete_commands.append(delete_command)
                 folder = "./" + each_instance.name
-                command = self.BUILD_COMMAND.format(folder=folder, tag=tag)
-                build_commands.append(command)
+                build_command = self.BUILD_COMMAND.format(folder=folder, tag=tag)
+                build_commands.append(build_command)
 
         script = self._build_script()
         with open(script, "w") as stream:
             body = self._fetch_script_template()
             body = sub(self.BUILD_COMMAND_MARKER,
-                       "\n\t".join(build_commands),
+                       "\n    ".join(build_commands),
                        body)
             body = sub(self.OBSELETE_IMAGES_MARKER,
-                       " ".join(obselete_images),
+                       "\n    ".join(delete_commands),
                        body)
             stream.write(body)
 
@@ -359,8 +360,12 @@ class Builder(object):
 
 
     # Issue 82: The "--force-rm" option avoids generating many
-    # dangling images and consuming a lot of disk space
+    # intermediate containers and consuming disk space
     BUILD_COMMAND = "docker build --force-rm --no-cache -t {tag} {folder}"
+
+    DELETE_COMMAND = ("if [ -z \"$(docker images -q {image})\" ]; "
+                     "then printf \"No such image {image}!\\\\n\"; "
+                     "else docker rmi {image}; fi")
 
     def _build_script(self):
         return join_paths(self._image_directory, "build_images.sh")
