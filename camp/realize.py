@@ -320,7 +320,7 @@ class Builder(object):
                     self._images.append(instance.feature_provider)
                     self._images.append(instance)
             else:
-                self._images.append(instance)
+                self._images.insert(0, instance)
         else:
             if instance.feature_provider:
                 if instance.feature_provider not in self._images:
