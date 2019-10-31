@@ -87,8 +87,9 @@ class BuilderTest(TestCase):
 class BuildImagesIsGenerated(BuilderTest):
 
 
-    def test_when_the_stack_has_more_than_two_components(self):
-        model = Model(
+    def setUp(self):
+        super().setUp()
+        self.model = Model(
             [
                 Component("server",
                           provided_services=[Service("Awesome")],
@@ -106,16 +107,15 @@ class BuildImagesIsGenerated(BuilderTest):
             Goals(services=[Service("Awesome")])
         )
 
-        server_0 = Instance("server_0", model.resolve("server"))
-        tomcat_0 = Instance("tomcat_0", model.resolve("tomcat"))
-        jdk_0 = Instance("jdk_0", model.resolve("jdk"))
+        self.server_0 = Instance("server_0", self.model.resolve("server"))
+        self.tomcat_0 = Instance("tomcat_0", self.model.resolve("tomcat"))
+        self.jdk_0 = Instance("jdk_0", self.model.resolve("jdk"))
 
-        server_0.feature_provider = tomcat_0
-        tomcat_0.feature_provider = jdk_0
-        configuration = Configuration(model, [server_0, tomcat_0, jdk_0])
+        self.server_0.feature_provider = self.tomcat_0
+        self.tomcat_0.feature_provider = self.jdk_0
 
-        self.build(configuration)
 
+    def verify_script(self):
         expected_command_order = (
             "docker build --force-rm --no-cache -t camp-jdk_0 ./jdk_0\n"
             "    docker build --force-rm --no-cache -t camp-tomcat_0 ./tomcat_0\n"
@@ -127,6 +127,78 @@ class BuildImagesIsGenerated(BuilderTest):
              with_patterns=[
                  expected_command_order
              ])
+
+
+    def test_ordering_jdk_tc_svr(self):
+        configuration = Configuration(self.model, [self.jdk_0,
+                                                   self.tomcat_0,
+                                                   self.server_0])
+
+        self.build(configuration)
+
+        self.verify_script()
+
+
+    def test_ordering_jdk_svr_tc(self):
+        configuration = Configuration(self.model, [self.jdk_0,
+                                                   self.server_0,
+                                                   self.tomcat_0])
+
+        self.build(configuration)
+
+        self.verify_script()
+
+
+    def test_ordering_tc_jdk_svr(self):
+        configuration = Configuration(self.model,
+                                      [
+                                          self.tomcat_0,
+                                          self.jdk_0,
+                                          self.server_0,
+                                      ])
+
+        self.build(configuration)
+
+        self.verify_script()
+
+
+    def test_ordering_tc_svr_jdk(self):
+        configuration = Configuration(self.model,
+                                      [
+                                          self.tomcat_0,
+                                          self.server_0,
+                                          self.jdk_0,
+                                      ])
+
+        self.build(configuration)
+
+        self.verify_script()
+
+
+    def test_ordering_svr_jdk_tc(self):
+        configuration = Configuration(self.model,
+                                      [
+                                          self.server_0,
+                                          self.jdk_0,
+                                          self.tomcat_0,
+                                      ])
+
+        self.build(configuration)
+
+        self.verify_script()
+
+
+    def test_ordering_svr_tc_jdk(self):
+        configuration = Configuration(self.model,
+                                      [
+                                          self.server_0,
+                                          self.tomcat_0,
+                                          self.jdk_0,
+                                      ])
+
+        self.build(configuration)
+
+        self.verify_script()
 
 
 
