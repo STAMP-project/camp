@@ -46,7 +46,7 @@ services:
     build: ./nginx
     container_name: "my_nginx"
     ports: 
-      - "80:80"
+      - "82:82"
     environment:
       - gzip=on
       - worker_connections=1240
@@ -75,7 +75,7 @@ services:
     build: ./citygo
     container_name: "my_web"
     restart: always
-    command: bash -c "python manage.py migrate --no-input && gunicorn citygo_settings.wsgi:application -b 0.0.0.0:80 --workers 3"
+    command: bash -c "python manage.py migrate --no-input && gunicorn citygo_settings.wsgi:application -b 0.0.0.0:82 --workers 3"
     environment:
       - DJANGO_SETTINGS_MODULE=citygo_settings.settings
       - BROWSERNAME=chrome
@@ -87,8 +87,9 @@ services:
     volumes:
       - ./app/:/usr/src/app/
       - static_volume:/usr/src/app/static
+      - ./logs/:/usr/src/app/
     expose: 
-      - "80"
+      - "82"
     depends_on:
       - db
       - mongo
