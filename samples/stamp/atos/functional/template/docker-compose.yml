@@ -84,6 +84,7 @@ services:
       - MAXINSTANCES=50
       - CSSSELECTORSENABLED=True
       - BROWSERCONNECTIONENABLED=True
+      - port=6666
     volumes:
       - ./app/:/usr/src/app/
       - static_volume:/usr/src/app/static
