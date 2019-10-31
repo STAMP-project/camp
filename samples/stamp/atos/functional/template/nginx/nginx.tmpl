@@ -55,11 +55,11 @@ http {
 
   upstream web {
     ip_hash;
-    server web:80;
+    server web:82;
   }
 
   server {
-    listen 80;
+    listen 82;
     server_name localhost;
     
     location /static {
