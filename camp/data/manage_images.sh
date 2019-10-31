@@ -34,7 +34,7 @@ parse_arguments () {
 # Remove the obselete images created for this configuration
 # See Issue #82 
 remove_obselete_images () {
-    docker rmi {obselete_images}
+    {obselete_images}
     docker image prune --force --filter "label=stage=intermediate"
 }
 
