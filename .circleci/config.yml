@@ -21,8 +21,8 @@ jobs:
           root: ./
           paths:
             - camp-ci.tar
-            
-  test:
+
+  tests_main:
     machine:
       image: circleci/classic:201808-01
     steps:
@@ -36,14 +36,62 @@ jobs:
              docker run --name tests \
                         -v /var/run/docker.sock:/var/run/docker.sock \
                         -t camp:ci \
-                        /bin/bash -c "green -qrfvv -s 1 tests && coverage xml"
+                        /bin/bash -c "green -qrfvv -s 1 tests.test_util tests.unit"
       - run: |
-          docker cp tests:/camp/coverage.xml coverage.xml
+          docker cp tests:/camp/.coverage .coverage_main
       - persist_to_workspace:
           root: ./
           paths:
             - coverage.xml
 
+            
+  tests_java:
+    machine:
+      image: circleci/classic:201808-01
+    steps:
+      - attach_workspace:
+          at: ./
+      - run: |
+          docker load -i camp-ci.tar
+      - run:
+          no_output_timeout: 30m
+          command: |
+             docker run --name tests \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        -t camp:ci \
+                        /bin/bash -c "green -qrfvv -s 1 tests.acceptance.test_java"
+      - run: |
+          docker cp tests:/camp/.coverage .coverage_java
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - .coverage_java
+
+
+  tests_python:
+    machine:
+      image: circleci/classic:201808-01
+    steps:
+      - attach_workspace:
+          at: ./
+      - run: |
+          docker load -i camp-ci.tar
+      - run:
+          no_output_timeout: 30m
+          command: |
+             docker run --name tests_python \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        -t camp:ci \
+                        /bin/bash -c "green -qrfvv -s 1 tests.acceptance.test_python"
+      - run: |
+          docker cp tests_python:/camp/.coverage .coverage_python
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - .coverage_python
+
+
+            
   coverage:
     docker:
       - image: circleci/python:3.6.8-stretch
@@ -54,7 +102,9 @@ jobs:
       - run: |
           python3 -m virtualenv .venv
           source .venv/bin/activate
-          pip install codacy-coverage
+          pip install coverage codacy-coverage
+          coverage combine .coverage_main .coverage_java .coverage_python
+          coverage xml
           python-codacy-coverage -r coverage.xml
         
                       
@@ -95,15 +145,25 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - test:
+      - test_main:
+          requires:
+            - build
+      - test_java:
+          requires:
+            - build
+      - test_python:
           requires:
             - build
       - coverage:
           requires:
-            - test
+            - test_main
+            - test_python
+            - test_java
       - publish:
           requires:
-            - test
+            - test_main
+            - test_python
+            - test_java
           filters:
             branches:
               only: master

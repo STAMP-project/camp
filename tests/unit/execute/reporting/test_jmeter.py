@@ -34,7 +34,7 @@ class TheJMeterJSONReaderShould(TestCase):
 
     def test_raise_exception_when_given_empty_JSON_report_from_file(self):
 
-        with open('tests/execute/reporting/data_folder/empty_jmeter_report.json') as json_report:
+        with open('tests/unit/execute/reporting/data_folder/empty_jmeter_report.json') as json_report:
             with self.assertRaises(JMeterJSONInvalidReport):
                 self._reader._extract_from_text(json_report.read())
 
@@ -207,7 +207,7 @@ class TheJMeterJSONReaderShould(TestCase):
             self._reader._extract_from_text(json_report)
 
     def test_raise_exception_when_given_invalid_JSON_report_from_file(self):
-        with open('tests/execute/reporting/data_folder/invalid_jmeter_report.json','r') as json_report:
+        with open('tests/unit/execute/reporting/data_folder/invalid_jmeter_report.json','r') as json_report:
             with self.assertRaises(JMeterJSONInvalidReport):
                 self._reader._extract_from_text(json_report.read())
 
@@ -505,7 +505,7 @@ class TheJMeterJSONReaderShould(TestCase):
 
     def test_extract_a_testsuite_from_actual_JSON_report_on_file(self):
 
-        with open('tests/execute/reporting/data_folder/statistics.json', 'r') as json_report:
+        with open('tests/unit/execute/reporting/data_folder/statistics.json', 'r') as json_report:
 
             test_suite = self._reader._extract_from_text(json_report.read())
 
