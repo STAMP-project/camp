@@ -22,6 +22,7 @@ jobs:
           paths:
             - camp-ci.tar
 
+            
   tests_main:
     machine:
       image: circleci/classic:201808-01
@@ -170,4 +171,3 @@ workflows:
           filters:
             branches:
               only: master
-              pull_requests: false
