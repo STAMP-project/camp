@@ -144,25 +144,25 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - test_main:
+      - tests_main:
           requires:
             - build
-      - test_java:
+      - tests_java:
           requires:
             - build
-      - test_python:
+      - tests_python:
           requires:
             - build
       - coverage:
           requires:
-            - test_main
-            - test_python
-            - test_java
+            - tests_main
+            - tests_python
+            - tests_java
       - publish:
           requires:
-            - test_main
-            - test_python
-            - test_java
+            - tests_main
+            - tests_python
+            - tests_java
           filters:
             branches:
               only: master
