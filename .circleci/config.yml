@@ -108,7 +108,7 @@ jobs:
                      -v $(pwd):/reports \
                      -t camp:ci \
                      /bin/bash -c "cd /reports && coverage xml"
-          chgrp circleci coverage.xml
+          sudo chgrp circleci coverage.xml
           python-codacy-coverage -r coverage.xml
         
                       
