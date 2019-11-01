@@ -93,17 +93,21 @@ jobs:
 
   coverage:
     docker:
-      - image: circleci/python:3.6.8-stretch
+      - image: circleci/classic:201808-01
     steps:
       - checkout
       - attach_workspace:
           at: ./
       - run: |
+          docker load -i camp-ci.tar
+      - run: |
           python3 -m virtualenv .venv
           source .venv/bin/activate
           pip install coverage codacy-coverage
           coverage combine .coverage_main .coverage_java .coverage_python
-          coverage xml
+          docker run --name coverage \
+                     -v $(pwd):/reports \
+                     /bin/bash -c "cd /reports && coverage xml"
           python-codacy-coverage -r coverage.xml
         
                       
@@ -166,3 +170,4 @@ workflows:
           filters:
             branches:
               only: master
+              pull_requests: false
