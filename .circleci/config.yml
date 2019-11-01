@@ -102,13 +102,13 @@ jobs:
       - run: |
           docker load -i camp-ci.tar
       - run: |
-          python3 -m virtualenv .venv
-          source .venv/bin/activate
           pip install coverage codacy-coverage
           coverage combine .coverage_main .coverage_java .coverage_python
           docker run --name coverage \
                      -v $(pwd):/reports \
+                     -t camp:ci \
                      /bin/bash -c "cd /reports && coverage xml"
+          chgrp circleci coverage.xml
           python-codacy-coverage -r coverage.xml
         
                       
