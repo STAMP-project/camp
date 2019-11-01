@@ -94,7 +94,7 @@ jobs:
 
   coverage:
     machine:
-      - image: circleci/classic:201808-01
+      image: circleci/classic:201808-01
     steps:
       - checkout
       - attach_workspace:
