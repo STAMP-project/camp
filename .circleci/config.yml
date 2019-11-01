@@ -42,7 +42,7 @@ jobs:
       - persist_to_workspace:
           root: ./
           paths:
-            - coverage.xml
+            - .coverage_main
 
             
   tests_java:
@@ -91,7 +91,6 @@ jobs:
             - .coverage_python
 
 
-            
   coverage:
     docker:
       - image: circleci/python:3.6.8-stretch
