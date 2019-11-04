@@ -92,6 +92,29 @@ jobs:
             - .coverage_python
 
 
+  tests_errors:
+    machine:
+      image: circleci/classic:201808-01
+    steps:
+      - attach_workspace:
+          at: ./
+      - run: |
+          docker load -i camp-ci.tar
+      - run:
+          no_output_timeout: 30m
+          command: |
+             docker run --name tests_python \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        -t camp:ci \
+                        /bin/bash -c "green -qrfvv -s 1 tests.acceptance.test_errors"
+      - run: |
+          docker cp tests_python:/camp/.coverage .coverage_errors
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - .coverage_errors
+
+
   coverage:
     machine:
       image: circleci/classic:201808-01
@@ -103,7 +126,7 @@ jobs:
           docker load -i camp-ci.tar
       - run: |
           pip install coverage codacy-coverage
-          coverage combine .coverage_main .coverage_java .coverage_python
+          coverage combine .coverage_main .coverage_java .coverage_python coverage_errors
           docker run --name coverage \
                      -v $(pwd):/reports \
                      -t camp:ci \
@@ -163,11 +186,13 @@ workflows:
             - tests_main
             - tests_python
             - tests_java
+            - tests_errors
       - publish:
           requires:
             - tests_main
             - tests_python
             - tests_java
+            - tests_errors
           filters:
             branches:
               only: master
