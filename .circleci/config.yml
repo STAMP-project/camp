@@ -91,7 +91,6 @@ jobs:
           paths:
             - .coverage_python
 
-
   tests_errors:
     machine:
       image: circleci/classic:201808-01
@@ -179,6 +178,9 @@ workflows:
           requires:
             - build
       - tests_python:
+          requires:
+            - build
+      - tests_errors:
           requires:
             - build
       - coverage:
