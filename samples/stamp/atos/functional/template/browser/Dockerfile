@@ -11,11 +11,9 @@ WORKDIR /browser
 USER root
 RUN chmod 777 -R /browser
 
-RUN pip install --upgrade pip
-
-# Install BlazeMetter to run performance Tests
-RUN sudo -H pip install bzt
-COPY ./citygo.jmx /browser/citygo-tests/citygo.jmx
+#Install requirements.txt
+COPY ./requirements.txt /browser/
+RUN sudo -H pip3 install -r requirements.txt
 
 #Funtional Tests
 COPY ./tests.py /browser/citygo-tests/tests.py
