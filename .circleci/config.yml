@@ -12,8 +12,8 @@ jobs:
           docker build --no-cache \
                  --build-arg PYTHON_VERSION=3.5 \
                  --build-arg WITH_TESTS=--camp-with-tests \
-                 --build-arg Z3_VERSION=4.8.4.d6df51951f4c \
-                 --build-arg Z3_PLATFORM=x64-debian-8.11 \
+                 --build-arg Z3_VERSION=4.8.6 \
+                 --build-arg Z3_PLATFORM=x64-ubuntu-16.04 \
                  -t camp:ci .
       - run: |
           docker save -o camp-ci.tar camp:ci
