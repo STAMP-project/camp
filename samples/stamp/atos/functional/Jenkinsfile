@@ -49,15 +49,11 @@ pipeline {
           BUILD_ID = env.BUILD_ID
           sh '''
                 docker exec -i -e BUILD_ID="${BUILD_ID}" camp sh -c 'cd /stamp_docker_citygoApp/out/ && mkdir $BUILD_ID && 
-		        cp -R /camp/samples/stamp/atos/functional/out/* /stamp_docker_citygoApp/out/$BUILD_ID/ && 
-		        cp /camp/samples/stamp/atos/functional/camp_execute.log /stamp_docker_citygoApp/out/$BUILD_ID/ && exit';
+		cp -R /camp/samples/stamp/atos/functional/out/* /stamp_docker_citygoApp/out/$BUILD_ID/ && 
+		cp /camp/samples/stamp/atos/functional/camp_execute.log /stamp_docker_citygoApp/out/$BUILD_ID/ && exit';
                 ls -d /var/jenkins_home/workspace/citygo_case2_camp/out/$BUILD_ID/*/ > reportDirNames.txt;
-                cat /var/jenkins_home/workspace/citygo_case2_camp/out/$BUILD_ID/camp_execute.log | grep "Online report link" > linksFunctionalTestReports.log;
-                rm /var/jenkins_home/workspace/citygo_case2_camp/out/$BUILD_ID/camp_execute.log;
                 exit;
             '''
-            zip zipFile: BUILD_ID+'_JMetterTestsLogs.zip', archive: true, dir: '/var/jenkins_home/workspace/citygo_case2_camp/out/'+BUILD_ID+'/', glob: '**/linksFunctionalTestReports.log'
-          
           def reportDirectories = readFile('reportDirNames.txt').split("\\r?\\n")
           sh 'rm -f reportDirNames.txt'
           for (i = 0; i < reportDirectories.size(); i++) {
@@ -66,7 +62,7 @@ pipeline {
               alwaysLinkToLastBuild: false,
               keepAll: true, 
               reportDir: reportDirectories[i] + '/test-reports/nginx-logs/',
-              reportFiles: 'error.log', 
+              reportFiles: 'error.log','pytest_report.html',
               reportName: reportDirectories[i].tokenize('/').last()
             ])
           }
