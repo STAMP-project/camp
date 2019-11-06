@@ -22,7 +22,7 @@ RUN chmod +x /usr/src/app/entrypoint.sh
 # copy project
 COPY . /usr/src/app/
 
-EXPOSE 80
+EXPOSE 82
 
 # run entrypoint.sh
 ENTRYPOINT ["/bin/sh","/usr/src/app/entrypoint.sh"]

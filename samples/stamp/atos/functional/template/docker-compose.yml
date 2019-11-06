@@ -2,7 +2,6 @@
 # This docker-compose file deploy the platfomr using Nginx Proxy Server
 #
 # Nginx acts as a proxy server and sends that request to Gunicorm
-#
 # Maintainer: Fernando Méndez Requena - fernando.mendez@atos.net 
 
 version: '3'
@@ -38,9 +37,9 @@ services:
     volumes:
       - ./data/db:/data/db
     ports:
-      - "27017:27017"
+      - "22222:22222"
     expose:
-      - "27017"
+      - "22222"
     
   nginx:
     build: ./nginx
@@ -64,7 +63,6 @@ services:
       - gzip_min_length=256
       - reset_timedout_connection=on
     volumes:
-      - ./app/:/usr/src/app/
       - static_volume:/usr/src/app/static
       - dsne-nginx-cert:/etc/ssl/certs:ro
       - ./logs/:/var/log/nginx/
@@ -86,7 +84,6 @@ services:
       - BROWSERCONNECTIONENABLED=True
       - port=6666
     volumes:
-      - ./app/:/usr/src/app/
       - static_volume:/usr/src/app/static
       - ./logs/:/usr/src/app/
     expose: 
