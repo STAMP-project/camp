@@ -10,6 +10,13 @@ services:
 
   browser:
     build: ./browser
+    environment:
+      - BROWSERNAME=chrome
+      - PLATFORM=LINUX
+      - JAVASCRIPTENABLED=True
+      - MAXINSTANCES=50
+      - CSSSELECTORSENABLED=True
+      - BROWSERCONNECTIONENABLED=True
     volumes:
       - ./logs/:/browser/citygo-tests/nginx-logs
 
@@ -76,12 +83,6 @@ services:
     command: bash -c "python manage.py migrate --no-input && gunicorn citygo_settings.wsgi:application -b 0.0.0.0:82 --workers 3"
     environment:
       - DJANGO_SETTINGS_MODULE=citygo_settings.settings
-      - BROWSERNAME=chrome
-      - PLATFORM=LINUX
-      - JAVASCRIPTENABLED=True
-      - MAXINSTANCES=50
-      - CSSSELECTORSENABLED=True
-      - BROWSERCONNECTIONENABLED=True
       - port=6666
     volumes:
       - static_volume:/usr/src/app/static
