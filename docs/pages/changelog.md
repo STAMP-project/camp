@@ -6,6 +6,13 @@ changes that were made.
 
 *   CAMP v0.7
 
+    *   CAMP v0.7.2 (Nov. 7, 2019)
+
+        *   Fix [Issue
+            98](https://github.com/STAMP-project/camp/issues/98) about
+            resource selection at the component-level that failed when
+            refering to a file from the template of another component.
+
     *   CAMP v0.7.1 (Nov. 6, 2019)
 
         *   Upgrade Z3 to version 4.8.6
