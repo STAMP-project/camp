@@ -72,12 +72,16 @@ class Builder(object):
             self._output_directory = output_directory
 
         self._prepare_output_directory()
+
         self._copy_orchestration_files()
         for each_instance in configuration.instances:
             self._copy_template_for(each_instance)
+
+        for each_instance in configuration.instances:
             self._adjust_docker_file(each_instance)
             self._realize_component(each_instance)
             self._realize_variables(each_instance)
+
         self._adjust_docker_compose_file(configuration)
         self._generate_build_script()
 
@@ -156,11 +160,22 @@ class Builder(object):
     def _file_for(self, instance, resource):
         normalized_path = normpath(resource)
         parts = normalized_path.split(path_separator)
+
+        # the resource belongs to the current instance
         if instance.definition.name in parts:
             path = relpath(resource, instance.definition.name)
-            return join_paths(self._directory_for(instance), path)
-        else:
-            return join_paths(self._output_directory, resource)
+            result = join_paths(self._directory_for(instance), path)
+            return result
+
+        # The resource belongs to another instance
+        if isdir(join_paths(self._image_directory, parts[0]+"_0")):
+            destination = join_paths(self._image_directory,
+                                     parts[0] + "_0",
+                                     *parts[1:])
+            return destination
+
+        # Other resource
+        return join_paths(self._output_directory, resource)
 
 
     def _adjust_docker_file(self, instance):

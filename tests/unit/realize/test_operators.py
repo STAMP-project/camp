@@ -162,6 +162,48 @@ class ComponentResourceSelectionShould(CampTest):
                                  "apache_docker-compose.yml")
 
 
+    # See Issue 98
+    def test_handle_files_of_another_instance(self):
+        self.scenario.create_template("app", "Dockerfile", "FROM camp/runtime")
+        self.scenario.create_template("app", "tomcat_entrypoint.sh")
+        self.scenario.create_template("app", "jetty_entrypoint.sh")
+        self.scenario.create_template("jetty", "Dockerfile")
+        self.scenario.create_model(
+            "goals:\n"
+            "  running: [ MyService ]\n"
+            "components:\n"
+            "  app:\n"
+            "    provides_services: [ MyService ]\n"
+            "    requires_features: [ Servlet ]\n"
+            "    implementation:\n"
+            "      docker:\n"
+            "        file: app/Dockerfile\n"
+            "  jetty:\n"
+            "    provides_features: [ Servlet ]\n"
+            "    realization:\n"
+            "      - select: app/jetty_entrypoint.sh\n"
+            "        instead_of:\n"
+            "          - app/tomcat_entrypoint.sh\n"
+            "        as: app/entrypoint.sh\n"
+            "    implementation:\n"
+            "      docker:\n"
+            "        file: jetty/Dockerfile\n"
+        )
+
+        self.generate_all()
+        self.realize()
+
+        configurations = self.scenario.generated_configurations
+        for each_configuration in self.scenario.generated_configurations:
+            self._assert_generated(each_configuration,
+                                   "images/app_0/entrypoint.sh")
+
+        for each_configuration in self.scenario.generated_configurations:
+            self._assert_missing(each_configuration,
+                                 "images/app_0/tomcat_entrypoint.sh",
+                                 "images/app_0/jetty_entrypoint.sh")
+
+
     def test_select_resource_before_substitutions_take_place(self):
         self.scenario.create_template("nginx", "Dockerfile")
         self.scenario.create_template(None,
