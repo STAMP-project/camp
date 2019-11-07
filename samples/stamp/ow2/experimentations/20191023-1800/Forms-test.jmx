@@ -1,5 +1,0 @@
-  <stringProp name="ThreadGroup.num_threads">10000</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1000</stringProp>
-        <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">1000</stringProp>
-        <stringProp name="ThreadGroup.delay"></stringProp>
