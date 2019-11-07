@@ -36,7 +36,7 @@ ADD db.properties /app/target/${site}/WEB-INF/conf/db.properties
 # /usr/local/tomcat. See template/tomcat/Dockerfile
 FROM camp/runtime
 
-COPY --from=builder /app/target/${site}/ /usr/local/tomcat/webapps/site-forms-demo
+COPY --from=builder /app/target/${site}/ ${WEBAPPS}/site-forms-demo
 
 COPY entrypoint.sh /entrypoint.sh
 
