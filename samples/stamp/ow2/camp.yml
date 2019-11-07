@@ -30,13 +30,13 @@ components:
   lutece:
     provides_services: [Lutece]
     requires_services: [MySQL]
-    requires_features: [Tomcat]
+    requires_features: [ServletContainer]
     implementation:
       docker:
         file: lutece/Dockerfile
 
   tomcat:
-    provides_features: [Tomcat]
+    provides_features: [ServletContainer]
     requires_features: [JRE]
     variables:
       version:
@@ -57,7 +57,23 @@ components:
     implementation:
       docker:
         file: tomcat/Dockerfile
+    realization:
+      - select: lutece/tomcat_entrypoint.sh
+        instead_of:
+          - lutece/jetty_entrypoint.sh
+        as: lutece/entrypoint.sh
 
+  jetty:
+    provides_features: [ServletContainer]
+    requires_features: [JRE]
+    implementation:
+      docker:
+        file: jetty/Dockerfile
+    realization:
+      - select: lutece/jetty_entrypoint.sh
+        instead_of:
+          - lutece/tomcat_entrypoint.sh
+        as: lutece/entrypoint.sh
 
   jre:
     provides_features: [ JRE ]
