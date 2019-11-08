@@ -63,6 +63,15 @@ components:
             replacements:
               - "Django==1.10.2"
               - "Django==1.11"
+      requests:
+        values: [v2.18, 2.22]
+        realization:
+          - targets: [ citygo/requirements.txt ]
+            pattern: "requests>=2.18.2"
+            replacements:
+              - "requests==2.18.2"
+              - "requests==2.22.0"
+        
     implementation:
       docker:
         file: citygo/Dockerfile
@@ -73,11 +82,18 @@ components:
       docker:
         image: ubuntu:xenial
         
-  mongo:
+  mongo4:
     provides_services: [ Mongo ]
     implementation:
       docker:
         image: mongo:4.0.6-xenial
+
+  mongo3:
+    provides_services: [ Mongo ]
+    implementation:
+      docker:
+        image: mongo:3-xenial
+
 
   python:
     provides_features: [ Python ]
@@ -86,9 +102,15 @@ components:
       docker:
         file: python/Dockerfile
 
-  postgres:
+  postgres9:
     provides_services: [ Postgres ]
     implementation:
       docker:
         image: postgres:9.3
+
+  postgres10:
+    provides_services: [ Postgres ]
+    implementation:
+      docker:
+        image: postgres:10
 
