@@ -20,7 +20,7 @@ pipeline {
     stage('CAMP generate'){
         steps{
             sh '''
-            docker exec -d camp sh -c 'rm /stamp_docker_citygoApp/apache/app/Dockerfile && cp -R /stamp_docker_citygoApp/nginx/ARTIST/app/* ./samples/stamp/atos/functional/template/citygo/';
+            docker exec -d camp sh -c 'rm /stamp_docker_citygoApp/nginx/ARTIST/app/entrypoint.sh && cp -R /stamp_docker_citygoApp/nginx/ARTIST/app/* ./samples/stamp/atos/functional/template/citygo/';
             docker exec -i camp sh -c 'cd samples/stamp/atos/functional/ && camp generate -d . --all';
             exit;
         '''
@@ -29,7 +29,7 @@ pipeline {
     stage('CAMP realize'){
         steps{
             sh '''
-            docker exec -i camp sh -c 'cd samples/stamp/atos/functional/ && camp realize -d . && cp -R out/ /stamp_docker_citygoApp/';
+            docker exec -i camp sh -c 'cd samples/stamp/atos/functional/ && camp realize -d . ';
             exit;
         	'''
         }
@@ -45,9 +45,10 @@ pipeline {
     stage('Publish reports') {
       steps {
         script {
-          def BUILD_ID= ""
-          BUILD_ID = env.BUILD_ID
-          sh '''
+		
+        def BUILD_ID=""
+        BUILD_ID= env.BUILD_ID	
+        sh '''
                 docker exec -i -e BUILD_ID="${BUILD_ID}" camp sh -c 'cd /stamp_docker_citygoApp/out/ && mkdir $BUILD_ID && 
 		cp -R /camp/samples/stamp/atos/functional/out/* /stamp_docker_citygoApp/out/$BUILD_ID/ && 
 		cp /camp/samples/stamp/atos/functional/camp_execute.log /stamp_docker_citygoApp/out/$BUILD_ID/ && exit';
@@ -62,13 +63,23 @@ pipeline {
               alwaysLinkToLastBuild: false,
               keepAll: true, 
               reportDir: reportDirectories[i] + '/test-reports/nginx-logs/',
-              reportFiles: 'error.log','pytest_report.html',
+              reportFiles: 'error.log', 
+              reportName: reportDirectories[i].tokenize('/').last()
+            ])
+	  }
+          for (i = 0; i < reportDirectories.size(); i++) {
+            publishHTML (target: [
+              allowMissing: false,
+              alwaysLinkToLastBuild: false,
+              keepAll: true, 
+              reportDir: reportDirectories[i] + '/test-reports/nginx-logs/',
+              reportFiles: 'pytest_report.html', 
               reportName: reportDirectories[i].tokenize('/').last()
             ])
           }
-          sh '''
+       sh '''
             docker stop camp && docker rm camp   
-          '''
+       '''
         }
       }
     }
