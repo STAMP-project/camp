@@ -62,7 +62,7 @@ pipeline {
               allowMissing: false,
               alwaysLinkToLastBuild: false,
               keepAll: true, 
-              reportDir: reportDirectories[i] + '/test-reports/nginx-logs/',
+              reportDir: reportDirectories[i] + '/test-reports/citygo-tests/nginx-logs/',
               reportFiles: 'error.log', 
               reportName: reportDirectories[i].tokenize('/').last()
             ])
@@ -72,7 +72,7 @@ pipeline {
               allowMissing: false,
               alwaysLinkToLastBuild: false,
               keepAll: true, 
-              reportDir: reportDirectories[i] + '/test-reports/nginx-logs/',
+              reportDir: reportDirectories[i] + '/test-reports/',
               reportFiles: 'pytest_report.html', 
               reportName: reportDirectories[i].tokenize('/').last()
             ])
