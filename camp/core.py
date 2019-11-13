@@ -170,7 +170,11 @@ class Camp(object):
             selected_configurations = self._filter(arguments, list(configurations))
             with open("camp_execute.log", "wb") as log_file:
                 shell = self._select_shell(arguments, log_file)
-                engine = Engine(testing, shell, self._ui)
+                engine = Engine(testing,
+                                shell,
+                                self._ui,
+                                arguments.retry,
+                                arguments.retry_delay)
                 reports = engine.execute(selected_configurations)
                 self._output.save_reports(reports)
                 self._ui.summarize_execution(reports)
