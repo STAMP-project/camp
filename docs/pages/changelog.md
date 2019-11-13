@@ -4,6 +4,19 @@ Below is the list of CAMP versions, along with a quick summary of the
 changes that were made.
 
 
+*   CAMP v0.8
+
+    *   CAMP v0.8.0 (Nov. 13, 2019)
+
+        *   Support for liveness tests that avoid testing a system
+            system that is not yet ready. CAMP run this liveness test
+            several time and its only when it succeeds that CAMP
+            triggers the main test command.
+
+        *   Add options `-r|--retry COUNT` and `-y|--retry-delay
+            DELAY` to camp execute that control the number of retry
+            and the delay in between, respectively.
+
 *   CAMP v0.7
 
     *   CAMP v0.7.2 (Nov. 7, 2019)
