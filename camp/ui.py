@@ -164,6 +164,11 @@ class UI(object):
                           "  - target file: '{target}'\n"
                           "Is the pattern appropriate? What about the file content?")
 
+    def service_not_ready(self, error):
+        self._print("Service is not ready!")
+        self._print("All {retry} failed (with {delay} delay in between).",
+                    retry=error.retry_count,
+                    delay=error.retry_delay)
 
     def shell_command_failed(self, error):
         self._print("\nTest execution aborted!")
