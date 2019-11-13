@@ -19,7 +19,8 @@ the test reports.
 Here is the usage and options:
 ```console
 $ camp execute -h
-usage: CAMP execute [-h] [-d WORKING_DIRECTORY] [-i INCLUDED [INCLUDED ...]] [-s]
+usage: CAMP execute [-h] [-d WORKING_DIRECTORY] [-i INCLUDED [INCLUDED ...]] [-s] [-r RETRY_COUNT]
+                    [-y RETRY_DELAY]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -28,6 +29,10 @@ optional arguments:
   -i INCLUDED [INCLUDED ...], --include INCLUDED [INCLUDED ...]
                         Set the indexes of the configurations to execute
   -s, --simulated       Display but do NOT execute the commands that CAMP triggers
+  -r RETRY_COUNT, --retry RETRY_COUNT
+                        Set the maximum number of attempt for the liveness tests
+  -y RETRY_DELAY, --retry-delay RETRY_DELAY
+                        Set how long to wait before to run another liveness test
 ```
 
 ---
@@ -255,11 +260,56 @@ TOTAL                           3      3      0      0
 
 That's all folks
 ```
+## Liveness Tests (since v0.8.0)
+
+In many cases, services take some time to get ready to respond and we
+may need to wait for these services to be fully ready before to
+trigger the tests.
+
+CAMP lets you define a command as "liveness test", which it will
+execute before to run the tests. If this commands fails, it will wait
+for a momwnt (30 s by defaault) and try again afterwards. We can
+define such a test in a shell script as follows:
+
+```sh
+URL="http://www.google.com"
+EXPECTED=200
+
+if [ $(curl --silent --output /dev/null --write-out "%{http_code}\n" ${URL}) -eq ${EXPECTED} ]
+then
+    exit 0
+else
+    exit 1
+fi
+```
+
+Here we simply test the status code returned by the `curl` command,
+and we return 1 as soon as it differs from 0. We can know modify our
+variability model to account for this liveness tests.
+
+```yaml
+      command: -n -t Forms-test.jmx -l Forms-test.jtl -e -o results
+      liveness_test: sh /tests/ready.sh
+      reports:
+        format: jmeter
+        location: results
+        pattern: statistics.json
+```
+
+The number of retry and the delay before to retry can be controlled
+from the command line as follows. In this case we set a maximum of 10
+retries with 20s delay between each.
+
+```console
+$ camp execute -d . --retry 10 --retry-delay 20s
+```
 
 
 ## Example: Performance Test A Java WebApp
 
-In this example you will see how to use CAMP to generate new configurations, to be performance tested with [Apache JMeter](https://jmeter.apache.org/).
+In this example you will see how to use CAMP to generate new
+configurations, to be performance tested with [Apache
+JMeter](https://jmeter.apache.org/).
 
 If you are unsure about how to generate new configuration with CAMP,
 please check the camp generate and camp realize commands.
