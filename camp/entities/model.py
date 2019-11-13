@@ -529,11 +529,12 @@ class TestSettings(object):
     """
 
 
-    def __init__(self, command, report_format, report_location, report_pattern):
+    def __init__(self, command, report_format, report_location, report_pattern, liveness_test=None):
         self._command = command
         self._report_format = report_format
         self._report_location = report_location
         self._report_pattern = report_pattern
+        self._liveness_test = liveness_test
 
 
     @property
@@ -556,6 +557,17 @@ class TestSettings(object):
         return self._report_pattern
 
 
+    @property
+    def include_liveness_test(self):
+        return self._liveness_test is not None
+
+    @property
+    def liveness_test(self):
+        if not self.include_liveness_test:
+            raise ValueError("There is no liveness test defined!")
+        return self._liveness_test
+
+
     def __eq__(self, other):
         if not isinstance(other, TestSettings):
             return False
@@ -563,14 +575,15 @@ class TestSettings(object):
         return self._command == other.test_command \
             and self._report_format == other.report_format \
             and self._report_location == other.report_location \
-            and self._report_pattern == other.report_pattern
-
+            and self._report_pattern == other.report_pattern \
+            and self._liveness_test == other._liveness_test
 
     def __hash__(self):
         return hash((self._command,
                      self._report_format,
                      self._report_location,
-                     self._report_pattern))
+                     self._report_pattern,
+                     self._liveness_test))
 
 
 

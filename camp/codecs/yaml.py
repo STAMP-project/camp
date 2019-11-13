@@ -435,16 +435,22 @@ class YAML(Codec):
     def _parse_test_settings(self, name, data):
         path = [Keys.COMPONENTS, name, Keys.TEST_SETTINGS]
         command = None
+        liveness_test = None
         report = None
         for key, item in data.items():
             if key == Keys.COMMAND:
                 if not isinstance(item, str):
-                    self._wrong_type(str, type(item), path + [key])
+                    self._wrong_type(str, type(item), *(path + [key]))
                     continue
                 command = item
+            elif key == Keys.LIVENESS_TEST:
+                if not isinstance(item, str):
+                    self._wrong_type(str, type(item), *(path + [key]))
+                    continue
+                liveness_test = item
             elif key == Keys.REPORTS:
                 if not isinstance(item, dict):
-                    self._wrong_type(dict, type(item), path + [key])
+                    self._wrong_type(dict, type(item), *(path + [key]))
                     continue
                 report = self._parse_test_reports(name, item)
             else:
@@ -456,7 +462,9 @@ class YAML(Codec):
         if not report:
             self._missing([Keys.REPORTS], *path)
 
-        return TestSettings(command, *report)
+        # Liveness test is optional
+
+        return TestSettings(command, *report, liveness_test)
 
 
 
@@ -602,6 +610,7 @@ class Keys:
     IMPLEMENTATION = "implementation"
     INSTANCES = "instances"
     INSTEAD_OF = "instead_of"
+    LIVENESS_TEST = "liveness_test"
     NAME = "name"
     PATTERN = "pattern"
     PROVIDES_FEATURES = "provides_features"

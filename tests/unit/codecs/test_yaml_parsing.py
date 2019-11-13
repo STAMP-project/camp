@@ -349,6 +349,48 @@ class BuiltModelAreComplete(TestCase):
             })
 
 
+
+    def test_given_a_component_containing_tests_with_liveness_check(self):
+        self.assert_complete(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      tests:\n"
+            "        command: mvn -B test -gs ./settings.xml\n"
+            "        liveness_test: This is a nice test!\n"
+            "        reports:\n"
+            "          format: JUnit\n"
+            "          location: target/surefire-reports\n"
+            "          pattern: TEST*.xml\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
+            expectations={
+                "services": ["Wonderful"],
+                "features": [],
+                "components" : {
+                    "server": {
+                        "provided_services": ["Wonderful"],
+                        "required_services": [],
+                        "provided_features": [],
+                        "required_features": [],
+                        "implementation": None,
+                        "variables": {},
+                        "tests": TestSettings("mvn -B test -gs ./settings.xml",
+                                              "JUnit",
+                                              "target/surefire-reports",
+                                              "TEST*.xml",
+                                              "This is a nice test!")
+                    }
+                },
+                "goals": {
+                    "services": ["Wonderful"],
+                    "features": []
+                }
+            })
+
+
+
     def test_given_a_component_with_realization(self):
         self.assert_complete(
             "components:\n"

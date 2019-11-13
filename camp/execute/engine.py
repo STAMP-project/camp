@@ -25,6 +25,7 @@ from os.path import isdir, join as join_paths
 
 from re import search
 
+from shlex import split
 from subprocess import Popen, PIPE
 
 
@@ -56,7 +57,7 @@ class Shell(object):
 
     def _run_shell(self, command, allow_failure):
         try:
-            process = Popen(command.split(),
+            process = Popen(split(command),
                             cwd=self._working_directory,
                             stdout=PIPE, stderr=PIPE)
             stdout, stderr = process.communicate()
@@ -249,16 +250,47 @@ class Engine(object):
     _START_SERVICES = "docker-compose up -d"
 
 
+
     def _run_tests(self, path):
-        command = self.RUN_TESTS.format(
-            component=self._component.name,
-            command=self._component.test_settings.test_command)
+        # Wait for the services to be ready
+        liveness_test = "cat -n file_no_found.txt'"
+
+        if self._component.test_settings.include_liveness_test:
+            for attempt in range(self._MAX_RETRIES):
+                try:
+                    test_liveness = self._LIVENESS_TEST.format(
+                        container=self._CONTAINER_NAME,
+                        command=self._component.test_settings.liveness_test,
+                        component=self._component.name)
+                    self._shell.execute(test_liveness, path)
+                    break
+
+                except ShellCommandFailed:
+                    self._shell.execute(self._WAIT_A_BIT, path)
+            else:
+                message = "The service was still not ready after {} attempts. Giving up."
+                raise RuntimeError(message.format(self._MAX_RETRIES))
 
         # We allow failure because some test commands return non-zero
         # code when tests fail (e.g., mvn test).
         # See Issue #49
-        self._shell.execute(command, path, allow_failure=True)
+        run_tests = self.RUN_TESTS.format(
+            container=self._CONTAINER_NAME,
+            component=self._component.name,
+            command=self._component.test_settings.test_command)
+        self._shell.execute(run_tests, path, allow_failure=True)
 
+    _MAX_RETRIES = 5
+
+    _LIVENESS_TEST = ("docker-compose run "
+                      "--name {container} "
+                      "--rm "
+                      "--entrypoint=\"{command}\" "
+                      "{component}")
+
+    _WAIT_A_BIT = "sleep 30s"
+
+    _CONTAINER_NAME = "camp-tests"
 
     # We CANNOT use Docker volumes (option -v). If CAMP runs within a
     # container that spawns new containers by sharing the docker
@@ -266,6 +298,7 @@ class Engine(object):
     # Docker interprets the paths given to mount volumes with respect
     # to the host file system. (See Issue #35)
     RUN_TESTS = ("docker-compose run "
+                 "--name {container} "
                  # "--user={uid} "
                  # "-v {path}/images/{component}_0/:/{component} "
                  "{component} "
@@ -273,35 +306,14 @@ class Engine(object):
 
 
     def _collect_results(self, path):
-        container = self._fetch_tests_container_id(path)
-
-
         docker_cp = self.FETCH_TEST_REPORTS.format(
-            container=container.strip(),
+            container=self._CONTAINER_NAME,
             component=self._component.name,
             location=self._component.test_settings.report_location)
 
         self._shell.execute(docker_cp, path)
 
         return self._parse_test_reports(path)
-
-
-    def _fetch_tests_container_id(self, path):
-        docker_ps = self.GET_CONTAINER_ID.format(
-            configuration=search(r"(config_[0-9]+)\/?$", path).group(1),
-            component=self._component.name)
-        return self._shell.execute(docker_ps, path)
-
-
-    # Fix for Issue 63.
-    #
-    # The docker-compose naming convention changed from 1.22 to 1.23
-    # and the simple index append for each container run, was replaced
-    # by a random number".
-    # See https://github.com/docker/compose/issues/6316
-    #
-    GET_CONTAINER_ID = ("docker ps --all --quiet "
-                        "--filter name={configuration}_{component}_run_")
 
 
     FETCH_TEST_REPORTS=("docker cp "
