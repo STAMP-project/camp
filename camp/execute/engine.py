@@ -205,10 +205,12 @@ class ExecutorListener(object):
 class Engine(object):
 
 
-    def __init__(self, component, shell, listener=None):
+    def __init__(self, component, shell, listener=None, retry=5, retry_delay="30s"):
         self._component = component
         self._shell = shell
         self._listener = listener or ExecutorListener()
+        self._retry_count = retry
+        self._retry_delay = retry_delay
 
 
     def execute(self, configurations):
@@ -254,7 +256,7 @@ class Engine(object):
     def _run_tests(self, path):
 
         if self._component.test_settings.include_liveness_test:
-            for _ in range(self._MAX_RETRIES):
+            for _ in range(self._retry_count):
                 try:
                     test_liveness = self._LIVENESS_TEST.format(
                         container=self._CONTAINER_NAME,
@@ -264,7 +266,8 @@ class Engine(object):
                     break
 
                 except ShellCommandFailed:
-                    self._shell.execute(self._WAIT_A_BIT, path)
+                    sleep = self._WAIT_A_BIT.format(delay=self._retry_delay)
+                    self._shell.execute(sleep, path)
             else:
                 message = "The service was still not ready after {} attempts. Giving up."
                 raise RuntimeError(message.format(self._MAX_RETRIES))
@@ -278,15 +281,13 @@ class Engine(object):
             command=self._component.test_settings.test_command)
         self._shell.execute(run_tests, path, allow_failure=True)
 
-    _MAX_RETRIES = 5
-
     _LIVENESS_TEST = ("docker-compose run "
                       "--name {container} "
                       "--rm "
                       "--entrypoint=\"{command}\" "
                       "{component}")
 
-    _WAIT_A_BIT = "sleep 30s"
+    _WAIT_A_BIT = "sleep {delay}"
 
     _CONTAINER_NAME = "camp-tests"
 

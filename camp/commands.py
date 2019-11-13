@@ -88,6 +88,19 @@ class Command(object):
             action="store_true",
             dest="is_simulated",
             help="Display but do NOT execute the commands that CAMP triggers")
+        execute.add_argument(
+            "-r",
+            "--retry",
+            type=int,
+            dest="retry_count",
+            help="Set the maximum number of attempt for the liveness tests")
+        execute.add_argument(
+            "-y",
+            "--retry-delay",
+            type=str,
+            dest="retry_delay",
+            help="Set how long to wait before to run another liveness test")
+
 
         values = parser.parse_args(command_line)
         return Command.from_namespace(values)
@@ -106,7 +119,9 @@ class Command(object):
         elif namespace.command == "execute":
             return Execute(namespace.working_directory,
                            namespace.is_simulated,
-                           namespace.included)
+                           namespace.included,
+                           namespace.retry_count,
+                           namespace.retry_delay)
 
         elif namespace.command == "show_version":
             return ShowVersions()
@@ -187,14 +202,21 @@ class Execute(Command):
 
     DEFAULT_IS_SIMULATED = False
     DEFAULT_INCLUDED = []
+    DEFAULT_RETRY_COUNT = 5
+    DEFAULT_RETRY_DELAY = "30s"
 
     def __init__(self,
                  working_directory=None,
                  is_simulated=None,
-                 included=None):
+                 included=None,
+                 max_retries=None,
+                 wait_for=None):
         super(Execute, self).__init__(working_directory)
         self._is_simulated = is_simulated or self.DEFAULT_IS_SIMULATED
         self._included = included or self.DEFAULT_INCLUDED
+        self._max_retries = max_retries or self.DEFAULT_RETRY_COUNT
+        self._wait_for = wait_for or self.DEFAULT_RETRY_DELAY
+
 
     @property
     def is_simulated(self):
@@ -204,6 +226,16 @@ class Execute(Command):
     @property
     def included_configurations(self):
         return self._included
+
+
+    @property
+    def retry_delay(self):
+        return self._wait_for
+
+
+    @property
+    def retry_count(self):
+        return self._max_retries
 
 
     def send_to(self, camp):
