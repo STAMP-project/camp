@@ -252,11 +252,9 @@ class Engine(object):
 
 
     def _run_tests(self, path):
-        # Wait for the services to be ready
-        liveness_test = "cat -n file_no_found.txt'"
 
         if self._component.test_settings.include_liveness_test:
-            for attempt in range(self._MAX_RETRIES):
+            for _ in range(self._MAX_RETRIES):
                 try:
                     test_liveness = self._LIVENESS_TEST.format(
                         container=self._CONTAINER_NAME,
