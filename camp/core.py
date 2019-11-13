@@ -15,7 +15,7 @@ from camp.directories import InputDirectory, OutputDirectory, \
     MissingModel, NoConfigurationFound
 from camp.entities.validation import Checker, InvalidModel
 from camp.execute.engine import Engine, SimulatedShell, Shell, \
-    ShellCommandFailed, ReportFormatNotSupported
+    ServiceNotReady, ShellCommandFailed, ReportFormatNotSupported
 from camp.realize import InvalidSubstitution
 from camp.ui import UI
 
@@ -173,7 +173,7 @@ class Camp(object):
                 engine = Engine(testing,
                                 shell,
                                 self._ui,
-                                arguments.retry,
+                                arguments.retry_count,
                                 arguments.retry_delay)
                 reports = engine.execute(selected_configurations)
                 self._output.save_reports(reports)
@@ -193,6 +193,9 @@ class Camp(object):
 
         except ShellCommandFailed as error:
             self._ui.shell_command_failed(error)
+
+        except ServiceNotReady as error:
+            self._ui.service_not_ready(error)
 
         except ReportFormatNotSupported as error:
             self._ui.report_format_not_supported(error)

@@ -269,8 +269,9 @@ class Engine(object):
                     sleep = self._WAIT_A_BIT.format(delay=self._retry_delay)
                     self._shell.execute(sleep, path)
             else:
-                message = "The service was still not ready after {} attempts. Giving up."
-                raise RuntimeError(message.format(self._MAX_RETRIES))
+                raise ServiceNotReady(self._retry_count,
+                                      self._retry_delay)
+
 
         # We allow failure because some test commands return non-zero
         # code when tests fail (e.g., mvn test).
@@ -363,7 +364,6 @@ class Engine(object):
 
 
 
-
 def select_reader_for(report_format):
     key = report_format.strip().upper()
     if key in SUPPORTED_REPORT_FORMAT:
@@ -391,3 +391,21 @@ class ReportFormatNotSupported(Exception):
     @property
     def options(self):
         return [ each_name for each_name, _ in SUPPORTED_TECHNOLOGIES ]
+
+
+
+class ServiceNotReady(Exception):
+
+    def __init__(self, retry, delay):
+        self._retry = retry
+        self._delay = delay
+
+
+    @property
+    def retry_count(self):
+        return self._retry
+
+
+    @property
+    def retry_delay(self):
+        return self._delay
