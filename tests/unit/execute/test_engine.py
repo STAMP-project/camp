@@ -103,7 +103,7 @@ class TheShellShould(TestCase):
     def test_append_outputs_of_multiple_commands_in_the_log(self):
         self._shell.execute("echo Hello World!")
         self._shell.execute("expr 1 + 2")
-        self._shell.execute("echo -n That's all folks!")
+        self._shell.execute("echo -n \"That's all folks!\"")
 
         expected_log = ("\n"
                         "camp@bash:./$ echo Hello World!\n"
@@ -112,7 +112,7 @@ class TheShellShould(TestCase):
                         "camp@bash:./$ expr 1 + 2\n"
                         "3\n"
                         "\n"
-                        "camp@bash:./$ echo -n That's all folks!\n"
+                        "camp@bash:./$ echo -n \"That's all folks!\"\n"
                         "That's all folks!")
         self.assertEquals(expected_log, self.log)
 
@@ -262,6 +262,7 @@ class TheExecutorShould(TestCase):
         for each_path, _ in self._configurations:
             expected_command = Engine.RUN_TESTS.format(
                 path=join_paths(getcwd(), each_path),
+                container=Engine._CONTAINER_NAME,
                 component=self._tested.name,
                 command=self._tested.test_settings.test_command)
             SimulatedShell.LOG_OUTPUT.format(each_path,
@@ -273,13 +274,8 @@ class TheExecutorShould(TestCase):
         self._call_execute()
 
         for each_path, _ in self._configurations:
-            docker_ps = Engine.GET_CONTAINER_ID.format(
-                configuration=search(r"(config_[0-9]+)\/?$", each_path).group(1),
-                component=self._tested.name)
-            self._verify(each_path, docker_ps)
-
             docker_cp = Engine.FETCH_TEST_REPORTS.format(
-                container="",
+                container=Engine._CONTAINER_NAME,
                 component=self._tested.name,
                 location=self._tested.test_settings.report_location)
             self._verify(each_path, docker_cp)

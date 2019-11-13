@@ -478,6 +478,26 @@ class TypeMismatchAreReported(TestCase):
             warning_count=1)
 
 
+    def test_with_a_number_as_liveness_check(self):
+        self.assert_warning(
+            "components:\n"
+            "   server:\n"
+            "      provides_services: [ Wonderful ]\n"
+            "      tests:\n"
+            "        command: echo \"Run tests!\"\n"
+            "        liveness_test: 123\n"
+            "        reports:\n"
+            "          format: JUnitnit\n"
+            "          location: this/nice/directory\n"
+            "          pattern: \"*.ini\"\n"
+            "goals:\n"
+            "   running: [ Wonderful ]\n",
+            expected="str",
+            found="int",
+            path="components/server/tests/liveness_test",
+            warning_count=1)
+
+
 
 
     def assert_warning(self, text,  expected, found, path, warning_count=1):

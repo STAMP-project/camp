@@ -27,11 +27,13 @@ class TheTestSettingsShould(TestCase):
         self._report_format = "JUnit"
         self._report_location = "in/this/directory"
         self._report_pattern = "TEST*.xml"
+        self._liveness_test = "sh ready.sh"
         self._settings = TestSettings(
             self._command,
             self._report_format,
             self._report_location,
-            self._report_pattern
+            self._report_pattern,
+            self._liveness_test
         )
 
 
@@ -53,6 +55,14 @@ class TheTestSettingsShould(TestCase):
     def test_expose_a_pattern_to_detect_test_report(self):
         self.assertEqual(self._report_pattern,
                          self._settings.report_pattern)
+
+    def test_expose_a_liveness_test(self):
+        self.assertEqual(self._liveness_test,
+                         self._settings.liveness_test)
+
+    def test_expose_whether_is_has_or_not_a_liveness_test(self):
+        self.assertEqual(True, self._settings.include_liveness_test)
+
 
 
 class ResourceSelectionsShould(TestCase):
