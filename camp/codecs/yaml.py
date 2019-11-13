@@ -464,7 +464,8 @@ class YAML(Codec):
 
         # Liveness test is optional
 
-        return TestSettings(command, *report, liveness_test)
+        arguments = list(report) + [liveness_test]
+        return TestSettings(command, *arguments)
 
 
 
