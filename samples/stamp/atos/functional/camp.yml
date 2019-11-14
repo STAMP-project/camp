@@ -23,7 +23,7 @@ components:
     tests:
       command:  pytest citygo-tests/tests.py --html=pytest_report.html --junitxml=report.xml --self-contained-html
       reports:
-        location: "./"
+        location: "/citygo-tests/nginx-logs/"
         pattern: ".xml"
         format: junit
 
