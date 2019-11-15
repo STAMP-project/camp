@@ -189,6 +189,10 @@ class ExecutorListener(object):
         pass
 
 
+    def collecting_logs_for(self, configuration):
+        pass
+
+
     def on_reading_report(self, report):
         pass
 
@@ -233,6 +237,9 @@ class Engine(object):
                 test_results.append(results)
 
             finally:
+                self._listener.collecting_logs_for(each_path)
+                self._collect_logs_for(each_path)
+
                 self._listener.stopping_services_for(each_path)
                 self._stop_services(each_path)
 
@@ -250,7 +257,6 @@ class Engine(object):
         self._shell.execute(self._START_SERVICES, path)
 
     _START_SERVICES = "docker-compose up -d"
-
 
 
     def _run_tests(self, path):
@@ -348,6 +354,16 @@ class Engine(object):
 
         return TestReport(path, TestSuite("all tests", *all_tests))
 
+
+
+    def _collect_logs_for(self, path):
+        self._shell.execute(self.FETCH_LOG_FILE, path, allow_failure=True)
+
+
+    FETCH_LOG_FILE = ("sh -c 'docker-compose logs "
+                      "--no-color "
+                      "--timestamps "
+                      " > docker_run.log'")
 
 
     def _stop_services(self, path):

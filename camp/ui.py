@@ -92,8 +92,12 @@ class UI(object):
         self._print("   4. Collecting reports ...")
 
 
+    def collecting_logs_for(self, path):
+        self._print("   5. Collecting logs ...")
+
+
     def stopping_services_for(self, path):
-        self._print("   5. Stopping Services ...")
+        self._print("   6. Stopping Services ...")
 
 
     def on_shell_command(self, command, working_directory):
