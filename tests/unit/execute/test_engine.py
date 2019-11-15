@@ -234,6 +234,7 @@ class TheExecutorShould(TestCase):
             expected_calls.append(call.starting_services_for(each))
             expected_calls.append(call.running_tests_for(each))
             expected_calls.append(call.collecting_reports_for(each))
+            expected_calls.append(call.collecting_logs_for(each))
             expected_calls.append(call.stopping_services_for(each))
 
         self._listener.assert_has_calls(expected_calls)
@@ -279,6 +280,14 @@ class TheExecutorShould(TestCase):
                 component=self._tested.name,
                 location=self._tested.test_settings.report_location)
             self._verify(each_path, docker_cp)
+
+
+    def test_collect_logfiles_for_each_service(self):
+        self._call_execute()
+
+        for each_path, _ in self._configurations:
+            docker_logs = Engine.FETCH_LOG_FILE
+            self._verify(each_path, docker_logs)
 
 
     def test_stop_services_for_all_configurations(self):
