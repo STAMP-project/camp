@@ -21,7 +21,7 @@ components:
       docker:
         file: browser/Dockerfile
     tests:
-      command:  pytest citygo-tests/tests.py --html=nginx-logs/pytest_report.html --junitxml=report.xml --self-contained-html
+      command:  pytest citygo-tests/tests.py --html=citygo-tests/nginx-logs/pytest_report.html --junitxml=report.xml --self-contained-html
       reports:
         location: "./"
         pattern: ".xml"
