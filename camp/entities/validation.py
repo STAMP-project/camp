@@ -65,7 +65,7 @@ class NoServiceAndNoFeature(Error):
     HINT = "Do we miss required/provided services or features?"
 
     def __init__(self, service):
-        super(NoServiceProvider, self).__init__(
+        super(NoServiceAndNoFeature, self).__init__(
             self.PROBLEM % service.name,
             self.HINT)
 

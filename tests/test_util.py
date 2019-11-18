@@ -12,8 +12,6 @@
 
 from camp.util import redirect_stderr_to
 
-from io import StringIO
-
 from os import remove
 from os.path import isfile
 

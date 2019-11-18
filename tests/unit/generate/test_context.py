@@ -37,15 +37,15 @@ class LoadedContextIncludes(TestCase):
         self._context.load_metamodel()
         self._context.load_model(self._model)
 
-            
-    def test_all_metaclasses(self):        
+
+    def test_all_metaclasses(self):
         for each in self.EXPECTED_CLASSES:
             self.assertIn(each, self._context)
 
     EXPECTED_CLASSES = ["Value", "Variable", "Service",
                         "Feature", "Component", "CInstance"]
 
-    
+
     def test_all_services(self):
         for each in self._model.services:
             self.assertIn(each.name, self._context)
@@ -69,4 +69,3 @@ class LoadedContextIncludes(TestCase):
             for each_variable in each_component.variables:
                 qualified_name = "_".join([each_component.name, "0", each_variable.name])
                 self.assertIn(qualified_name, self._context)
-                    

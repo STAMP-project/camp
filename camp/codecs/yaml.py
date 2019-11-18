@@ -565,7 +565,7 @@ class YAML(Codec):
                 if not isinstance(item, list):
                     self._wrong_type(list, type(item), Keys.GOALS, key)
                     continue
-                for index, each_name in enumerate(item, 1):
+                for each_name in item:
                     running_services.append(Service(str(each_name)))
             else:
                 self._ignore(Keys.GOALS, key)
