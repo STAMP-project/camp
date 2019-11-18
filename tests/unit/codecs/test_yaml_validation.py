@@ -15,8 +15,7 @@ from __future__ import unicode_literals
 from camp.codecs.yaml import YAML, InvalidYAMLModel
 from camp.entities.model import DockerFile, DockerImage, Substitution, \
     TestSettings
-from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest, \
-    TestReport
+from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest
 
 from unittest import TestCase
 
@@ -420,24 +419,6 @@ class TypeMismatchAreReported(TestCase):
             warning_count=1)
 
 
-    def test_with_a_number_as_component_selected_resource(self):
-        self.assert_warning(
-            "components:\n"
-            "   server:\n"
-            "      provides_services: [ Wonderful ]\n"
-            "      realization:\n"
-            "       - select: 1234\n"
-            "         instead_of:\n"
-            "          - nginx_docker-compose.yml\n"
-            "         as: docker-compose.yml\n"
-            "goals:\n"
-            "   running: [ Wonderful ]\n",
-            expected="str",
-            found="int",
-            path="components/server/realization/#1/select",
-            warning_count=2)
-
-
     def test_with_a_number_as_component_resource_alternatives(self):
         self.assert_warning(
             "components:\n"
@@ -521,7 +502,7 @@ class TypeMismatchesAreNotReportedWhenStringIsExpected(TestCase):
         self._codec = YAML()
 
     def assert_no_warning_in(self, text):
-        model = self._codec.load_model_from(StringIO(text))
+        self._codec.load_model_from(StringIO(text))
 
         self.assertEqual(0, len(self._codec.warnings))
 

@@ -15,7 +15,7 @@ from camp.entities.model import DockerFile, DockerImage, Substitution, \
 
 from os import listdir, makedirs, remove, sep as path_separator
 from os.path import exists, isdir, isfile, join as join_paths, \
-     normpath, split as split_path, relpath
+     normpath, relpath
 
 from pkgutil import get_data
 
@@ -120,9 +120,9 @@ class Builder(object):
                     # Issue 82: Here we replace "build" clauses by
                     # "images" clauses to avoid generating additional
                     # dangling images
-                    content, count = subn(r"build:\s*\./" + each_instance.definition.name,
-                                          "image: " + self._docker_tag_for(each_instance),
-                                          content)
+                    content = sub(r"build:\s*\./" + each_instance.definition.name,
+                                  "image: " + self._docker_tag_for(each_instance),
+                                  content)
 
             with open(orchestration, "w") as target:
                 target.write(content)
@@ -218,7 +218,8 @@ class Builder(object):
                     self._delete(instance, each_alternative)
 
             else:
-                message = UNSUPPORTED_COMPONENT_REALIZATION.format(type(any_action))
+                message = self.UNSUPPORTED_COMPONENT_REALIZATION \
+                              .format(type(any_action))
                 raise RuntimeError(message)
 
     UNSUPPORTED_COMPONENT_REALIZATION = \
@@ -269,7 +270,8 @@ class Builder(object):
         raise RuntimeError("Invalid replacements for variable '%s'!" % variable.name)
 
 
-    def _replace_in(self, path, instance, pattern, replacement, escape_pattern=False):
+    @staticmethod
+    def _replace_in(path, instance, pattern, replacement, escape_pattern=False):
         with open(path, "r+") as resource_file:
             content = resource_file.read()
 
@@ -370,7 +372,8 @@ class Builder(object):
 
     OBSELETE_IMAGES_MARKER = "{obselete_images}"
 
-    def _fetch_script_template(self):
+    @staticmethod
+    def _fetch_script_template():
         return get_data('camp', 'data/manage_images.sh').decode("utf-8")
 
 

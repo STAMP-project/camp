@@ -124,9 +124,9 @@ class BuildImagesIsGenerated(BuilderTest):
 
         self.assert_generated(
             "config_0/images/build_images.sh",
-             with_patterns=[
-                 expected_command_order
-             ])
+            with_patterns=[
+                expected_command_order
+            ])
 
 
     def test_ordering_jdk_tc_svr(self):

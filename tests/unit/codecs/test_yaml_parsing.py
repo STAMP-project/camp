@@ -12,13 +12,11 @@
 
 from __future__ import unicode_literals
 
-from camp.codecs.yaml import YAML, InvalidYAMLModel
+from camp.codecs.yaml import YAML
 from camp.entities.model import DockerFile, DockerImage, Substitution, \
     TestSettings, ResourceSelection, ComponentResourceSelection
 from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest, \
     TestSuite, TestReport
-
-from sys import version_info
 
 from unittest import TestCase
 

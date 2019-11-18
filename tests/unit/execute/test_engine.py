@@ -22,8 +22,6 @@ from mock import MagicMock, call
 from os import makedirs, getcwd
 from os.path import isdir, join as join_paths
 
-from re import search
-
 from tempfile import gettempdir
 
 from shutil import rmtree

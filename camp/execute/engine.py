@@ -23,8 +23,6 @@ from camp.execute.reporting.jmeter import JMeterJSONReader
 from os import listdir
 from os.path import isdir, join as join_paths
 
-from re import search
-
 from shlex import split
 from subprocess import Popen, PIPE
 
@@ -399,6 +397,7 @@ class ReportFormatNotSupported(Exception):
     def __init__(self, technology):
         self._technology = technology
 
+
     @property
     def technology(self):
         return self._technology
@@ -406,7 +405,7 @@ class ReportFormatNotSupported(Exception):
 
     @property
     def options(self):
-        return [ each_name for each_name, _ in SUPPORTED_TECHNOLOGIES ]
+        return [ each_name for each_name, _ in SUPPORTED_REPORT_FORMAT ]
 
 
 
