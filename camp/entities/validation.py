@@ -106,7 +106,7 @@ class NoSuchInterface(Error):
     HINT = "Do we miss a {} {}, maybe a component?"
 
     def __init__(self, kind, component, interface, role):
-        super(NoFeatureInterface, self).__init__(
+        super(NoSuchInterface, self).__init__(
             self.PROBLEM.format(kind,
                                 interface.name,
                                 role,

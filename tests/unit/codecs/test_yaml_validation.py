@@ -15,7 +15,6 @@ from __future__ import unicode_literals
 from camp.codecs.yaml import YAML, InvalidYAMLModel
 from camp.entities.model import DockerFile, DockerImage, Substitution, \
     TestSettings
-from camp.entities.report import FailedTest
 
 from unittest import TestCase
 
