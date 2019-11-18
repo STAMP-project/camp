@@ -14,13 +14,9 @@ from __future__ import unicode_literals
 
 from camp.codecs.yaml import YAML, InvalidYAMLModel
 from camp.entities.model import DockerFile, DockerImage, Substitution, \
-    TestSettings, ResourceSelection
+    TestSettings
 from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest, \
-    TestSuite, TestReport
-
-from io import BytesIO
-
-from sys import version_info
+    TestReport
 
 from unittest import TestCase
 
@@ -268,11 +264,11 @@ class TypeMismatchAreReported(TestCase):
     def test_with_a_string_as_required_features(self):
         self.assert_warning(
             "components: \n"
-                "  server:\n"
-                "     requires_features: blablabla\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n",
+            "  server:\n"
+            "     requires_features: blablabla\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
             expected="list",
             found="str",
             path="components/server/requires_features")
@@ -281,12 +277,12 @@ class TypeMismatchAreReported(TestCase):
     def test_with_a_string_as_variables(self):
         self.assert_warning(
             "components: \n"
-                "  server:\n"
-                "     requires_features: [ Awesome ]\n"
-                "     variables: blablabla\n"
-                "goals:\n"
-                "   running:\n"
-                "      - Wonderful\n",
+            "  server:\n"
+            "     requires_features: [ Awesome ]\n"
+            "     variables: blablabla\n"
+            "goals:\n"
+            "   running:\n"
+            "      - Wonderful\n",
             expected="dict",
             found="str",
             path="components/server/variables")
@@ -502,7 +498,7 @@ class TypeMismatchAreReported(TestCase):
 
     def assert_warning(self, text,  expected, found, path, warning_count=1):
         try:
-            model = self._codec.load_model_from(StringIO(text))
+            self._codec.load_model_from(StringIO(text))
             self.fail("InvalidYAMLModel should have been thrown!")
 
         except InvalidYAMLModel as error:

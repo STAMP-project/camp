@@ -17,11 +17,9 @@ from camp.generate import Z3Problem
 from camp.realize import Builder
 
 from os import listdir, makedirs
-from os.path import join, isdir
+from os.path import join
 
 from re import match
-
-from shutil import rmtree
 
 from tempfile import mkdtemp
 

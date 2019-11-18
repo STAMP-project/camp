@@ -9,7 +9,6 @@
 #
 
 
-from camp import About
 from camp.codecs.yaml import InvalidYAMLModel
 from camp.directories import InputDirectory, OutputDirectory, \
     MissingModel, NoConfigurationFound

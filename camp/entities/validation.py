@@ -60,6 +60,17 @@ class NoGoal(Error):
 
 
 
+class NoServiceAndNoFeature(Error):
+    PROBLEM = "Components must provides at least one feature or service!"
+    HINT = "Do we miss required/provided services or features?"
+
+    def __init__(self, service):
+        super(NoServiceProvider, self).__init__(
+            self.PROBLEM % service.name,
+            self.HINT)
+
+
+
 class NoServiceProvider(Error):
     PROBLEM = "No component provides the service '%s'!"
     HINT = "Do we miss a provided service or a component?"
@@ -180,7 +191,7 @@ class Checker(object):
 
     def _required_features_are_defined(self, model, component):
         for any_feature in component.required_features:
-            if not any_feature in model:
+            if any_feature not in model:
                 self._report(UnknownRequiredFeature(model,
                                                     component,
                                                     any_feature))

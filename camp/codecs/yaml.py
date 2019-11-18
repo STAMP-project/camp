@@ -509,7 +509,7 @@ class YAML(Codec):
         for index, each_action in enumerate(data, 1):
             path_to_action = path + ["#%d" % index]
             if not isinstance(each_action, dict):
-                self._wrong_type(dict, type(item), path_to_action)
+                self._wrong_type(dict, type(each_action), path_to_action)
                 continue
             action = self._parse_component_resource_selection(path_to_action,
                                                               each_action)

@@ -18,8 +18,6 @@ from camp.entities.model import DockerFile, DockerImage, Substitution, \
 from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest, \
     TestSuite, TestReport
 
-from io import BytesIO
-
 from sys import version_info
 
 from unittest import TestCase
@@ -97,7 +95,7 @@ class BuiltModelAreComplete(TestCase):
                         "implementation": None,
                         "variables": {
                             "threads": {
-                                 "values": [64, 128, 256],
+                                "values": [64, 128, 256],
                                 "realization": []
                             },
                             "memory": {

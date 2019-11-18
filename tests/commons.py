@@ -18,7 +18,7 @@ from camp.generate import Z3Problem
 from camp.realize import Builder
 
 from os import makedirs, listdir
-from os.path import exists, isdir, join as join_paths, basename
+from os.path import exists, isdir, join as join_paths
 
 from shutil import copytree, copy2, rmtree
 
