@@ -116,7 +116,6 @@ class ResourceSelectionShould(CampTest):
         self.generate_all()
         self.realize()
 
-        configurations = self.scenario.generated_configurations
         for each_configuration in self.scenario.generated_configurations:
             self._assert_generated(each_configuration, "images/server_0/config")
 

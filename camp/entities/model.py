@@ -667,7 +667,7 @@ class Configuration(Visitee):
     def stacks(self):
         def top_services():
             for each in self.instances:
-                if all(not i.feature_provider is each for i in self.instances):
+                if all(i.feature_provider is not each for i in self.instances):
                     yield each
 
         def stack_of(service):

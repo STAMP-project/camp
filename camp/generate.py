@@ -372,7 +372,7 @@ class Context(object):
                 if "configuration" in item:
                     for each_value in item["configuration"]:
                         value = z3_solution[each_value]
-                        if not value in self.covered_values:
+                        if value not in self.covered_values:
                            self.covered_values.append((value["variable"], value["value"]))
 
     def coverage_constraint(self):
