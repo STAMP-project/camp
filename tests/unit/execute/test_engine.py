@@ -9,6 +9,7 @@
 #
 
 
+from camp.commands import Execute
 from camp.entities.model import Component, TestSettings
 from camp.execute.engine import ShellCommandFailed, Shell, SimulatedShell, \
     Engine, ExecutorListener, ReportFormatNotSupported, select_reader_for
@@ -207,6 +208,7 @@ class TheExecutorShould(TestCase):
 
 
     def setUp(self):
+        self._options = Execute()
         self._listener = MagicMock(ExecutorListener)
         self._tested = Component(
             name="Foo",
@@ -215,6 +217,7 @@ class TheExecutorShould(TestCase):
         self._engine = Engine(
             self._tested,
             SimulatedShell(self._log, "."),
+            self._options,
             self._listener)
         self._configurations = [
             ("config_1", "useless"),
@@ -284,8 +287,9 @@ class TheExecutorShould(TestCase):
         self._call_execute()
 
         for each_path, _ in self._configurations:
-            docker_logs = Engine.FETCH_LOG_FILE
-            self._verify(each_path, docker_logs)
+            expected = Engine.FETCH_LOG_FILE.format(
+                path=Execute.DEFAULT_LOGS_PATH)
+            self._verify(each_path, expected)
 
 
     def test_stop_services_for_all_configurations(self):

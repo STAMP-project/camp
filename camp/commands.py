@@ -100,7 +100,14 @@ class Command(object):
             type=str,
             dest="retry_delay",
             help="Set how long to wait before to run another liveness test")
-
+        execute.add_argument(
+            "-l",
+            "--logs",
+            type=str,
+            dest="logs_path",
+            help=("Set the relative path where CAMP saves the Docker logs of "
+                  "each configuration. By default, the logs of the n-th "
+                  "configuration are saved into 'out/config_N/'."))
 
         values = parser.parse_args(command_line)
         return Command.from_namespace(values)
@@ -121,7 +128,8 @@ class Command(object):
                            namespace.is_simulated,
                            namespace.included,
                            namespace.retry_count,
-                           namespace.retry_delay)
+                           namespace.retry_delay,
+                           namespace.logs_path)
 
         elif namespace.command == "show_version":
             return ShowVersions()
@@ -204,18 +212,21 @@ class Execute(Command):
     DEFAULT_INCLUDED = []
     DEFAULT_RETRY_COUNT = 5
     DEFAULT_RETRY_DELAY = "30s"
+    DEFAULT_LOGS_PATH = ""
 
     def __init__(self,
                  working_directory=None,
                  is_simulated=None,
                  included=None,
                  max_retries=None,
-                 wait_for=None):
+                 wait_for=None,
+                 logs_path=None):
         super(Execute, self).__init__(working_directory)
         self._is_simulated = is_simulated or self.DEFAULT_IS_SIMULATED
         self._included = included or self.DEFAULT_INCLUDED
         self._max_retries = max_retries or self.DEFAULT_RETRY_COUNT
         self._wait_for = wait_for or self.DEFAULT_RETRY_DELAY
+        self._logs_path = logs_path or self.DEFAULT_LOGS_PATH
 
 
     @property
@@ -236,6 +247,11 @@ class Execute(Command):
     @property
     def retry_count(self):
         return self._max_retries
+
+
+    @property
+    def logs_path(self):
+        return self._logs_path
 
 
     def send_to(self, camp):

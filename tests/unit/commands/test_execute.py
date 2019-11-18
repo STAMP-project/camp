@@ -62,6 +62,13 @@ class LongOptionsAreAccepted(TestCase):
         self.assertEqual(command.retry_delay, "10s")
 
 
+    def test_with_the_log_path_option(self):
+        command = _parse("execute --logs here/is/a/directory")
+
+        self.assertIsInstance(command, Execute)
+        self.assertEqual(command.logs_path, "here/is/a/directory")
+
+
 
 class ShortOptionsAreAccepted(TestCase):
 
@@ -103,6 +110,11 @@ class ShortOptionsAreAccepted(TestCase):
         self.assertEqual("15s",
                          command.retry_delay)
 
+    def test_with_the_log_path_option(self):
+        command = _parse("execute -l here/is/a/directory")
+
+        self.assertIsInstance(command, Execute)
+        self.assertEqual(command.logs_path, "here/is/a/directory")
 
 
 
@@ -126,3 +138,5 @@ class DefaultValuesAreCorrect(TestCase):
                          command.retry_count)
         self.assertEqual(Execute.DEFAULT_RETRY_DELAY,
                          command.retry_delay)
+        self.assertEqual(Execute.DEFAULT_LOGS_PATH,
+                         command.logs_path)

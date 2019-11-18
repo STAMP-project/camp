@@ -19,9 +19,8 @@ from camp.execute.reporting.junit import JUnitXMLReader, \
 
 from camp.execute.reporting.jmeter import JMeterJSONReader
 
-
-from os import listdir
-from os.path import isdir, join as join_paths
+from os import listdir, makedirs
+from os.path import exists, isdir, join as join_paths
 
 from shlex import split
 from subprocess import Popen, PIPE
@@ -207,12 +206,11 @@ class ExecutorListener(object):
 class Engine(object):
 
 
-    def __init__(self, component, shell, listener=None, retry=5, retry_delay="30s"):
+    def __init__(self, component, shell, options, listener=None):
         self._component = component
         self._shell = shell
         self._listener = listener or ExecutorListener()
-        self._retry_count = retry
-        self._retry_delay = retry_delay
+        self._options = options
 
 
     def execute(self, configurations):
@@ -260,7 +258,7 @@ class Engine(object):
     def _run_tests(self, path):
 
         if self._component.test_settings.include_liveness_test:
-            for _ in range(self._retry_count):
+            for _ in range(self._options.retry_count):
                 try:
                     test_liveness = self._LIVENESS_TEST.format(
                         container=self._CONTAINER_NAME,
@@ -270,11 +268,11 @@ class Engine(object):
                     break
 
                 except ShellCommandFailed:
-                    sleep = self._WAIT_A_BIT.format(delay=self._retry_delay)
+                    sleep = self._WAIT_A_BIT.format(delay=self._options.retry_delay)
                     self._shell.execute(sleep, path)
             else:
-                raise ServiceNotReady(self._retry_count,
-                                      self._retry_delay)
+                raise ServiceNotReady(self._options.retry_count,
+                                      self._options.retry_delay)
 
 
         # We allow failure because some test commands return non-zero
@@ -355,14 +353,25 @@ class Engine(object):
 
 
     def _collect_logs_for(self, path):
-        self._shell.execute(self.FETCH_LOG_FILE, path, allow_failure=True)
+        log_path = join_paths(path, self._options.logs_path)
+        if exists(log_path):
+            if not isdir(log_path):
+                raise ValueError(self._LOGS_PATH_IS_A_FILE.format(log_path))
+        else:
+            if not self._options.is_simulated:
+                makedirs(log_path)
+
+        command = self.FETCH_LOG_FILE.format(path=self._options.logs_path)
+        self._shell.execute(command, path, allow_failure=True)
 
 
     FETCH_LOG_FILE = ("sh -c 'docker-compose logs "
                       "--no-color "
                       "--timestamps "
-                      " > docker_run.log'")
+                      " > ./{path}/docker_run.log'")
 
+    _LOGS_PATH_IS_A_FILE = ("The path '{}' exists but it's a file instead of a "
+                           "directory!")
 
     def _stop_services(self, path):
         self._shell.execute(self._STOP_SERVICES, path)
