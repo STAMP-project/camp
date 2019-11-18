@@ -25,4 +25,4 @@ COPY . /usr/src/app/
 EXPOSE 82
 
 # run entrypoint.sh
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+ENTRYPOINT ["/bin/sh","/usr/src/app/entrypoint.sh"]
