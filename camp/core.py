@@ -171,9 +171,8 @@ class Camp(object):
                 shell = self._select_shell(arguments, log_file)
                 engine = Engine(testing,
                                 shell,
-                                self._ui,
-                                arguments.retry_count,
-                                arguments.retry_delay)
+                                arguments,
+                                self._ui)
                 reports = engine.execute(selected_configurations)
                 self._output.save_reports(reports)
                 self._ui.summarize_execution(reports)
