@@ -385,7 +385,7 @@ class ResourceSelection(Visitee):
 
 
     def __hash__(self):
-        return hash(tuple([self._destination, *self._resources]))
+        return hash(tuple([self._destination] + self._resources))
 
 
     def __repr__(self):
