@@ -50,8 +50,11 @@ class Camp(object):
         import z3;
         z3_version = z3.get_version_string()
 
-        docker_version = check_output(["docker", "--version"]).decode("utf-8")
-        compose_version = check_output(["docker-compose", "--version"]).decode("utf-8")
+        docker_version = check_output(["docker", "--version"], shell=False)\
+                         .decode("utf-8")
+        compose_version = check_output(["docker-compose", "--version"],
+                                       shell=False)\
+                          .decode("utf-8")
 
         self._ui.show_versions(os_version,
                                python,
@@ -227,7 +230,8 @@ class Camp(object):
         return selection
 
 
-    def _search_for(self, index, configurations):
+    @staticmethod
+    def _search_for(index, configurations):
         marker = "config_{}".format(index)
         for any_path, any_config in configurations:
             if marker in any_path:

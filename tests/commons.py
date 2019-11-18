@@ -20,7 +20,7 @@ from camp.realize import Builder
 from os import makedirs, listdir
 from os.path import exists, isdir, join as join_paths
 
-from shutil import copytree, copy2, rmtree
+from shutil import copytree, copy2
 
 from tempfile import mkdtemp
 

@@ -151,7 +151,6 @@ class ComponentResourceSelectionShould(CampTest):
         self.generate_all()
         self.realize()
 
-        configurations = self.scenario.generated_configurations
         for each_configuration in self.scenario.generated_configurations:
             self._assert_generated(each_configuration, "docker-compose.yml")
 
@@ -192,7 +191,6 @@ class ComponentResourceSelectionShould(CampTest):
         self.generate_all()
         self.realize()
 
-        configurations = self.scenario.generated_configurations
         for each_configuration in self.scenario.generated_configurations:
             self._assert_generated(each_configuration,
                                    "images/app_0/entrypoint.sh")
@@ -242,7 +240,7 @@ class ComponentResourceSelectionShould(CampTest):
 
         configurations = self.scenario.generated_configurations
         self.assertEquals(1, len(configurations))
-        for each_configuration in self.scenario.generated_configurations:
+        for each_configuration in configurations:
             self._assert_generated(each_configuration, "docker-compose.yml")
 
             self.assertIn("nginx_variable=something_else",

@@ -15,7 +15,7 @@ from __future__ import unicode_literals
 from camp.codecs.yaml import YAML, InvalidYAMLModel
 from camp.entities.model import DockerFile, DockerImage, Substitution, \
     TestSettings
-from camp.entities.report import SuccessfulTest, FailedTest, ErroneousTest
+from camp.entities.report import FailedTest
 
 from unittest import TestCase
 
@@ -327,17 +327,17 @@ class TypeMismatchAreReported(TestCase):
     def test_with_a_string_as_substitution_replacements(self):
         self.assert_warning(
             "components:\n"
-                "   server:\n"
-                "      provides_services: [ Awesome ]\n"
-                "      variables:\n"
-                "        memory:\n"
-                "          values: [1GB, 2GB ]\n"
-                "          realization:\n"
-                "             - targets: [ Dockerfile ]\n"
-                "               pattern: xmem=1GB\n"
-                "               replacements: This should not be a string!\n"
-                "goals:\n"
-                "  running: [ Awesome ]\n",
+            "   server:\n"
+            "      provides_services: [ Awesome ]\n"
+            "      variables:\n"
+            "        memory:\n"
+            "          values: [1GB, 2GB ]\n"
+            "          realization:\n"
+            "             - targets: [ Dockerfile ]\n"
+            "               pattern: xmem=1GB\n"
+            "               replacements: This should not be a string!\n"
+            "goals:\n"
+            "  running: [ Awesome ]\n",
             expected="list",
             found="str",
             path="components/server/variables/memory/realization/#1/replacements",
@@ -399,23 +399,6 @@ class TypeMismatchAreReported(TestCase):
             expected="str",
             found="int",
             path="components/server/variables/memory/realization/#1/as",
-            warning_count=1)
-
-    def test_with_a_number_as_selected_resource_final_name(self):
-        self.assert_warning(
-            "components:\n"
-            "   server:\n"
-            "      provides_services: [ Wonderful ]\n"
-            "      realization:\n"
-            "       - select: apache_docker-compose.yml\n"
-            "         instead_of:\n"
-            "          - nginx_docker-compose.yml\n"
-            "         as: 1234\n"
-            "goals:\n"
-            "   running: [ Wonderful ]\n",
-            expected="str",
-            found="int",
-            path="components/server/realization/#1/as",
             warning_count=1)
 
 
