@@ -64,9 +64,9 @@ class NoServiceAndNoFeature(Error):
     PROBLEM = "Components must provides at least one feature or service!"
     HINT = "Do we miss required/provided services or features?"
 
-    def __init__(self, service):
+    def __init__(self):
         super(NoServiceAndNoFeature, self).__init__(
-            self.PROBLEM % service.name,
+            self.PROBLEM,
             self.HINT)
 
 
@@ -91,6 +91,27 @@ class NoFeatureProvider(Error):
             self.PROBLEM % feature.name,
             self.HINT)
 
+
+class Kind:
+    SERVICE = "service"
+    FEATURE = "feature"
+
+class Role:
+    PROVIDED = "provided"
+    REQUIRED = "required"
+
+
+class NoSuchInterface(Error):
+    PROBLEM = "The {} '{}', {} by {}, does not exist!"
+    HINT = "Do we miss a {} {}, maybe a component?"
+
+    def __init__(self, kind, component, interface, role):
+        super(NoFeatureInterface, self).__init__(
+            self.PROBLEM.format(kind,
+                                interface.name,
+                                role,
+                                component.name),
+            self.HINT.format(role, kind))
 
 
 class EmptyVariableDomain(Error):
@@ -192,33 +213,37 @@ class Checker(object):
     def _required_features_are_defined(self, model, component):
         for any_feature in component.required_features:
             if any_feature not in model:
-                self._report(UnknownRequiredFeature(model,
-                                                    component,
-                                                    any_feature))
+                self._report(NoSuchInterface(Kind.FEATURE,
+                                             component,
+                                             any_feature,
+                                             Role.REQUIRED))
 
 
     def _provided_features_are_defined(self, model, component):
         for any_feature in component.provided_features:
             if any_feature not in model:
-                self._report(UnknownProvidedFeature(model,
-                                                    component,
-                                                    any_feature))
+                self._report(NoSuchInterface(Kind.FEATURE,
+                                             component,
+                                             any_feature,
+                                             Role.PROVIDED))
 
 
     def _required_services_are_defined(self, model, component):
         for any_service in component.required_services:
             if any_service not in model:
-                self._report(UnknownRequiredService(model,
-                                                    component,
-                                                    any_service))
+                self._report(NoSuchInterface(Kind.Service,
+                                             component,
+                                             any_service,
+                                             Role.REQUIRED))
 
 
     def _provided_services_are_defined(self, model, component):
         for any_service in component.provided_services:
             if any_service not in model:
-                self._report(UnknownProvidedService(model,
-                                                    component,
-                                                    any_service))
+                self._report(NoSuchInterface(Kind.SERVICE,
+                                             component,
+                                             any_service,
+                                             Role.PROVIDED))
 
 
     def visit_variable(self, variable, model, component):

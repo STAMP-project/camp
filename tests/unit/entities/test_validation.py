@@ -9,11 +9,13 @@
 #
 
 
+
 from unittest import TestCase
 
 from camp.entities.model import Model, Service, Feature, Component, \
     Variable, Goals, DockerFile
-from camp.entities.validation import *
+from camp.entities.validation import DockerFileNotFound, InvalidModel, \
+    NoServiceProvider, Checker, NoFeatureProvider, NoGoal, EmptyVariableDomain
 
 
 

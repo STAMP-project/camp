@@ -15,8 +15,7 @@ from camp.util import redirect_stderr_to
 
 from ozepy import load_all_classes, DefineObject, ObjectVar, \
     get_all_meta_facts, get_all_config_facts, cast_all_objects, \
-    generate_config_constraints, generate_meta_constraints, start_over, \
-    ObjectConst
+    generate_config_constraints, generate_meta_constraints, start_over
 
 from pkgutil import get_data
 
@@ -367,7 +366,7 @@ class Context(object):
         for _, item in z3_solution.items():
             if "definition" in item:
                 definition = self.find(item["definition"])
-                if not definition in self.covered_components:
+                if definition not in self.covered_components:
                     self.covered_components.append(definition)
                 if "configuration" in item:
                     for each_value in item["configuration"]:

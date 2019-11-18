@@ -380,8 +380,8 @@ class ResourceSelection(Visitee):
     def __eq__(self, other):
         if not isinstance(other, ResourceSelection):
             return False
-        return tuple([self._destination, *self._resources]) \
-            == tuple([other.destination, *other.resources])
+        return tuple([self._destination] + self._resources) \
+            == tuple([other.destination] + other.resources)
 
 
     def __hash__(self):
