@@ -22,6 +22,16 @@ individually for a customized gift and for contribution opportunities.
 
 ---
 
+If you feel like trying CAMP, feel totally free to: 
+
+ *   Checkout the online
+     [documentation](https://github.com/STAMP-project/camp/issues);
+
+ *   Ask questions on our [mailing
+     list](mailto:camp-users@googlegroups.com);
+
+ *   Post issues or features requests on the [issue
+     tracker](https://github.com/STAMP-project/camp/issues).
 
 CAMP (Configuration AMPlification) takes as input a sample testing
 configuration and generates automatically a number of diverse
