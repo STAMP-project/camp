@@ -30,16 +30,16 @@ version of CAMP is focused on the Docker environment, and the input
 and output configurations are specified as Dockerfiles or
 docker-compose files.
 
-If you try CAMP, feel free to: 
+If you try CAMP, feel free to:
 
- *   Checkout the online 
-     [documentation](https://github.com/STAMP-project/camp/issues);
+*   Checkout the online
+    [documentation](https://github.com/STAMP-project/camp/issues);
 
- *   Ask questions on our [mailing
-     list](mailto:camp-users@googlegroups.com);
+*   Ask questions on our [mailing
+    list](mailto:camp-users@googlegroups.com);
 
- *   Post issues or feature requests on the [issue
-     tracker](https://github.com/STAMP-project/camp/issues).
+*   Post issues or feature requests on the [issue
+    tracker](https://github.com/STAMP-project/camp/issues).
 
 
 ## Running CAMP on your project
