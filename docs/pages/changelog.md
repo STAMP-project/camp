@@ -4,6 +4,17 @@ Below is the list of CAMP versions, along with a quick summary of the
 changes that were made.
 
 
+*   CAMP v0.9
+
+    *   CAMP v0.9.0 (Nov. 19, 2019)
+
+        *   Fetch the logs of all containers before to shutdown the
+            orchestration. The logs result from the `docker-compose
+            logs` command.
+
+        *   Add the option `-l|--logs PATH` to `camp execute` in order
+            to set the host folder where the logfiles should be saved.
+
 *   CAMP v0.8
 
     *   CAMP v0.8.0 (Nov. 13, 2019)
