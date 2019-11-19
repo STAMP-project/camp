@@ -11,6 +11,15 @@ version of CAMP is focused on the Docker environment, and the input
 and output configurations are specified as Dockerfiles or
 docker-compose files.
 
+If you feel like trying CAMP, feel totally free to: 
+
+ *   Ask questions on our [mailing
+     list](mailto:camp-users@googlegroups.com);
+
+ *   Post issues or features requests on the [issue
+     tracker](https://github.com/STAMP-project/camp/issues).
+
+
 ## Quick start
 The fastest solution is to use [docker](https://www.docker.com/) to
 run CAMP and all its dependencies in one container, using the
