@@ -22,17 +22,6 @@ individually for a customized gift and for contribution opportunities.
 
 ---
 
-If you feel like trying CAMP, feel totally free to: 
-
- *   Checkout the online
-     [documentation](https://github.com/STAMP-project/camp/issues);
-
- *   Ask questions on our [mailing
-     list](mailto:camp-users@googlegroups.com);
-
- *   Post issues or features requests on the [issue
-     tracker](https://github.com/STAMP-project/camp/issues).
-
 CAMP (Configuration AMPlification) takes as input a sample testing
 configuration and generates automatically a number of diverse
 configurations. The generation is guided by predefined features and
@@ -41,7 +30,17 @@ version of CAMP is focused on the Docker environment, and the input
 and output configurations are specified as Dockerfiles or
 docker-compose files.
 
-Check out the documentation on the [CAMP Companion website](https://stamp-project.github.io/camp)!
+If you try CAMP, feel free to: 
+
+ *   Checkout the online 
+     [documentation](https://github.com/STAMP-project/camp/issues);
+
+ *   Ask questions on our [mailing
+     list](mailto:camp-users@googlegroups.com);
+
+ *   Post issues or feature requests on the [issue
+     tracker](https://github.com/STAMP-project/camp/issues).
+
 
 ## Running CAMP on your project
 To set CAMP on your project. There are two prerequisites:

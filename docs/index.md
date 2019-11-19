@@ -11,7 +11,7 @@ version of CAMP is focused on the Docker environment, and the input
 and output configurations are specified as Dockerfiles or
 docker-compose files.
 
-If you feel like trying CAMP, feel totally free to: 
+If you try CAMP, feel free to: 
 
  *   Ask questions on our [mailing
      list](mailto:camp-users@googlegroups.com);
