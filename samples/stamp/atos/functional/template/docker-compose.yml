@@ -70,9 +70,8 @@ services:
       - gzip_min_length=256
       - reset_timedout_connection=on
     volumes:
-      - static_volume:/usr/src/app/static
-      - dsne-nginx-cert:/etc/ssl/certs:ro
       - ./logs/:/var/log/nginx/
+      -  static_volume:/usr/src/app/static
     depends_on:
       - web
 
@@ -80,13 +79,12 @@ services:
     build: ./citygo
     container_name: "my_web"
     restart: always
-    command: bash -c "python manage.py migrate --no-input && gunicorn citygo_settings.wsgi:application -b 0.0.0.0:82 --workers 3"
+    command: sh -c "python manage.py migrate --no-input && python manage.py collectstatic --no-input && gunicorn citygo_settings.wsgi:application -b 0.0.0.0:82 --workers 3"
     environment:
       - DJANGO_SETTINGS_MODULE=citygo_settings.settings
       - port=6666
     volumes:
       - static_volume:/usr/src/app/static
-      - ./logs/:/usr/src/app/
     expose: 
       - "82"
     depends_on:
