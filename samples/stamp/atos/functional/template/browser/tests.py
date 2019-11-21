@@ -80,7 +80,7 @@ class SeleniumTest(unittest.TestCase):
             "//div[contains(@class,'collapse navbar-collapse')]/ul[4]/li[4]")
         for i in elements:
             elements_urls.append(i.get_attribute('href'))
-            self.assertIn('http://localhost/dashboard/map/parking/', self.chrome.get(i)        
+            self.assertIn('http://localhost/dashboard/map/parking/', self.chrome.get(i))      
         print("Test5 pass !!")
         self.chrome.close()
 
