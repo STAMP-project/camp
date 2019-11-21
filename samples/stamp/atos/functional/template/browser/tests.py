@@ -39,7 +39,7 @@ class SeleniumTest(unittest.TestCase):
     def test2_navigate_realTimeBusData(self):
         elements_urls = []
         self.chrome.implicitly_wait(20)
-        self.chrome.get("http://web:82/dashboard/")
+        self.chrome.get("http://nginx:82/dashboard/")
         elements = self.chrome.find_elements_by_xpath(
             "//div[contains(@class,'collapse navbar-collapse')]/ul[1]/li[1]")
         for i in elements:
@@ -51,7 +51,7 @@ class SeleniumTest(unittest.TestCase):
     def test3_navigate_busStation(self):
         elements_urls = []
         self.chrome.implicitly_wait(20)
-        self.chrome.get("http://web:82/dashboard/")
+        self.chrome.get("http://nginx:82/dashboard/")
         elements = self.chrome.find_elements_by_xpath(
             "//div[contains(@class,'collapse navbar-collapse')]/ul[2]/li[2]")
         for i in elements:
@@ -63,7 +63,7 @@ class SeleniumTest(unittest.TestCase):
     def test4_heatMap(self):
         elements_urls = []
         self.chrome.implicitly_wait(20)
-        self.chrome.get("http://web:82/dashboard/")
+        self.chrome.get("http://nginx:82/dashboard/")
         elements = self.chrome.find_elements_by_xpath(
             "//div[contains(@class,'collapse navbar-collapse')]/ul[3]/li[3]")
         for i in elements:
@@ -75,7 +75,7 @@ class SeleniumTest(unittest.TestCase):
     def test5_vehicule_parking(self):
         elements_urls = []
         self.chrome.implicitly_wait(20)
-        self.chrome.get("http://web:82/dashboard/")
+        self.chrome.get("http://nginx:82/dashboard/")
         elements = self.chrome.find_elements_by_xpath(
             "//div[contains(@class,'collapse navbar-collapse')]/ul[4]/li[4]")
         for i in elements:
