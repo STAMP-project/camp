@@ -27,7 +27,7 @@ class SeleniumTest(unittest.TestCase):
 
     def test1_navigate_weather(self):
         elements_urls = []
-        self.chrome.get("http://web:82/dashboard/")
+        self.chrome.get("http://nginx:82/dashboard/")
         elements = self.chrome.find_elements_by_xpath(
             "//div[contains(@class,'collapse navbar-collapse')]/ul[0]/li[0]")
         for i in elements:
