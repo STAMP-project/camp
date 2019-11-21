@@ -90,6 +90,8 @@ services:
     depends_on:
       - db
       - mongo
+    links:
+      - db:db
 
   hub:
     container_name: "selenium_hub"
