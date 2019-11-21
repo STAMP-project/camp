@@ -38,6 +38,8 @@ class SeleniumTest(unittest.TestCase):
         for i in elements:
             elements_urls.append(i.get_attribute('href'))
             self.assertIn("http://localhost/dashboard/map/weather/", self.chrome.get(i))
+        
+        self.chrome.get("http://web:82/dashboard/map/weather/")
         print("Test1 pass !!")
         self.chrome.close()
 
@@ -52,6 +54,8 @@ class SeleniumTest(unittest.TestCase):
         for i in elements:
             elements_urls.append(i.get_attribute('href'))
             self.assertIn("http://localhost/dashboard/map/bus/", self.chrome.get(i))
+
+        self.chrome.get("http://web:82/dashboard/map/bus/")
         print("Test2 pass !!")
         self.chrome.close()
 
@@ -66,6 +70,8 @@ class SeleniumTest(unittest.TestCase):
         for i in elements:
             elements_urls.append(i.get_attribute('href'))
             self.assertIn("http://localhost/dashboard/map/cycle/", self.chrome.get(i))
+          
+        self.chrome.get("http://web:82/dashboard/map/cycle/")
         print("Test3 pass !!")
         self.chrome.close()
 
@@ -80,6 +86,8 @@ class SeleniumTest(unittest.TestCase):
         for i in elements:
             elements_urls.append(i.get_attribute('href'))
             self.assertIn("http://localhost/dashboard/map/heatmap/", self.chrome.get(i))
+        
+        self.chrome.get("http://web:82/dashboard/map/heatmap/")
         print("Test4 pass !!")
         self.chrome.close()
 
@@ -94,6 +102,8 @@ class SeleniumTest(unittest.TestCase):
         for i in elements:
             elements_urls.append(i.get_attribute('href'))
             self.assertIn('http://localhost/dashboard/map/parking/', self.chrome.get(i))
+        
+        self.chrome.get("http://web:82/dashboard/map/parking/")
         print("Test5 pass !!")
         self.chrome.close()
 
