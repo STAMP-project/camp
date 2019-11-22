@@ -64,7 +64,7 @@ pipeline {
               alwaysLinkToLastBuild: false,
               keepAll: true, 
               reportDir: reportDirectories[i] + '/test-reports/citygo-tests/nginx-logs/',
-              reportFiles: 'error.log, access.log, pytest_report.html',
+              reportFiles: 'error.log, access.log, pytest_report.html, docker_run.log',
               reportName: reportDirectories[i].tokenize('/').last()
             ])
           }
