@@ -33,6 +33,7 @@ class SeleniumTest(unittest.TestCase):
         for i in elements:
             elements_urls.append(i.get_attribute('href'))
             self.assertIn("http://localhost/dashboard/map/weather/", self.chrome.get(i))
+        self.chrome.get("http://nginx:82/dashboard/map/weather/")
         print("Test1 pass !!")
         self.chrome.close()
 
@@ -45,6 +46,7 @@ class SeleniumTest(unittest.TestCase):
         for i in elements:
             elements_urls.append(i.get_attribute('href'))
             self.assertIn("http://localhost/dashboard/map/bus/", self.chrome.get(i))
+        self.chrome.get("http://nginx:82/dashboard/map/bus/")
         print("Test2 pass !!")
         self.chrome.close()
 
@@ -56,7 +58,8 @@ class SeleniumTest(unittest.TestCase):
             "//div[contains(@class,'collapse navbar-collapse')]/ul[2]/li[2]")
         for i in elements:
             elements_urls.append(i.get_attribute('href'))
-            self.assertIn("http://localhost/dashboard/map/cycle/", self.chrome.get(i))      
+            self.assertIn("http://localhost/dashboard/map/cycle/", self.chrome.get(i))
+        self.chrome.get("http://nginx:82/dashboard/map/cycle/")
         print("Test3 pass !!")
         self.chrome.close()
 
@@ -69,6 +72,7 @@ class SeleniumTest(unittest.TestCase):
         for i in elements:
             elements_urls.append(i.get_attribute('href'))
             self.assertIn("http://localhost/dashboard/map/heatmap/", self.chrome.get(i))
+        self.chrome.get("http://nginx:82/dashboard/map/heatmap/")
         print("Test4 pass !!")
         self.chrome.close()
 
@@ -80,7 +84,8 @@ class SeleniumTest(unittest.TestCase):
             "//div[contains(@class,'collapse navbar-collapse')]/ul[4]/li[4]")
         for i in elements:
             elements_urls.append(i.get_attribute('href'))
-            self.assertIn('http://localhost/dashboard/map/parking/', self.chrome.get(i))      
+            self.assertIn('http://localhost/dashboard/map/parking/', self.chrome.get(i))
+        self.chrome.get("http://nginx:82/dashboard/map/parking/")
         print("Test5 pass !!")
         self.chrome.close()
 
@@ -92,7 +97,8 @@ class SeleniumTest(unittest.TestCase):
             "//div[contains(@class,'collapse navbar-collapse')]/ul[5]/li[5]")
         for i in elements:
             elements_urls.append(i.get_attribute('href'))
-            self.assertIn('http://localhost/dashboard/map/parking/', self.chrome.get(i))
+            self.assertIn('http://localhost/dashboard/map/chart/cycle/', self.chrome.get(i))
+        self.chrome.get("http://nginx:82/dashboard/map/chart/cycle/")
         print("Test6 pass !!")
         self.chrome.close()
 
