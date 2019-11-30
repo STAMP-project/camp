@@ -30,6 +30,7 @@ version of CAMP is focused on the Docker environment, and the input
 and output configurations are specified as Dockerfiles or
 docker-compose files.
 
+
 If you try CAMP, feel free to:
 
 *   Checkout the online
@@ -41,6 +42,7 @@ If you try CAMP, feel free to:
 *   Post issues or feature requests on the [issue
     tracker](https://github.com/STAMP-project/camp/issues).
 
+[![CAMP Demo](https://img.youtube.com/vi/81_2H7GOQwg/0.jpg)](https://www.youtube.com/watch?v=81_2H7GOQwg)
 
 ## Running CAMP on your project
 To set CAMP on your project. There are two prerequisites:
