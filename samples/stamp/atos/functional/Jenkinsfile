@@ -37,7 +37,8 @@ pipeline {
     stage('CAMP execute'){
         steps{
             sh '''
-            docker exec -i camp sh -c 'cd samples/stamp/atos/functional/ && camp execute -d .';
+            docker exec -i camp sh -c 'cd samples/stamp/atos/functional/ && 
+            camp execute --logs test-reports/citygo-tests/nginx-logs -d .';
             exit;
         '''
         }
@@ -63,7 +64,7 @@ pipeline {
               alwaysLinkToLastBuild: false,
               keepAll: true, 
               reportDir: reportDirectories[i] + '/test-reports/citygo-tests/nginx-logs/',
-              reportFiles: 'error.log, access.log, pytest_report.html',
+              reportFiles: 'error.log, access.log, pytest_report.html, docker_run.log',
               reportName: reportDirectories[i].tokenize('/').last()
             ])
           }
