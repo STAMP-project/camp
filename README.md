@@ -34,7 +34,7 @@ docker-compose files.
 If you try CAMP, feel free to:
 
 *   Checkout the online
-    [documentation](https://github.com/STAMP-project/camp/issues);
+    [documentation](https://STAMP-project.github.io/camp/);
 
 *   Ask questions on our [mailing
     list](mailto:camp-users@googlegroups.com);
