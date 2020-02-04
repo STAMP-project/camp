@@ -19,12 +19,12 @@ database to persist its data, either MySQL or Postgres. By contrast,
 with the [CityGo case-study](citygo.html), there is no numerical
 variable involved.
 
-The inputs files are located in the GitHub repository under
-`samples/stamp/xwiki`. You may fetch them as follows:
+All case-studies are located in a separate Git repository, namely
+`STAMP-project/camp-samples`. You can fetch the case-study as follows:
 
-```console
-$ git clone https://github.com/STAMP-project/camp
-$ cd camp/samples/stamp/xwiki
+```shell-session
+$ git clone https://github.com/STAMP-project/camp-samples
+$ cd camp-samples/xwiki
 ```
 
 We assume hereafter that you already have CAMP up and running. If not,

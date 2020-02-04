@@ -16,6 +16,14 @@ develop their own CMS systems. In this case study, Lutece use
 [MySQL](https://www.mysql.com/) to store all content.
 
 
+All case-studies are located in a separate Git repository, namely
+`STAMP-project/camp-samples`. You can fetch the case-study as follows:
+
+```shell-session
+$ git clone https://github.com/STAMP-project/camp-samples
+$ cd camp-samples/ow2
+```
+
 <a name="inputs"/>
 ## The Required Inputs
 

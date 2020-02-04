@@ -1,6 +1,17 @@
 # Proactive CAMP sample
 
-In the context of the project STAMP, ActiveEon is a use case to explore several configuration notably for using different databases. This readme explain show how to run camp for proactive worflows & schedulling.
+In the context of the project STAMP, ActiveEon is a use case to
+explore several configuration notably for using different
+databases. This page explain show how to run camp for proactive
+worflows & schedulling.
+
+All case-studies are located in a separate Git repository, namely
+`STAMP-project/camp-samples`. You can fetch the case-study as follows:
+
+```shell-session
+$ git clone https://github.com/STAMP-project/camp-samples
+$ cd camp-samples/activeon
+```
 
 ## Building camp last version
 
@@ -92,20 +103,29 @@ git clone https://bitbucket.org/activeeon/scheduling-system-tests/src/master/
 
 * Proactive docker container to target system tests;
 
-  - The last build proactive artifact [here](http://jenkins.activeeon.com/view/NightlyRelease/job/nightly-release/lastSuccessfulBuild/artifact/build/distributions/)
+  - The last build proactive artifact
+    [here](http://jenkins.activeeon.com/view/NightlyRelease/job/nightly-release/lastSuccessfulBuild/artifact/build/distributions/)
 
-  - The system tests project is [here](https://bitbucket.org/activeeon/scheduling-system-tests/src/master/)
+  - The system tests project is
+    [here](https://bitbucket.org/activeeon/scheduling-system-tests/src/master/)
 
-  - Example of running proactive system tests [here](http://jenkins.activeeon.com/job/scheduling-system-tests/)
+  - Example of running proactive system tests
+    [here](http://jenkins.activeeon.com/job/scheduling-system-tests/)
 
 * Add database intial setup;
-  - Updated document provided by Gleb to configure db connection to MySQL, PG, Oracle, and SQL server [here](- Mysql connector [here](https://dev.mysql.com/downloads/connector/j/))
-  - Mysql database configuration [here](https://docs.google.com/document/d/1z9qNB64Sch3n-F5dwgFCmbKzKXSqfjfjYD9PLmSsgsM/edit#heading=h.1qei06ddonzh)
+  - Updated document provided by Gleb to configure db connection to
+    MySQL, PG, Oracle, and SQL server [here](- Mysql connector
+    [here](https://dev.mysql.com/downloads/connector/j/))
+  - Mysql database configuration
+    [here](https://docs.google.com/document/d/1z9qNB64Sch3n-F5dwgFCmbKzKXSqfjfjYD9PLmSsgsM/edit#heading=h.1qei06ddonzh)
 
-  - Mysql connector [here](https://dev.mysql.com/downloads/connector/j/)
+  - Mysql connector
+    [here](https://dev.mysql.com/downloads/connector/j/)
 
-  - Postgres database configuration [here](https://docs.google.com/document/d/1z9qNB64Sch3n-F5dwgFCmbKzKXSqfjfjYD9PLmSsgsM/edit#heading=h.1qei06ddonzh)
+  - Postgres database configuration
+    [here](https://docs.google.com/document/d/1z9qNB64Sch3n-F5dwgFCmbKzKXSqfjfjYD9PLmSsgsM/edit#heading=h.1qei06ddonzh)
 
-  - Postgres connector [here](https://jdbc.postgresql.org/download.html)
+  - Postgres connector
+    [here](https://jdbc.postgresql.org/download.html)
 
 * Collect performance measures : memory, cpu, security;
