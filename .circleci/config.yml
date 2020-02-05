@@ -124,7 +124,7 @@ jobs:
       - run: |
           docker load -i camp-ci.tar
       - run: |
-          pip install coverage codacy-coverage
+          pip install coverage==4.5.4 codacy-coverage
           coverage combine .coverage_main .coverage_java .coverage_python .coverage_errors
           docker run --name coverage \
                      -v $(pwd):/reports \
