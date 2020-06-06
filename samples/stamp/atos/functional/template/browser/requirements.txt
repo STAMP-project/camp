@@ -3,7 +3,7 @@ html-testRunner==1.2
 pytest-html
 pytest
 unittest-xml-reporting==2.5.1
-Django==1.10.2
+Django==1.11.29
 django-allauth==0.27.0
 django-rest-auth==0.8.1
 djangorestframework==3.4.7
