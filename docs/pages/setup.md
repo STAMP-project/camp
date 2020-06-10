@@ -4,7 +4,7 @@ layout: default
 
 # How to install CAMP?
 
-CAMP is a [Python 2.7](https://www.python.org/) application, which
+CAMP is a [Python 3.7](https://www.python.org/) application, which
 uses the [Z3 theorem prover](https://github.com/Z3Prover/z3) behind
 the scenes. These are therefore the two mandatory dependencies that
 must installed on your machine.
@@ -64,7 +64,7 @@ execute as follows:
 
 ```bash
 $ \curl -L https://github.com/STAMP-project/camp/raw/master/install.sh \
-  | sudo bash -s -- --install-z3 --z3-python-bindings /usr/lib/python2.7
+  | sudo bash -s -- --install-z3 --z3-python-bindings /usr/lib/python3.7
 ```
 
 This script installs both the Z3 solver and CAMP. It accepts the
@@ -85,7 +85,7 @@ Options:
   -i, --install-z3              Install Z3 if not already available. By default,
                                 Z3 will notbe installed.
   -p, --z3-python-bindings DIR  Set the installation directory for the Z3 Python
-                                bindings. Default is '/usr/lib/python2.7'.
+                                bindings. Default is '/usr/lib/python3.7'.
   -s, --camp-from-sources       Install CAMP for sources expected to be in
                                 the working directory. By default, CAMP is
                                 downloaded from Github.
@@ -124,9 +124,9 @@ optional arguments:
 <a name="manually" />
 ## Installing from Scratch
 
-### Installing Python 2.7
+### Installing Python 3.7
 
-Python 2.7 is installed on many Linux distribution. Should you need to
+Python 3.7 is installed on many Linux distribution. Should you need to
 install it yourself, please follow the instruction given on the
 [Python website](https://www.python.org/) for your environment.
 
@@ -147,16 +147,16 @@ $ unzip z3-4.7.1-x64-debian-8.10.zip && mv z3-4.7.1-x64-debian-8.10 unzipped
 ```
 
 Now, create the directory that will contain the Z3 binaries. I install
-it within the Python2.7 distribution in `/usr/lib/python2.7`, and copy
+it within the Python 3.7 distribution in `/usr/lib/python3.7`, and copy
 the relevant executable file, the Z3 libraries, and the Z3 Python
 bindings.
 
 ```bash
-$ mkdir -p /usr/lib/python2.7/z3/lib
-$ cp unzipped/bin/z3 /usr/lib/python2.7/z3/lib/
-$ cp unzipped/bin/lib* /usr/lib/python2.7/z3/lib/
-$ cp -rf unzipped/bin/python/z3 /usr/lib/python2.7/
-$ ln -s /usr/lib/python2.7/z3/lib/z3 /usr/bin/z3
+$ mkdir -p /usr/lib/python3.7/z3/lib
+$ cp unzipped/bin/z3 /usr/lib/python3.7/z3/lib/
+$ cp unzipped/bin/lib* /usr/lib/python3.7/z3/lib/
+$ cp -rf unzipped/bin/python/z3 /usr/lib/python3.7/
+$ ln -s /usr/lib/python3.7/z3/lib/z3 /usr/bin/z3
 $ rm -rf unzipped
 
 ```
@@ -185,9 +185,9 @@ $ python -c 'import z3; print(z3.get_version_string())'
 > environment, as follows:
 >
 > ```console
-> $ virtualenv -p /usr/bin/python2.7 --system-site-package .venv2.7
-> $ source .venv2.7/bin/activate
-> (.venv2.7) $ python -c 'import z3; print(z3.get_version_string())'
+> $ virtualenv -p /usr/bin/python3.7 --system-site-package .venv3.7
+> $ source .venv3.7/bin/activate
+> (.venv3.7) $ python -c 'import z3; print(z3.get_version_string())'
 > 4.7.1
 > ```
 
@@ -242,11 +242,11 @@ Could not find libz3.so; consider adding the directory containing it to
 	__builtin__.Z3_LIB_DIRS = [ '/path/to/libz3.so' ]
 Traceback (most recent call last):
   File "<string>", line 1, in <module>
-  File "/usr/lib/python2.7/z3/__init__.py", line 1, in <module>
+  File "/usr/lib/python3.7/z3/__init__.py", line 1, in <module>
 	from .z3 import *
-  File "/usr/lib/python2.7/z3/z3.py", line 44, in <module>
+  File "/usr/lib/python3.7/z3/z3.py", line 44, in <module>
 	from . import z3core
-  File "/usr/lib/python2.7/z3/z3core.py", line 64, in <module>
+  File "/usr/lib/python3.7/z3/z3core.py", line 64, in <module>
 	raise Z3Exception("libz3.%s not found." % _ext)
 z3.z3types.Z3Exception: libz3.so not found.
 ```
