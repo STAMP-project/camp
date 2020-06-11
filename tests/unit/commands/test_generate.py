@@ -20,7 +20,7 @@ class DefaultValuesAreCorrect(TestCase):
 
 
     def test_given_no_parameters(self):
-        command_line = "generate --all"
+        command_line = "generate --mode  all"
 
         command = Command.extract_from(command_line.split())
 
@@ -36,8 +36,8 @@ class DefaultValuesAreCorrect(TestCase):
         command = Command.extract_from(command_line.split())
 
         self.assertIsInstance(command, Generate)
-        self.assertEqual(command.only_coverage,
-                         Generate.DEFAULT_COVERAGE)
+        self.assertEqual(command.mode,
+                         Generate.DEFAULT_MODE)
 
 
 
@@ -54,22 +54,31 @@ class ShortOptionsAreAccepted(TestCase):
                          "my/test/directory")
 
 
-    def test_given_only_coverage(self):
-        command_line = "generate --c"
+    def test_given_covering_mode(self):
+        command_line = "generate -m covering"
 
         command = Command.extract_from(command_line.split())
 
         self.assertIsInstance(command, Generate)
-        self.assertTrue(command.only_coverage)
+        self.assertEqual(command.mode, Generate.COVERING)
 
 
-    def test_given_all_configurations(self):
-        command_line = "generate --a"
+    def test_given_all_configurations_mode(self):
+        command_line = "generate -m all"
 
         command = Command.extract_from(command_line.split())
 
         self.assertIsInstance(command, Generate)
-        self.assertFalse(command.only_coverage)
+        self.assertEqual(command.mode, Generate.ALL)
+
+
+    def test_given_atomic_mode(self):
+        command_line = "generate -m all"
+
+        command = Command.extract_from(command_line.split())
+
+        self.assertIsInstance(command, Generate)
+        self.assertEqual(command.mode, Generate.ALL)
 
 
 
@@ -86,19 +95,28 @@ class LongOptionsAreAccepted(TestCase):
                          "my/test/directory")
 
 
-    def test_given_only_coverage(self):
-        command_line = "generate --coverage"
+    def test_given_covering_mode(self):
+        command_line = "generate --mode covering"
 
         command = Command.extract_from(command_line.split())
 
         self.assertIsInstance(command, Generate)
-        self.assertTrue(command.only_coverage)
+        self.assertTrue(command.mode, Generate.COVERING)
 
 
-    def test_given_all_configurations(self):
-        command_line = "generate --all"
+    def test_given_atomic_mode(self):
+        command_line = "generate --mode atomic"
 
         command = Command.extract_from(command_line.split())
 
         self.assertIsInstance(command, Generate)
-        self.assertFalse(command.only_coverage)
+        self.assertEquals(command.mode, Generate.ATOMIC)
+        
+
+    def test_given_all_configurations_mode(self):
+        command_line = "generate --mode all"
+
+        command = Command.extract_from(command_line.split())
+
+        self.assertIsInstance(command, Generate)
+        self.assertEquals(command.mode, Generate.ALL)
