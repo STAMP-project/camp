@@ -41,17 +41,15 @@ class Command(object):
             dest="working_directory",
             help="the directory that contains input files")
         generate.add_argument(
-            "-a",
-            "--all",
-            action="store_false",
-            dest="coverage",
-            help="Generate  all possibles configurations")
-        generate.add_argument(
-            "-c",
-            "--coverage",
-            action="store_true",
-            dest="coverage",
-            help="Generate only enough configurations to cover every single variations")
+            "-m",
+            "--mode",
+            choices=["all", "covering", "atomic"],
+            dest="mode",
+            help=("Select the generation mode. Mode 'all' generates "
+                  "all possible configuration ; Mode 'covering' "
+                  "generates a covering array so that all options "
+                  "gets included at least once ; and Mode 'atomic' generates "
+                  "configurations that differ from other by a single option"))
 
         realize = subparsers.add_parser(
             "realize",
@@ -117,7 +115,7 @@ class Command(object):
     def from_namespace(namespace):
         if namespace.command == "generate":
             return Generate(namespace.working_directory,
-                            namespace.coverage)
+                            namespace.mode)
 
         elif namespace.command == "realize":
             return Realize(namespace.working_directory,
@@ -161,19 +159,20 @@ class Generate(Command):
     """
     Encapsulate calls to 'camp generate ...'
     """
+    ALL = "all"
+    ATOMIC = "atomic"
+    COVERING = "covering"
 
+    DEFAULT_MODE = COVERING
 
-    DEFAULT_COVERAGE = True
-
-    def __init__(self, working_directory=None, coverage=None):
+    def __init__(self, working_directory=None, mode=None):
         super(Generate, self).__init__(working_directory)
-        self._coverage = coverage \
-                         if coverage is not None else self.DEFAULT_COVERAGE
+        self._mode = mode or self.DEFAULT_MODE
 
-
+        
     @property
-    def only_coverage(self):
-        return self._coverage
+    def mode(self):
+        return self._mode
 
 
     def send_to(self, camp):

@@ -111,6 +111,26 @@ class Z3Problem(object):
         return self._extract_from(z3_solution)
 
 
+    @redirect_stderr_to("z3_errors.log")
+    def atomic(self):
+        self._solver.push()
+        while self.has_solution():
+            yield self._find_atomic_changes()
+
+
+    def _find_atomic_changes(self):
+        z3_solution = cast_all_objects(self._solver.model())
+        if not self._context.has_reference:
+            self._context.mark_as_reference(z3_solution)
+        self._solver.pop()
+        self._solver.add(self._context.evaluate(self._as_constraint(z3_solution)))
+        self._solver.push()
+        self._solver.add(self._context.atomic_diff())
+        self._solver.push
+
+        return self._extract_from(z3_solution)
+
+            
     @staticmethod
     def _as_constraint(z3_solution):
         clauses = []
@@ -177,11 +197,15 @@ class Context(object):
         self._definitions = {}
         self._definitions[self.COVERED_VALUES] = []
         self._definitions[self.COVERED_COMPONENTS] = []
+        self._definitions[self.REFERENCE_VALUES] = []
+        self._definitions[self.REFERENCE_COMPONENTS] = []
         exec("from ozepy import Not, Implies, Or, And", self._definitions)
         self._value_constraints = []
 
     COVERED_VALUES = "covered_values"
     COVERED_COMPONENTS = "covered_components"
+    REFERENCE_VALUES = "reference_values"
+    REFERENCE_COMPONENTS = "reference_components"
 
 
     @property
@@ -361,6 +385,31 @@ class Context(object):
     def covered_values(self):
         return self.find(self.COVERED_VALUES)
 
+    @property
+    def reference_components(self):
+        return self.find(self.REFERENCE_COMPONENTS)
+
+    @property
+    def reference_values(self):
+        return self.find(self.REFERENCE_VALUES)
+
+    @property
+    def has_reference(self):
+        return len(self.reference_values) > 0 \
+            and len(self.reference_components) > 0
+
+    
+    def mark_as_reference(self, z3_solution):
+        for _, item in z3_solution.items():
+            if "definition" in item:
+                definition = self.find(item["definition"])
+                if definition not in self.reference_components:
+                    self.reference_components.append(definition)
+                if "configuration" in item:
+                    for each_value in item["configuration"]:
+                        value = z3_solution[each_value]
+                        if value not in self.reference_values:
+                           self.reference_values.append((value["variable"], value["value"]))
 
     def mark_as_covered(self, z3_solution):
         for _, item in z3_solution.items():
@@ -389,13 +438,29 @@ class Context(object):
         constraint = "0"
         if self.covered_values:
             constraint = "CInstance.filter(ci, ci.configuration.exists(val, And([%s]))).count()"
-            values = ", ".join("Implies(val.variable != %s, val.value != %d)" % (variable, value) \
+            values = ", ".join("Implies(val.variable == %s, val.value != %d)" % (variable, value) \
                            for variable, value in self.covered_values)
             constraint = constraint % values
         constraint += " + CInstance.filter(ci, And([%s])).count()"
         components = ", ".join("ci.definition != %s" % each for each in self.covered_components)
         constraint = constraint % components
         return self.evaluate(constraint)
+
+    
+    def atomic_diff(self):
+        constraint = "1 == "
+
+        value_clause = "Value.filter(val, And([%s])).count() + "
+        values = ", ".join("Implies(val.variable == %s, val.value != %d)" % (variable, value) \
+                           for variable, value in self.reference_values)
+        constraint += value_clause % values
+
+        constraint += "CInstance.filter(ci, And([%s])).count()"
+        components = ", ".join("ci.definition != %s" % each for each in self.reference_components)
+        constraint = constraint % components
+
+        return self.evaluate(constraint)
+        
 
 
 

@@ -134,11 +134,11 @@ class CampTest(TestCase):
 
 
     def generate_all(self):
-        self.camp("generate", "--all", "-d", self.scenario.directory)
+        self.camp("generate", "--mode", "all", "-d", self.scenario.directory)
 
 
     def generate_coverage(self):
-        self.camp("generate", "--coverage", "-d", self.scenario.directory)
+        self.camp("generate", "--mode", "covering", "-d", self.scenario.directory)
 
 
     def realize(self):

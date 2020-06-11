@@ -230,7 +230,7 @@ class ConfigurationsAreGenerated(TestCase):
 
     def invoke_camp_generate(self):
         camp = Camp(YAML(), Z3Problem, Builder())
-        command = Command.extract_from(["generate", "--all", "-d", self._working_directory])
+        command = Command.extract_from(["generate", "--mode",  "all", "-d", self._working_directory])
         command.send_to(camp)
 
 

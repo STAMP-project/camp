@@ -12,7 +12,7 @@
 FROM python:3.7-slim-stretch
 
 RUN apt-get update && \
-        apt-get install -y --no-install-recommends git=1:2.11.0-3+deb9u4 && \
+        apt-get install -y --no-install-recommends git=1:2.11.0-3+deb9u7 && \
         apt-get clean && \
         rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

@@ -10,6 +10,7 @@
 
 
 from camp.codecs.yaml import InvalidYAMLModel
+from camp.commands import Generate
 from camp.directories import InputDirectory, OutputDirectory, \
     MissingModel, NoConfigurationFound
 from camp.entities.validation import Checker, InvalidModel
@@ -111,9 +112,12 @@ class Camp(object):
 
     def _generate_configurations(self, arguments, model):
         problem = self._problem.from_model(model)
-        if arguments.only_coverage:
+        if arguments.mode == Generate.COVERING:
             return  problem.coverage()
-        return problem.all_solutions()
+        elif arguments.mode == Generate.ATOMIC:
+            return problem.atomic()
+        else:
+            return problem.all_solutions()
 
 
     def _save(self, index, configuration):
