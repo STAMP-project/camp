@@ -161,7 +161,7 @@ As for other case-studies, you can generate all possible
 configurations with the following command:
 
 ```console
-$ camp generate -d . --all
+$ camp generate -d . --mode all
 ```
 
 For X-Wiki, **there are exactly 64 possible configurations** and the
@@ -183,7 +183,7 @@ The command to search of a subset of configurations that covers all
 single variations is:
 
 ```console
-$ camp generate -d . --coverage
+$ camp generate -d . --mode covering
 CAMP v0.1.0 (MIT)
 Copyright (C) 2017, 2018 SINTEF Digital
 
