@@ -13,13 +13,13 @@ class About:
 
     PROGRAM = "CAMP"
 
-    VERSION = "0.9.0"
+    VERSION = "0.10.0"
 
     COMMIT_HASH = None
 
     LICENSE = "MIT"
 
-    COPYRIGHT = "Copyright (C) 2017 -- 2019 SINTEF Digital"
+    COPYRIGHT = "Copyright (C) 2017 -- 2020 SINTEF Digital"
 
     DESCRIPTION = "Amplify your configuration tests!"
 
