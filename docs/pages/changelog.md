@@ -4,6 +4,20 @@ Below is the list of CAMP versions, along with a quick summary of the
 changes that were made.
 
 
+*   CAMP v0.10
+
+    *   CAMP v0.10 (Jun. 16, 2020)
+	
+	    *   Atomic mode for CAMP generate. CAMP assumes the first
+            configuration it finds as a reference, and then generate
+            only configurations that differ from it by a single
+            variation point (see [Issue
+            60](https://github.com/STAMP-project/camp/issues/60).)
+			
+		*   Update the CLI of CAMP generate. The generation mode is
+            now specified using the option `--mode|-m [MODE]`, where
+            `MODE` can be either of `all`, `covering` or `atomic`.
+
 *   CAMP v0.9
 
     *   CAMP v0.9.0 (Nov. 19, 2019)
