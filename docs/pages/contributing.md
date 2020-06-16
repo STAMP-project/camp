@@ -13,21 +13,6 @@ explain here:
  * How to [contribute to the documentation](#documentation);
  * How to [build and modify the code](#building)
 
----
-
-**Give us feedback!** Please take 5’ of your time to fill in this
-[quick
-questionnaire](https://www.stamp-project.eu/view/main/betatestingsurvey/).
-
-This is important for us. As a recognition for your feedback, you will
-receive a limited edition “STAMP Software Test Pilot” **gift** and be
-recognized as a STAMP contributor.
-
-This campaign will close on November 30, 2019. You will be contacted
-individually for a customized gift and for contribution opportunities.
-
----
-
 
 <a name="todo"/>
 ## TODO List
