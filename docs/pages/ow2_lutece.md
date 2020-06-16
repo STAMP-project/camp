@@ -157,7 +157,7 @@ As for other case-studies, you can generate all possible
 configurations with the following command:
 
 ```console
-$ camp generate -d . --all
+$ camp generate -d . --mode all
 ```
 
 In this simple example, there are only two configurations, which are

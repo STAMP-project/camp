@@ -99,7 +99,7 @@ As for other case-studies, you can generate all possible
 configurations with the following command:
 
 ```console
-$ camp generate -d . --all
+$ camp generate -d . --mode all
 ```
 
 ![CityGo
@@ -150,7 +150,7 @@ use the following commands:
 
 
 ```console
-$ camp generate -d . --coverage
+$ camp generate -d . --mode covering
 CAMP v0.1.0 (MIT)
 Copyright (C) 2017, 2018 SINTEF Digital
 
@@ -451,7 +451,7 @@ the followings command. We omit parts of the output for the sake of
 brevity.
 
 ```console
-$ camp generate -d . --all
+$ camp generate -d . --mode all
 CAMP v0.6.3 (MIT)
 Copyright (C) 2017 -- 2019 SINTEF Digital
 
@@ -485,7 +485,7 @@ of configuration where each option is used at least once. This yields
 5 configurations. To do so, we proceed as follows
 
 ```console
-$ camp  generate -d . --coverage
+$ camp  generate -d . --mode covering
 CAMP v0.6.3 (MIT)
 Copyright (C) 2017 -- 2019 SINTEF Digital
 

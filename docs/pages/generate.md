@@ -4,12 +4,13 @@ layout: default
 
 # CAMP generate
 
-CAMP generates new configurations given a description of what
-can be varied. We use here a simple made-up example to explain how to
+CAMP generates new configurations given a description of what can be
+varied. We use here a simple made-up example to explain how to
 generate all configurations, or only the subset that [covers all
-possible variations](#coverage). We then explain how to
-define [variables](#variables) and [constraints](#constraints). We
-also give a few shell commands to [visualize the generated
+possible variations](#coverage), or only [single-change
+configurations](#atomic). We then explain how to define
+[variables](#variables) and [constraints](#constraints). We also give
+a few shell commands to [visualize the generated
 configurations](#visualisation).
 
 
@@ -72,7 +73,7 @@ components:
 We can ask CAMP to generate all the possible configurations, as follows:
 
 ```bash
-$ camp generate -d . --all
+$ camp generate -d . --mode all
 ```
 
 The figure below shows what configurations CAMP generates.
@@ -89,7 +90,7 @@ generate a smaller subset that covers all possible variations at least
 one (i.e., components and variable values).
 
 ```
-$ camp generate --coverage -d .
+$ camp generate --mode coverage -d .
 ```
 
 In the previous example, CAMP generates only the three following
@@ -97,6 +98,20 @@ configurations:
 
 ![awesome configurations]({{site.baseurl}}/assets/images/awesome_coverage.png "The
 three generated configurations to cover all features")
+
+
+### Atomic Variations
+<a name="atomic"/>
+
+Sometimes we prefer to get configuration that vary from one another by
+a single change. CAMP offers the "atomic" mode that does just
+that. The first configuration, will be taken as a reference and CAMP
+will generate only configuration that differs by single variation
+point from this very first configuration.
+
+```
+$ camp generate --mode atomic -d .
+```
 
 
 ### Features vs. Services
