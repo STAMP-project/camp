@@ -10,7 +10,7 @@ jobs:
           sed -ir "s/COMMIT_HASH = None/COMMIT_HASH = \"${CIRCLE_SHA1}\"/I" camp/__init__.py          
       - run: |
           docker build --no-cache \
-                 --build-arg PYTHON_VERSION=3.5 \
+                 --build-arg PYTHON_VERSION=3.7 \
                  --build-arg WITH_TESTS=--camp-with-tests \
                  --build-arg Z3_VERSION=4.8.6 \
                  --build-arg Z3_PLATFORM=x64-ubuntu-16.04 \

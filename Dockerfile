@@ -8,11 +8,11 @@
 # of the MIT license.  See the LICENSE file for details.
 #
 
-FROM debian:9-slim
+FROM debian:10-slim
 
 
 ARG DEBUG
-ARG PYTHON_VERSION=3.5
+ARG PYTHON_VERSION=3.7
 ARG WITH_TESTS
 ARG Z3_VERSION=4.8.4.d6df51951f4c
 ARG Z3_PLATFORM=x64-debian-8.11

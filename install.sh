@@ -8,6 +8,9 @@ set -o nounset
 DEBUG=false
 LOG_FILE=install.log
 
+# PIP Options to avoid SSL errors
+PIP_SSL_OPTIONS='--trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org'
+
 # Default parameters values
 
 PYTHON_VERSION=3.5
@@ -243,11 +246,12 @@ ensure_pip_available() {
     local -r PIP_VERSION="19.0.3"
     if ! type pip >> ${LOG_FILE} 2>&1;
     then
+	install_packages python3-distutils
         ensure_curl_available
         printf "Installing Pip ${PIP_VERSION}.\n";
         local -r PIP_INSTALLER_URL=https://bootstrap.pypa.io/get-pip.py
         \curl -sS -L -k -O ${PIP_INSTALLER_URL};
-        python get-pip.py -qq pip==$PIP_VERSION;
+        python3 get-pip.py ${PIP_SSL_OPTIONS} -qq pip==$PIP_VERSION;
         rm get-pip.py
 
     else
@@ -332,14 +336,14 @@ ensure_CAMP_available() {
 
     if [[ "${CAMP_FROM_SOURCES}" == "true" ]]
     then
-        pip install --upgrade setuptools >> ${LOG_FILE} 2>&1
-        pip install .${CAMP_WITH_TESTS} >> ${LOG_FILE} 2>&1
+        pip install ${PIP_SSL_OPTIONS} --upgrade setuptools >> ${LOG_FILE} 2>&1;
+        pip install ${PIP_SSL_OPTIONS} .${CAMP_WITH_TESTS} >> ${LOG_FILE} 2>&1;
 
     else
         local -r GITHUB_URL="https://github.com/STAMP-project/camp.git@%s#egg=camp"
         local -r CAMP_URL=$(printf ${GITHUB_URL} ${CAMP_VERSION})
 
-        pip install git+${CAMP_URL} >> ${LOG_FILE} 2>&1
+        pip install ${PIP_SSL_OPTIONS} git+${CAMP_URL} >> ${LOG_FILE} 2>&1;
         if [ $? -eq 0 ]; then
             printf "CAMP (%s) ready.\n" "${CAMP_VERSION}"
         else

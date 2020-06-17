@@ -18,6 +18,17 @@ changes that were made.
             now specified using the option `--mode|-m [MODE]`, where
             `MODE` can be either of `all`, `covering` or `atomic`.
 
+        *   Update dependencies:
+		
+			*   future 0.18.2 
+			*   pyyaml 5.3.1
+			*   argparse 1.4.0
+			*   mock 4.0.2
+			*   deepdiff 4.3.2
+			*   green 3.2.0
+			*   Python 3.7 (Docker image)
+			*   Debian 10 (Docker image)
+
 *   CAMP v0.9
 
     *   CAMP v0.9.0 (Nov. 19, 2019)
